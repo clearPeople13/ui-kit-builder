@@ -1,0 +1,37 @@
+{
+  "name": "branded",
+  "components": "full",
+  "prefix": "acme",
+  "theme": {
+    "global": {
+      "colorPrimary": "#0f766e",
+      "colorPrimaryLight": "#14b8a6",
+      "colorSuccess": "#059669",
+      "colorWarning": "#d97706",
+      "colorDanger": "#dc2626",
+      "radiusBase": "8px",
+      "fontSizeBase": "14px"
+    },
+    "components": {
+      "button": {
+        "radius": "10px"
+      },
+      "dialog": {
+        "radius": "16px",
+        "headerBg": "#f8fafc",
+        "footerBg": "#f1f5f9"
+      },
+      "drawer": {
+        "headerBg": "#f8fafc",
+        "footerBg": "#f1f5f9"
+      },
+      "splitter": {
+        "barBg": "#eef2f8",
+        "barGrip": "#64748b"
+      },
+      "tag": {
+        "radius": "999px"
+      }
+    }
+  }
+}

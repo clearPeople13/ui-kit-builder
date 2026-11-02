@@ -1,0 +1,13 @@
+.ui-card.is-always-shadow {
+  box-shadow: var(--ui-card-shadow-always);
+}
+
+.ui-card.is-hover-shadow {
+  box-shadow: none;
+  transition: box-shadow 0.3s ease, transform 0.18s ease;
+}
+
+.ui-card.is-hover-shadow:hover {
+  box-shadow: var(--ui-card-shadow-hover);
+  transform: var(--ui-card-hover-transform);
+}

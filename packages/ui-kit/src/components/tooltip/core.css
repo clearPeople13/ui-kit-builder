@@ -1,0 +1,44 @@
+.ui-tooltip {
+  display: inline-block;
+  font-family: var(--ui-font-family);
+}
+
+.ui-tooltip__trigger {
+  display: inline-block;
+}
+
+.ui-tooltip__popper {
+  position: fixed;
+  z-index: 3000;
+  max-width: 320px;
+  padding: 8px 12px;
+  border-radius: var(--ui-radius-md);
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  box-sizing: border-box;
+  animation: ui-tooltip-in 130ms ease-out;
+}
+
+@keyframes ui-tooltip-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.ui-tooltip__popper.is-dark {
+  background: var(--ui-bg-color-dark-elevated);
+  color: var(--ui-text-color-inverse);
+  box-shadow: var(--ui-shadow-drawer);
+}
+
+.ui-tooltip__popper.is-light {
+  background: var(--ui-bg-color);
+  color: var(--ui-text-color-strong);
+  border: 1px solid var(--ui-border-color-light);
+  box-shadow: var(--ui-shadow-drawer);
+}

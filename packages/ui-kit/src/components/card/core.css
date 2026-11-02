@@ -1,0 +1,35 @@
+.ui-card {
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--ui-card-border-color);
+  border-radius: var(--ui-card-radius);
+  background: var(--ui-card-bg);
+  color: var(--ui-card-color);
+  font-size: 14px;
+  box-shadow: var(--ui-card-shadow);
+}
+
+.ui-card__header {
+  padding: var(--ui-card-header-padding);
+  border-bottom: 1px solid var(--ui-card-header-border-color);
+  background: var(--ui-card-header-bg);
+  color: var(--ui-card-header-color);
+  font-size: var(--ui-card-header-font-size);
+  font-weight: var(--ui-card-header-font-weight);
+  letter-spacing: var(--ui-card-header-letter-spacing);
+  box-shadow: var(--ui-card-header-accent);
+}
+
+.ui-card__body {
+  padding: var(--ui-card-body-padding);
+  color: var(--ui-card-body-color);
+  line-height: var(--ui-card-body-line-height);
+}
+
+.ui-card__footer {
+  padding: var(--ui-card-footer-padding);
+  border-top: 1px solid var(--ui-card-footer-border-color);
+  background: var(--ui-card-footer-bg);
+  color: var(--ui-card-footer-color);
+  font-size: 13px;
+}

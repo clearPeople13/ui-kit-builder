@@ -1,0 +1,193 @@
+.ui-menu {
+  --ui-menu-active-color: var(--ui-color-primary);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--ui-menu-padding);
+  border: 1px solid var(--ui-menu-border-color);
+  border-radius: var(--ui-menu-radius);
+  background: var(--ui-menu-bg, #ffffff);
+  box-shadow: var(--ui-menu-shadow);
+  color: var(--ui-text-color-primary);
+  font-size: 14px;
+}
+
+.ui-menu__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ui-menu.is-horizontal .ui-menu__list {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* 水平导航条不展示分组标题，分组内的条目直接参与横向排布 */
+.ui-menu.is-horizontal .ui-menu-item-group__title {
+  display: none;
+}
+
+.ui-menu.is-horizontal .ui-menu-item-group__list {
+  display: contents;
+}
+
+.ui-menu-item {
+  list-style: none;
+}
+
+.ui-menu-item__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: var(--ui-menu-item-padding);
+  border-radius: var(--ui-menu-item-radius);
+  color: var(--ui-menu-item-color);
+  font-weight: var(--ui-menu-item-font-weight);
+  letter-spacing: var(--ui-menu-item-letter-spacing);
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ui-menu-item__inner:hover {
+  background: var(--ui-menu-item-hover-bg);
+  color: var(--ui-menu-item-hover-color);
+}
+
+.ui-menu-item.is-active .ui-menu-item__inner {
+  background: var(--ui-menu-item-active-bg);
+  color: var(--ui-menu-item-active-color);
+  font-weight: var(--ui-menu-item-active-font-weight);
+  box-shadow: var(--ui-menu-item-active-shadow);
+}
+
+.ui-menu-item.is-active .ui-menu-item__inner::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--ui-menu-item-active-marker-width);
+  height: var(--ui-menu-item-active-marker-height);
+  margin-top: calc(var(--ui-menu-item-active-marker-height) / -2);
+  border-radius: var(--ui-menu-item-active-marker-radius);
+  background: var(--ui-menu-item-active-marker-color);
+}
+
+.ui-menu-item.is-disabled .ui-menu-item__inner {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-menu-item.is-disabled .ui-menu-item__inner:hover {
+  background: transparent;
+  color: var(--ui-menu-text-color, #4b5563);
+}
+
+.ui-menu-item-group__title {
+  padding: 8px 14px 4px;
+  color: var(--ui-menu-group-title-color);
+  font-size: 12px;
+  font-weight: var(--ui-menu-group-title-font-weight);
+  letter-spacing: var(--ui-menu-group-title-letter-spacing);
+}
+
+.ui-sub-menu {
+  list-style: none;
+}
+
+.ui-sub-menu__title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: var(--ui-menu-item-padding);
+  border-radius: var(--ui-menu-item-radius);
+  color: var(--ui-menu-item-color);
+  font-weight: var(--ui-menu-item-font-weight);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ui-sub-menu__title:hover {
+  background: var(--ui-menu-item-hover-bg);
+  color: var(--ui-menu-item-hover-color);
+}
+
+.ui-sub-menu.is-opened > .ui-sub-menu__title {
+  color: var(--ui-sub-menu-open-color);
+  font-weight: var(--ui-font-weight-strong);
+}
+
+.ui-sub-menu.is-disabled > .ui-sub-menu__title {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: transparent;
+  color: var(--ui-menu-text-color, #4b5563);
+}
+
+.ui-sub-menu__body {
+  position: relative;
+  padding-left: var(--ui-sub-menu-body-padding-left);
+}
+
+.ui-sub-menu__body::before {
+  content: "";
+  position: absolute;
+  left: var(--ui-sub-menu-body-line-left);
+  top: 2px;
+  bottom: 8px;
+  width: var(--ui-sub-menu-body-line-width);
+  border-radius: var(--ui-sub-menu-body-line-radius);
+  background: var(--ui-sub-menu-body-line-color);
+}
+
+/* 水平模式下子菜单浮出为面板，不挤开导航条 */
+.ui-menu.is-horizontal .ui-sub-menu {
+  position: relative;
+}
+
+.ui-menu.is-horizontal .ui-sub-menu__body {
+  position: absolute;
+  z-index: 20;
+  top: 100%;
+  left: 0;
+  min-width: 190px;
+  padding: var(--ui-menu-popper-padding);
+  border: var(--ui-menu-popper-border);
+  border-radius: var(--ui-menu-popper-radius);
+  background: var(--ui-menu-bg, #ffffff);
+  box-shadow: var(--ui-menu-popper-shadow);
+}
+
+.ui-menu.is-horizontal .ui-sub-menu__body::before {
+  content: none;
+}
+
+/* 折叠态只保留顶级条目：分组标题与子菜单面板整体收起 */
+.ui-menu.is-collapse .ui-sub-menu__body,
+.ui-menu.is-collapse .ui-menu-item-group__title {
+  display: none;
+}
+
+.ui-sub-menu__arrow {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--ui-sub-menu-arrow-color);
+  font-size: 11px;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s ease;
+}
+
+.ui-sub-menu.is-opened .ui-sub-menu__arrow {
+  transform: rotate(90deg);
+  color: var(--ui-color-primary);
+}
+
+.ui-sub-menu.is-opened .ui-sub-menu__arrow.is-custom {
+  transform: none;
+}

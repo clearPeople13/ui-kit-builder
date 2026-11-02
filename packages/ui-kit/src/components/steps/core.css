@@ -1,0 +1,120 @@
+.ui-steps {
+  width: 100%;
+}
+
+.ui-steps__list {
+  display: flex;
+  gap: 0;
+}
+
+.ui-step {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ui-steps.is-horizontal .ui-step__head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.ui-steps.is-vertical .ui-step {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ui-steps.is-vertical .ui-step__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.ui-step__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--ui-step-icon-size);
+  height: var(--ui-step-icon-size);
+  border: var(--ui-step-icon-border);
+  border-radius: var(--ui-step-icon-radius);
+  background: var(--ui-step-icon-bg);
+  color: var(--ui-step-icon-color);
+  box-shadow: var(--ui-step-icon-shadow);
+  font-size: 13px;
+  font-weight: var(--ui-step-icon-font-weight);
+}
+
+.ui-step__line {
+  flex: 1;
+  height: var(--ui-step-line-height);
+  margin: var(--ui-step-line-margin);
+  border-radius: var(--ui-step-line-radius);
+  background: var(--ui-step-line-bg);
+}
+
+.ui-steps.is-vertical .ui-step__line {
+  width: 2px;
+  height: 100%;
+  min-height: 20px;
+  margin: 6px 0;
+}
+
+.ui-step__main {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 8px 8px 0;
+}
+
+.ui-steps.is-horizontal .ui-step__main {
+  padding: 8px 20px 0 0;
+}
+
+.ui-step__title {
+  color: var(--ui-step-title-color);
+  font-size: 14px;
+  font-weight: var(--ui-step-title-font-weight);
+  letter-spacing: var(--ui-step-title-letter-spacing);
+  line-height: 1.5;
+}
+
+.ui-step__description {
+  margin-top: 4px;
+  color: var(--ui-step-description-color);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ui-step.is-process .ui-step__icon {
+  border-color: var(--ui-step-process-icon-border-color);
+  background: var(--ui-step-process-icon-bg);
+  color: var(--ui-step-process-icon-color);
+  box-shadow: var(--ui-step-process-icon-shadow);
+}
+
+.ui-step.is-process .ui-step__title {
+  color: var(--ui-step-process-title-color);
+}
+
+.ui-step.is-finish .ui-step__icon {
+  border-color: var(--ui-step-finish-icon-border-color);
+  background: var(--ui-step-finish-icon-bg);
+  color: var(--ui-step-finish-icon-color);
+}
+
+.ui-step.is-finish .ui-step__line {
+  background: var(--ui-step-finish-line-bg);
+}
+
+.ui-step.is-finish .ui-step__title {
+  color: var(--ui-step-finish-title-color);
+}
+
+.ui-steps.is-simple .ui-step__description {
+  display: none;
+}

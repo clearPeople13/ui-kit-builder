@@ -1,0 +1,147 @@
+.ui-transfer {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  font-family: var(--ui-font-family);
+  font-size: 13px;
+  color: var(--ui-text-color-regular);
+}
+
+.ui-transfer__panel {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 150px;
+  height: 260px;
+  border: 1px solid var(--ui-transfer-panel-border-color);
+  border-radius: var(--ui-transfer-panel-radius);
+  background: var(--ui-transfer-panel-bg);
+  box-shadow: var(--ui-transfer-panel-shadow);
+  overflow: hidden;
+}
+
+.ui-transfer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ui-transfer-header-padding);
+  border-bottom: 1px solid var(--ui-border-color-light);
+  background: var(--ui-fill-color-subtle);
+  color: var(--ui-color-info-strong);
+  font-size: 13px;
+  font-weight: var(--ui-transfer-header-font-weight);
+}
+
+.ui-transfer__count {
+  color: var(--ui-color-info);
+  font-size: 12px;
+  font-weight: var(--ui-font-weight-regular);
+}
+
+.ui-transfer__filter {
+  padding: 10px 12px 6px;
+}
+
+.ui-transfer__input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--ui-border-color-faint);
+  border-radius: var(--ui-radius-base);
+  outline: none;
+  background: var(--ui-fill-color-light);
+  color: var(--ui-text-color-muted);
+  font: inherit;
+  font-family: var(--ui-font-family);
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ui-transfer__input:focus {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-bg-color);
+  box-shadow: 0 0 0 3px var(--ui-focus-ring-soft);
+}
+
+.ui-transfer__list {
+  flex: 1;
+  padding: 4px 6px 8px;
+  overflow: auto;
+}
+
+.ui-transfer__item {
+  border-radius: var(--ui-radius-base);
+  transition: background-color 0.15s ease;
+}
+
+.ui-transfer__item:hover {
+  background: var(--ui-fill-color-subtle);
+}
+
+.ui-transfer__item.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-transfer__checkbox {
+  box-sizing: border-box;
+  width: 100%;
+  margin-right: 0;
+  padding: 7px 6px;
+  border-radius: var(--ui-radius-base);
+  font-size: 13px;
+}
+
+.ui-transfer__checkbox .ui-checkbox__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-transfer__empty {
+  padding: 24px 0;
+  color: var(--ui-text-color-tertiary);
+  text-align: center;
+}
+
+.ui-transfer__actions {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ui-transfer__button {
+  width: var(--ui-transfer-button-size);
+  height: var(--ui-transfer-button-size);
+  padding: 0;
+  border: 1px solid var(--ui-border-color-faint);
+  border-radius: var(--ui-radius-base);
+  background: var(--ui-bg-color);
+  color: var(--ui-text-color-muted);
+  font: inherit;
+  font-family: var(--ui-font-family);
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+}
+
+.ui-transfer__button:hover:not(:disabled) {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-color-primary-bg-subtle);
+  color: var(--ui-color-primary);
+}
+
+.ui-transfer__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-transfer.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

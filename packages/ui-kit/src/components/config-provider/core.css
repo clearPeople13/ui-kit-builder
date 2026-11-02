@@ -1,0 +1,9 @@
+.ui-config-provider {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-config-provider.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

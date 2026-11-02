@@ -1,0 +1,79 @@
+.ui-input-number {
+  position: relative;
+}
+
+.ui-input-number__inner {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-input-number__inner::-webkit-outer-spin-button,
+.ui-input-number__inner::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.ui-input-number:not(.is-controls-none):not(.is-controls-both) .ui-input-number__inner {
+  padding-right: 28px;
+}
+
+.ui-input-number__controls {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  display: flex;
+  flex-direction: column;
+  width: 24px;
+  border-left: 1px solid var(--ui-border-color);
+  border-radius: 0 3px 3px 0;
+  overflow: hidden;
+}
+
+.ui-input-number__increase,
+.ui-input-number__decrease {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: var(--ui-fill-color);
+  color: var(--ui-text-color-regular);
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.ui-input-number__increase:hover:not(:disabled),
+.ui-input-number__decrease:hover:not(:disabled) {
+  color: var(--ui-color-primary);
+}
+
+.ui-input-number__increase:disabled,
+.ui-input-number__decrease:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.ui-input-number.is-controls-both .ui-input-number__inner {
+  padding: 0 11px;
+}
+
+.ui-input-number.is-controls-both .ui-input-number__increase,
+.ui-input-number.is-controls-both .ui-input-number__decrease {
+  flex: none;
+  width: 28px;
+  border: 1px solid var(--ui-border-color);
+  background: var(--ui-fill-color);
+}
+
+.ui-input-number.is-controls-both .ui-input-number__decrease {
+  border-right: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.ui-input-number.is-controls-both .ui-input-number__increase {
+  border-left: 0;
+  border-radius: 0 4px 4px 0;
+}

@@ -1,0 +1,8 @@
+.ui-focus-trap {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-focus-trap:focus {
+  outline: none;
+}

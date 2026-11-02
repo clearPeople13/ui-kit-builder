@@ -1,0 +1,108 @@
+export interface DemoIconEntry {
+  name: string
+  label: string
+  group: string
+}
+
+export const ICON_GROUPS = ['全部', '通用', '方向', '操作', '文件', '用户', '状态', '媒体', '设备', '数据', '商业']
+
+export const ICON_LIBRARY: DemoIconEntry[] = [
+  { name: 'star', label: '星标', group: '通用' },
+  { name: 'heart', label: '喜欢', group: '通用' },
+  { name: 'bell', label: '通知', group: '通用' },
+  { name: 'bookmark', label: '收藏', group: '通用' },
+  { name: 'clock', label: '时钟', group: '通用' },
+  { name: 'calendar', label: '日历', group: '通用' },
+  { name: 'search', label: '搜索', group: '通用' },
+  { name: 'settings', label: '设置', group: '通用' },
+  { name: 'home', label: '首页', group: '通用' },
+  { name: 'grid', label: '网格', group: '通用' },
+  { name: 'menu', label: '菜单', group: '通用' },
+  { name: 'list', label: '列表', group: '通用' },
+  { name: 'more', label: '更多', group: '通用' },
+  { name: 'info', label: '信息', group: '通用' },
+  { name: 'alert', label: '警示', group: '通用' },
+  { name: 'coffee', label: '咖啡', group: '通用' },
+
+  { name: 'arrowLeft', label: '左箭头', group: '方向' },
+  { name: 'arrowRight', label: '右箭头', group: '方向' },
+  { name: 'arrowUp', label: '上箭头', group: '方向' },
+  { name: 'arrowDown', label: '下箭头', group: '方向' },
+  { name: 'chevronLeft', label: '左折角', group: '方向' },
+  { name: 'chevronRight', label: '右折角', group: '方向' },
+  { name: 'chevronUp', label: '上折角', group: '方向' },
+  { name: 'chevronDown', label: '下折角', group: '方向' },
+  { name: 'expand', label: '展开', group: '方向' },
+  { name: 'shrink', label: '收起', group: '方向' },
+
+  { name: 'plus', label: '新增', group: '操作' },
+  { name: 'minus', label: '移除', group: '操作' },
+  { name: 'addCircle', label: '圆圈新增', group: '操作' },
+  { name: 'edit', label: '编辑', group: '操作' },
+  { name: 'trash', label: '删除', group: '操作' },
+  { name: 'copy', label: '复制', group: '操作' },
+  { name: 'save', label: '保存', group: '操作' },
+  { name: 'download', label: '下载', group: '操作' },
+  { name: 'upload', label: '上传', group: '操作' },
+  { name: 'share', label: '分享', group: '操作' },
+  { name: 'send', label: '发送', group: '操作' },
+  { name: 'printer', label: '打印', group: '操作' },
+  { name: 'refresh', label: '刷新', group: '操作' },
+  { name: 'rotate', label: '还原', group: '操作' },
+  { name: 'externalLink', label: '外链', group: '操作' },
+
+  { name: 'folder', label: '文件夹', group: '文件' },
+  { name: 'folderOpen', label: '打开文件夹', group: '文件' },
+  { name: 'fileText', label: '文档', group: '文件' },
+  { name: 'paperclip', label: '附件', group: '文件' },
+  { name: 'inbox', label: '收件箱', group: '文件' },
+
+  { name: 'user', label: '用户', group: '用户' },
+  { name: 'users', label: '用户组', group: '用户' },
+  { name: 'userCircle', label: '用户头像', group: '用户' },
+  { name: 'login', label: '登录', group: '用户' },
+  { name: 'logout', label: '退出', group: '用户' },
+  { name: 'shield', label: '安全', group: '用户' },
+  { name: 'key', label: '密钥', group: '用户' },
+  { name: 'lock', label: '锁定', group: '用户' },
+  { name: 'unlock', label: '解锁', group: '用户' },
+
+  { name: 'success', label: '成功', group: '状态' },
+  { name: 'error', label: '失败', group: '状态' },
+  { name: 'warning', label: '警告', group: '状态' },
+  { name: 'help', label: '帮助', group: '状态' },
+  { name: 'loader', label: '加载', group: '状态' },
+  { name: 'zap', label: '闪电', group: '状态' },
+  { name: 'flame', label: '火焰', group: '状态' },
+  { name: 'thumbUp', label: '点赞', group: '状态' },
+  { name: 'badgeCheck', label: '认证', group: '状态' },
+
+  { name: 'play', label: '播放', group: '媒体' },
+  { name: 'pause', label: '暂停', group: '媒体' },
+  { name: 'video', label: '视频', group: '媒体' },
+  { name: 'camera', label: '相机', group: '媒体' },
+  { name: 'image', label: '图片', group: '媒体' },
+  { name: 'eye', label: '可见', group: '媒体' },
+  { name: 'eyeOff', label: '隐藏', group: '媒体' },
+
+  { name: 'phone', label: '电话', group: '设备' },
+  { name: 'mail', label: '邮件', group: '设备' },
+  { name: 'globe', label: '全球', group: '设备' },
+  { name: 'sun', label: '晴天', group: '设备' },
+  { name: 'moon', label: '夜间', group: '设备' },
+  { name: 'cloud', label: '云端', group: '设备' },
+  { name: 'wifi', label: '网络', group: '设备' },
+
+  { name: 'database', label: '数据库', group: '数据' },
+  { name: 'code', label: '代码', group: '数据' },
+  { name: 'chartColumn', label: '柱状图', group: '数据' },
+  { name: 'chartLine', label: '折线图', group: '数据' },
+  { name: 'chartPie', label: '饼图', group: '数据' },
+  { name: 'location', label: '定位', group: '数据' },
+
+  { name: 'cart', label: '购物车', group: '商业' },
+  { name: 'creditCard', label: '银行卡', group: '商业' },
+  { name: 'package', label: '包裹', group: '商业' },
+  { name: 'truck', label: '配送', group: '商业' },
+  { name: 'gift', label: '礼物', group: '商业' }
+]

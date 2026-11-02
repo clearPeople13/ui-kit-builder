@@ -1,0 +1,21 @@
+.ui-roving-focus-group {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-roving-focus-group:focus {
+  outline: none;
+}
+
+.ui-roving-focus-item {
+  outline: none;
+}
+
+.ui-roving-focus-item:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.ui-roving-focus-item.is-active {
+  outline-color: var(--el-color-primary, var(--ui-color-primary));
+}

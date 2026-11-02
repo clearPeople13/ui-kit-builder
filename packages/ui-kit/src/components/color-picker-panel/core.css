@@ -1,0 +1,124 @@
+.ui-color-picker-panel {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 240px;
+  padding: 12px;
+  background: var(--ui-bg-color);
+  font-family: var(--ui-font-family);
+}
+
+.ui-color-picker-panel.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ui-color-picker-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ui-color-picker-panel__saturation {
+  position: relative;
+  height: 140px;
+  border-radius: var(--ui-radius-small);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.ui-color-picker-panel__cursor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--ui-border-color-inverse);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ui-color-picker-panel__sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ui-color-picker-panel__hue {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.ui-color-picker-panel__alpha {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background-image: linear-gradient(45deg, var(--ui-border-color-soft) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--ui-border-color-soft) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--ui-border-color-soft) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--ui-border-color-soft) 75%);
+  background-position: 0 0, 0 5px, 5px -5px, -5px 0;
+  background-size: 10px 10px;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.ui-color-picker-panel__alpha-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 5px;
+}
+
+.ui-color-picker-panel__bar-cursor {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--ui-border-color-inverse);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ui-color-picker-panel__predefine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ui-color-picker-panel__preset {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--ui-radius-small);
+  cursor: pointer;
+}
+
+.ui-color-picker-panel__preset:disabled {
+  cursor: not-allowed;
+}
+
+.ui-color-picker-panel__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ui-text-color-regular);
+  font-size: 12px;
+}
+
+.ui-color-picker-panel__preview {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--ui-radius-small);
+  box-shadow: var(--ui-shadow-inset-strong);
+}
+
+.ui-color-picker-panel__value {
+  font-variant-numeric: tabular-nums;
+}

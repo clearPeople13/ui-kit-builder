@@ -1,0 +1,19 @@
+.ui-tree--draggable .ui-tree__node {
+  cursor: grab;
+}
+
+.ui-tree--draggable .ui-tree__node.is-drag-source {
+  opacity: 0.45;
+}
+
+.ui-tree--draggable .ui-tree__node.is-drop-prev {
+  box-shadow: inset 0 2px 0 var(--ui-color-primary);
+}
+
+.ui-tree--draggable .ui-tree__node.is-drop-next {
+  box-shadow: inset 0 -2px 0 var(--ui-color-primary);
+}
+
+.ui-tree--draggable .ui-tree__node.is-drop-inner {
+  background: var(--ui-color-primary-lighter);
+}

@@ -1,0 +1,11 @@
+.ui-notification--top-right .ui-notification__panel,
+.ui-notification--top-left .ui-notification__panel,
+.ui-notification--top-center .ui-notification__panel {
+  margin-top: var(--ui-notification-offset, 0px);
+}
+
+.ui-notification--bottom-right .ui-notification__panel,
+.ui-notification--bottom-left .ui-notification__panel,
+.ui-notification--bottom-center .ui-notification__panel {
+  margin-bottom: var(--ui-notification-offset, 0px);
+}

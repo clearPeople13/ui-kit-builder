@@ -1,0 +1,285 @@
+import type { VNodeChild } from 'vue'
+import { computed, h, onBeforeUnmount, ref, watch } from 'vue'
+import type { UiFeature } from '../../shared/feature'
+import { createUiComponent } from '../../shared/component'
+import { tabPaneClosableFeature } from './features/closable/index'
+import { tabPaneLazyFeature } from './features/lazy/index'
+import { tabPaneEditableFeature } from './features/editable/index'
+import { tabsClosableFeature } from './features/tabs-closable/index'
+import { tabsEditableFeature } from './features/tabs-editable/index'
+import './core.css'
+
+interface TabPaneMeta {
+  name: string | number
+  label: string
+  disabled: boolean
+  closable: boolean
+}
+
+interface TabsContext {
+  active: () => string | number
+  setActive: (name: string | number) => void
+  register: (pane: TabPaneMeta) => void
+  unregister: (name: string | number) => void
+  isRemoved: (name: string | number) => boolean
+}
+
+const TABS_CONTEXT = Symbol('ui-tabs-context')
+let paneSeed = 0
+
+const tabPaneBaseProps = {
+  type: { type: String, default: '' },
+  disabled: { type: Boolean },
+  stretch: { type: Boolean },
+  tabindex: { type: [String, Number] },
+  label: { type: String, default: '' },
+  name: { type: [String, Number] }
+}
+
+export function createTabPane(features: UiFeature[] = []) {
+  return createUiComponent(
+    {
+      name: 'UiTabPane',
+      baseClass: 'ui-tab-pane',
+      props: tabPaneBaseProps,
+      setup(props, { inject }) {
+        const context = inject(TABS_CONTEXT, null) as TabsContext | null
+        const fallbackName = `pane-${(paneSeed += 1)}`
+        const name = props.name ?? props.label ?? fallbackName
+        const meta: TabPaneMeta = {
+          name,
+          label: props.label || String(name),
+          disabled: Boolean(props.disabled),
+          closable: Boolean(props.closable)
+        }
+        context?.register(meta)
+        watch(
+          () => [props.label, props.disabled, props.closable],
+          () => context?.register({ ...meta, label: props.label || String(name), disabled: Boolean(props.disabled), closable: Boolean(props.closable) })
+        )
+        onBeforeUnmount(() => context?.unregister(name))
+        const everActive = ref(false)
+        watch(
+          () => context?.active(),
+          (value) => {
+            if (value !== undefined && String(value) === String(name)) {
+              everActive.value = true
+            }
+          },
+          { immediate: true }
+        )
+        return {
+          paneName: name,
+          get isActive() {
+            return context ? String(context.active()) === String(name) : true
+          },
+          get shouldRender() {
+            if (context?.isRemoved(name)) {
+              return false
+            }
+            return !props.lazy || everActive.value || (context ? String(context.active()) === String(name) : true)
+          }
+        }
+      },
+      classes: (props) => [props.disabled ? 'is-disabled' : ''],
+      content: ({ props, slots, state }) => {
+        if (!state.shouldRender) {
+          return null
+        }
+        return h(
+          'div',
+          {
+            class: 'ui-tab-pane__content',
+            style: state.isActive ? undefined : { display: 'none' }
+          },
+          [slots.default?.() ?? props.label ?? null]
+        )
+      }
+    },
+    features
+  )
+}
+
+const tabsBaseProps = {
+  type: { type: String, default: '' },
+  modelValue: { type: [String, Number] },
+  defaultValue: { type: [String, Number] },
+  tabPosition: { type: String, default: 'top' },
+  stretch: { type: Boolean },
+  tabindex: { type: [String, Number], default: 0 }
+}
+
+export function createTabs(features: UiFeature[] = []) {
+  return createUiComponent(
+    {
+      name: 'UiTabs',
+      baseClass: 'ui-tabs',
+      props: tabsBaseProps,
+      setup(props, { emit, provide }) {
+        const panes = ref<TabPaneMeta[]>([])
+        const active = ref<string | number>(props.modelValue ?? props.defaultValue ?? '')
+        const removed = ref<Set<string>>(new Set())
+
+        watch(
+          () => props.modelValue,
+          (value) => {
+            if (value !== undefined) {
+              active.value = value
+            }
+          }
+        )
+
+        function setActive(name: string | number) {
+          if (String(active.value) === String(name)) {
+            return
+          }
+          active.value = name
+          emit('update:modelValue', name)
+          emit('tab-change', name)
+          emit('tab-click', name)
+        }
+
+        function register(pane: TabPaneMeta) {
+          const index = panes.value.findIndex((item) => String(item.name) === String(pane.name))
+          if (index >= 0) {
+            const next = [...panes.value]
+            next[index] = pane
+            panes.value = next
+            return
+          }
+          panes.value = [...panes.value, pane]
+          if (active.value === '' && pane.name !== undefined) {
+            active.value = pane.name
+          }
+        }
+
+        function unregister(name: string | number) {
+          panes.value = panes.value.filter((item) => String(item.name) !== String(name))
+        }
+
+        function isRemoved(name: string | number) {
+          return removed.value.has(String(name))
+        }
+
+        function removeTab(name: string | number) {
+          const key = String(name)
+          if (removed.value.has(key)) {
+            return
+          }
+          const index = panes.value.findIndex((item) => String(item.name) === key)
+          const nextRemoved = new Set(removed.value)
+          nextRemoved.add(key)
+          removed.value = nextRemoved
+          unregister(name)
+          if (String(active.value) === key) {
+            const remaining = panes.value.filter((item) => !isRemoved(item.name))
+            const fallback = remaining[Math.min(index, remaining.length - 1)]
+            active.value = fallback?.name ?? ''
+            emit('update:modelValue', active.value)
+            emit('tab-change', active.value)
+          }
+          emit('tab-remove', name)
+          emit('edit', name, 'remove')
+        }
+
+        function addTab() {
+          emit('tab-add')
+          emit('edit', undefined, 'add')
+        }
+
+        provide(TABS_CONTEXT, {
+          active: () => active.value,
+          setActive,
+          register,
+          unregister,
+          isRemoved
+        })
+
+        return {
+          setActive,
+          register,
+          unregister,
+          removeTab,
+          addTab,
+          isRemoved,
+          get editable() {
+            return Boolean(props.editable || props.addable)
+          },
+          get activeName() {
+            return active.value
+          },
+          get paneList(): TabPaneMeta[] {
+            return panes.value.filter((item) => !isRemoved(item.name))
+          }
+        }
+      },
+      classes: (props) => [props.tabPosition ? `is-${props.tabPosition}` : '', props.stretch ? 'is-stretch' : ''],
+      content: ({ props, slots, state }) => {
+        const tabsClosable = Boolean(props.closable || props.editable || props.addable)
+        const nav = h(
+          'div',
+          {
+            class: 'ui-tabs__nav',
+            role: 'tablist'
+          },
+          [
+            ...state.paneList.map((pane: TabPaneMeta) =>
+              h(
+                'button',
+                {
+                  key: String(pane.name),
+                  type: 'button',
+                  role: 'tab',
+                  class: [
+                    'ui-tabs__nav-item',
+                    String(state.activeName) === String(pane.name) ? 'is-active' : '',
+                    pane.disabled ? 'is-disabled' : ''
+                  ],
+                  tabindex: Number(props.tabindex ?? 0),
+                  onClick: () => {
+                    if (!pane.disabled) {
+                      state.setActive(pane.name)
+                    }
+                  }
+                },
+                [
+                  pane.label,
+                  (pane.closable || tabsClosable) && !pane.disabled
+                    ? h(
+                        'span',
+                        {
+                          class: 'ui-tabs__nav-close',
+                          role: 'button',
+                          'aria-label': `关闭 ${pane.label}`,
+                          onClick: (event: MouseEvent) => {
+                            event.stopPropagation()
+                            state.removeTab(pane.name)
+                          }
+                        },
+                        '×'
+                      )
+                    : null
+                ]
+              )
+            ),
+            state.editable
+              ? h(
+                  'button',
+                  {
+                    type: 'button',
+                    class: 'ui-tabs__nav-add',
+                    'aria-label': '新增标签',
+                    onClick: () => state.addTab()
+                  },
+                  '+'
+                )
+              : null
+          ]
+        )
+        const panes: VNodeChild = slots.default?.() ?? null
+        return [nav, h('div', { class: 'ui-tabs__content' }, [panes])]
+      }
+    },
+    features
+  )
+}

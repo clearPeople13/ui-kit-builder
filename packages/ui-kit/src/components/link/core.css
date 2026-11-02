@@ -1,0 +1,37 @@
+.ui-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--ui-color-primary);
+  font-family: var(--ui-font-family);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ui-link:hover {
+  color: var(--ui-color-primary-light);
+}
+
+.ui-link--success { color: var(--ui-color-success); }
+.ui-link--warning { color: var(--ui-color-warning); }
+.ui-link--danger { color: var(--ui-color-danger); }
+.ui-link--info { color: var(--ui-color-info); }
+
+.ui-link.is-disabled {
+  color: var(--ui-text-color-disabled);
+  cursor: not-allowed;
+}
+
+.ui-link--underline {
+  text-decoration: underline;
+}
+
+.ui-link--underline-hover:hover {
+  text-decoration: underline;
+}
+
+.ui-link__icon {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}

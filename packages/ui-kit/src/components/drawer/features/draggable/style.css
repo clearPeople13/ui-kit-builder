@@ -1,0 +1,48 @@
+.ui-drawer--draggable .ui-drawer__panel__header {
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.ui-drawer__resizer {
+  position: absolute;
+  z-index: 3;
+  display: none;
+  touch-action: none;
+}
+
+.ui-drawer--resizable .ui-drawer__resizer {
+  display: block;
+}
+
+.ui-drawer--rtl .ui-drawer__resizer {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 8px;
+  cursor: col-resize;
+}
+
+.ui-drawer--ltr .ui-drawer__resizer {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 8px;
+  cursor: col-resize;
+}
+
+.ui-drawer--ttb .ui-drawer__resizer {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8px;
+  cursor: row-resize;
+}
+
+.ui-drawer--btt .ui-drawer__resizer {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 8px;
+  cursor: row-resize;
+}

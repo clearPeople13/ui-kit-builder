@@ -1,0 +1,23 @@
+.ui-overlay {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: color-mix(in srgb, var(--ui-mask-color) 45%, transparent);
+  backdrop-filter: blur(2px);
+  font-family: var(--ui-font-family);
+  animation: ui-overlay-fade 160ms ease-out;
+}
+
+@keyframes ui-overlay-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

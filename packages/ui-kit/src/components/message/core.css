@@ -1,0 +1,95 @@
+.ui-message {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ui-message__panel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: var(--ui-message-padding);
+  border: 1px solid var(--ui-message-border);
+  border-radius: var(--ui-message-radius);
+  background: var(--ui-message-bg);
+  color: var(--ui-message-text);
+  font-size: 14px;
+  font-weight: var(--ui-message-font-weight);
+  letter-spacing: var(--ui-message-letter-spacing);
+  line-height: 1.5;
+  box-shadow: var(--ui-shadow-message);
+  animation: ui-message-in 180ms ease-out;
+}
+
+@keyframes ui-message-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-message__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--ui-message-accent);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ui-message__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-message__close {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.ui-message__close:hover {
+  opacity: 1;
+}
+
+.ui-message--success .ui-message__panel {
+  --ui-message-accent: var(--ui-message-success-accent);
+  --ui-message-bg: var(--ui-message-success-bg);
+  --ui-message-border: var(--ui-message-success-border);
+  --ui-message-text: var(--ui-message-success-text);
+}
+
+.ui-message--warning .ui-message__panel {
+  --ui-message-accent: var(--ui-message-warning-accent);
+  --ui-message-bg: var(--ui-message-warning-bg);
+  --ui-message-border: var(--ui-message-warning-border);
+  --ui-message-text: var(--ui-message-warning-text);
+}
+
+.ui-message--error .ui-message__panel {
+  --ui-message-accent: var(--ui-message-error-accent);
+  --ui-message-bg: var(--ui-message-error-bg);
+  --ui-message-border: var(--ui-message-error-border);
+  --ui-message-text: var(--ui-message-error-text);
+}
+
+.ui-message.is-center .ui-message__panel {
+  justify-content: center;
+}

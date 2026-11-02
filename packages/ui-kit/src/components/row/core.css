@@ -1,0 +1,20 @@
+.ui-row {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-row.is-justify-start { justify-content: flex-start; }
+.ui-row.is-justify-center { justify-content: center; }
+.ui-row.is-justify-end { justify-content: flex-end; }
+.ui-row.is-justify-space-around { justify-content: space-around; }
+.ui-row.is-justify-space-between { justify-content: space-between; }
+.ui-row.is-justify-space-evenly { justify-content: space-evenly; }
+
+.ui-row.is-align-top { align-items: flex-start; }
+.ui-row.is-align-middle { align-items: center; }
+.ui-row.is-align-bottom { align-items: flex-end; }
+
+.ui-row.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

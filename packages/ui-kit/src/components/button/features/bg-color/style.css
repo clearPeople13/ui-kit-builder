@@ -1,0 +1,13 @@
+.ui-button--bg-color {
+  border-color: transparent;
+  box-shadow: inset 0 0 0 1px rgb(16 24 40 / 8%);
+}
+
+.ui-button--bg-color:hover {
+  border-color: transparent;
+}
+
+.ui-button--bg-color:focus-visible {
+  outline: 2px solid rgb(16 24 40 / 25%);
+  outline-offset: 2px;
+}

@@ -1,0 +1,19 @@
+import { createClassFeature } from '../../../../shared/component'
+import { panelScrollProp } from '../../../../shared/panel'
+import './style.css'
+
+export const mentionPopperFeature = createClassFeature({
+  id: 'mention.popper',
+  props: {
+    teleported: { type: Boolean, default: true },
+    appendTo: { type: [String, Object] },
+    popperClass: { type: [String, Array, Object, Boolean] },
+    popperStyle: { type: [String, Array, Object, Boolean] },
+    placement: { type: String, default: 'bottom' },
+    fallbackPlacements: { type: Array },
+    offset: { type: Number, default: 0 },
+    showArrow: { type: Boolean, default: true },
+    panelScroll: panelScrollProp
+  },
+  className: () => 'ui-mention--popper'
+})

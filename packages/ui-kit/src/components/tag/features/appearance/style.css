@@ -1,0 +1,12 @@
+.ui-tag.is-round {
+  border-radius: var(--ui-radius-pill);
+}
+
+.ui-tag.is-hit {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ui-tag.is-hit:active {
+  opacity: 0.85;
+}

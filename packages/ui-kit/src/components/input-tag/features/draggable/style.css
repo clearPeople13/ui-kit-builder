@@ -1,0 +1,14 @@
+.ui-input-tag--draggable .ui-input-tag__tag {
+  cursor: grab;
+  user-select: none;
+}
+
+.ui-input-tag--draggable .ui-input-tag__tag.is-dragging {
+  cursor: grabbing;
+  opacity: 0.45;
+}
+
+.ui-input-tag--draggable .ui-input-tag__tag.is-drop-target {
+  outline: 2px dashed var(--ui-color-primary);
+  outline-offset: 1px;
+}

@@ -1,0 +1,54 @@
+.ui-floating-panel.is-top {
+  transform-origin: bottom center;
+}
+
+.ui-floating-panel.is-bottom {
+  transform-origin: top center;
+}
+
+.ui-floating-panel.is-left {
+  transform-origin: center right;
+}
+
+.ui-floating-panel.is-right {
+  transform-origin: center left;
+}
+
+/* 悬停过渡桥：fixed 定位，避免被面板 overflow 计入可滚动区域（向上弹出时会出现假滚动条） */
+.ui-floating-panel.is-top::before,
+.ui-floating-panel.is-bottom::before,
+.ui-floating-panel.is-left::before,
+.ui-floating-panel.is-right::before {
+  content: '';
+  position: fixed;
+  z-index: 0;
+  left: var(--ui-floating-bridge-left, 0);
+  top: var(--ui-floating-bridge-top, 0);
+  width: var(--ui-floating-bridge-width, 0);
+  height: var(--ui-floating-bridge-height, 0);
+}
+
+.ui-floating-panel > .ui-floating-arrow {
+  position: fixed;
+  z-index: 1;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.ui-floating-panel.is-bottom > .ui-floating-arrow,
+.ui-floating-panel.is-top > .ui-floating-arrow {
+  margin-left: -4px;
+}
+
+.ui-floating-panel.is-left > .ui-floating-arrow,
+.ui-floating-panel.is-right > .ui-floating-arrow {
+  margin-top: -4px;
+}
+
+.ui-button:active {
+  transform: var(--ui-button-active-transform);
+  box-shadow: var(--ui-button-shadow-active);
+}

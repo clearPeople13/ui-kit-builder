@@ -1,0 +1,8 @@
+.ui-button--gradient {
+  background-size: 160% 160%;
+  background-position: center;
+}
+
+.ui-button--gradient:hover {
+  background-position: left center;
+}

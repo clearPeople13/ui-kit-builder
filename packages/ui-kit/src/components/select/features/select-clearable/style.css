@@ -1,0 +1,30 @@
+.ui-select__clear {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.ui-select:hover .ui-select__clear,
+.ui-select:focus-within .ui-select__clear,
+.ui-select.is-open .ui-select__clear {
+  visibility: visible;
+  opacity: 0.75;
+}
+
+.ui-select:hover .ui-select__clear ~ .ui-select__arrow,
+.ui-select:focus-within .ui-select__clear ~ .ui-select__arrow,
+.ui-select.is-open .ui-select__clear ~ .ui-select__arrow {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.ui-select .ui-select__clear:hover {
+  opacity: 1;
+  color: var(--ui-text-color-regular);
+}

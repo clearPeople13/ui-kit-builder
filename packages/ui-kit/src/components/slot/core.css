@@ -1,0 +1,9 @@
+.ui-slot {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-slot.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

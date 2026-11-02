@@ -1,0 +1,144 @@
+.ui-message-box {
+  font-family: var(--ui-font-family);
+}
+
+.ui-message-box__mask {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: color-mix(in srgb, var(--ui-mask-color) 45%, transparent);
+  backdrop-filter: var(--ui-message-box-mask-backdrop);
+}
+
+.ui-message-box__panel {
+  position: fixed;
+  z-index: 3001;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  width: min(420px, calc(100vw - 32px));
+  max-height: calc(100vh - 80px);
+  border-radius: var(--ui-radius-large);
+  background: var(--ui-bg-color);
+  box-shadow: var(--ui-shadow-message-box);
+  overflow: hidden;
+}
+
+.ui-message-box__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--ui-message-box-header-padding);
+}
+
+.ui-message-box__title {
+  font-size: var(--ui-message-box-title-font-size);
+  font-weight: var(--ui-message-box-title-font-weight);
+  color: var(--ui-text-color-strong);
+}
+
+.ui-message-box__close {
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  color: var(--ui-color-info);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ui-message-box__close:hover {
+  color: var(--ui-text-color-regular);
+}
+
+.ui-message-box__body {
+  padding: 8px 20px 18px;
+  overflow: hidden;
+  color: var(--ui-text-color-muted);
+  font-size: 14px;
+  line-height: var(--ui-message-box-body-line-height);
+}
+
+.ui-message-box__panel.is-overflow .ui-message-box__body {
+  overflow: auto;
+}
+
+.ui-message-box.is-center .ui-message-box__body,
+.ui-message-box.is-center .ui-message-box__header {
+  text-align: center;
+  justify-content: center;
+}
+
+.ui-message-box__input {
+  margin-top: 12px;
+}
+
+.ui-message-box__input-inner {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--ui-border-color-faint);
+  border-radius: var(--ui-radius-base);
+  outline: none;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.ui-message-box__input-inner:focus {
+  border-color: var(--ui-color-primary);
+}
+
+.ui-message-box__input-inner.is-error {
+  border-color: var(--ui-color-danger-strong);
+}
+
+.ui-message-box__input-error {
+  margin-top: 6px;
+  color: var(--ui-color-danger-strong);
+  font-size: 12px;
+}
+
+.ui-message-box__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: var(--ui-message-box-footer-padding);
+}
+
+.ui-message-box__button {
+  padding: 7px 16px;
+  border: 1px solid var(--ui-border-color-faint);
+  border-radius: var(--ui-radius-base);
+  background: var(--ui-bg-color);
+  color: var(--ui-text-color-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ui-message-box__button:hover {
+  border-color: var(--ui-border-color-contrast);
+}
+
+.ui-message-box__button.is-primary {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-color-primary);
+  color: var(--ui-text-color-inverse);
+}
+
+.ui-message-box__button.is-primary:hover {
+  background: var(--ui-color-primary-light);
+}
+
+.ui-message-box__panel--error .ui-message-box__title {
+  color: var(--ui-color-danger-strong);
+}
+
+.ui-message-box__panel--success .ui-message-box__title {
+  color: var(--ui-color-success-strong);
+}
+
+.ui-message-box__panel--warning .ui-message-box__title {
+  color: var(--ui-color-warning-strong);
+}

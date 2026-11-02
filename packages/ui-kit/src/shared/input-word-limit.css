@@ -1,0 +1,65 @@
+.ui-input--word-limit,
+.ui-autocomplete--word-limit,
+.ui-mention--word-limit {
+  position: relative;
+}
+
+.ui-input__count,
+.ui-autocomplete__count,
+.ui-mention__count {
+  flex: none;
+  margin-left: 2px;
+  color: var(--ui-text-color-placeholder);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.ui-input__count.is-exceed,
+.ui-autocomplete__count.is-exceed,
+.ui-mention__count.is-exceed {
+  color: var(--ui-color-danger);
+}
+
+.ui-input--textarea.ui-input--word-limit > .ui-input__count,
+.ui-autocomplete--textarea.ui-autocomplete--word-limit > .ui-autocomplete__count,
+.ui-mention--textarea.ui-mention--word-limit > .ui-mention__count {
+  background: var(--ui-bg-color);
+}
+
+.ui-input--textarea.ui-input--word-limit:not(.is-word-limit-outside) > .ui-input__inner,
+.ui-autocomplete--textarea.ui-autocomplete--word-limit:not(.is-word-limit-outside) > .ui-autocomplete__inner,
+.ui-mention--textarea.ui-mention--word-limit:not(.is-word-limit-outside) > .ui-mention__inner {
+  padding-bottom: 22px;
+}
+
+.ui-input--textarea.ui-input--word-limit:not(.is-word-limit-outside) > .ui-input__count,
+.ui-autocomplete--textarea.ui-autocomplete--word-limit:not(.is-word-limit-outside) > .ui-autocomplete__count,
+.ui-mention--textarea.ui-mention--word-limit:not(.is-word-limit-outside) > .ui-mention__count {
+  position: absolute;
+  right: 11px;
+  bottom: 6px;
+  margin-left: 0;
+}
+
+.ui-input--word-limit.is-word-limit-outside,
+.ui-autocomplete--word-limit.is-word-limit-outside,
+.ui-mention--word-limit.is-word-limit-outside {
+  margin-bottom: 16px;
+}
+
+.ui-input--word-limit.is-word-limit-outside > .ui-input__count,
+.ui-autocomplete--word-limit.is-word-limit-outside > .ui-autocomplete__count,
+.ui-mention--word-limit.is-word-limit-outside > .ui-mention__count {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 3px;
+  margin-left: 0;
+}
+
+.ui-button:active {
+  transform: var(--ui-button-active-transform);
+  box-shadow: var(--ui-button-shadow-active);
+}

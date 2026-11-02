@@ -1,0 +1,33 @@
+.ui-countdown {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--ui-font-family);
+}
+
+.ui-countdown__title {
+  color: var(--ui-color-info);
+  font-size: 12px;
+}
+
+.ui-countdown__value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--ui-text-color-primary);
+  font-size: 24px;
+  font-weight: var(--ui-font-weight-strong);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.ui-countdown__prefix,
+.ui-countdown__suffix {
+  font-size: 13px;
+  font-weight: var(--ui-font-weight-regular);
+  color: var(--ui-color-info);
+}
+
+.ui-countdown.is-finished .ui-countdown__value {
+  color: var(--ui-color-danger);
+}

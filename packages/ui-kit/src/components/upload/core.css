@@ -1,0 +1,314 @@
+.ui-upload {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-upload.is-disabled {
+  opacity: 0.6;
+}
+
+.ui-upload.is-disabled .ui-upload__trigger {
+  cursor: not-allowed;
+}
+
+.ui-upload.is-drag {
+  display: block;
+  width: 100%;
+}
+
+/* 触发区本身不加边框：边框属于拖拽区与卡片，插槽内容（如按钮）由消费方自己负责 */
+.ui-upload__trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  color: var(--ui-text-color-regular);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.ui-upload__trigger input[type='file'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.ui-upload__hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0 15px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg-color);
+  pointer-events: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-upload__trigger:hover .ui-upload__hint {
+  border-color: var(--ui-color-primary);
+  color: var(--ui-color-primary);
+}
+
+.ui-upload__trigger-icon {
+  pointer-events: none;
+}
+
+.ui-upload__trigger.is-drag .ui-upload__trigger-icon {
+  font-size: 28px;
+}
+
+.ui-upload__trigger.is-drag {
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-height: 160px;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px dashed var(--ui-border-color);
+  border-radius: var(--ui-radius-base);
+  background: var(--ui-fill-color-light);
+  color: var(--ui-text-color-secondary);
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-upload__trigger.is-drag:hover,
+.ui-upload__trigger.is-drag.is-dragover {
+  border-color: var(--ui-color-primary);
+  background: color-mix(in srgb, var(--ui-color-primary) 6%, transparent);
+  color: var(--ui-color-primary);
+}
+
+.ui-upload.is-drag .ui-upload__hint {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.ui-upload.is-picture-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ui-upload.is-picture-card .ui-upload__trigger {
+  flex: none;
+  flex-direction: column;
+  gap: 6px;
+  width: 100px;
+  height: 100px;
+  min-height: 0;
+  border: 1px dashed var(--ui-border-color);
+  border-radius: var(--ui-radius-base);
+  background: var(--ui-fill-color-light);
+  color: var(--ui-text-color-secondary);
+  font-size: 12px;
+  transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.ui-upload.is-picture-card .ui-upload__trigger:hover {
+  border-color: var(--ui-color-primary);
+  background: color-mix(in srgb, var(--ui-color-primary) 6%, transparent);
+  color: var(--ui-color-primary);
+}
+
+.ui-upload.is-picture-card .ui-upload__trigger-icon {
+  font-size: 24px;
+}
+
+.ui-upload.is-picture-card .ui-upload__hint {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.ui-upload__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-upload__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--ui-border-color-light);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg-color);
+  color: var(--ui-text-color-regular);
+  font-size: 13px;
+}
+
+.ui-upload__item.is-fail,
+.ui-upload__item.is-error {
+  border-color: color-mix(in srgb, var(--ui-color-danger) 50%, transparent);
+}
+
+.ui-upload__file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-upload__item.is-fail .ui-upload__file-name,
+.ui-upload__item.is-error .ui-upload__file-name {
+  color: var(--ui-color-danger);
+}
+
+.ui-upload__status {
+  flex: none;
+  color: var(--ui-text-color-secondary);
+  font-size: 12px;
+}
+
+.ui-upload__item.is-uploading .ui-upload__status {
+  color: var(--ui-color-primary);
+}
+
+.ui-upload__item.is-fail .ui-upload__status,
+.ui-upload__item.is-error .ui-upload__status {
+  color: var(--ui-color-danger);
+}
+
+.ui-upload__remove {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ui-text-color-secondary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ui-upload__remove:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--ui-color-danger);
+}
+
+.ui-upload__remove:disabled {
+  cursor: not-allowed;
+}
+
+.ui-upload__thumb {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: var(--ui-radius-small);
+  background: var(--ui-fill-color);
+}
+
+.ui-upload__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ui-upload__thumb-placeholder {
+  color: var(--ui-text-color-secondary);
+  font-size: 10px;
+}
+
+.ui-upload__list.is-picture .ui-upload__thumb {
+  width: 60px;
+  height: 60px;
+}
+
+.ui-upload__list.is-picture .ui-upload__thumb-placeholder {
+  font-size: 12px;
+}
+
+.ui-upload__list.is-picture-card .ui-upload__thumb-placeholder {
+  color: var(--ui-text-color-placeholder);
+  font-size: 14px;
+  font-weight: var(--ui-font-weight-medium);
+  letter-spacing: 0.5px;
+}
+
+/* 卡片列表不生成盒子，让每个文件项与触发器在根容器里连续换行 */
+.ui-upload__list.is-picture-card {
+  display: contents;
+}
+
+.ui-upload__list.is-picture-card .ui-upload__item {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 100px;
+  height: 100px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: var(--ui-radius-base);
+}
+
+.ui-upload__list.is-picture-card .ui-upload__thumb {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.ui-upload__list.is-picture-card .ui-upload__file-name {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 1;
+  box-sizing: border-box;
+  flex: none;
+  padding: 3px 6px;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--ui-text-color-inverse);
+  font-size: 11px;
+  text-align: left;
+}
+
+.ui-upload__list.is-picture-card .ui-upload__mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--ui-text-color-inverse);
+  font-size: 12px;
+}
+
+.ui-upload__list.is-picture-card .ui-upload__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--ui-text-color-inverse);
+}
+
+.ui-upload__list.is-picture-card .ui-upload__remove:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--ui-text-color-inverse);
+}

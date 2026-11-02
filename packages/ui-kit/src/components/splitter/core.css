@@ -1,0 +1,139 @@
+.ui-splitter {
+  display: flex;
+  width: 100%;
+  background: var(--ui-bg-color);
+  border: 1px solid var(--ui-border-color-light);
+  border-radius: var(--ui-splitter-radius);
+  overflow: hidden;
+  font-family: var(--ui-font-family);
+}
+
+.ui-splitter.is-vertical {
+  flex-direction: column;
+}
+
+.ui-splitter-panel {
+  flex: 1 1 0;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px 18px;
+  overflow: auto;
+  color: var(--ui-text-color-regular);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.ui-splitter__bar {
+  position: relative;
+  flex: 0 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-splitter-bar-bg);
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.ui-splitter__bar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--ui-splitter-bar-line);
+  transition: background-color 0.15s ease;
+}
+
+.ui-splitter__bar::after {
+  content: "";
+  position: relative;
+  width: 4px;
+  height: 26px;
+  border-radius: var(--ui-radius-xs);
+  background: var(--ui-splitter-bar-grip);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.ui-splitter__bar:hover {
+  --ui-splitter-bar-bg: #eef2f8;
+  --ui-splitter-bar-grip: #97a3b8;
+  --ui-splitter-bar-line: #cfd8e6;
+}
+
+.ui-splitter__bar:focus-visible {
+  --ui-splitter-bar-bg: #eef2f8;
+  --ui-splitter-bar-grip: var(--ui-color-primary);
+  outline: none;
+}
+
+.ui-splitter__bar.is-dragging {
+  --ui-splitter-bar-bg: #e8f1ff;
+  --ui-splitter-bar-grip: var(--ui-color-primary);
+  --ui-splitter-bar-line: #a8c9f5;
+}
+
+.ui-splitter.is-vertical > .ui-splitter__bar {
+  cursor: row-resize;
+}
+
+/* 相邻面板收起时 bar 不占布局空间，仅保留 1px 分隔线与可拖回的边缘命中区。
+   不能 overflow: hidden——bar 宽 0 会把 ::before 命中区整个裁掉，导致真实鼠标无法命中 */
+.ui-splitter__bar.is-collapsed {
+  flex-basis: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+.ui-splitter__bar.is-collapsed::after {
+  display: none;
+}
+
+.ui-splitter__bar.is-collapsed::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* 命中区 24px；收起侧在容器边缘会被容器裁掉一半，保住可见侧 12px */
+  width: 24px;
+  margin-left: -12px;
+  background: transparent;
+}
+
+.ui-splitter__bar.is-collapsed:hover::before,
+.ui-splitter__bar.is-collapsed:focus-visible::before {
+  background: var(--ui-splitter-bar-line);
+}
+
+.ui-splitter__bar.is-collapsed:hover,
+.ui-splitter__bar.is-collapsed:focus-visible {
+  --ui-splitter-bar-bg: #eef2f8;
+}
+
+.ui-splitter.is-vertical > .ui-splitter__bar.is-collapsed::before {
+  top: 0;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 24px;
+  margin: -12px 0 0;
+}
+
+.ui-splitter.is-vertical > .ui-splitter__bar::before {
+  top: 50%;
+  bottom: auto;
+  left: 0;
+  right: 0;
+  width: auto;
+  height: 1px;
+  margin: -0.5px 0 0;
+}
+
+.ui-splitter.is-vertical > .ui-splitter__bar::after {
+  width: 26px;
+  height: 4px;
+}

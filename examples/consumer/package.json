@@ -1,0 +1,31 @@
+{
+  "name": "ui-kit-consumer",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config vite.config.mjs",
+    "check": "vue-tsc --noEmit --project tsconfig.json",
+    "check:negative": "node scripts/check-negative.mjs",
+    "check:runtime": "node src/render.mjs",
+    "check:all": "npm run check && npm run check:negative && npm run check:runtime"
+  },
+  "dependencies": {
+    "@demo/ui-kit-bg-color": "file:../../dist/bg-color",
+    "@demo/ui-kit-branded": "file:../../dist/branded",
+    "@demo/ui-kit-core": "file:../../dist/core",
+    "@demo/ui-kit-cute": "file:../../dist/cute",
+    "@demo/ui-kit-full": "file:../../dist/full",
+    "@demo/ui-kit-gradient": "file:../../dist/gradient",
+    "@lucide/vue": "1.61.0",
+    "ui-kit-feature-build-demo": "file:../..",
+    "vue": "3.5.44"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.10",
+    "typescript": "5.9.3",
+    "vite": "^7.3.7",
+    "vue-component-type-helpers": "3.3.13",
+    "vue-tsc": "3.3.13"
+  }
+}

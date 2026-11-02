@@ -1,0 +1,712 @@
+/* ===== 全局主题令牌（默认值 = 默认主题，预设经构建器全部可覆盖） ===== */
+:root {
+  /* 品牌与状态色 */
+  --ui-color-primary: #409eff;
+  --ui-color-primary-light: #66b1ff;
+  --ui-color-primary-lighter: #a0cfff;
+  --ui-color-primary-dark: #337ecc;
+  --ui-color-primary-soft: #79bbff;
+  --ui-color-primary-strong: #2563eb;
+  --ui-color-primary-deep: #4f46e5;
+  --ui-color-primary-bg: #ecf5ff;
+  --ui-color-primary-bg-subtle: #eff6ff;
+  --ui-color-primary-border: #d9ecff;
+  --ui-color-success: #67c23a;
+  --ui-color-success-light: #85ce61;
+  --ui-color-success-strong: #16a34a;
+  --ui-color-success-bg: #f0f9eb;
+  --ui-color-success-border: #e1f3d8;
+  --ui-color-warning: #e6a23c;
+  --ui-color-warning-light: #ebb563;
+  --ui-color-warning-strong: #d97706;
+  --ui-color-warning-bg: #fdf6ec;
+  --ui-color-warning-border: #faecd8;
+  --ui-color-danger: #f56c6c;
+  --ui-color-danger-light: #f78989;
+  --ui-color-danger-strong: #dc2626;
+  --ui-color-danger-bg: #fef0f0;
+  --ui-color-danger-border: #fde2e2;
+  --ui-color-info: #909399;
+  --ui-color-info-light: #a6a9ad;
+  --ui-color-info-strong: #6b7280;
+  --ui-color-info-bg: #f4f4f5;
+  --ui-color-info-border: #e9e9eb;
+
+  /* 文字色 */
+  --ui-text-color-primary: #303133;
+  --ui-text-color-regular: #606266;
+  --ui-text-color-secondary: #909399;
+  --ui-text-color-placeholder: #a8abb2;
+  --ui-text-color-disabled: #c0c4cc;
+  --ui-text-color-strong: #1f2937;
+  --ui-text-color-muted: #4b5563;
+  --ui-text-color-tertiary: #9aa3b2;
+  --ui-text-color-emphasis: #475467;
+  --ui-text-color-heading: #111827;
+  --ui-text-color-inverse: #ffffff;
+  --ui-text-color-inverse-muted: #e5eaf3;
+  --ui-text-color-inverse-subtle: #a3a6ad;
+
+  /* 边框色 */
+  --ui-border-color: #dcdfe6;
+  --ui-border-color-light: #e6e9f0;
+  --ui-border-color-lighter: #ebeef5;
+  --ui-border-color-dark: #dbe3f0;
+  --ui-border-color-strong: #e4e7ed;
+  --ui-border-color-subtle: #eef1f6;
+  --ui-border-color-muted: #e8ecf3;
+  --ui-border-color-contrast: #b9c2d2;
+  --ui-border-color-faint: #dfe4ec;
+  --ui-border-color-soft: #dddddd;
+  --ui-border-color-disabled: #dfe3ec;
+  --ui-border-color-inverse: #ffffff;
+
+  /* 填充与背景 */
+  --ui-fill-color: #f5f7fa;
+  --ui-fill-color-light: #fbfcfe;
+  --ui-fill-color-hover: #f5f7fc;
+  --ui-fill-color-subtle: #f7f9fc;
+  --ui-fill-color-muted: #f1f5f9;
+  --ui-fill-color-disabled: #f4f6fa;
+  --ui-bg-color: #ffffff;
+  --ui-bg-color-dark: #303133;
+  --ui-bg-color-dark-elevated: #1f2937;
+  --ui-mask-color: #0f172a;
+
+  /* 圆角 */
+  --ui-radius-xs: 2px;
+  --ui-radius-small: 4px;
+  --ui-radius-md: 6px;
+  --ui-radius-base: 8px;
+  --ui-radius-lg: 10px;
+  --ui-radius-large: 12px;
+  --ui-radius-xl: 16px;
+  --ui-radius-pill: 999px;
+
+  /* 阴影 */
+  --ui-shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --ui-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.12);
+  --ui-shadow-md: 0 6px 18px rgba(0, 0, 0, 0.12);
+  --ui-shadow-lg: 0 12px 32px rgba(16, 24, 40, 0.14);
+  --ui-shadow-base: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --ui-shadow-light: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --ui-shadow-float: 0 10px 28px rgba(15, 23, 42, 0.12);
+  --ui-shadow-card-sm: 0 2px 12px rgba(16, 24, 40, 0.08);
+  --ui-shadow-card: 0 2px 12px rgba(16, 24, 40, 0.12);
+  --ui-shadow-dialog: 0 20px 50px rgba(16, 24, 40, 0.2);
+  --ui-shadow-drawer: -8px 0 24px rgba(16, 24, 40, 0.16);
+  --ui-shadow-message: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --ui-shadow-message-box: 0 16px 48px rgba(16, 24, 40, 0.2);
+  --ui-shadow-tour: 0 24px 60px rgba(15, 23, 42, 0.28);
+  --ui-shadow-inset: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --ui-shadow-inset-strong: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+  /* 字体 */
+  --ui-font-family: inherit;
+  --ui-font-family-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --ui-font-size-base: 14px;
+  --ui-font-size-small: 13px;
+  --ui-font-size-extra-small: 12px;
+  --ui-font-weight-regular: 400;
+  --ui-font-weight-medium: 500;
+  --ui-font-weight-strong: 600;
+  --ui-font-weight-bold: 700;
+  --ui-font-smoothing: auto;
+  --ui-letter-spacing: normal;
+
+  /* 焦点环与浮层 */
+  --ui-focus-ring: rgba(64, 158, 255, 0.45);
+  --ui-focus-ring-soft: rgba(64, 158, 255, 0.15);
+  --ui-floating-panel-max-height: 274px;
+  --ui-panel-padding: 6px;
+
+  /* 滚动条 */
+  --ui-scrollbar-size: 8px;
+  --ui-scrollbar-thumb: #c0c4cc;
+  --ui-scrollbar-thumb-hover: #a8abb2;
+  --ui-scrollbar-track: transparent;
+  --ui-scrollbar-radius: 4px;
+
+  /* 面板（Teleport 到 body，必须全局声明） */
+  --ui-select-option-padding: 0 10px;
+  --ui-select-option-selected-font-weight: var(--ui-font-weight-strong);
+  --ui-select-v2-option-padding: 7px 10px;
+  --ui-tree-select-option-padding: 7px 10px;
+  --ui-time-select-option-padding: 0 10px;
+  --ui-autocomplete-option-padding: 7px 10px;
+  --ui-mention-option-padding: 7px 10px;
+  --ui-dialog-mask-backdrop: blur(2px);
+  --ui-drawer-mask-backdrop: blur(2px);
+  --ui-message-box-mask-backdrop: blur(2px);
+  --ui-tour-mask-backdrop: none;
+  --ui-alert-accent-width: 3px;
+  --ui-alert-accent: var(--ui-alert-info-accent);
+  --ui-alert-bg: var(--ui-alert-info-bg);
+  --ui-alert-border: var(--ui-alert-info-border);
+  --ui-alert-text: var(--ui-alert-info-text);
+  --ui-alert-error-accent: #dc2626;
+  --ui-alert-error-bg: #fef2f2;
+  --ui-alert-error-border: #fecaca;
+  --ui-alert-error-text: #b91c1c;
+  --ui-alert-font-weight: inherit;
+  --ui-alert-info-accent: #2563eb;
+  --ui-alert-info-bg: var(--ui-color-primary-bg-subtle);
+  --ui-alert-info-border: #dbe7fd;
+  --ui-alert-info-text: #1e40af;
+  --ui-alert-padding: 11px 14px 11px 16px;
+  --ui-alert-plain-bg: var(--ui-bg-color);
+  --ui-alert-radius: var(--ui-radius-lg);
+  --ui-alert-shadow: none;
+  --ui-alert-success-accent: #16a34a;
+  --ui-alert-success-bg: #f0fdf4;
+  --ui-alert-success-border: #dcfce7;
+  --ui-alert-success-text: #15803d;
+  --ui-alert-title-font-weight: var(--ui-font-weight-strong);
+  --ui-alert-title-letter-spacing: normal;
+  --ui-alert-warning-accent: #d97706;
+  --ui-alert-warning-bg: #fffbeb;
+  --ui-alert-warning-border: #fde68a;
+  --ui-alert-warning-text: #b45309;
+  --ui-badge-animation: none;
+  --ui-badge-border-color: #ffffff;
+  --ui-badge-border-width: 1px;
+  --ui-badge-dot-size: 8px;
+  --ui-badge-font-size: 12px;
+  --ui-badge-font-weight: inherit;
+  --ui-badge-height: 18px;
+  --ui-badge-line-height: 16px;
+  --ui-badge-min-width: 18px;
+  --ui-badge-padding-x: 5px;
+  --ui-badge-radius: 9px;
+  --ui-button-active-transform: none;
+  --ui-button-bg-image: none;
+  --ui-button-font-size-large: 14px;
+  --ui-button-font-size-small: 12px;
+  --ui-button-font-size: 14px;
+  --ui-button-font-weight: var(--ui-font-weight-medium);
+  --ui-button-height-large: 40px;
+  --ui-button-height-small: 24px;
+  --ui-button-height: 32px;
+  --ui-button-hover-transform: none;
+  --ui-button-padding-x-large: 19px;
+  --ui-button-padding-x-small: 11px;
+  --ui-button-padding-x: 15px;
+  --ui-button-radius: var(--ui-radius-small);
+  --ui-button-shadow-active: none;
+  --ui-button-shadow: none;
+  --ui-button-transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  --ui-calendar-bg: var(--ui-bg-color);
+  --ui-calendar-border-color: var(--ui-border-color-lighter);
+  --ui-calendar-header-bg: transparent;
+  --ui-calendar-header-border: 1px solid var(--ui-border-color-lighter);
+  --ui-calendar-header-padding: 10px 14px;
+  --ui-calendar-nav-bg: var(--ui-bg-color);
+  --ui-calendar-nav-border-color: var(--ui-border-color);
+  --ui-calendar-nav-color: var(--ui-text-color-regular);
+  --ui-calendar-nav-hover-bg: transparent;
+  --ui-calendar-nav-hover-border-color: var(--ui-color-primary);
+  --ui-calendar-nav-hover-color: var(--ui-color-primary);
+  --ui-calendar-nav-radius: var(--ui-radius-small);
+  --ui-calendar-range-tip-bg: var(--ui-color-primary-bg-subtle);
+  --ui-calendar-range-tip-border-color: var(--ui-border-color-lighter);
+  --ui-calendar-range-tip-color: var(--ui-color-primary);
+  --ui-calendar-range-tip-font-weight: inherit;
+  --ui-calendar-title-color: inherit;
+  --ui-calendar-title-font-weight: var(--ui-font-weight-strong);
+  --ui-calendar-title-letter-spacing: normal;
+  --ui-calendar-radius: var(--ui-radius-base);
+  --ui-calendar-shadow: none;
+  --ui-calendar-cell-color: var(--ui-text-color-regular);
+  --ui-calendar-cell-hover-bg: var(--ui-fill-color);
+  --ui-calendar-cell-hover-color: inherit;
+  --ui-calendar-cell-in-range-bg: var(--ui-color-primary-bg);
+  --ui-calendar-cell-in-range-color: var(--ui-color-primary);
+  --ui-calendar-cell-in-range-radius: 0;
+  --ui-calendar-cell-radius: var(--ui-radius-small);
+  --ui-calendar-cell-range-end-radius: 0 4px 4px 0;
+  --ui-calendar-cell-range-start-radius: 4px 0 0 4px;
+  --ui-calendar-cell-selected-bg: var(--ui-color-primary);
+  --ui-calendar-cell-selected-color: var(--ui-text-color-inverse);
+  --ui-calendar-cell-selected-shadow: none;
+  --ui-calendar-cell-today-color: var(--ui-color-primary);
+  --ui-calendar-cell-today-font-weight: var(--ui-font-weight-strong);
+  --ui-calendar-cell-today-shadow: none;
+  --ui-calendar-weekdays-color: var(--ui-color-info);
+  --ui-calendar-weekdays-font-weight: inherit;
+  --ui-calendar-weekdays-letter-spacing: normal;
+  --ui-card-bg: var(--ui-bg-color);
+  --ui-card-border-color: var(--ui-border-color-light);
+  --ui-card-body-padding: 18px;
+  --ui-card-footer-padding: 12px 18px;
+  --ui-card-header-font-size: 15px;
+  --ui-card-header-padding: 14px 18px;
+  --ui-card-radius: var(--ui-radius-large);
+  --ui-card-color: var(--ui-text-color-strong);
+  --ui-card-body-color: var(--ui-text-color-muted);
+  --ui-card-body-line-height: 1.65;
+  --ui-card-footer-bg: var(--ui-fill-color-light);
+  --ui-card-footer-border-color: var(--ui-border-color-subtle);
+  --ui-card-footer-color: var(--ui-color-info);
+  --ui-card-header-accent: none;
+  --ui-card-header-bg: transparent;
+  --ui-card-header-border-color: var(--ui-border-color-subtle);
+  --ui-card-header-color: inherit;
+  --ui-card-header-font-weight: var(--ui-font-weight-strong);
+  --ui-card-header-letter-spacing: normal;
+  --ui-card-hover-transform: none;
+  --ui-card-shadow: var(--ui-shadow-xs);
+  --ui-card-shadow-always: var(--ui-shadow-card);
+  --ui-card-shadow-hover: var(--ui-shadow-card);
+  --ui-checkbox-border-width: 1.5px;
+  --ui-checkbox-box-size-large: 18px;
+  --ui-checkbox-box-size-small: 14px;
+  --ui-checkbox-box-size: 16px;
+  --ui-date-picker-header-padding: 2px 2px 8px;
+  --ui-date-picker-title-font-weight: var(--ui-font-weight-strong);
+  --ui-dialog-body-padding: 20px;
+  --ui-dialog-footer-bg: transparent;
+  --ui-dialog-footer-padding: 12px 20px 16px;
+  --ui-dialog-header-bg: transparent;
+  --ui-dialog-header-padding: 16px 20px;
+  --ui-dialog-radius: var(--ui-radius-large);
+  --ui-dialog-title-font-size: 16px;
+  --ui-dialog-title-font-weight: var(--ui-font-weight-strong);
+  --ui-dialog-width: 420px;
+  --ui-drawer-footer-bg: transparent;
+  --ui-drawer-header-bg: transparent;
+  --ui-gradient-danger: none;
+  --ui-gradient-info: none;
+  --ui-gradient-primary: none;
+  --ui-gradient-success: none;
+  --ui-gradient-warning: none;
+  --ui-input-height: 32px;
+  --ui-input-padding-x: 11px;
+  --ui-input-radius: var(--ui-radius-small);
+  --ui-input-tag-padding: 3px 6px;
+  --ui-input-textarea-padding: 6px 11px;
+  --ui-menu-border-color: var(--ui-border-color-light);
+  --ui-menu-group-title-color: var(--ui-menu-text-color, var(--ui-color-info));
+  --ui-menu-group-title-font-weight: 400;
+  --ui-menu-group-title-letter-spacing: normal;
+  --ui-menu-item-active-bg: color-mix(in srgb, var(--ui-menu-active-color) 12%, transparent);
+  --ui-menu-item-active-color: var(--ui-menu-active-color);
+  --ui-menu-item-active-font-weight: var(--ui-font-weight-strong);
+  --ui-menu-item-active-marker-color: var(--ui-menu-active-color);
+  --ui-menu-item-active-marker-height: 16px;
+  --ui-menu-item-active-marker-radius: 0 3px 3px 0;
+  --ui-menu-item-active-marker-width: 3px;
+  --ui-menu-item-active-shadow: none;
+  --ui-menu-item-color: var(--ui-menu-text-color, #4b5563);
+  --ui-menu-item-font-weight: 400;
+  --ui-menu-item-hover-bg: color-mix(in srgb, var(--ui-menu-active-color) 8%, transparent);
+  --ui-menu-item-hover-color: var(--ui-menu-active-color);
+  --ui-menu-item-letter-spacing: normal;
+  --ui-menu-item-padding: 9px 14px;
+  --ui-menu-item-radius: var(--ui-radius-base);
+  --ui-menu-padding: 6px;
+  --ui-menu-popper-border: none;
+  --ui-menu-popper-padding: 6px;
+  --ui-menu-popper-radius: var(--ui-radius-base);
+  --ui-menu-popper-shadow: var(--ui-shadow-light);
+  --ui-menu-radius: 10px;
+  --ui-menu-shadow: none;
+  --ui-sub-menu-arrow-color: var(--ui-text-color-tertiary);
+  --ui-sub-menu-body-line-color: var(--ui-border-color-muted);
+  --ui-sub-menu-body-line-left: 11px;
+  --ui-sub-menu-body-line-radius: 0;
+  --ui-sub-menu-body-line-width: 1px;
+  --ui-sub-menu-body-padding-left: 20px;
+  --ui-sub-menu-open-color: var(--ui-menu-text-color, var(--ui-text-color-primary));
+  --ui-message-box-body-line-height: 1.6;
+  --ui-message-box-footer-padding: 12px 20px 18px;
+  --ui-message-box-header-padding: 16px 20px 8px;
+  --ui-message-box-title-font-size: 16px;
+  --ui-message-box-title-font-weight: var(--ui-font-weight-strong);
+  --ui-message-padding: 10px 14px;
+  --ui-notification-padding: 14px 44px 14px 16px;
+  --ui-message-accent: var(--ui-message-info-accent);
+  --ui-message-bg: var(--ui-message-info-bg);
+  --ui-message-border: var(--ui-message-info-border);
+  --ui-message-text: var(--ui-message-info-text);
+  --ui-message-info-accent: #2563eb;
+  --ui-message-info-bg: var(--ui-color-primary-bg-subtle);
+  --ui-message-info-border: #dbe7fd;
+  --ui-message-info-text: #1e40af;
+  --ui-message-success-accent: #16a34a;
+  --ui-message-success-bg: #f0fdf4;
+  --ui-message-success-border: #dcfce7;
+  --ui-message-success-text: #15803d;
+  --ui-message-warning-accent: #d97706;
+  --ui-message-warning-bg: #fffbeb;
+  --ui-message-warning-border: #fde68a;
+  --ui-message-warning-text: #b45309;
+  --ui-message-error-accent: #dc2626;
+  --ui-message-error-bg: #fef2f2;
+  --ui-message-error-border: #fecaca;
+  --ui-message-error-text: #b91c1c;
+  --ui-message-font-weight: 400;
+  --ui-message-letter-spacing: normal;
+  --ui-message-radius: var(--ui-radius-lg);
+  --ui-notification-accent: var(--ui-notification-info-accent);
+  --ui-notification-bg: var(--ui-notification-info-bg);
+  --ui-notification-border: var(--ui-notification-info-border);
+  --ui-notification-info-accent: #2563eb;
+  --ui-notification-info-bg: #ffffff;
+  --ui-notification-info-border: #e3e8f2;
+  --ui-notification-success-accent: #16a34a;
+  --ui-notification-success-bg: #f6fef9;
+  --ui-notification-success-border: #dcfce7;
+  --ui-notification-warning-accent: #d97706;
+  --ui-notification-warning-bg: #fffdf5;
+  --ui-notification-warning-border: #fde68a;
+  --ui-notification-error-accent: #dc2626;
+  --ui-notification-error-bg: #fff8f7;
+  --ui-notification-error-border: #fecaca;
+  --ui-pagination-active-bg: var(--ui-color-primary);
+  --ui-pagination-active-border-color: var(--ui-color-primary);
+  --ui-pagination-active-color: var(--ui-text-color-inverse);
+  --ui-pagination-active-font-weight: var(--ui-font-weight-strong);
+  --ui-pagination-active-shadow: none;
+  --ui-pagination-background-pager-bg: var(--ui-color-info-bg);
+  --ui-pagination-gap: 6px;
+  --ui-pagination-item-bg: var(--ui-bg-color);
+  --ui-pagination-item-border-color: var(--ui-border-color);
+  --ui-pagination-item-color: var(--ui-text-color-regular);
+  --ui-pagination-item-font-weight: inherit;
+  --ui-pagination-item-hover-bg: transparent;
+  --ui-pagination-item-hover-border-color: var(--ui-color-primary);
+  --ui-pagination-item-hover-color: var(--ui-color-primary);
+  --ui-pagination-item-radius: var(--ui-radius-small);
+  --ui-pagination-item-size: 30px;
+  --ui-pagination-more-color: var(--ui-color-info);
+  --ui-radio-box-size-large: 18px;
+  --ui-radio-box-size-small: 14px;
+  --ui-radio-box-size: 16px;
+  --ui-rate-active-color: #f7ba2a;
+  --ui-rate-text-color: var(--ui-text-color-secondary);
+  --ui-rate-void-color: #c0c4cc;
+  --ui-step-description-color: var(--ui-color-info);
+  --ui-step-finish-icon-bg: var(--ui-color-success);
+  --ui-step-finish-icon-border-color: var(--ui-color-success);
+  --ui-step-finish-icon-color: var(--ui-text-color-inverse);
+  --ui-step-finish-line-bg: var(--ui-color-success);
+  --ui-step-finish-title-color: var(--ui-color-success);
+  --ui-step-icon-bg: var(--ui-bg-color);
+  --ui-step-icon-border: 1px solid var(--ui-text-color-disabled);
+  --ui-step-icon-color: var(--ui-color-info);
+  --ui-step-icon-font-weight: var(--ui-font-weight-strong);
+  --ui-step-icon-radius: 50%;
+  --ui-step-icon-shadow: none;
+  --ui-step-icon-size: 26px;
+  --ui-step-line-bg: var(--ui-border-color-strong);
+  --ui-step-line-height: 2px;
+  --ui-step-line-margin: 0 8px;
+  --ui-step-line-radius: 0;
+  --ui-step-process-icon-bg: var(--ui-color-primary);
+  --ui-step-process-icon-border-color: var(--ui-color-primary);
+  --ui-step-process-icon-color: var(--ui-text-color-inverse);
+  --ui-step-process-icon-shadow: none;
+  --ui-step-process-title-color: var(--ui-color-primary);
+  --ui-step-title-color: var(--ui-text-color-primary);
+  --ui-step-title-font-weight: var(--ui-font-weight-medium);
+  --ui-step-title-letter-spacing: normal;
+  --ui-slider-bar-bg: linear-gradient(90deg, #79bbff, var(--ui-color-primary));
+  --ui-slider-bar-radius: 3px;
+  --ui-slider-button-bg: var(--ui-bg-color);
+  --ui-slider-button-border-color: var(--ui-color-primary);
+  --ui-slider-button-border-width: 2px;
+  --ui-slider-button-focus-shadow: 0 0 0 5px color-mix(in srgb, var(--ui-color-primary) 16%, transparent);
+  --ui-slider-button-hover-border-color: var(--ui-color-primary);
+  --ui-slider-button-hover-transform: scale(1.1);
+  --ui-slider-button-shadow: 0 1px 4px color-mix(in srgb, var(--ui-color-primary) 35%, transparent);
+  --ui-slider-button-size: 16px;
+  --ui-slider-runway-bg: var(--ui-border-color-strong);
+  --ui-slider-runway-height: 6px;
+  --ui-slider-runway-radius: 3px;
+  --ui-slider-runway-shadow: none;
+  --ui-slider-tooltip-bg: var(--ui-bg-color-dark);
+  --ui-slider-tooltip-color: var(--ui-text-color-inverse);
+  --ui-slider-tooltip-font-weight: inherit;
+  --ui-slider-tooltip-radius: var(--ui-radius-small);
+  --ui-splitter-radius: 10px;
+  --ui-splitter-bar-bg: transparent;
+  --ui-splitter-bar-grip: transparent;
+  --ui-splitter-bar-line: var(--ui-border-color-light);
+  --ui-table-bg: var(--ui-bg-color);
+  --ui-table-border-color: var(--ui-border-color-light);
+  --ui-table-cell-padding: 9px 12px;
+  --ui-table-header-cell-padding: 9px 12px;
+  --ui-table-radius: var(--ui-radius-lg);
+  --ui-table-shadow: none;
+  --ui-table-cell-bg: var(--ui-bg-color);
+  --ui-table-cell-color: var(--ui-text-color-regular);
+  --ui-table-current-row-bg: var(--ui-color-primary-bg-subtle);
+  --ui-table-current-row-color: var(--ui-text-color-regular);
+  --ui-table-current-row-font-weight: inherit;
+  --ui-table-empty-color: var(--ui-color-info);
+  --ui-table-expand-active-bg: transparent;
+  --ui-table-expand-active-border-color: var(--ui-color-primary);
+  --ui-table-expand-active-color: var(--ui-color-primary);
+  --ui-table-expand-bg: var(--ui-bg-color);
+  --ui-table-expand-border-width: 1px;
+  --ui-table-expand-radius: var(--ui-radius-small);
+  --ui-table-expand-border-color: var(--ui-border-color);
+  --ui-table-expand-color: var(--ui-text-color-regular);
+  --ui-table-expanded-row-bg: var(--ui-fill-color-subtle);
+  --ui-table-header-bg: var(--ui-fill-color-subtle);
+  --ui-table-header-border-color: var(--ui-border-color-light);
+  --ui-table-header-color: var(--ui-color-info-strong);
+  --ui-table-header-font-weight: var(--ui-font-weight-strong);
+  --ui-table-header-letter-spacing: normal;
+  --ui-table-row-border-color: var(--ui-border-color-subtle);
+  --ui-table-row-hover-bg: var(--ui-fill-color-subtle);
+  --ui-table-row-striped-bg: var(--ui-fill-color-subtle);
+  --ui-table-row-striped-hover-bg: var(--ui-fill-color-subtle);
+  --ui-table-summary-bg: var(--ui-fill-color-subtle);
+  --ui-table-summary-color: inherit;
+  --ui-table-summary-border-color: var(--ui-border-color-light);
+  --ui-table-summary-font-weight: var(--ui-font-weight-strong);
+  --ui-tabs-ink-height: 2px;
+  --ui-tabs-nav-gap: 2px;
+  --ui-tabs-nav-item-active-font-weight: var(--ui-font-weight-medium);
+  --ui-tabs-nav-item-height: 38px;
+  --ui-tabs-nav-item-padding-x: 16px;
+  --ui-tabs-content-padding-top: 16px;
+  --ui-tabs-nav-border: 1px solid var(--ui-border-color-light);
+  --ui-tabs-nav-padding-bottom: 0;
+  --ui-tabs-nav-item-active-bg: transparent;
+  --ui-tabs-nav-item-active-color: var(--ui-color-primary);
+  --ui-tabs-nav-item-active-shadow: none;
+  --ui-tabs-nav-item-color: var(--ui-text-color-muted);
+  --ui-tabs-nav-item-font-weight: inherit;
+  --ui-tabs-nav-item-hover-bg: transparent;
+  --ui-tabs-nav-item-hover-color: var(--ui-color-primary);
+  --ui-tabs-nav-item-letter-spacing: normal;
+  --ui-tabs-nav-item-radius: 0;
+  --ui-tabs-nav-close-color: var(--ui-text-color-tertiary);
+  --ui-tabs-nav-close-hover-bg: var(--ui-border-color-light);
+  --ui-tabs-nav-close-hover-color: var(--ui-text-color-muted);
+  --ui-tabs-nav-close-radius: 3px;
+  --ui-tabs-nav-add-border-color: var(--ui-border-color);
+  --ui-tabs-nav-add-border-width: 1px;
+  --ui-tabs-nav-add-color: var(--ui-color-info-strong);
+  --ui-tabs-nav-add-hover-bg: transparent;
+  --ui-tabs-nav-add-hover-border-color: var(--ui-color-primary);
+  --ui-tabs-nav-add-hover-color: var(--ui-color-primary);
+  --ui-tabs-nav-add-radius: var(--ui-radius-md);
+  --ui-tabs-ink-bg: var(--ui-color-primary);
+  --ui-tabs-ink-inset-x: 16px;
+  --ui-tabs-ink-radius: var(--ui-radius-xs);
+  --ui-tabs-pane-color: var(--ui-text-color-muted);
+  --ui-tabs-vertical-item-align: center;
+  --ui-tabs-vertical-item-radius: var(--ui-tabs-nav-item-radius);
+  --ui-tabs-vertical-ink-bottom: 8px;
+  --ui-tabs-vertical-ink-top: 8px;
+  --ui-tabs-vertical-ink-width: 2px;
+  --ui-tabs-vertical-nav-border-left: none;
+  --ui-tabs-vertical-nav-border-right: 1px solid var(--ui-border-color-light);
+  --ui-tabs-vertical-nav-gap: var(--ui-tabs-nav-gap);
+  --ui-tag-border-width: 1px;
+  --ui-tag-font-size-large: 14px;
+  --ui-tag-font-size-small: 11px;
+  --ui-tag-font-size: 12px;
+  --ui-tag-font-weight: 500;
+  --ui-tag-height-large: 32px;
+  --ui-tag-height-small: 20px;
+  --ui-tag-height: 24px;
+  --ui-tag-padding-x-large: 11px;
+  --ui-tag-padding-x-small: 7px;
+  --ui-tag-padding-x: 9px;
+  --ui-tag-radius: var(--ui-radius-small);
+  --ui-tag-shadow: none;
+  --ui-tour-title-font-size: 15px;
+  --ui-tour-title-font-weight: var(--ui-font-weight-strong);
+  --ui-transfer-panel-bg: var(--ui-bg-color);
+  --ui-transfer-panel-border-color: var(--ui-border-color-light);
+  --ui-transfer-panel-radius: var(--ui-radius-lg);
+  --ui-transfer-panel-shadow: none;
+  --ui-transfer-button-size: 34px;
+  --ui-transfer-header-font-weight: var(--ui-font-weight-strong);
+  --ui-transfer-header-padding: 9px 12px;
+  --ui-tree-node-min-height: 30px;
+}
+
+/* ===== 基础排版（全组件统一字体、平滑、字距） ===== */
+.ui-container,
+.ui-row,
+.ui-col,
+.ui-space,
+.ui-affix,
+.ui-backtop,
+.ui-button,
+.ui-button-group,
+.ui-card,
+.ui-dialog,
+.ui-drawer,
+.ui-message,
+.ui-message-box,
+.ui-notification,
+.ui-tour,
+.ui-tooltip,
+.ui-tooltip__popper,
+.ui-popover,
+.ui-popover__panel,
+.ui-popconfirm,
+.ui-popconfirm__panel,
+.ui-dropdown,
+.ui-dropdown__panel,
+.ui-popper,
+.ui-popper-content,
+.ui-floating-panel,
+.ui-menu,
+.ui-tabs,
+.ui-table,
+.ui-table-v2,
+.ui-pagination,
+.ui-form,
+.ui-input,
+.ui-input-number,
+.ui-input-tag,
+.ui-input-otp,
+.ui-select,
+.ui-select-v2,
+.ui-cascader,
+.ui-cascader-panel,
+.ui-date-picker,
+.ui-date-picker-panel,
+.ui-time-picker,
+.ui-time-select,
+.ui-color-picker,
+.ui-color-picker-panel,
+.ui-autocomplete,
+.ui-mention,
+.ui-upload,
+.ui-transfer,
+.ui-tree,
+.ui-tree-v2,
+.ui-tree-select,
+.ui-calendar,
+.ui-carousel,
+.ui-collapse,
+.ui-steps,
+.ui-timeline,
+.ui-alert,
+.ui-tag,
+.ui-check-tag,
+.ui-avatar,
+.ui-empty,
+.ui-result,
+.ui-skeleton,
+.ui-progress,
+.ui-slider,
+.ui-rate,
+.ui-switch,
+.ui-checkbox,
+.ui-radio,
+.ui-link,
+.ui-text,
+.ui-divider,
+.ui-statistic,
+.ui-countdown,
+.ui-descriptions,
+.ui-breadcrumb,
+.ui-page-header,
+.ui-anchor,
+.ui-image,
+.ui-image-viewer,
+.ui-watermark,
+.ui-splitter,
+.ui-scrollbar,
+.ui-segmented,
+.ui-badge,
+.ui-overlay,
+.ui-slot,
+.ui-collection,
+.ui-collection__item,
+.ui-config-provider,
+.ui-focus-trap,
+.ui-roving-focus-group,
+.ui-popper-trigger,
+.ui-loading,
+.ui-virtual-list,
+.ui-infinite-scroll {
+  font-family: var(--ui-font-family);
+  -webkit-font-smoothing: var(--ui-font-smoothing);
+  letter-spacing: var(--ui-letter-spacing);
+}
+
+/* ===== 滚动条 ===== */
+::-webkit-scrollbar {
+  width: var(--ui-scrollbar-size);
+  height: var(--ui-scrollbar-size);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ui-scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: var(--ui-scrollbar-radius);
+  background: var(--ui-scrollbar-thumb);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-scrollbar-thumb-hover);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+@supports (-moz-appearance: none) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-scrollbar-thumb) var(--ui-scrollbar-track);
+  }
+}
+
+.ui-scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ui-scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ===== 徽标弹出动画（由 --ui-badge-animation 引用，预设可启用） ===== */
+@keyframes ui-badge-pop {
+  0% {
+    transform: translate(50%, -50%) scale(0.4);
+  }
+
+  70% {
+    transform: translate(50%, -50%) scale(1.12);
+  }
+
+  100% {
+    transform: translate(50%, -50%) scale(1);
+  }
+}
+
+@keyframes ui-seal-pop {
+  0% {
+    transform: translate(50%, -50%) scale(0.5) rotate(-6deg);
+  }
+
+  70% {
+    transform: translate(50%, -50%) scale(1.08) rotate(2deg);
+  }
+
+  100% {
+    transform: translate(50%, -50%) scale(1) rotate(0deg);
+  }
+}
+
+/* ===== 组件级令牌默认值 ===== */
+

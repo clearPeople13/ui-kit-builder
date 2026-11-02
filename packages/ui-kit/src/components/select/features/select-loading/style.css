@@ -1,0 +1,25 @@
+.ui-select__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 10px;
+  color: var(--ui-text-color-secondary);
+  font-size: 13px;
+}
+
+.ui-select__loading-spinner {
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: ui-select-loading-spin 800ms linear infinite;
+}
+
+@keyframes ui-select-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

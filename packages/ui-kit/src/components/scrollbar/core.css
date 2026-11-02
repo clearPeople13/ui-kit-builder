@@ -1,0 +1,84 @@
+.ui-scrollbar {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ui-scrollbar__wrap {
+  overflow: auto;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.ui-scrollbar__wrap--hidden-default {
+  scrollbar-width: none;
+}
+
+.ui-scrollbar__wrap--hidden-default::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.ui-scrollbar__view {
+  box-sizing: border-box;
+}
+
+.ui-scrollbar__bar {
+  position: absolute;
+  z-index: 1;
+  border-radius: var(--ui-radius-small);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+  user-select: none;
+  touch-action: none;
+}
+
+.ui-scrollbar__bar.is-vertical {
+  top: 2px;
+  bottom: 2px;
+  width: 6px;
+}
+
+.ui-scrollbar__bar.is-horizontal {
+  left: 2px;
+  right: 2px;
+  height: 6px;
+}
+
+.ui-scrollbar:hover > .ui-scrollbar__bar,
+.ui-scrollbar__bar.is-always,
+.ui-scrollbar__bar.is-dragging {
+  opacity: 1;
+}
+
+.ui-scrollbar__bar.is-hidden {
+  display: none;
+}
+
+.ui-scrollbar__thumb {
+  position: absolute;
+  display: block;
+  cursor: pointer;
+  border-radius: inherit;
+  background-color: var(--ui-scrollbar-thumb-color, rgba(144, 147, 153, 0.35));
+  transition: background-color 120ms ease-out;
+}
+
+.ui-scrollbar__bar.is-vertical .ui-scrollbar__thumb {
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.ui-scrollbar__bar.is-horizontal .ui-scrollbar__thumb {
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+
+.ui-scrollbar__thumb:hover,
+.ui-scrollbar__bar.is-dragging .ui-scrollbar__thumb {
+  background-color: var(--ui-scrollbar-thumb-hover-color, rgba(144, 147, 153, 0.6));
+}

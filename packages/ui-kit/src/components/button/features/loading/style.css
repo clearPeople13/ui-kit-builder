@@ -1,0 +1,23 @@
+.ui-button__loading {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  animation: ui-button-loading-rotate 1s linear infinite;
+}
+
+.ui-button__spinner {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: ui-button-loading-rotate 0.8s linear infinite;
+}
+
+@keyframes ui-button-loading-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

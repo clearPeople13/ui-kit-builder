@@ -1,0 +1,143 @@
+.ui-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  font-family: var(--ui-font-family);
+  font-size: 13px;
+  color: var(--ui-text-color-regular);
+}
+
+.ui-progress__bar {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-border-color-lighter);
+  overflow: hidden;
+}
+
+.ui-progress__inner {
+  height: 100%;
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-color-primary);
+  transition: width 240ms ease;
+}
+
+.ui-progress--success .ui-progress__inner {
+  background: var(--ui-color-success);
+}
+
+.ui-progress--warning .ui-progress__inner {
+  background: var(--ui-color-warning);
+}
+
+.ui-progress--error .ui-progress__inner,
+.ui-progress--danger .ui-progress__inner {
+  background: var(--ui-color-danger);
+}
+
+.ui-progress--status-success .ui-progress__text {
+  color: var(--ui-color-success);
+}
+
+.ui-progress--status-warning .ui-progress__text {
+  color: var(--ui-color-warning);
+}
+
+.ui-progress--status-error .ui-progress__text,
+.ui-progress--status-danger .ui-progress__text {
+  color: var(--ui-color-danger);
+}
+
+.ui-progress__text {
+  flex: none;
+  min-width: 36px;
+  color: var(--ui-text-color-regular);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.ui-progress.is-indeterminate .ui-progress__bar {
+  position: relative;
+}
+
+.ui-progress.is-indeterminate .ui-progress__inner {
+  position: absolute;
+  width: 40% !important;
+  animation: ui-progress-indeterminate 1.4s ease-in-out infinite;
+}
+
+@keyframes ui-progress-indeterminate {
+  0% {
+    left: -40%;
+  }
+
+  100% {
+    left: 100%;
+  }
+}
+
+.ui-progress__circle {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.ui-progress__circle svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-progress__circle-track {
+  stroke: var(--ui-border-color-lighter);
+}
+
+.ui-progress__circle-path {
+  stroke: var(--ui-color-primary);
+  transition: stroke-dasharray 240ms ease;
+}
+
+.ui-progress--success .ui-progress__circle-path {
+  stroke: var(--ui-color-success);
+}
+
+.ui-progress--warning .ui-progress__circle-path {
+  stroke: var(--ui-color-warning);
+}
+
+.ui-progress--error .ui-progress__circle-path,
+.ui-progress--danger .ui-progress__circle-path {
+  stroke: var(--ui-color-danger);
+}
+
+.ui-progress__circle-text {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-color-regular);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-progress--status-success .ui-progress__circle-text {
+  color: var(--ui-color-success);
+}
+
+.ui-progress--status-warning .ui-progress__circle-text {
+  color: var(--ui-color-warning);
+}
+
+.ui-progress--status-error .ui-progress__circle-text,
+.ui-progress--status-danger .ui-progress__circle-text {
+  color: var(--ui-color-danger);
+}
+
+.ui-progress--circle,
+.ui-progress--dashboard {
+  width: auto;
+  gap: 0;
+}

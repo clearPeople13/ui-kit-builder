@@ -1,0 +1,33 @@
+.ui-radio--border {
+  padding: 8px 14px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-radius-small);
+  background: var(--ui-bg-color);
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.ui-radio--border:hover:not(.is-disabled) {
+  border-color: var(--ui-color-primary);
+}
+
+.ui-radio--border.is-checked {
+  border-color: var(--ui-color-primary);
+  background: color-mix(in srgb, var(--ui-color-primary) 6%, transparent);
+}
+
+.ui-radio--border.is-disabled {
+  border-color: var(--ui-border-color-light);
+  background: var(--ui-fill-color);
+}
+
+.ui-radio--size-small.ui-radio--border {
+  padding: 6px 12px;
+}
+
+.ui-radio--size-large.ui-radio--border {
+  padding: 10px 16px;
+}
+
+.ui-radio-group > .ui-radio--border {
+  margin-right: 0;
+}

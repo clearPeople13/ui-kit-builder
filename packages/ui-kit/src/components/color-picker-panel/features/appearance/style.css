@@ -1,0 +1,5 @@
+.ui-color-picker-panel--appearance {
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-radius-base);
+  box-shadow: var(--ui-shadow-card-sm);
+}

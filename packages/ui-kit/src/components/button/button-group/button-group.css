@@ -1,0 +1,30 @@
+.ui-button-group {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.ui-button-group > .ui-button {
+  border-radius: 0;
+}
+
+/* 逻辑属性适配 dir=rtl：inline-start 在 LTR 是左侧、RTL 是右侧 */
+.ui-button-group > .ui-button + .ui-button {
+  margin-inline-start: -1px;
+}
+
+.ui-button-group > .ui-button:first-child {
+  border-start-start-radius: var(--ui-button-radius, 4px);
+  border-end-start-radius: var(--ui-button-radius, 4px);
+}
+
+.ui-button-group > .ui-button:last-child {
+  border-start-end-radius: var(--ui-button-radius, 4px);
+  border-end-end-radius: var(--ui-button-radius, 4px);
+}
+
+.ui-button-group > .ui-button:hover,
+.ui-button-group > .ui-button:focus-visible {
+  position: relative;
+  z-index: 1;
+}

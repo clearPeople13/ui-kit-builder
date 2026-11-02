@@ -1,0 +1,21 @@
+.ui-affix {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-affix.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.ui-affix__sentinel {
+  display: block;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.ui-affix.is-fixed > .ui-affix__inner {
+  margin: 0;
+  transition: none;
+}

@@ -1,0 +1,14 @@
+.ui-virtual-list {
+  box-sizing: border-box;
+  width: 100%;
+  will-change: transform;
+}
+
+.ui-virtual-list__spacer {
+  width: 100%;
+}
+
+.ui-virtual-list__item {
+  box-sizing: border-box;
+  overflow: hidden;
+}

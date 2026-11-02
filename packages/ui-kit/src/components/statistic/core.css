@@ -1,0 +1,37 @@
+.ui-statistic {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--ui-font-family);
+}
+
+.ui-statistic__title {
+  color: var(--ui-color-info);
+  font-size: 13px;
+}
+
+.ui-statistic__content {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--ui-text-color-primary);
+  font-size: 26px;
+  font-weight: var(--ui-font-weight-strong);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.ui-statistic__prefix,
+.ui-statistic__suffix {
+  font-size: 15px;
+  font-weight: var(--ui-font-weight-medium);
+}
+
+.ui-statistic__value {
+  letter-spacing: -0.01em;
+}
+
+.ui-statistic__footer {
+  color: var(--ui-color-info);
+  font-size: 12.5px;
+}

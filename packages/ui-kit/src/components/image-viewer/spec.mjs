@@ -1,0 +1,59 @@
+export default {
+  "id": "image-viewer",
+  "title": "ImageViewer 图片预览",
+  "description": "对齐主流组件库的 ImageViewer，基础 props 与可选特性拆分。",
+  "order": 10,
+  "exports": [
+    {
+      "name": "ImageViewer",
+      "module": "packages/ui-kit/src/components/image-viewer/core.ts",
+      "createExport": "createImageViewer",
+      "coreProps": [
+        {
+          "name": "modelValue",
+          "type": "boolean",
+          "description": "modelValue"
+        },
+        {
+          "name": "zIndex",
+          "type": "number",
+          "description": "zIndex"
+        }
+      ],
+      "features": {
+        "image-viewer.popper": {
+          "title": "浮层传送",
+          "description": "浮层传送：teleported",
+          "module": "packages/ui-kit/src/components/image-viewer/features/popper/index.ts",
+          "exportName": "imageViewerPopperFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "teleported",
+              "type": "boolean"
+            }
+          ]
+        },
+        "image-viewer.modal": {
+          "title": "遮罩与关闭行为",
+          "description": "遮罩与关闭行为：closeOnPressEscape、lockScroll",
+          "module": "packages/ui-kit/src/components/image-viewer/features/modal/index.ts",
+          "exportName": "imageViewerModalFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "lockScroll",
+              "type": "boolean",
+              "default": true
+            },
+            {
+              "name": "closeOnPressEscape",
+              "type": "boolean",
+              "default": true
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

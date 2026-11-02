@@ -1,0 +1,10 @@
+.ui-collapse-transition {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-collapse-transition-enter-active,
+.ui-collapse-transition-leave-active {
+  transition: height 0.3s ease-in-out;
+  overflow: hidden;
+}

@@ -1,0 +1,115 @@
+.ui-dialog {
+  --ui-dialog-header-bg: transparent;
+  --ui-dialog-footer-bg: transparent;
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ui-font-family);
+}
+
+.ui-dialog__mask {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--ui-mask-color) 45%, transparent);
+  animation: ui-dialog-fade 160ms ease-out;
+  backdrop-filter: var(--ui-dialog-mask-backdrop);
+}
+
+.ui-dialog__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: var(--ui-dialog-width);
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 80px);
+  border-radius: var(--ui-dialog-radius);
+  background: var(--ui-bg-color);
+  box-shadow: var(--ui-shadow-dialog);
+  overflow: hidden;
+  animation: ui-dialog-pop 180ms ease-out;
+}
+
+.ui-dialog__panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: var(--ui-dialog-header-padding);
+  border-bottom: 1px solid var(--ui-border-color-light);
+  background: var(--ui-dialog-header-bg);
+}
+
+.ui-dialog__panel__title {
+  color: var(--ui-text-color-strong);
+  font-size: var(--ui-dialog-title-font-size);
+  font-weight: var(--ui-dialog-title-font-weight);
+}
+
+.ui-dialog__panel__close {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ui-radius-base);
+  background: transparent;
+  color: var(--ui-color-info);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.ui-dialog__panel__close:hover {
+  background: var(--ui-color-primary-bg-subtle);
+  color: var(--ui-color-primary);
+}
+
+.ui-dialog__panel__body {
+  flex: 1;
+  padding: var(--ui-dialog-body-padding);
+  overflow: hidden;
+  color: var(--ui-text-color-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.ui-dialog.is-overflow .ui-dialog__panel__body {
+  overflow: auto;
+}
+
+.ui-dialog__panel__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: var(--ui-dialog-footer-padding);
+  border-top: 1px solid var(--ui-border-color-light);
+  background: var(--ui-dialog-footer-bg);
+}
+
+.ui-dialog.is-center .ui-dialog__panel__body,
+.ui-dialog.is-center .ui-dialog__panel__header {
+  text-align: center;
+}
+
+@keyframes ui-dialog-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ui-dialog-pop {
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ui-dialog.is-hidden {
+  display: none;
+}

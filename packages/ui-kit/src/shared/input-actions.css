@@ -1,0 +1,65 @@
+.ui-input__clear,
+.ui-input__password,
+.ui-autocomplete__clear,
+.ui-autocomplete__password,
+.ui-mention__clear,
+.ui-mention__password {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ui-text-color-placeholder);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ui-input__clear,
+.ui-autocomplete__clear,
+.ui-mention__clear {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.ui-input--clearable:hover .ui-input__clear,
+.ui-input--clearable:focus-within .ui-input__clear,
+.ui-autocomplete--clearable:hover .ui-autocomplete__clear,
+.ui-autocomplete--clearable:focus-within .ui-autocomplete__clear,
+.ui-mention--clearable:hover .ui-mention__clear,
+.ui-mention--clearable:focus-within .ui-mention__clear {
+  visibility: visible;
+  opacity: 1;
+}
+
+.ui-input__clear:hover,
+.ui-input__password:hover,
+.ui-autocomplete__clear:hover,
+.ui-autocomplete__password:hover,
+.ui-mention__clear:hover,
+.ui-mention__password:hover {
+  color: var(--ui-text-color-regular);
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ui-input__clear:focus-visible,
+.ui-input__password:focus-visible,
+.ui-autocomplete__clear:focus-visible,
+.ui-autocomplete__password:focus-visible,
+.ui-mention__clear:focus-visible,
+.ui-mention__password:focus-visible {
+  outline: 2px solid var(--ui-focus-ring);
+  outline-offset: 1px;
+}
+
+.ui-button:active {
+  transform: var(--ui-button-active-transform);
+  box-shadow: var(--ui-button-shadow-active);
+}

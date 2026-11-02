@@ -1,0 +1,92 @@
+.ui-button {
+  --ui-button-accent: var(--ui-text-color-regular);
+  background-image: var(--ui-button-bg-image);
+  box-shadow: var(--ui-button-shadow);
+}
+
+.ui-button--primary {
+  --ui-button-accent: var(--ui-color-primary);
+}
+
+.ui-button--success {
+  --ui-button-accent: var(--ui-color-success);
+}
+
+.ui-button--warning {
+  --ui-button-accent: var(--ui-color-warning);
+}
+
+.ui-button--info {
+  --ui-button-accent: var(--ui-color-info);
+}
+
+.ui-button--danger {
+  --ui-button-accent: var(--ui-color-danger);
+}
+
+.ui-button.is-plain {
+  background: color-mix(in srgb, var(--ui-button-bg) 12%, #ffffff);
+  border-color: color-mix(in srgb, var(--ui-button-border) 55%, #ffffff);
+  color: var(--ui-button-accent);
+}
+
+.ui-button.is-plain:hover {
+  background: var(--ui-button-hover-bg);
+  border-color: var(--ui-button-hover-border);
+  color: var(--ui-button-hover-text);
+}
+
+.ui-button.is-text,
+.ui-button.is-link {
+  padding-left: 4px;
+  padding-right: 4px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--ui-button-accent);
+}
+
+.ui-button.is-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ui-button.is-text:hover,
+.ui-button.is-link:hover {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--ui-button-accent) 10%, transparent);
+  color: var(--ui-button-accent);
+}
+
+.ui-button.is-dashed {
+  border-style: dashed;
+}
+
+.ui-button.is-round {
+  border-radius: 20px;
+}
+
+.ui-button.is-circle {
+  width: var(--ui-button-height);
+  padding: 0;
+  border-radius: 50%;
+}
+
+.ui-button.is-circle.ui-button--size-large {
+  width: var(--ui-button-height-large);
+}
+
+.ui-button.is-circle.ui-button--size-small {
+  width: var(--ui-button-height-small);
+}
+
+.ui-button.is-bg {
+  border-color: transparent;
+  background: color-mix(in srgb, var(--ui-button-accent) 12%, #ffffff);
+  color: var(--ui-button-accent);
+}
+
+.ui-button.is-dark {
+  border-color: var(--ui-button-accent);
+  background: color-mix(in srgb, var(--ui-button-accent) 82%, #000000);
+  color: var(--ui-text-color-inverse);
+}

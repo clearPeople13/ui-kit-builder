@@ -1,0 +1,12 @@
+.ui-infinite-scroll {
+  box-sizing: border-box;
+  font-family: var(--ui-font-family);
+}
+
+.ui-infinite-scroll.is-disabled {
+  pointer-events: none;
+}
+
+.ui-infinite-scroll.is-loading {
+  cursor: progress;
+}

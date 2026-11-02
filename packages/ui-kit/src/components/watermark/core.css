@@ -1,0 +1,10 @@
+.ui-watermark {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ui-watermark__content {
+  position: relative;
+  z-index: 1;
+}

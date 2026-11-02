@@ -1,0 +1,25 @@
+.ui-text {
+  color: inherit;
+  font-family: var(--ui-font-family);
+}
+
+.ui-text--primary { color: var(--ui-color-primary); }
+.ui-text--success { color: var(--ui-color-success); }
+.ui-text--warning { color: var(--ui-color-warning); }
+.ui-text--danger { color: var(--ui-color-danger); }
+.ui-text--info { color: var(--ui-color-info); }
+
+.ui-text--size-large { font-size: 16px; }
+.ui-text--size-small { font-size: 12px; }
+
+.ui-text.is-truncated {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-text.is-line-clamp {
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,4 @@
+.ui-message--plain .ui-message__panel {
+  --ui-message-bg: var(--ui-bg-color);
+  box-shadow: none;
+}

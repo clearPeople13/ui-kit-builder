@@ -1,0 +1,40 @@
+{
+  "name": "ui-kit-feature-build-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:core": "node scripts/build-lib.mjs --config profiles/core.json",
+    "build:bg-color": "node scripts/build-lib.mjs --config profiles/bg-color.json",
+    "build:gradient": "node scripts/build-lib.mjs --config profiles/gradient.json",
+    "build:full": "node scripts/build-lib.mjs --config profiles/full.json",
+    "build:chinese": "node scripts/build-lib.mjs --config profiles/chinese.json",
+    "build:cute": "node scripts/build-lib.mjs --config profiles/cute.json",
+    "build:all": "node scripts/build-all.mjs",
+    "meta:demo": "node scripts/generate-demo-meta.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\"",
+    "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\"",
+    "verify": "node scripts/verify.mjs",
+    "verify:consumer": "npm --prefix examples/consumer run check:all",
+    "demo:consumer": "npm --prefix examples/consumer run dev"
+  },
+  "dependencies": {
+    "@lucide/vue": "1.61.0",
+    "chroma-js": "3.2.0",
+    "vue": "3.5.44"
+  },
+  "devDependencies": {
+    "@types/chroma-js": "3.1.3",
+    "@vue/server-renderer": "3.5.44",
+    "eslint": "^9.39.0",
+    "playwright": "^1.64.1",
+    "prettier": "^3.6.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.46.2",
+    "vite": "7.3.7"
+  }
+}

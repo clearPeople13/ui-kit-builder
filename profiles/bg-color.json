@@ -1,0 +1,5 @@
+{
+  "name": "bg-color",
+  "components": "all",
+  "features": ["button.bg-color"]
+}

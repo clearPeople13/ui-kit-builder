@@ -1,0 +1,5 @@
+{
+  "name": "gradient",
+  "components": "all",
+  "features": ["button.gradient"]
+}

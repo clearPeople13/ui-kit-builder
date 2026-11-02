@@ -1,0 +1,71 @@
+@import '../../shared/controls.css';
+
+.ui-mention__dropdown {
+  min-width: 160px;
+  padding: 4px;
+}
+
+.ui-mention__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-mention__option {
+  padding: var(--ui-mention-option-padding);
+  border-radius: var(--ui-radius-md);
+  color: var(--ui-text-color-regular);
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.ui-mention__option.is-active {
+  background: var(--ui-color-primary-bg-subtle);
+  color: var(--ui-color-primary);
+}
+
+.ui-mention__option.is-disabled {
+  color: var(--ui-text-color-disabled);
+  cursor: not-allowed;
+}
+
+.ui-mention__loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  color: var(--ui-text-color-secondary);
+  font-size: 12px;
+}
+
+.ui-mention__spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid color-mix(in srgb, var(--ui-color-primary) 20%, transparent);
+  border-top-color: var(--ui-color-primary);
+  border-radius: 50%;
+  animation: ui-mention-spin 0.7s linear infinite;
+}
+
+@keyframes ui-mention-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ui-mention--textarea {
+  align-items: stretch;
+  padding: 0;
+}
+
+.ui-mention--textarea .ui-mention__inner {
+  height: auto;
+  padding: 6px 11px;
+  line-height: 1.5;
+  resize: vertical;
+}

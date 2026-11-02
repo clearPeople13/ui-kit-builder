@@ -1,0 +1,117 @@
+.ui-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ui-text-color-disabled);
+  color: var(--ui-text-color-inverse);
+  font-size: 15px;
+  font-weight: var(--ui-font-weight-medium);
+  vertical-align: middle;
+  user-select: none;
+}
+
+.ui-avatar.is-square {
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-avatar.is-small {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+.ui-avatar.is-large {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+}
+
+.ui-avatar__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-avatar__text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-avatar-group {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.ui-avatar-group__inner {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ui-avatar-group .ui-avatar {
+  margin-left: -8px;
+  border: 2px solid var(--ui-border-color-inverse);
+  background: var(--ui-color-primary-lighter);
+}
+
+.ui-avatar-group .ui-avatar:first-child {
+  margin-left: 0;
+}
+
+.ui-avatar-group .ui-avatar:last-child {
+  background: var(--ui-color-primary-border);
+  color: var(--ui-color-primary);
+  font-size: 12px;
+}
+
+.ui-avatar-group.is-size-large .ui-avatar {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+}
+
+.ui-avatar-group.is-size-small .ui-avatar {
+  width: 28px;
+  height: 28px;
+  font-size: 12px;
+}
+
+/* 组的 shape 要作用到组内每一个头像，否则 is-square 只落在根节点上没有视觉效果 */
+.ui-avatar-group.is-square .ui-avatar {
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-avatar-group .ui-avatar--collapse {
+  background: var(--ui-color-primary);
+  color: var(--ui-text-color-inverse);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.ui-avatar-group__dropdown {
+  padding: 8px;
+}
+
+.ui-avatar-group__list {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ui-avatar-group__list .ui-avatar {
+  margin-left: 0;
+  border: 0;
+}
+
+/* 浮层被 teleport 到 body，组根节点上的 is-square 传不进去，单独给面板内的头像补方形 */
+.ui-avatar-group__dropdown.is-square .ui-avatar {
+  border-radius: var(--ui-radius-md);
+}

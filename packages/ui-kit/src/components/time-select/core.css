@@ -1,0 +1,162 @@
+@import '../../shared/controls.css';
+
+.ui-time-select {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+}
+
+.ui-time-select__trigger {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: var(--ui-input-height, 32px);
+  padding: 0 10px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-input-radius, 4px);
+  background: var(--ui-bg-color);
+  color: var(--ui-text-color-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ui-time-select__trigger:hover {
+  border-color: var(--ui-text-color-disabled);
+}
+
+.ui-time-select.is-open .ui-time-select__trigger,
+.ui-time-select__trigger:focus {
+  border-color: var(--ui-color-primary);
+  box-shadow: 0 0 0 2px var(--ui-focus-ring-soft);
+}
+
+.ui-time-select.is-disabled .ui-time-select__trigger {
+  background: var(--ui-fill-color);
+  color: var(--ui-text-color-placeholder);
+  cursor: not-allowed;
+}
+
+.ui-time-select.is-size-small .ui-time-select__trigger {
+  --ui-input-height: 28px;
+}
+
+.ui-time-select.is-size-large .ui-time-select__trigger {
+  --ui-input-height: 36px;
+}
+
+.ui-time-select__icon {
+  flex: none;
+  color: var(--ui-text-color-placeholder);
+  font-size: 14px;
+}
+
+.ui-time-select__value,
+.ui-time-select__placeholder {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-time-select__placeholder {
+  color: var(--ui-text-color-placeholder);
+}
+
+.ui-time-select__actions {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--ui-text-color-placeholder);
+  font-size: 13px;
+}
+
+.ui-time-select__arrow {
+  display: inline-flex;
+  font-size: 12px;
+  transition: transform 0.2s ease, opacity 0.15s ease;
+}
+
+.ui-time-select__arrow.is-open {
+  transform: rotate(180deg);
+}
+
+.ui-time-select__clear {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.ui-time-select:hover .ui-time-select__clear,
+.ui-time-select:focus-within .ui-time-select__clear,
+.ui-time-select.is-open .ui-time-select__clear {
+  visibility: visible;
+  opacity: 0.75;
+}
+
+.ui-time-select:hover .ui-time-select__clear ~ .ui-time-select__arrow,
+.ui-time-select:focus-within .ui-time-select__clear ~ .ui-time-select__arrow,
+.ui-time-select.is-open .ui-time-select__clear ~ .ui-time-select__arrow {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.ui-time-select .ui-time-select__clear:hover {
+  opacity: 1;
+  color: var(--ui-text-color-regular);
+}
+
+.ui-time-select__dropdown {
+  padding: 6px;
+}
+
+.ui-time-select__option {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: var(--ui-time-select-option-padding);
+  border-radius: var(--ui-radius-small);
+  color: var(--ui-text-color-regular);
+  font-size: 14px;
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-time-select__option:hover {
+  background: var(--ui-fill-color);
+}
+
+.ui-time-select__option.is-selected {
+  color: var(--ui-color-primary);
+  font-weight: var(--ui-font-weight-strong);
+}
+
+.ui-time-select__dropdown.is-dark {
+  border-color: color-mix(in srgb, var(--ui-text-color-inverse) 12%, transparent);
+  background: var(--ui-bg-color-dark);
+}
+
+.ui-time-select__dropdown.is-dark .ui-time-select__option {
+  color: var(--ui-text-color-inverse-muted);
+}
+
+.ui-time-select__dropdown.is-dark .ui-time-select__option:hover {
+  background: color-mix(in srgb, var(--ui-text-color-inverse) 8%, transparent);
+}
+
+.ui-time-select__dropdown.is-dark .ui-time-select__option.is-selected {
+  color: var(--ui-color-primary-soft);
+}

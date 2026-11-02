@@ -1,0 +1,13 @@
+.ui-button__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.ui-button__icon svg {
+  width: 1em;
+  height: 1em;
+}

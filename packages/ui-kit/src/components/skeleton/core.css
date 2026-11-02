@@ -1,0 +1,69 @@
+.ui-skeleton {
+  width: 100%;
+}
+
+.ui-skeleton__group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 4px 0;
+}
+
+.ui-skeleton__group + .ui-skeleton__group {
+  margin-top: 18px;
+}
+
+.ui-skeleton__item {
+  height: 14px;
+  border-radius: var(--ui-radius-small);
+  background: linear-gradient(90deg, var(--ui-fill-color-muted) 25%, #e9ebee 37%, var(--ui-fill-color-muted) 63%);
+  background-size: 400% 100%;
+}
+
+.ui-skeleton__item.is-last {
+  width: 62%;
+}
+
+.ui-skeleton.is-animated .ui-skeleton__item {
+  animation: ui-skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes ui-skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.ui-skeleton-item {
+  box-sizing: border-box;
+  height: 14px;
+  border-radius: var(--ui-radius-small);
+  background: var(--ui-fill-color-muted);
+}
+
+.ui-skeleton-item.is-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 96px;
+  border-radius: var(--ui-radius-md);
+}
+
+.ui-skeleton-item.is-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.ui-skeleton-item.is-rect {
+  height: 64px;
+}
+
+.ui-skeleton-item__icon {
+  opacity: 0.35;
+  font-size: 22px;
+}
