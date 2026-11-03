@@ -12,11 +12,8 @@ const expected = [
   { line: 12, code: 'TS2353', includes: 'gradientAngle' },
   { line: 13, code: 'TS2353', includes: 'plain' },
   { line: 14, code: 'TS2353', includes: 'loading' },
-  { line: 17, code: 'TS2353', includes: 'gradient' },
-  { line: 18, code: 'TS2353', includes: 'gradientAngle' },
-  { line: 19, code: 'TS2353', includes: 'round' },
-  { line: 22, code: 'TS2322', includes: "Type 'string'" },
-  { line: 25, code: 'TS2353', includes: 'clearable' },
+  { line: 17, code: 'TS2353', includes: 'clearable' },
+  { line: 20, code: 'TS2322', includes: "Type 'string'" },
 ]
 
 let output = ''

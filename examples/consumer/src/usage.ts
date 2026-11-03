@@ -1,4 +1,4 @@
-import type { ButtonProps as BgColorButtonProps, InputProps as BgColorInputProps } from '@demo/ui-kit-bg-color'
+import type { ButtonProps as BrandedButtonProps, InputProps as BrandedInputProps } from '@demo/ui-kit-branded'
 import type {
   ButtonProps as CoreButtonProps,
   InputInstance as CoreInputInstance,
@@ -14,7 +14,7 @@ import type {
   ScrollbarInstance as FullScrollbarInstance
 } from '@demo/ui-kit-full'
 import type { ComponentProps } from 'vue-component-type-helpers'
-import { Button as BgColorButton } from '@demo/ui-kit-bg-color'
+import { Button as BrandedButton, Input as BrandedInput } from '@demo/ui-kit-branded'
 import { Button as CoreButton, Input as CoreInput } from '@demo/ui-kit-core'
 import { Button as FullButton, Input as FullInput } from '@demo/ui-kit-full'
 
@@ -30,10 +30,12 @@ export const coreButton: CoreButtonProps = {
   tag: 'button'
 }
 
-export const bgColorButton: BgColorButtonProps = {
+export const brandedButton: BrandedButtonProps = {
   type: 'primary',
   bgColor: '#3366ff',
-  autoContrast: true
+  autoContrast: true,
+  gradient: true,
+  gradientAngle: 45
 }
 
 export const fullButton: FullButtonProps = {
@@ -50,17 +52,18 @@ export const fullButton: FullButtonProps = {
 }
 
 export const coreInput: CoreInputProps = { modelValue: 'hello', placeholder: 'Name', type: 'text' }
+export const brandedInput: BrandedInputProps = { modelValue: 'hello', clearable: true }
 export const fullInput: FullInputProps = { modelValue: 'hello', placeholder: 'Name' }
 export const coreScrollbar: CoreScrollbarProps = { height: 120, native: false, minSize: 20 }
 
 type CoreComponentProps = ComponentProps<typeof CoreButton>
-type BgColorComponentProps = ComponentProps<typeof BgColorButton>
+type BrandedComponentProps = ComponentProps<typeof BrandedButton>
 type FullComponentProps = ComponentProps<typeof FullButton>
 type CoreInputComponentProps = ComponentProps<typeof CoreInput>
 type FullInputComponentProps = ComponentProps<typeof FullInput>
 
 export const coreComponent: CoreComponentProps = { type: 'primary', size: 'small' }
-export const bgColorComponent: BgColorComponentProps = { bgColor: '#3366ff', type: 'success' }
+export const brandedComponent: BrandedComponentProps = { bgColor: '#3366ff', type: 'success', gradient: true }
 export const fullComponent: FullComponentProps = { gradient: true, gradientAngle: 45, round: true }
 export const coreInputComponent: CoreInputComponentProps = { modelValue: 'hello' }
 export const fullInputComponent: FullInputComponentProps = { modelValue: 'hello' }
@@ -78,16 +81,6 @@ export const coreRejectsGradient: CoreComponentProps = {
 export const coreRejectsLoading: CoreButtonProps = {
   // @ts-expect-error core 包未启用 button.loading
   loading: true
-}
-
-export const bgColorRejectsGradient: BgColorButtonProps = {
-  // @ts-expect-error bg-color 包未启用 button.gradient
-  gradient: true
-}
-
-export const bgColorRejectsAppearance: BgColorComponentProps = {
-  // @ts-expect-error bg-color 包未启用 button.appearance
-  plain: true
 }
 
 export const fullRejectsStringAngle: FullButtonProps = {
@@ -122,12 +115,7 @@ export const coreRejectsScrollbarSetScrollTop = (null as unknown as CoreScrollba
 export type CoreButtonKeysExact = Expect<
   Equal<keyof CoreButtonProps, 'size' | 'type' | 'disabled' | 'nativeType' | 'autofocus' | 'tag'>
 >
-export type BgColorButtonKeysExact = Expect<
-  Equal<
-    keyof BgColorButtonProps,
-    'size' | 'type' | 'disabled' | 'nativeType' | 'autofocus' | 'tag' | 'bgColor' | 'autoContrast'
-  >
->
+export type BrandedButtonKeysMatchFull = Expect<Equal<keyof BrandedButtonProps, keyof FullButtonProps>>
 export type FullButtonKeysExact = Expect<
   Equal<
     keyof FullButtonProps,
@@ -157,10 +145,10 @@ export type FullButtonKeysExact = Expect<
   >
 >
 export type CoreComponentHasNoBgColor = Expect<Equal<'bgColor' extends keyof CoreComponentProps ? true : false, false>>
-export type BgColorComponentHasNoGradient = Expect<
-  Equal<'gradient' extends keyof BgColorComponentProps ? true : false, false>
+export type BrandedComponentHasGradient = Expect<
+  Equal<'gradient' extends keyof BrandedComponentProps ? true : false, true>
 >
 export type FullComponentHasGradient = Expect<Equal<'gradient' extends keyof FullComponentProps ? true : false, true>>
 export type CoreInputHasNoClearable = Expect<Equal<'clearable' extends keyof CoreInputProps ? true : false, false>>
 export type FullInputHasPassword = Expect<Equal<'showPassword' extends keyof FullInputProps ? true : false, true>>
-export type BgColorInputPropsMatchCore = Expect<Equal<keyof BgColorInputProps, keyof CoreInputProps>>
+export type BrandedInputKeysMatchFull = Expect<Equal<keyof BrandedInputProps, keyof FullInputProps>>

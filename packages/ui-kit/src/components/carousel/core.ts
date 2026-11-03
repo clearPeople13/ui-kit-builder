@@ -8,6 +8,7 @@ import './core.css'
 
 interface CarouselContext {
   active: () => number
+  length: () => number
   register: (item: CarouselItemMeta) => number
 }
 interface CarouselItemMeta {
@@ -72,7 +73,7 @@ export function createCarousel(features: UiFeature[] = []) {
           return items.value.length - 1
         }
 
-        provide(CAROUSEL_CONTEXT, { active: () => active.value, register })
+        provide(CAROUSEL_CONTEXT, { active: () => active.value, length: () => items.value.length, register })
 
         function startTimer() {
           stopTimer()
@@ -110,7 +111,8 @@ export function createCarousel(features: UiFeature[] = []) {
       classes: (props) => [
         props.indicatorPosition ? `is-indicator-${props.indicatorPosition}` : '',
         props.direction ? `is-${props.direction}` : '',
-        props.arrow && props.arrow !== 'hover' ? `is-arrow-${props.arrow}` : ''
+        props.arrow && props.arrow !== 'hover' ? `is-arrow-${props.arrow}` : '',
+        props.type === 'card' ? 'is-card' : ''
       ],
       styles: (props) => ({ height: sizeValue(props.height) }),
       attrs: () => ({
@@ -186,6 +188,26 @@ export function createCarouselItem(features: UiFeature[] = []) {
         const seed = Math.random().toString(36).slice(2, 8)
         const name = props.name || `item-${seed}`
         const index = context?.register({ name, label: String(props.label || props.name || '') }) ?? 0
+        const relation = () => {
+          if (!context) {
+            return 'active'
+          }
+          const length = context.length()
+          if (length < 2) {
+            return 'active'
+          }
+          const active = context.active()
+          if (active === index) {
+            return 'active'
+          }
+          if ((active - 1 + length) % length === index) {
+            return 'prev'
+          }
+          if ((active + 1) % length === index) {
+            return 'next'
+          }
+          return 'rest'
+        }
         return {
           itemName: name,
           get active() {
@@ -193,10 +215,18 @@ export function createCarouselItem(features: UiFeature[] = []) {
               return true
             }
             return context.active() === index
+          },
+          get relation() {
+            return relation()
           }
         }
       },
-      classes: (_props, state) => [state.active ? 'is-active' : ''],
+      classes: (_props, state) => [
+        state.active ? 'is-active' : '',
+        state.relation === 'prev' ? 'is-prev' : '',
+        state.relation === 'next' ? 'is-next' : '',
+        state.relation === 'rest' ? 'is-rest' : ''
+      ],
       content: ({ props, slots }) =>
         h('div', { class: 'ui-carousel-item__inner' }, [slots.default?.() ?? props.label ?? null])
     },

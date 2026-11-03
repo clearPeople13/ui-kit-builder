@@ -7,3 +7,4 @@ configurator-preview.png
 configurator-test.png
 consumer-preview.png
 *.log
+.guardian/

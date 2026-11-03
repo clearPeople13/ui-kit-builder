@@ -25,7 +25,11 @@ export function createEmpty(features: UiFeature[] = []) {
             ? h('img', { class: 'ui-empty__image', src: props.image, style: { width: sizeValue(props.imageSize) } })
             : renderIcon(Inbox, {
                 class: 'ui-empty__icon',
-                attrs: { style: { fontSize: sizeValue(props.imageSize) } }
+                attrs: {
+                  style: props.imageSize
+                    ? `width:${sizeValue(props.imageSize)};height:${sizeValue(props.imageSize)};font-size:${Math.round((Number(props.imageSize) * 26) / 64)}px`
+                    : undefined
+                }
               }),
           h('div', { class: 'ui-empty__description' }, [props.description || '暂无数据']),
           slots.default ? h('div', { class: 'ui-empty__footer' }, [slots.default()]) : null

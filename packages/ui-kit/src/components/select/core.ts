@@ -6,6 +6,7 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
+import { sizeValue } from '../../shared/behavior'
 import { selectClearableFeature } from './features/select-clearable/index'
 import { selectIconsFeature } from './features/select-icons/index'
 import { selectLoadingFeature } from './features/select-loading/index'
@@ -52,7 +53,9 @@ const selectBaseProps = {
   placeholder: { type: String },
   tabindex: { type: [String, Number], default: 0 },
   props: { type: Object, default: () => ({}) },
-  ariaLabel: { type: String }
+  ariaLabel: { type: String },
+  fitWidth: { type: Boolean },
+  maxWidth: { type: [String, Number] }
 }
 
 function textOf(children: unknown): string {
@@ -610,6 +613,10 @@ export function createSelect(features: UiFeature[] = []) {
         props.disabled ? 'is-disabled' : '',
         state.open ? 'is-open' : ''
       ],
+      styles: (props) => ({
+        width: props.fitWidth ? 'fit-content' : undefined,
+        maxWidth: sizeValue(props.maxWidth)
+      }),
       content: ({ props, state }) => {
         const actions: VNodeChild[] = []
         if (props.clearable && state.hasValue && !props.disabled) {

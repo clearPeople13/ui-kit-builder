@@ -1317,6 +1317,23 @@
               "description": "multiple"
             },
             {
+              "name": "checkbox",
+              "type": "boolean",
+              "default": null,
+              "description": "多选复选框模式：每级节点都渲染复选框，勾选父级级联选中/取消全部叶子并显示半选态，禁用叶子不可勾选且不计入统计；checkStrictly 时每级独立勾选"
+            },
+            {
+              "name": "checkStrictly",
+              "type": "boolean",
+              "description": "父子不关联：任意节点（含父级）可单独选中，全选=全部已加载节点"
+            },
+            {
+              "name": "emitPath",
+              "type": "boolean",
+              "default": true,
+              "description": "false 时 v-model 只存末级值（多选为末级值数组）"
+            },
+            {
               "name": "props",
               "type": "Record<string, any>",
               "description": "props"
@@ -1359,6 +1376,16 @@
               "type": "string",
               "default": "light",
               "description": "effect"
+            },
+            {
+              "name": "fitWidth",
+              "type": "boolean",
+              "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+            },
+            {
+              "name": "maxWidth",
+              "type": "string | number",
+              "description": "最大宽度：超出后文本省略"
             }
           ],
           "features": [
@@ -1408,6 +1435,17 @@
                   "name": "tagEffect",
                   "type": "string",
                   "default": "light"
+                }
+              ]
+            },
+            {
+              "id": "cascader.select-all",
+              "title": "全选",
+              "description": "面板顶部全选栏：selectAll；值语义跟随 checkStrictly（父子不关联则全选=全部已加载节点）与 emitPath（false 只存末级值）",
+              "props": [
+                {
+                  "name": "selectAll",
+                  "type": "boolean"
                 }
               ]
             },
@@ -4444,13 +4482,19 @@
               "name": "effect",
               "type": "string",
               "default": "light",
-              "description": "effect"
+              "description": "标签效果：light / dark / plain"
+            },
+            {
+              "name": "tagType",
+              "type": "string",
+              "default": "primary",
+              "description": "标签类型：primary / success / warning / danger / info"
             },
             {
               "name": "trigger",
               "type": "string",
               "default": "Enter",
-              "description": "trigger"
+              "description": "生成标签按键：Enter / Space / Both"
             },
             {
               "name": "readonly",
@@ -4506,7 +4550,7 @@
             {
               "id": "input-tag.clearable",
               "title": "可清空",
-              "description": "可清空：clearable、clearIcon",
+              "description": "可清空：clearable、clearIcon；点击清空按钮全部移除并触发 clear",
               "props": [
                 {
                   "name": "clearable",
@@ -4514,11 +4558,18 @@
                 },
                 {
                   "name": "clearIcon",
-                  "type": "string | Record<string, any> | (...args: any[]) => any",
-                  "default": {
-                    "name": "CircleClose",
-                    "__name": "circle-close"
-                  }
+                  "type": "string | Record<string, any> | (...args: any[]) => any"
+                }
+              ]
+            },
+            {
+              "id": "input-tag.separator",
+              "title": "分隔符批量添加",
+              "description": "分隔符批量添加：separator（输入分隔符或粘贴含分隔符文本时一次生成多个标签）",
+              "props": [
+                {
+                  "name": "separator",
+                  "type": "string"
                 }
               ]
             },
@@ -6902,6 +6953,16 @@
               "name": "ariaLabel",
               "type": "string",
               "description": "ariaLabel"
+            },
+            {
+              "name": "fitWidth",
+              "type": "boolean",
+              "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+            },
+            {
+              "name": "maxWidth",
+              "type": "string | number",
+              "description": "最大宽度：超出后文本省略"
             }
           ],
           "features": [
@@ -7143,6 +7204,16 @@
               "type": "string",
               "default": "",
               "description": "size"
+            },
+            {
+              "name": "fitWidth",
+              "type": "boolean",
+              "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+            },
+            {
+              "name": "maxWidth",
+              "type": "string | number",
+              "description": "最大宽度：超出后文本省略"
             }
           ],
           "features": [
@@ -9691,6 +9762,16 @@
               "name": "defaultExpandAll",
               "type": "boolean",
               "description": "defaultExpandAll"
+            },
+            {
+              "name": "fitWidth",
+              "type": "boolean",
+              "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+            },
+            {
+              "name": "maxWidth",
+              "type": "string | number",
+              "description": "最大宽度：超出后文本省略"
             }
           ],
           "features": [
@@ -10395,643 +10476,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 519674,
-          "gzipBytes": 122728
+          "bytes": 527179,
+          "gzipBytes": 124514
         },
         {
           "file": "ui-kit.css",
-          "bytes": 227129,
-          "gzipBytes": 31127
+          "bytes": 229976,
+          "gzipBytes": 31487
         }
       ],
       "sizes": {
-        "js": 519674,
-        "css": 227129,
-        "total": 746803,
-        "gzip": 153764
-      }
-    },
-    {
-      "id": "bg-color",
-      "label": "BG Color",
-      "npm": "@demo/ui-kit-bg-color",
-      "prefix": "ui",
-      "features": [
-        "button.bg-color"
-      ],
-      "componentFeatures": {
-        "affix": [],
-        "alert": [],
-        "anchor": [],
-        "autocomplete": [],
-        "avatar": [],
-        "backtop": [],
-        "badge": [],
-        "breadcrumb": [],
-        "button": [
-          "button.bg-color"
-        ],
-        "calendar": [],
-        "card": [],
-        "carousel": [],
-        "cascader": [],
-        "cascader-panel": [],
-        "check-tag": [],
-        "checkbox": [],
-        "col": [],
-        "collapse": [],
-        "collapse-transition": [],
-        "collection": [],
-        "color-picker": [],
-        "color-picker-panel": [],
-        "config-provider": [],
-        "container": [],
-        "countdown": [],
-        "date-picker": [],
-        "date-picker-panel": [],
-        "descriptions": [],
-        "dialog": [],
-        "divider": [],
-        "drawer": [],
-        "dropdown": [],
-        "empty": [],
-        "focus-trap": [],
-        "form": [],
-        "icon": [],
-        "image": [],
-        "image-viewer": [],
-        "infinite-scroll": [],
-        "input": [],
-        "input-number": [],
-        "input-otp": [],
-        "input-tag": [],
-        "link": [],
-        "loading": [],
-        "mention": [],
-        "menu": [],
-        "message": [],
-        "message-box": [],
-        "notification": [],
-        "overlay": [],
-        "page-header": [],
-        "pagination": [],
-        "popconfirm": [],
-        "popover": [],
-        "popper": [],
-        "progress": [],
-        "radio": [],
-        "rate": [],
-        "result": [],
-        "roving-focus-group": [],
-        "row": [],
-        "scrollbar": [],
-        "segmented": [],
-        "select": [],
-        "select-v2": [],
-        "skeleton": [],
-        "slider": [],
-        "slot": [],
-        "space": [],
-        "splitter": [],
-        "statistic": [],
-        "steps": [],
-        "switch": [],
-        "table": [],
-        "table-v2": [],
-        "tabs": [],
-        "tag": [],
-        "text": [],
-        "time-picker": [],
-        "time-select": [],
-        "timeline": [],
-        "tooltip": [],
-        "tour": [],
-        "transfer": [],
-        "tree": [],
-        "tree-select": [],
-        "tree-v2": [],
-        "upload": [],
-        "virtual-list": [],
-        "watermark": []
-      },
-      "components": [
-        "affix",
-        "alert",
-        "anchor",
-        "autocomplete",
-        "avatar",
-        "backtop",
-        "badge",
-        "breadcrumb",
-        "button",
-        "calendar",
-        "card",
-        "carousel",
-        "cascader",
-        "cascader-panel",
-        "check-tag",
-        "checkbox",
-        "col",
-        "collapse",
-        "collapse-transition",
-        "collection",
-        "color-picker",
-        "color-picker-panel",
-        "config-provider",
-        "container",
-        "countdown",
-        "date-picker",
-        "date-picker-panel",
-        "descriptions",
-        "dialog",
-        "divider",
-        "drawer",
-        "dropdown",
-        "empty",
-        "focus-trap",
-        "form",
-        "icon",
-        "image",
-        "image-viewer",
-        "infinite-scroll",
-        "input",
-        "input-number",
-        "input-otp",
-        "input-tag",
-        "link",
-        "loading",
-        "mention",
-        "menu",
-        "message",
-        "message-box",
-        "notification",
-        "overlay",
-        "page-header",
-        "pagination",
-        "popconfirm",
-        "popover",
-        "popper",
-        "progress",
-        "radio",
-        "rate",
-        "result",
-        "roving-focus-group",
-        "row",
-        "scrollbar",
-        "segmented",
-        "select",
-        "select-v2",
-        "skeleton",
-        "slider",
-        "slot",
-        "space",
-        "splitter",
-        "statistic",
-        "steps",
-        "switch",
-        "table",
-        "table-v2",
-        "tabs",
-        "tag",
-        "text",
-        "time-picker",
-        "time-select",
-        "timeline",
-        "tooltip",
-        "tour",
-        "transfer",
-        "tree",
-        "tree-select",
-        "tree-v2",
-        "upload",
-        "virtual-list",
-        "watermark"
-      ],
-      "selection": {
-        "affix": [],
-        "alert": [],
-        "anchor": [],
-        "autocomplete": [],
-        "avatar": [],
-        "backtop": [],
-        "badge": [],
-        "breadcrumb": [],
-        "button": [
-          "button.bg-color"
-        ],
-        "calendar": [],
-        "card": [],
-        "carousel": [],
-        "cascader": [],
-        "cascader-panel": [],
-        "check-tag": [],
-        "checkbox": [],
-        "col": [],
-        "collapse": [],
-        "collapse-transition": [],
-        "collection": [],
-        "color-picker": [],
-        "color-picker-panel": [],
-        "config-provider": [],
-        "container": [],
-        "countdown": [],
-        "date-picker": [],
-        "date-picker-panel": [],
-        "descriptions": [],
-        "dialog": [],
-        "divider": [],
-        "drawer": [],
-        "dropdown": [],
-        "empty": [],
-        "focus-trap": [],
-        "form": [],
-        "icon": [],
-        "image": [],
-        "image-viewer": [],
-        "infinite-scroll": [],
-        "input": [],
-        "input-number": [],
-        "input-otp": [],
-        "input-tag": [],
-        "link": [],
-        "loading": [],
-        "mention": [],
-        "menu": [],
-        "message": [],
-        "message-box": [],
-        "notification": [],
-        "overlay": [],
-        "page-header": [],
-        "pagination": [],
-        "popconfirm": [],
-        "popover": [],
-        "popper": [],
-        "progress": [],
-        "radio": [],
-        "rate": [],
-        "result": [],
-        "roving-focus-group": [],
-        "row": [],
-        "scrollbar": [],
-        "segmented": [],
-        "select": [],
-        "select-v2": [],
-        "skeleton": [],
-        "slider": [],
-        "slot": [],
-        "space": [],
-        "splitter": [],
-        "statistic": [],
-        "steps": [],
-        "switch": [],
-        "table": [],
-        "table-v2": [],
-        "tabs": [],
-        "tag": [],
-        "text": [],
-        "time-picker": [],
-        "time-select": [],
-        "timeline": [],
-        "tooltip": [],
-        "tour": [],
-        "transfer": [],
-        "tree": [],
-        "tree-select": [],
-        "tree-v2": [],
-        "upload": [],
-        "virtual-list": [],
-        "watermark": []
-      },
-      "files": [
-        {
-          "file": "ui-kit.js",
-          "bytes": 520280,
-          "gzipBytes": 122523
-        },
-        {
-          "file": "ui-kit.css",
-          "bytes": 227356,
-          "gzipBytes": 31176
-        }
-      ],
-      "sizes": {
-        "js": 520280,
-        "css": 227356,
-        "total": 747636,
-        "gzip": 153591
-      }
-    },
-    {
-      "id": "gradient",
-      "label": "Gradient",
-      "npm": "@demo/ui-kit-gradient",
-      "prefix": "ui",
-      "features": [
-        "button.bg-color",
-        "button.gradient"
-      ],
-      "componentFeatures": {
-        "affix": [],
-        "alert": [],
-        "anchor": [],
-        "autocomplete": [],
-        "avatar": [],
-        "backtop": [],
-        "badge": [],
-        "breadcrumb": [],
-        "button": [
-          "button.bg-color",
-          "button.gradient"
-        ],
-        "calendar": [],
-        "card": [],
-        "carousel": [],
-        "cascader": [],
-        "cascader-panel": [],
-        "check-tag": [],
-        "checkbox": [],
-        "col": [],
-        "collapse": [],
-        "collapse-transition": [],
-        "collection": [],
-        "color-picker": [],
-        "color-picker-panel": [],
-        "config-provider": [],
-        "container": [],
-        "countdown": [],
-        "date-picker": [],
-        "date-picker-panel": [],
-        "descriptions": [],
-        "dialog": [],
-        "divider": [],
-        "drawer": [],
-        "dropdown": [],
-        "empty": [],
-        "focus-trap": [],
-        "form": [],
-        "icon": [],
-        "image": [],
-        "image-viewer": [],
-        "infinite-scroll": [],
-        "input": [],
-        "input-number": [],
-        "input-otp": [],
-        "input-tag": [],
-        "link": [],
-        "loading": [],
-        "mention": [],
-        "menu": [],
-        "message": [],
-        "message-box": [],
-        "notification": [],
-        "overlay": [],
-        "page-header": [],
-        "pagination": [],
-        "popconfirm": [],
-        "popover": [],
-        "popper": [],
-        "progress": [],
-        "radio": [],
-        "rate": [],
-        "result": [],
-        "roving-focus-group": [],
-        "row": [],
-        "scrollbar": [],
-        "segmented": [],
-        "select": [],
-        "select-v2": [],
-        "skeleton": [],
-        "slider": [],
-        "slot": [],
-        "space": [],
-        "splitter": [],
-        "statistic": [],
-        "steps": [],
-        "switch": [],
-        "table": [],
-        "table-v2": [],
-        "tabs": [],
-        "tag": [],
-        "text": [],
-        "time-picker": [],
-        "time-select": [],
-        "timeline": [],
-        "tooltip": [],
-        "tour": [],
-        "transfer": [],
-        "tree": [],
-        "tree-select": [],
-        "tree-v2": [],
-        "upload": [],
-        "virtual-list": [],
-        "watermark": []
-      },
-      "components": [
-        "affix",
-        "alert",
-        "anchor",
-        "autocomplete",
-        "avatar",
-        "backtop",
-        "badge",
-        "breadcrumb",
-        "button",
-        "calendar",
-        "card",
-        "carousel",
-        "cascader",
-        "cascader-panel",
-        "check-tag",
-        "checkbox",
-        "col",
-        "collapse",
-        "collapse-transition",
-        "collection",
-        "color-picker",
-        "color-picker-panel",
-        "config-provider",
-        "container",
-        "countdown",
-        "date-picker",
-        "date-picker-panel",
-        "descriptions",
-        "dialog",
-        "divider",
-        "drawer",
-        "dropdown",
-        "empty",
-        "focus-trap",
-        "form",
-        "icon",
-        "image",
-        "image-viewer",
-        "infinite-scroll",
-        "input",
-        "input-number",
-        "input-otp",
-        "input-tag",
-        "link",
-        "loading",
-        "mention",
-        "menu",
-        "message",
-        "message-box",
-        "notification",
-        "overlay",
-        "page-header",
-        "pagination",
-        "popconfirm",
-        "popover",
-        "popper",
-        "progress",
-        "radio",
-        "rate",
-        "result",
-        "roving-focus-group",
-        "row",
-        "scrollbar",
-        "segmented",
-        "select",
-        "select-v2",
-        "skeleton",
-        "slider",
-        "slot",
-        "space",
-        "splitter",
-        "statistic",
-        "steps",
-        "switch",
-        "table",
-        "table-v2",
-        "tabs",
-        "tag",
-        "text",
-        "time-picker",
-        "time-select",
-        "timeline",
-        "tooltip",
-        "tour",
-        "transfer",
-        "tree",
-        "tree-select",
-        "tree-v2",
-        "upload",
-        "virtual-list",
-        "watermark"
-      ],
-      "selection": {
-        "affix": [],
-        "alert": [],
-        "anchor": [],
-        "autocomplete": [],
-        "avatar": [],
-        "backtop": [],
-        "badge": [],
-        "breadcrumb": [],
-        "button": [
-          "button.bg-color",
-          "button.gradient"
-        ],
-        "calendar": [],
-        "card": [],
-        "carousel": [],
-        "cascader": [],
-        "cascader-panel": [],
-        "check-tag": [],
-        "checkbox": [],
-        "col": [],
-        "collapse": [],
-        "collapse-transition": [],
-        "collection": [],
-        "color-picker": [],
-        "color-picker-panel": [],
-        "config-provider": [],
-        "container": [],
-        "countdown": [],
-        "date-picker": [],
-        "date-picker-panel": [],
-        "descriptions": [],
-        "dialog": [],
-        "divider": [],
-        "drawer": [],
-        "dropdown": [],
-        "empty": [],
-        "focus-trap": [],
-        "form": [],
-        "icon": [],
-        "image": [],
-        "image-viewer": [],
-        "infinite-scroll": [],
-        "input": [],
-        "input-number": [],
-        "input-otp": [],
-        "input-tag": [],
-        "link": [],
-        "loading": [],
-        "mention": [],
-        "menu": [],
-        "message": [],
-        "message-box": [],
-        "notification": [],
-        "overlay": [],
-        "page-header": [],
-        "pagination": [],
-        "popconfirm": [],
-        "popover": [],
-        "popper": [],
-        "progress": [],
-        "radio": [],
-        "rate": [],
-        "result": [],
-        "roving-focus-group": [],
-        "row": [],
-        "scrollbar": [],
-        "segmented": [],
-        "select": [],
-        "select-v2": [],
-        "skeleton": [],
-        "slider": [],
-        "slot": [],
-        "space": [],
-        "splitter": [],
-        "statistic": [],
-        "steps": [],
-        "switch": [],
-        "table": [],
-        "table-v2": [],
-        "tabs": [],
-        "tag": [],
-        "text": [],
-        "time-picker": [],
-        "time-select": [],
-        "timeline": [],
-        "tooltip": [],
-        "tour": [],
-        "transfer": [],
-        "tree": [],
-        "tree-select": [],
-        "tree-v2": [],
-        "upload": [],
-        "virtual-list": [],
-        "watermark": []
-      },
-      "files": [
-        {
-          "file": "ui-kit.js",
-          "bytes": 520898,
-          "gzipBytes": 122656
-        },
-        {
-          "file": "ui-kit.css",
-          "bytes": 227489,
-          "gzipBytes": 31210
-        }
-      ],
-      "sizes": {
-        "js": 520898,
-        "css": 227489,
-        "total": 748387,
-        "gzip": 153757
+        "js": 527179,
+        "css": 229976,
+        "total": 757155,
+        "gzip": 155844
       }
     },
     {
@@ -11063,6 +10521,7 @@
         "carousel.methods",
         "cascader.clearable",
         "cascader.multiple",
+        "cascader.select-all",
         "cascader.filterable",
         "cascader.popper",
         "cascader.lazy",
@@ -11117,6 +10576,7 @@
         "input.methods",
         "input-number.methods",
         "input-tag.clearable",
+        "input-tag.separator",
         "input-tag.draggable",
         "link.icons",
         "link.appearance",
@@ -11259,6 +10719,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -11361,6 +10822,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -11681,6 +11143,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -11783,6 +11246,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -11967,20 +11431,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 585032,
-          "gzipBytes": 136369
+          "bytes": 595424,
+          "gzipBytes": 138837
         },
         {
           "file": "ui-kit.css",
-          "bytes": 240362,
-          "gzipBytes": 32925
+          "bytes": 244623,
+          "gzipBytes": 33445
         }
       ],
       "sizes": {
-        "js": 585032,
-        "css": 240362,
-        "total": 825394,
-        "gzip": 169467
+        "js": 595424,
+        "css": 244623,
+        "total": 840047,
+        "gzip": 172412
       }
     },
     {
@@ -12012,6 +11476,7 @@
         "carousel.methods",
         "cascader.clearable",
         "cascader.multiple",
+        "cascader.select-all",
         "cascader.filterable",
         "cascader.popper",
         "cascader.lazy",
@@ -12066,6 +11531,7 @@
         "input.methods",
         "input-number.methods",
         "input-tag.clearable",
+        "input-tag.separator",
         "input-tag.draggable",
         "link.icons",
         "link.appearance",
@@ -12208,6 +11674,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -12310,6 +11777,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -12630,6 +12098,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -12732,6 +12201,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -12916,20 +12386,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 586790,
-          "gzipBytes": 136441
+          "bytes": 597210,
+          "gzipBytes": 139093
         },
         {
           "file": "ui-kit.css",
-          "bytes": 251642,
-          "gzipBytes": 33597
+          "bytes": 256087,
+          "gzipBytes": 34050
         }
       ],
       "sizes": {
-        "js": 586790,
-        "css": 251642,
-        "total": 838432,
-        "gzip": 170223
+        "js": 597210,
+        "css": 256087,
+        "total": 853297,
+        "gzip": 173282
       }
     },
     {
@@ -12961,6 +12431,7 @@
         "carousel.methods",
         "cascader.clearable",
         "cascader.multiple",
+        "cascader.select-all",
         "cascader.filterable",
         "cascader.popper",
         "cascader.lazy",
@@ -13015,6 +12486,7 @@
         "input.methods",
         "input-number.methods",
         "input-tag.clearable",
+        "input-tag.separator",
         "input-tag.draggable",
         "link.icons",
         "link.appearance",
@@ -13157,6 +12629,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -13259,6 +12732,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -13579,6 +13053,7 @@
         "cascader": [
           "cascader.clearable",
           "cascader.multiple",
+          "cascader.select-all",
           "cascader.filterable",
           "cascader.popper",
           "cascader.lazy",
@@ -13681,6 +13156,7 @@
         "input-otp": [],
         "input-tag": [
           "input-tag.clearable",
+          "input-tag.separator",
           "input-tag.draggable"
         ],
         "link": [
@@ -13865,20 +13341,975 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 586790,
-          "gzipBytes": 136445
+          "bytes": 597210,
+          "gzipBytes": 139095
         },
         {
           "file": "ui-kit.css",
-          "bytes": 266975,
-          "gzipBytes": 36534
+          "bytes": 271420,
+          "gzipBytes": 36990
         }
       ],
       "sizes": {
-        "js": 586790,
-        "css": 266975,
-        "total": 853765,
-        "gzip": 173177
+        "js": 597210,
+        "css": 271420,
+        "total": 868630,
+        "gzip": 176236
+      }
+    },
+    {
+      "id": "antd",
+      "label": "Ant Design",
+      "npm": "@demo/ui-kit-antd",
+      "prefix": "antd",
+      "features": [
+        "alert.icons",
+        "alert.closable",
+        "anchor.popper",
+        "autocomplete.clearable",
+        "autocomplete.password",
+        "autocomplete.word-limit",
+        "autocomplete.icons",
+        "autocomplete.filterable",
+        "autocomplete.popper",
+        "avatar.icons",
+        "avatar.avatar-group-popper",
+        "badge.popper",
+        "button.appearance",
+        "button.icon",
+        "button.loading",
+        "button.auto-insert-space",
+        "button.bg-color",
+        "button.gradient",
+        "calendar.range",
+        "card.appearance",
+        "carousel.methods",
+        "cascader.clearable",
+        "cascader.multiple",
+        "cascader.select-all",
+        "cascader.filterable",
+        "cascader.popper",
+        "cascader.lazy",
+        "cascader.virtualized",
+        "cascader.format",
+        "cascader-panel.multiple",
+        "cascader-panel.lazy",
+        "cascader-panel.selection",
+        "cascader-panel.virtualized",
+        "cascader-panel.appearance",
+        "checkbox.appearance",
+        "col.popper",
+        "collapse.collapse-item-icons",
+        "color-picker.clearable",
+        "color-picker.popper",
+        "color-picker.format",
+        "color-picker-panel.appearance",
+        "date-picker.clearable",
+        "date-picker.icons",
+        "date-picker.popper",
+        "date-picker.editable",
+        "date-picker.format",
+        "date-picker.range",
+        "date-picker-panel.clearable",
+        "date-picker-panel.appearance",
+        "date-picker-panel.format",
+        "date-picker-panel.range",
+        "descriptions.appearance",
+        "dialog.closable",
+        "dialog.popper",
+        "dialog.draggable",
+        "dialog.modal",
+        "dialog.fullscreen",
+        "drawer.closable",
+        "drawer.popper",
+        "drawer.draggable",
+        "drawer.modal",
+        "drawer.fullscreen",
+        "dropdown.popper",
+        "dropdown.dropdown-item-icons",
+        "form.validate",
+        "form.form-item-validate",
+        "image.loading",
+        "image.lazy",
+        "image.preview",
+        "image-viewer.popper",
+        "image-viewer.modal",
+        "input.clearable",
+        "input.password",
+        "input.word-limit",
+        "input.icons",
+        "input.methods",
+        "input-number.methods",
+        "input-tag.clearable",
+        "input-tag.separator",
+        "input-tag.draggable",
+        "link.icons",
+        "link.appearance",
+        "mention.clearable",
+        "mention.password",
+        "mention.word-limit",
+        "mention.icons",
+        "mention.loading",
+        "mention.popper",
+        "menu.sub-menu-icons",
+        "message.icons",
+        "message.closable",
+        "message.popper",
+        "message.appearance",
+        "message-box.input",
+        "notification.icons",
+        "notification.closable",
+        "notification.popper",
+        "page-header.icons",
+        "pagination.icons",
+        "popconfirm.icons",
+        "popconfirm.popper",
+        "popover.popper",
+        "radio.appearance",
+        "rate.clearable",
+        "result.icons",
+        "scrollbar.methods",
+        "select.select-clearable",
+        "select.select-icons",
+        "select.select-loading",
+        "select.select-multiple",
+        "select.select-filterable",
+        "select.select-popper",
+        "select.select-format",
+        "select.methods",
+        "select-v2.clearable",
+        "select-v2.multiple",
+        "select-v2.filterable",
+        "select-v2.popper",
+        "skeleton.loading",
+        "slider.popper",
+        "slider.format",
+        "slider.range",
+        "splitter.lazy",
+        "splitter.splitter-panel-draggable",
+        "statistic.format",
+        "steps.icons",
+        "switch.icons",
+        "switch.loading",
+        "table.sort",
+        "table.summary",
+        "table.methods",
+        "table.column-sort",
+        "table.selection",
+        "table-v2.table-v2-sortable",
+        "tabs.closable",
+        "tabs.lazy",
+        "tabs.editable",
+        "tabs.tabs-closable",
+        "tabs.tabs-editable",
+        "tag.closable",
+        "tag.appearance",
+        "time-picker.clearable",
+        "time-picker.icons",
+        "time-picker.popper",
+        "time-picker.editable",
+        "time-picker.format",
+        "time-picker.range",
+        "time-select.clearable",
+        "time-select.icons",
+        "time-select.popper",
+        "time-select.editable",
+        "time-select.format",
+        "tooltip.delay",
+        "tooltip.popper",
+        "tour.closable",
+        "tour.popper",
+        "tour.validate",
+        "tour.modal",
+        "tour.tour-step-closable",
+        "tour.tour-step-popper",
+        "tour.tour-step-validate",
+        "transfer.filterable",
+        "transfer.virtualized",
+        "tree.icons",
+        "tree.draggable",
+        "tree.selection",
+        "tree.methods",
+        "tree-select.multiple",
+        "tree-select.filterable",
+        "tree-select.popper",
+        "tree-v2.check",
+        "upload.multiple",
+        "upload.methods",
+        "watermark.popper"
+      ],
+      "componentFeatures": {
+        "affix": [],
+        "alert": [
+          "alert.icons",
+          "alert.closable"
+        ],
+        "anchor": [
+          "anchor.popper"
+        ],
+        "autocomplete": [
+          "autocomplete.clearable",
+          "autocomplete.password",
+          "autocomplete.word-limit",
+          "autocomplete.icons",
+          "autocomplete.filterable",
+          "autocomplete.popper"
+        ],
+        "avatar": [
+          "avatar.icons",
+          "avatar.avatar-group-popper"
+        ],
+        "backtop": [],
+        "badge": [
+          "badge.popper"
+        ],
+        "breadcrumb": [],
+        "button": [
+          "button.appearance",
+          "button.icon",
+          "button.loading",
+          "button.auto-insert-space",
+          "button.bg-color",
+          "button.gradient"
+        ],
+        "calendar": [
+          "calendar.range"
+        ],
+        "card": [
+          "card.appearance"
+        ],
+        "carousel": [
+          "carousel.methods"
+        ],
+        "cascader": [
+          "cascader.clearable",
+          "cascader.multiple",
+          "cascader.select-all",
+          "cascader.filterable",
+          "cascader.popper",
+          "cascader.lazy",
+          "cascader.virtualized",
+          "cascader.format"
+        ],
+        "cascader-panel": [
+          "cascader-panel.multiple",
+          "cascader-panel.lazy",
+          "cascader-panel.selection",
+          "cascader-panel.virtualized",
+          "cascader-panel.appearance"
+        ],
+        "check-tag": [],
+        "checkbox": [
+          "checkbox.appearance"
+        ],
+        "col": [
+          "col.popper"
+        ],
+        "collapse": [
+          "collapse.collapse-item-icons"
+        ],
+        "collapse-transition": [],
+        "collection": [],
+        "color-picker": [
+          "color-picker.clearable",
+          "color-picker.popper",
+          "color-picker.format"
+        ],
+        "color-picker-panel": [
+          "color-picker-panel.appearance"
+        ],
+        "config-provider": [],
+        "container": [],
+        "countdown": [],
+        "date-picker": [
+          "date-picker.clearable",
+          "date-picker.icons",
+          "date-picker.popper",
+          "date-picker.editable",
+          "date-picker.format",
+          "date-picker.range"
+        ],
+        "date-picker-panel": [
+          "date-picker-panel.clearable",
+          "date-picker-panel.appearance",
+          "date-picker-panel.format",
+          "date-picker-panel.range"
+        ],
+        "descriptions": [
+          "descriptions.appearance"
+        ],
+        "dialog": [
+          "dialog.closable",
+          "dialog.popper",
+          "dialog.draggable",
+          "dialog.modal",
+          "dialog.fullscreen"
+        ],
+        "divider": [],
+        "drawer": [
+          "drawer.closable",
+          "drawer.popper",
+          "drawer.draggable",
+          "drawer.modal",
+          "drawer.fullscreen"
+        ],
+        "dropdown": [
+          "dropdown.popper",
+          "dropdown.dropdown-item-icons"
+        ],
+        "empty": [],
+        "focus-trap": [],
+        "form": [
+          "form.validate",
+          "form.form-item-validate"
+        ],
+        "icon": [],
+        "image": [
+          "image.loading",
+          "image.lazy",
+          "image.preview"
+        ],
+        "image-viewer": [
+          "image-viewer.popper",
+          "image-viewer.modal"
+        ],
+        "infinite-scroll": [],
+        "input": [
+          "input.clearable",
+          "input.password",
+          "input.word-limit",
+          "input.icons",
+          "input.methods"
+        ],
+        "input-number": [
+          "input-number.methods"
+        ],
+        "input-otp": [],
+        "input-tag": [
+          "input-tag.clearable",
+          "input-tag.separator",
+          "input-tag.draggable"
+        ],
+        "link": [
+          "link.icons",
+          "link.appearance"
+        ],
+        "loading": [],
+        "mention": [
+          "mention.clearable",
+          "mention.password",
+          "mention.word-limit",
+          "mention.icons",
+          "mention.loading",
+          "mention.popper"
+        ],
+        "menu": [
+          "menu.sub-menu-icons"
+        ],
+        "message": [
+          "message.icons",
+          "message.closable",
+          "message.popper",
+          "message.appearance"
+        ],
+        "message-box": [
+          "message-box.input"
+        ],
+        "notification": [
+          "notification.icons",
+          "notification.closable",
+          "notification.popper"
+        ],
+        "overlay": [],
+        "page-header": [
+          "page-header.icons"
+        ],
+        "pagination": [
+          "pagination.icons"
+        ],
+        "popconfirm": [
+          "popconfirm.icons",
+          "popconfirm.popper"
+        ],
+        "popover": [
+          "popover.popper"
+        ],
+        "popper": [],
+        "progress": [],
+        "radio": [
+          "radio.appearance"
+        ],
+        "rate": [
+          "rate.clearable"
+        ],
+        "result": [
+          "result.icons"
+        ],
+        "roving-focus-group": [],
+        "row": [],
+        "scrollbar": [
+          "scrollbar.methods"
+        ],
+        "segmented": [],
+        "select": [
+          "select.select-clearable",
+          "select.select-icons",
+          "select.select-loading",
+          "select.select-multiple",
+          "select.select-filterable",
+          "select.select-popper",
+          "select.select-format",
+          "select.methods"
+        ],
+        "select-v2": [
+          "select-v2.clearable",
+          "select-v2.multiple",
+          "select-v2.filterable",
+          "select-v2.popper"
+        ],
+        "skeleton": [
+          "skeleton.loading"
+        ],
+        "slider": [
+          "slider.popper",
+          "slider.format",
+          "slider.range"
+        ],
+        "slot": [],
+        "space": [],
+        "splitter": [
+          "splitter.lazy",
+          "splitter.splitter-panel-draggable"
+        ],
+        "statistic": [
+          "statistic.format"
+        ],
+        "steps": [
+          "steps.icons"
+        ],
+        "switch": [
+          "switch.icons",
+          "switch.loading"
+        ],
+        "table": [
+          "table.sort",
+          "table.summary",
+          "table.methods",
+          "table.column-sort",
+          "table.selection"
+        ],
+        "table-v2": [
+          "table-v2.table-v2-sortable"
+        ],
+        "tabs": [
+          "tabs.closable",
+          "tabs.lazy",
+          "tabs.editable",
+          "tabs.tabs-closable",
+          "tabs.tabs-editable"
+        ],
+        "tag": [
+          "tag.closable",
+          "tag.appearance"
+        ],
+        "text": [],
+        "time-picker": [
+          "time-picker.clearable",
+          "time-picker.icons",
+          "time-picker.popper",
+          "time-picker.editable",
+          "time-picker.format",
+          "time-picker.range"
+        ],
+        "time-select": [
+          "time-select.clearable",
+          "time-select.icons",
+          "time-select.popper",
+          "time-select.editable",
+          "time-select.format"
+        ],
+        "timeline": [],
+        "tooltip": [
+          "tooltip.delay",
+          "tooltip.popper"
+        ],
+        "tour": [
+          "tour.closable",
+          "tour.popper",
+          "tour.validate",
+          "tour.modal",
+          "tour.tour-step-closable",
+          "tour.tour-step-popper",
+          "tour.tour-step-validate"
+        ],
+        "transfer": [
+          "transfer.filterable",
+          "transfer.virtualized"
+        ],
+        "tree": [
+          "tree.icons",
+          "tree.draggable",
+          "tree.selection",
+          "tree.methods"
+        ],
+        "tree-select": [
+          "tree-select.multiple",
+          "tree-select.filterable",
+          "tree-select.popper"
+        ],
+        "tree-v2": [
+          "tree-v2.check"
+        ],
+        "upload": [
+          "upload.multiple",
+          "upload.methods"
+        ],
+        "virtual-list": [],
+        "watermark": [
+          "watermark.popper"
+        ]
+      },
+      "components": [
+        "affix",
+        "alert",
+        "anchor",
+        "autocomplete",
+        "avatar",
+        "backtop",
+        "badge",
+        "breadcrumb",
+        "button",
+        "calendar",
+        "card",
+        "carousel",
+        "cascader",
+        "cascader-panel",
+        "check-tag",
+        "checkbox",
+        "col",
+        "collapse",
+        "collapse-transition",
+        "collection",
+        "color-picker",
+        "color-picker-panel",
+        "config-provider",
+        "container",
+        "countdown",
+        "date-picker",
+        "date-picker-panel",
+        "descriptions",
+        "dialog",
+        "divider",
+        "drawer",
+        "dropdown",
+        "empty",
+        "focus-trap",
+        "form",
+        "icon",
+        "image",
+        "image-viewer",
+        "infinite-scroll",
+        "input",
+        "input-number",
+        "input-otp",
+        "input-tag",
+        "link",
+        "loading",
+        "mention",
+        "menu",
+        "message",
+        "message-box",
+        "notification",
+        "overlay",
+        "page-header",
+        "pagination",
+        "popconfirm",
+        "popover",
+        "popper",
+        "progress",
+        "radio",
+        "rate",
+        "result",
+        "roving-focus-group",
+        "row",
+        "scrollbar",
+        "segmented",
+        "select",
+        "select-v2",
+        "skeleton",
+        "slider",
+        "slot",
+        "space",
+        "splitter",
+        "statistic",
+        "steps",
+        "switch",
+        "table",
+        "table-v2",
+        "tabs",
+        "tag",
+        "text",
+        "time-picker",
+        "time-select",
+        "timeline",
+        "tooltip",
+        "tour",
+        "transfer",
+        "tree",
+        "tree-select",
+        "tree-v2",
+        "upload",
+        "virtual-list",
+        "watermark"
+      ],
+      "selection": {
+        "affix": [],
+        "alert": [
+          "alert.icons",
+          "alert.closable"
+        ],
+        "anchor": [
+          "anchor.popper"
+        ],
+        "autocomplete": [
+          "autocomplete.clearable",
+          "autocomplete.password",
+          "autocomplete.word-limit",
+          "autocomplete.icons",
+          "autocomplete.filterable",
+          "autocomplete.popper"
+        ],
+        "avatar": [
+          "avatar.icons",
+          "avatar.avatar-group-popper"
+        ],
+        "backtop": [],
+        "badge": [
+          "badge.popper"
+        ],
+        "breadcrumb": [],
+        "button": [
+          "button.appearance",
+          "button.icon",
+          "button.loading",
+          "button.auto-insert-space",
+          "button.bg-color",
+          "button.gradient"
+        ],
+        "calendar": [
+          "calendar.range"
+        ],
+        "card": [
+          "card.appearance"
+        ],
+        "carousel": [
+          "carousel.methods"
+        ],
+        "cascader": [
+          "cascader.clearable",
+          "cascader.multiple",
+          "cascader.select-all",
+          "cascader.filterable",
+          "cascader.popper",
+          "cascader.lazy",
+          "cascader.virtualized",
+          "cascader.format"
+        ],
+        "cascader-panel": [
+          "cascader-panel.multiple",
+          "cascader-panel.lazy",
+          "cascader-panel.selection",
+          "cascader-panel.virtualized",
+          "cascader-panel.appearance"
+        ],
+        "check-tag": [],
+        "checkbox": [
+          "checkbox.appearance"
+        ],
+        "col": [
+          "col.popper"
+        ],
+        "collapse": [
+          "collapse.collapse-item-icons"
+        ],
+        "collapse-transition": [],
+        "collection": [],
+        "color-picker": [
+          "color-picker.clearable",
+          "color-picker.popper",
+          "color-picker.format"
+        ],
+        "color-picker-panel": [
+          "color-picker-panel.appearance"
+        ],
+        "config-provider": [],
+        "container": [],
+        "countdown": [],
+        "date-picker": [
+          "date-picker.clearable",
+          "date-picker.icons",
+          "date-picker.popper",
+          "date-picker.editable",
+          "date-picker.format",
+          "date-picker.range"
+        ],
+        "date-picker-panel": [
+          "date-picker-panel.clearable",
+          "date-picker-panel.appearance",
+          "date-picker-panel.format",
+          "date-picker-panel.range"
+        ],
+        "descriptions": [
+          "descriptions.appearance"
+        ],
+        "dialog": [
+          "dialog.closable",
+          "dialog.popper",
+          "dialog.draggable",
+          "dialog.modal",
+          "dialog.fullscreen"
+        ],
+        "divider": [],
+        "drawer": [
+          "drawer.closable",
+          "drawer.popper",
+          "drawer.draggable",
+          "drawer.modal",
+          "drawer.fullscreen"
+        ],
+        "dropdown": [
+          "dropdown.popper",
+          "dropdown.dropdown-item-icons"
+        ],
+        "empty": [],
+        "focus-trap": [],
+        "form": [
+          "form.validate",
+          "form.form-item-validate"
+        ],
+        "icon": [],
+        "image": [
+          "image.loading",
+          "image.lazy",
+          "image.preview"
+        ],
+        "image-viewer": [
+          "image-viewer.popper",
+          "image-viewer.modal"
+        ],
+        "infinite-scroll": [],
+        "input": [
+          "input.clearable",
+          "input.password",
+          "input.word-limit",
+          "input.icons",
+          "input.methods"
+        ],
+        "input-number": [
+          "input-number.methods"
+        ],
+        "input-otp": [],
+        "input-tag": [
+          "input-tag.clearable",
+          "input-tag.separator",
+          "input-tag.draggable"
+        ],
+        "link": [
+          "link.icons",
+          "link.appearance"
+        ],
+        "loading": [],
+        "mention": [
+          "mention.clearable",
+          "mention.password",
+          "mention.word-limit",
+          "mention.icons",
+          "mention.loading",
+          "mention.popper"
+        ],
+        "menu": [
+          "menu.sub-menu-icons"
+        ],
+        "message": [
+          "message.icons",
+          "message.closable",
+          "message.popper",
+          "message.appearance"
+        ],
+        "message-box": [
+          "message-box.input"
+        ],
+        "notification": [
+          "notification.icons",
+          "notification.closable",
+          "notification.popper"
+        ],
+        "overlay": [],
+        "page-header": [
+          "page-header.icons"
+        ],
+        "pagination": [
+          "pagination.icons"
+        ],
+        "popconfirm": [
+          "popconfirm.icons",
+          "popconfirm.popper"
+        ],
+        "popover": [
+          "popover.popper"
+        ],
+        "popper": [],
+        "progress": [],
+        "radio": [
+          "radio.appearance"
+        ],
+        "rate": [
+          "rate.clearable"
+        ],
+        "result": [
+          "result.icons"
+        ],
+        "roving-focus-group": [],
+        "row": [],
+        "scrollbar": [
+          "scrollbar.methods"
+        ],
+        "segmented": [],
+        "select": [
+          "select.select-clearable",
+          "select.select-icons",
+          "select.select-loading",
+          "select.select-multiple",
+          "select.select-filterable",
+          "select.select-popper",
+          "select.select-format",
+          "select.methods"
+        ],
+        "select-v2": [
+          "select-v2.clearable",
+          "select-v2.multiple",
+          "select-v2.filterable",
+          "select-v2.popper"
+        ],
+        "skeleton": [
+          "skeleton.loading"
+        ],
+        "slider": [
+          "slider.popper",
+          "slider.format",
+          "slider.range"
+        ],
+        "slot": [],
+        "space": [],
+        "splitter": [
+          "splitter.lazy",
+          "splitter.splitter-panel-draggable"
+        ],
+        "statistic": [
+          "statistic.format"
+        ],
+        "steps": [
+          "steps.icons"
+        ],
+        "switch": [
+          "switch.icons",
+          "switch.loading"
+        ],
+        "table": [
+          "table.sort",
+          "table.summary",
+          "table.methods",
+          "table.column-sort",
+          "table.selection"
+        ],
+        "table-v2": [
+          "table-v2.table-v2-sortable"
+        ],
+        "tabs": [
+          "tabs.closable",
+          "tabs.lazy",
+          "tabs.editable",
+          "tabs.tabs-closable",
+          "tabs.tabs-editable"
+        ],
+        "tag": [
+          "tag.closable",
+          "tag.appearance"
+        ],
+        "text": [],
+        "time-picker": [
+          "time-picker.clearable",
+          "time-picker.icons",
+          "time-picker.popper",
+          "time-picker.editable",
+          "time-picker.format",
+          "time-picker.range"
+        ],
+        "time-select": [
+          "time-select.clearable",
+          "time-select.icons",
+          "time-select.popper",
+          "time-select.editable",
+          "time-select.format"
+        ],
+        "timeline": [],
+        "tooltip": [
+          "tooltip.delay",
+          "tooltip.popper"
+        ],
+        "tour": [
+          "tour.closable",
+          "tour.popper",
+          "tour.validate",
+          "tour.modal",
+          "tour.tour-step-closable",
+          "tour.tour-step-popper",
+          "tour.tour-step-validate"
+        ],
+        "transfer": [
+          "transfer.filterable",
+          "transfer.virtualized"
+        ],
+        "tree": [
+          "tree.icons",
+          "tree.draggable",
+          "tree.selection",
+          "tree.methods"
+        ],
+        "tree-select": [
+          "tree-select.multiple",
+          "tree-select.filterable",
+          "tree-select.popper"
+        ],
+        "tree-v2": [
+          "tree-v2.check"
+        ],
+        "upload": [
+          "upload.multiple",
+          "upload.methods"
+        ],
+        "virtual-list": [],
+        "watermark": [
+          "watermark.popper"
+        ]
+      },
+      "files": [
+        {
+          "file": "ui-kit.js",
+          "bytes": 597210,
+          "gzipBytes": 139093
+        },
+        {
+          "file": "ui-kit.css",
+          "bytes": 276209,
+          "gzipBytes": 37146
+        }
+      ],
+      "sizes": {
+        "js": 597210,
+        "css": 276209,
+        "total": 873419,
+        "gzip": 176385
       }
     }
   ]

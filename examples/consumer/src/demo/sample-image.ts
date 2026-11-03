@@ -27,9 +27,7 @@ export const SAMPLE_PHOTOS: SamplePhoto[] = [
   }
 ]
 
-export const SAMPLE_IMAGE_SRC = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset="1" stop-color="#a855f7"/></linearGradient></defs><rect width="240" height="160" fill="url(#g)"/><text x="120" y="88" font-family="sans-serif" font-size="16" fill="white" text-anchor="middle">preview</text></svg>'
-)}`
+export const SAMPLE_IMAGE_SRC = 'https://picsum.photos/id/1069/480/320'
 
 // 头像示例用真人照片，图片放在 examples/consumer/public/avatars 下，断网也能加载
 export const SAMPLE_AVATAR_A = '/avatars/avatar-1.png'

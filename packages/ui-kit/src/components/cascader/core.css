@@ -253,9 +253,10 @@
   white-space: normal;
 }
 
-.ui-cascader__tag--more:hover .ui-cascader__tag-popover,
+/* 显隐由 core.ts 的 is-open 类控制（带 150ms 关闭延迟，容指针穿越空隙），
+   :focus-within 保留给键盘聚焦；不能用 :hover，否则空隙处立即隐藏，延迟失效 */
 .ui-cascader__tag--more:focus-within .ui-cascader__tag-popover,
-.ui-cascader__tag--more:focus .ui-cascader__tag-popover {
+.ui-cascader__tag-popover.is-open {
   display: flex;
 }
 
@@ -439,4 +440,41 @@
 
 .ui-cascader__dropdown.is-dark .ui-cascader__node-loading {
   color: color-mix(in srgb, var(--ui-text-color-inverse) 45%, transparent);
+}
+
+/* 复选框：checkStrictly 与 checkbox 多选模式共用，属基础渲染因此放在 core */
+.ui-cascader__checkbox {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-radius-small);
+  background: var(--ui-bg-color);
+  color: var(--ui-color-white, #fff);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.ui-cascader__checkbox.is-checked,
+.ui-cascader__checkbox.is-indeterminate {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-color-primary);
+}
+
+.ui-cascader__checkbox.is-disabled {
+  border-color: var(--ui-border-color);
+  background: var(--ui-fill-color);
+  cursor: not-allowed;
+}
+
+.ui-cascader__checkbox-icon {
+  width: 10px;
+  height: 10px;
 }

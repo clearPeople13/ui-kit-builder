@@ -5,7 +5,14 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { inputTagClearableFeature } from './features/clearable/index'
 import { inputTagDraggableFeature } from './features/draggable/index'
+import { inputTagSeparatorFeature } from './features/separator/index'
 import './core.css'
+
+const TRIGGER_KEY_MAP: Record<string, string | null> = {
+  Enter: 'Enter',
+  Space: ' ',
+  Both: null
+}
 
 const inputTagBaseProps = {
   modelValue: { type: Array, default: () => [] },
@@ -13,6 +20,7 @@ const inputTagBaseProps = {
   disabled: { type: Boolean },
   max: { type: Number },
   effect: { type: String, default: 'light' },
+  tagType: { type: String, default: 'primary' },
   trigger: { type: String, default: 'Enter' },
   readonly: { type: Boolean },
   id: { type: String },
@@ -43,14 +51,30 @@ export function createInputTag(features: UiFeature[] = []) {
       },
       setup(props, { emit }) {
         const draft = ref('')
+        const inputRef = ref<HTMLInputElement | null>(null)
         const tags = () => (Array.isArray(props.modelValue) ? props.modelValue : [])
+
+        function isTriggerKey(key: string): boolean {
+          const expected = TRIGGER_KEY_MAP[props.trigger || 'Enter'] ?? 'Enter'
+          if (expected === null) {
+            return key === 'Enter' || key === ' '
+          }
+          return key === expected
+        }
+
+        function canAccept(count = 1): boolean {
+          if (props.max === undefined) {
+            return true
+          }
+          return tags().length + count <= Number(props.max)
+        }
 
         function commit() {
           const value = draft.value.trim()
           if (!value) {
             return
           }
-          if (props.max !== undefined && tags().length >= Number(props.max)) {
+          if (!canAccept()) {
             return
           }
           if (tags().includes(value)) {
@@ -61,20 +85,22 @@ export function createInputTag(features: UiFeature[] = []) {
           draft.value = ''
           emit('update:modelValue', next)
           emit('change', next)
+          emit('add-tag', value)
         }
 
         function remove(index: number) {
           if (props.disabled) {
             return
           }
+          const removed = tags()[index]
           const next = tags().filter((_, itemIndex) => itemIndex !== index)
+          emit('remove-tag', removed)
           emit('update:modelValue', next)
           emit('change', next)
-          emit('remove-tag', tags()[index])
         }
 
         function handleKeydown(event: KeyboardEvent) {
-          if (event.key === (props.trigger || 'Enter')) {
+          if (isTriggerKey(event.key)) {
             event.preventDefault()
             commit()
           } else if (event.key === 'Backspace' && !draft.value && tags().length) {
@@ -82,14 +108,31 @@ export function createInputTag(features: UiFeature[] = []) {
           }
         }
 
-        return { draft, tags, commit, remove, handleKeydown }
+        function focusInput() {
+          inputRef.value?.focus()
+        }
+
+        return { draft, inputRef, tags, commit, remove, handleKeydown, focusInput, canAccept }
       },
-      content: ({ props, state }) => [
+      attrs: (_props, state) => ({
+        onClick: (event: MouseEvent) => {
+          const target = event.target as HTMLElement | null
+          if (target?.closest('.ui-input-tag__tag, .ui-input-tag__clear')) {
+            return
+          }
+          state.focusInput()
+        }
+      }),
+      content: ({ props, state, emit }) => [
         ...state.tags().map((tag: string, index: number) =>
           h(
             'span',
             {
-              class: ['ui-input-tag__tag', props.effect ? `is-${props.effect}` : ''],
+              class: [
+                'ui-input-tag__tag',
+                props.effect ? `is-${props.effect}` : '',
+                props.tagType ? `is-${props.tagType}` : ''
+              ],
               key: `${tag}-${index}`
             },
             [
@@ -101,6 +144,7 @@ export function createInputTag(features: UiFeature[] = []) {
                     {
                       class: 'ui-input-tag__close',
                       type: 'button',
+                      'aria-label': `移除 ${String(tag)}`,
                       onClick: () => state.remove(index)
                     },
                     [renderIcon(X)]
@@ -110,6 +154,7 @@ export function createInputTag(features: UiFeature[] = []) {
         ),
         h('input', {
           class: 'ui-input-tag__input',
+          ref: state.inputRef,
           value: state.draft.value,
           type: 'text',
           id: props.id,
@@ -123,9 +168,12 @@ export function createInputTag(features: UiFeature[] = []) {
           minlength: props.minlength,
           onInput: (event: Event) => {
             state.draft.value = (event.target as HTMLInputElement).value
+            emit('input', state.draft.value)
           },
           onKeydown: (event: KeyboardEvent) => state.handleKeydown(event),
+          onFocus: () => emit('focus'),
           onBlur: () => {
+            emit('blur')
             if (props.saveOnBlur) {
               state.commit()
             }

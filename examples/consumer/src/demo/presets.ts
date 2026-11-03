@@ -3,6 +3,7 @@ import {
   CASCADER_DEFAULT_CLEAR_PATH,
   CASCADER_MULTIPLE_VALUE,
   CASCADER_OPTIONS,
+  CASCADER_OPTIONS_WITH_DISABLED,
   cascaderValueOnClear
 } from './cascader-data'
 import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './form-data'
@@ -56,6 +57,24 @@ const RADIO_PLAN_OPTIONS = [
   { label: '标准版', value: 'standard' },
   { label: '专业版', value: 'pro' },
   { label: '旗舰版', value: 'ultimate', disabled: true }
+]
+
+// 自适应宽度演示：短/中/长三档标签，切换选中项观察宽度变化
+const FIT_WIDTH_OPTIONS = [
+  { label: '短', value: 'short' },
+  { label: '中等长度', value: 'mid' },
+  { label: '这是一个相当长的大幅度超出常规长度的选项文本', value: 'long' }
+]
+
+const TREE_FIT_DATA = [
+  {
+    id: 'group',
+    label: '分组一',
+    children: [
+      { id: 'short', label: '短节点' },
+      { id: 'long', label: '这是一个非常长的树节点名称用于演示文本省略效果' }
+    ]
+  }
 ]
 
 const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
@@ -242,8 +261,42 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'disabled', label: '禁用', values: { modelValue: 5, disabled: true } }
   ],
   InputTag: [
-    { id: 'base', label: '基础', values: {} },
-
+    {
+      id: 'base',
+      label: '基础',
+      hint: '输入回车添加，退格删除末尾标签',
+      values: { modelValue: ['Vue', 'React'] }
+    },
+    {
+      id: 'tag-type',
+      label: '标签类型',
+      hint: 'tagType=success，可选 success / warning / danger / info',
+      values: { modelValue: ['Vue', 'Vite'], tagType: 'success' }
+    },
+    {
+      id: 'effect-dark',
+      label: '深色标签',
+      hint: 'effect=dark，可再搭配 tagType 换色板',
+      values: { modelValue: ['Vue', 'Vite'], effect: 'dark' }
+    },
+    {
+      id: 'trigger-space',
+      label: '空格生成标签',
+      hint: 'trigger=Space，按空格立即生成（默认 Enter）',
+      values: { modelValue: [], trigger: 'Space' }
+    },
+    {
+      id: 'separator',
+      label: '分隔符批量添加',
+      requires: 'input-tag.separator',
+      hint: 'separator=，输入或粘贴 a,b,c 一次生成多个标签',
+      values: { modelValue: [], separator: ',' }
+    },
+    {
+      id: 'disabled',
+      label: '禁用',
+      values: { modelValue: ['Vue', 'React'], disabled: true }
+    },
     {
       id: 'draggable',
       label: '可拖拽',
@@ -255,11 +308,20 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       id: 'clearable',
       label: '可清除',
       requires: 'input-tag.clearable',
+      hint: '点击右侧清空按钮移除全部标签',
       values: { clearable: true, modelValue: ['Vue', 'Vite'] }
     }
   ],
   Autocomplete: [
-    { id: 'base', label: '聚焦即补全', values: { modelValue: 'Vu', autofocus: true } },
+    {
+      id: 'base',
+      label: '聚焦即补全',
+      values: {
+        modelValue: 'Vu',
+        autofocus: true,
+        fetchSuggestions: ['Vue', 'React', 'Angular', 'Svelte', 'Solid', 'Vite', 'TypeScript', 'JavaScript']
+      }
+    },
     {
       id: 'remote',
       label: '远程搜索 + 加载',
@@ -383,6 +445,18 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
   Select: [
     { id: 'base', label: '基础', values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai' } },
     {
+      id: 'fit-width',
+      label: '自适应宽度',
+      hint: 'fitWidth=true，宽度跟随选中项；打开面板切换长选项观察变宽',
+      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'short', fitWidth: true }
+    },
+    {
+      id: 'max-width',
+      label: '最大宽度',
+      hint: 'fitWidth + maxWidth=180：长文本最多 180px，超出省略',
+      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'long', fitWidth: true, maxWidth: 180 }
+    },
+    {
       id: 'clearable',
       label: '可清除 + 自定义图标',
       hint: '悬浮或聚焦时后缀箭头原位替换为清除按钮，两者同位置只显示一个；点击清空',
@@ -439,6 +513,18 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
   SelectV2: [
     { id: 'base', label: '基础', values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai' } },
     {
+      id: 'fit-width',
+      label: '自适应宽度',
+      hint: 'fitWidth=true，宽度跟随选中项；打开面板切换长选项观察变宽',
+      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'short', fitWidth: true }
+    },
+    {
+      id: 'max-width',
+      label: '最大宽度',
+      hint: 'fitWidth + maxWidth=180：长文本最多 180px，超出省略',
+      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'long', fitWidth: true, maxWidth: 180 }
+    },
+    {
       id: 'multiple',
       label: '多选',
       requires: 'select-v2.multiple',
@@ -470,6 +556,18 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       values: { options: CASCADER_OPTIONS, modelValue: CASCADER_DEFAULT_CLEAR_PATH }
     },
     {
+      id: 'fit-width',
+      label: '自适应宽度',
+      hint: 'fitWidth=true，宽度跟随选中路径文本',
+      values: { options: CASCADER_OPTIONS, modelValue: CASCADER_DEFAULT_CLEAR_PATH, fitWidth: true }
+    },
+    {
+      id: 'max-width',
+      label: '最大宽度',
+      hint: 'fitWidth + maxWidth=160：路径文本超出后省略',
+      values: { options: CASCADER_OPTIONS, modelValue: CASCADER_DEFAULT_CLEAR_PATH, fitWidth: true, maxWidth: 160 }
+    },
+    {
       id: 'multiple',
       label: '多选 + 折叠标签',
       hint: '首列展示 1 个深色标签，其余收进 +N，悬浮 +N 查看完整路径',
@@ -483,6 +581,133 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
         maxCollapseTags: 1,
         tagType: 'primary',
         tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'collapse-two',
+      label: '折叠标签 + 展开两条',
+      hint: 'maxCollapseTags=2：前 2 个标签平铺，其余收进 +N，悬浮 +N 查看完整路径',
+      requires: 'cascader.multiple',
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        modelValue: CASCADER_MULTIPLE_VALUE,
+        collapseTags: true,
+        collapseTagsTooltip: true,
+        maxCollapseTags: 2,
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'checkbox',
+      requires: 'cascader.multiple',
+      label: '多选 + 复选框',
+      hint: 'checkbox：每级节点都有复选框，点击复选框级联选中全部叶子，部分选中显示半选；点击行仅展开下钻；配合 checkStrictly 可逐级独立勾选',
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        checkbox: true,
+        modelValue: CASCADER_MULTIPLE_VALUE.slice(0, 2),
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'checkbox-disabled',
+      requires: 'cascader.multiple',
+      label: '复选框 + 禁用项',
+      hint: '余杭区/罗湖区已禁用：禁用叶子不可勾选，也不计入级联统计；勾选浙江省仍会把 8 个可用区全选并让省呈全选态',
+      values: {
+        options: CASCADER_OPTIONS_WITH_DISABLED,
+        multiple: true,
+        checkbox: true,
+        modelValue: CASCADER_MULTIPLE_VALUE.slice(0, 2),
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'fit-width-tags',
+      requires: 'cascader.multiple',
+      label: '标签 + 自适应宽度',
+      hint: '多选标签模式下 fitWidth=true：宽度跟随已选标签，未选时保持占位宽度，选满后自动撑开',
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        fitWidth: true,
+        modelValue: CASCADER_MULTIPLE_VALUE.slice(0, 1),
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'tag-all-levels',
+      requires: 'cascader.multiple',
+      label: '标签显示全路径',
+      hint: 'showAllLevels=true（默认）：tag 展示 省 / 市 / 区 完整层级',
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        showAllLevels: true,
+        modelValue: CASCADER_MULTIPLE_VALUE.slice(0, 2),
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'tag-last-level',
+      requires: 'cascader.multiple',
+      label: '标签只显示末级',
+      hint: 'showAllLevels=false：tag 只展示最后一级，单选回显同理',
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        showAllLevels: false,
+        modelValue: CASCADER_MULTIPLE_VALUE.slice(0, 3),
+        tagType: 'primary',
+        tagEffect: 'dark'
+      }
+    },
+    {
+      id: 'select-all',
+      label: '大数据全选',
+      hint: '2400 个叶子节点虚拟滚动，顶部全选栏一次写入/清空全部叶子路径',
+      requires: ['cascader.multiple', 'cascader.select-all'],
+      values: {
+        options: CASCADER_BIG_OPTIONS,
+        multiple: true,
+        selectAll: true,
+        collapseTags: true,
+        maxCollapseTags: 1,
+        virtualScroll: true,
+        modelValue: []
+      }
+    },
+    {
+      id: 'select-all-value',
+      label: '全选存末级值',
+      hint: 'emitPath=false：v-model 只存末级值数组，不做全路径拼接',
+      requires: ['cascader.multiple', 'cascader.select-all'],
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        selectAll: true,
+        emitPath: false,
+        modelValue: []
+      }
+    },
+    {
+      id: 'select-all-strict',
+      label: '父子不关联全选',
+      hint: 'checkStrictly：父级可单独勾选，全选=全部已加载节点（含中间节点）',
+      requires: ['cascader.multiple', 'cascader.select-all'],
+      values: {
+        options: CASCADER_OPTIONS,
+        multiple: true,
+        selectAll: true,
+        checkStrictly: true,
+        modelValue: []
       }
     },
     {
@@ -1119,6 +1344,29 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       values: {
         data: TREE_DATA,
         modelValue: 'button'
+      }
+    },
+    {
+      id: 'fit-width',
+      label: '自适应宽度',
+      hint: 'fitWidth=true，宽度跟随选中节点；展开树切换长短节点观察变宽',
+      values: {
+        data: TREE_FIT_DATA,
+        modelValue: 'short',
+        fitWidth: true,
+        defaultExpandAll: true
+      }
+    },
+    {
+      id: 'max-width',
+      label: '最大宽度',
+      hint: 'fitWidth + maxWidth=180：长节点名最多 180px，超出省略',
+      values: {
+        data: TREE_FIT_DATA,
+        modelValue: 'long',
+        fitWidth: true,
+        maxWidth: 180,
+        defaultExpandAll: true
       }
     },
     {

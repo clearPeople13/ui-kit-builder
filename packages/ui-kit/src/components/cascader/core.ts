@@ -1,11 +1,12 @@
 import type { VNodeChild } from 'vue'
 import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { Check, ChevronDown, ChevronRight, X } from '../../shared/icons'
-import type { UiFeature } from '../../shared/feature'
+import { Check, ChevronDown, ChevronRight, Minus, X } from '../../shared/icons'
+import { collectFeatureHooks, type UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
+import { sizeValue } from '../../shared/behavior'
 import { cascaderClearableFeature } from './features/clearable/index'
 import { cascaderMultipleFeature } from './features/multiple/index'
 import { cascaderFilterableFeature } from './features/filterable/index'
@@ -21,6 +22,9 @@ const cascaderBaseProps = {
   size: { type: String },
   disabled: { type: Boolean },
   multiple: { type: Boolean },
+  checkbox: { type: Boolean },
+  checkStrictly: { type: Boolean },
+  emitPath: { type: Boolean, default: true },
   props: { type: Object, default: () => ({}) },
   virtualScroll: { type: Boolean },
   height: { type: Number, default: 204 },
@@ -29,6 +33,8 @@ const cascaderBaseProps = {
   showAllLevels: { type: Boolean, default: true },
   beforeFilter: { type: Function },
   effect: { type: String, default: 'light' },
+  fitWidth: { type: Boolean },
+  maxWidth: { type: [String, Number] }
 }
 
 interface CascaderNode {
@@ -114,6 +120,8 @@ export function createCascader(features: UiFeature[] = []) {
         const rootLoaded = ref(false)
         const scrollTops = ref<Record<number, number>>({})
         let filterTimer: ReturnType<typeof setTimeout> | null = null
+        let tagPopTimer: ReturnType<typeof setTimeout> | null = null
+        const tagPopOpen = ref(false)
 
         const nodes = computed(() => normalizeTree(props.options, props.props ?? {}))
         const leafPaths = computed(() => {
@@ -147,6 +155,28 @@ export function createCascader(features: UiFeature[] = []) {
           }
           return lazyChildren.value[pathKey(path)] ?? node.children
         }
+
+        function collectNodePaths(
+          list: CascaderNode[],
+          values: any[],
+          labels: string[],
+          result: LeafPath[]
+        ): void {
+          for (const node of list) {
+            const nextValues = [...values, node.value]
+            const nextLabels = [...labels, node.label]
+            result.push({ values: nextValues, labels: nextLabels, disabled: node.disabled })
+            collectNodePaths(childrenOf(node, nextValues), nextValues, nextLabels, result)
+          }
+        }
+
+        // 已加载节点的全路径（含中间节点）：checkStrictly 与全选的可选集。
+        // lazy 未加载子树不展开——只覆盖已知节点，全选不触发 lazy 加载
+        const nodePaths = computed<LeafPath[]>(() => {
+          const result: LeafPath[] = []
+          collectNodePaths(rootNodes.value, [], [], result)
+          return result
+        })
 
         function isExpandable(node: CascaderNode, path: any[]): boolean {
           if (!lazyEnabled.value) {
@@ -185,13 +215,16 @@ export function createCascader(features: UiFeature[] = []) {
 
         const modelPaths = computed<any[][]>(() => {
           const value = props.modelValue
+          if (!props.multiple) {
+            if (value === undefined || value === null || value === '') {
+              return []
+            }
+            return [resolveIncomingPath(value)]
+          }
           if (!Array.isArray(value)) {
             return []
           }
-          if (!props.multiple) {
-            return value.length ? [value] : []
-          }
-          return value.filter((item) => Array.isArray(item))
+          return value.map(resolveIncomingPath).filter((path) => path.length > 0)
         })
 
         const isMultiple = computed(() => Boolean(props.multiple))
@@ -255,6 +288,27 @@ export function createCascader(features: UiFeature[] = []) {
         function emitValue(value: any) {
           emit('update:modelValue', value)
           emit('change', value)
+        }
+
+        // emitPath=false 时 v-model 只存末级值，回显前反查完整路径；
+        // 同值多分支时取第一个匹配，值为未知时退化为单元素路径兜底显示
+        function resolveIncomingPath(item: unknown): any[] {
+          if (Array.isArray(item)) {
+            return item
+          }
+          const hit = nodePaths.value.find((path) => sameValue(path.values[path.values.length - 1], item))
+          return hit ? [...hit.values] : [item]
+        }
+
+        function toEmit(paths: any[][]): any {
+          if (!props.multiple) {
+            const path = paths[0]
+            if (!path) {
+              return undefined
+            }
+            return props.emitPath === false ? path[path.length - 1] : path
+          }
+          return paths.map((path) => (props.emitPath === false ? path[path.length - 1] : path))
         }
 
         function applyLazyChildren(path: any[], children: any[]): void {
@@ -354,13 +408,75 @@ export function createCascader(features: UiFeature[] = []) {
 
         function toggleLeaf(path: any[]) {
           if (!props.multiple) {
-            emitValue(path)
+            emitValue(toEmit([path]))
             closePanel()
             return
           }
           const exists = isPathSelected(path)
           const next = exists ? modelPaths.value.filter((item) => !pathEquals(item, path)) : [...modelPaths.value, path]
-          emitValue(next)
+          emitValue(toEmit(next))
+          nextTick(refresh)
+        }
+
+        // 已加载子树的全部叶子路径（checkbox 级联勾选的可选集）
+        function leavesUnder(path: any[]): LeafPath[] {
+          const result: LeafPath[] = []
+          const walk = (node: CascaderNode, values: any[], labels: string[]) => {
+            const children = childrenOf(node, values)
+            if (children.length === 0) {
+              result.push({ values, labels, disabled: node.disabled })
+              return
+            }
+            for (const child of children) {
+              walk(child, [...values, child.value], [...labels, child.label])
+            }
+          }
+          let current = rootNodes.value
+          let prefix: any[] = []
+          let target: CascaderNode | undefined
+          for (const value of path) {
+            target = current.find((item) => sameValue(item.value, value))
+            if (!target) {
+              return []
+            }
+            prefix = [...prefix, value]
+            current = childrenOf(target, prefix)
+          }
+          if (!target) {
+            return []
+          }
+          walk(target, [...path], labelsOfPath(path))
+          return result
+        }
+
+        type CheckState = 'checked' | 'indeterminate' | 'unchecked'
+
+        function checkStateOf(path: any[]): CheckState {
+          const leaves = leavesUnder(path).filter((item) => !item.disabled)
+          if (leaves.length === 0) {
+            return 'unchecked'
+          }
+          const selected = leaves.filter((item) => isPathSelected(item.values)).length
+          if (selected === 0) {
+            return 'unchecked'
+          }
+          return selected === leaves.length ? 'checked' : 'indeterminate'
+        }
+
+        // checkbox 级联：勾选父级选中其全部（已加载）叶子，再次点击取消
+        function toggleCascade(path: any[]) {
+          const leaves = leavesUnder(path).filter((item) => !item.disabled)
+          if (leaves.length === 0) {
+            return
+          }
+          const allSelected = leaves.every((item) => isPathSelected(item.values))
+          const next = allSelected
+            ? modelPaths.value.filter((item) => !leaves.some((leaf) => pathEquals(leaf.values, item)))
+            : [
+                ...modelPaths.value,
+                ...leaves.filter((item) => !isPathSelected(item.values)).map((item) => item.values)
+              ]
+          emitValue(toEmit(next))
           nextTick(refresh)
         }
 
@@ -368,6 +484,7 @@ export function createCascader(features: UiFeature[] = []) {
           if (node.disabled) {
             return
           }
+          const checkboxMode = Boolean(props.checkbox) && isMultiple.value
           const next = [...activePath.value.slice(0, level), node.value]
           activePath.value = next
           emit('expand-change', next)
@@ -380,6 +497,11 @@ export function createCascader(features: UiFeature[] = []) {
             refresh()
             return
           }
+          // checkbox 模式选中只由复选框触发，行点击仅展开/下钻
+          if (checkboxMode) {
+            refresh()
+            return
+          }
           toggleLeaf(next)
         }
 
@@ -388,7 +510,63 @@ export function createCascader(features: UiFeature[] = []) {
             clearValue()
             return
           }
-          emitValue(modelPaths.value.filter((_item, current) => current !== index))
+          emitValue(toEmit(modelPaths.value.filter((_item, current) => current !== index)))
+        }
+
+        // +N 折叠标签浮层：mouseleave 在离开「标签+浮层」子树时才触发，
+        // 延迟关闭覆盖指针穿越 6px 空隙的间隙；重新进入子树即取消
+        function showTagPop() {
+          if (tagPopTimer) {
+            clearTimeout(tagPopTimer)
+            tagPopTimer = null
+          }
+          tagPopOpen.value = true
+        }
+
+        function hideTagPop() {
+          if (tagPopTimer) {
+            clearTimeout(tagPopTimer)
+          }
+          tagPopTimer = setTimeout(() => {
+            tagPopTimer = null
+            tagPopOpen.value = false
+          }, 150)
+        }
+
+        // 全选栏（cascader.select-all feature 通过 panelHeader hook 注入）。
+        // 可选集：leaf 模式为全部叶子路径；checkStrictly 为全部已加载节点（含中间节点），
+        // lazy 未加载子树不强制加载，选不到即选不到
+        const selectablePaths = computed<LeafPath[]>(() =>
+          props.checkStrictly ? nodePaths.value : leafPaths.value
+        )
+
+        function renderSelectAllBar(): VNodeChild {
+          if (!props.multiple || !props.selectAll) {
+            return null
+          }
+          const candidates = selectablePaths.value.filter((item) => !item.disabled)
+          const selectedCount = candidates.filter((item) => isPathSelected(item.values)).length
+          const allSelected = candidates.length > 0 && selectedCount === candidates.length
+          const indeterminate = selectedCount > 0 && !allSelected
+          const toggleAll = (event: Event) => {
+            event.stopPropagation()
+            emitValue(toEmit(allSelected ? [] : candidates.map((item) => item.values)))
+          }
+          return h('div', { class: 'ui-cascader__select-all' }, [
+            h(
+              'span',
+              {
+                class: [
+                  'ui-cascader__select-all-box',
+                  { 'is-checked': allSelected, 'is-indeterminate': indeterminate }
+                ],
+                onClick: toggleAll
+              },
+              [allSelected ? renderIcon(Check) : indeterminate ? renderIcon(Minus) : null]
+            ),
+            h('span', { class: 'ui-cascader__select-all-label', onClick: toggleAll }, allSelected ? '清空' : '全选'),
+            h('span', { class: 'ui-cascader__select-all-count' }, `${selectedCount} / ${candidates.length}`)
+          ])
         }
 
         function openPanel() {
@@ -497,6 +675,10 @@ export function createCascader(features: UiFeature[] = []) {
             clearTimeout(filterTimer)
             filterTimer = null
           }
+          if (tagPopTimer) {
+            clearTimeout(tagPopTimer)
+            tagPopTimer = null
+          }
         })
 
         watch(
@@ -525,7 +707,7 @@ export function createCascader(features: UiFeature[] = []) {
                   class: ['ui-cascader__tag', `is-${props.tagType || 'info'}`, `is-${props.tagEffect || 'light'}`]
                 },
                 [
-                  h('span', { class: 'ui-cascader__tag-label' }, item.labels[item.labels.length - 1] ?? ''),
+                  h('span', { class: 'ui-cascader__tag-label' }, displayText(item)),
                   h(
                     'span',
                     {
@@ -549,7 +731,9 @@ export function createCascader(features: UiFeature[] = []) {
                 {
                   class: 'ui-cascader__tag ui-cascader__tag--more',
                   tabindex: 0,
-                  'aria-label': `还有 ${hidden.length} 个已选项`
+                  'aria-label': `还有 ${hidden.length} 个已选项`,
+                  onMouseenter: showTagPop,
+                  onMouseleave: hideTagPop
                 },
                 [
                   `+${hidden.length}`,
@@ -557,7 +741,7 @@ export function createCascader(features: UiFeature[] = []) {
                     ? h(
                         'span',
                         {
-                          class: 'ui-cascader__tag-popover',
+                          class: ['ui-cascader__tag-popover', { 'is-open': tagPopOpen.value }],
                           onClick: (event: Event) => event.stopPropagation()
                         },
                         hidden.map((item, index) =>
@@ -611,7 +795,17 @@ export function createCascader(features: UiFeature[] = []) {
           const path = [...activePath.value.slice(0, level), node.value]
           const expandable = isExpandable(node, path)
           const loading = isLoading(path)
-          const selected = !expandable && isPathSelected(path)
+          const strict = Boolean(props.checkStrictly) && isMultiple.value
+          const checkboxMode = Boolean(props.checkbox) && isMultiple.value
+          const selectable = strict || !expandable
+          const selected = selectable && isPathSelected(path)
+          const checkState: CheckState = strict
+            ? selected
+              ? 'checked'
+              : 'unchecked'
+            : checkboxMode
+              ? checkStateOf(path)
+              : 'unchecked'
           const active = expandable
             ? sameValue(activePath.value[level], node.value) && activePath.value.length > level
             : selected
@@ -632,12 +826,45 @@ export function createCascader(features: UiFeature[] = []) {
               onClick: () => handleNode(node, level)
             },
             [
+              strict || checkboxMode
+                ? h(
+                    'span',
+                    {
+                      class: [
+                        'ui-cascader__checkbox',
+                        {
+                          'is-checked': checkState === 'checked',
+                          'is-indeterminate': checkState === 'indeterminate',
+                          'is-disabled': node.disabled
+                        }
+                      ],
+                      onClick: (event: Event) => {
+                        event.stopPropagation()
+                        if (node.disabled) {
+                          return
+                        }
+                        if (strict) {
+                          toggleLeaf(path)
+                        } else {
+                          toggleCascade(path)
+                        }
+                      }
+                    },
+                    [
+                      checkState === 'checked'
+                        ? renderIcon(Check, { class: 'ui-cascader__checkbox-icon' })
+                        : checkState === 'indeterminate'
+                          ? renderIcon(Minus, { class: 'ui-cascader__checkbox-icon' })
+                          : null
+                    ]
+                  )
+                : null,
               h('span', { class: 'ui-cascader__node-label' }, node.label),
               loading
                 ? h('span', { class: 'ui-cascader__node-loading' }, '加载中…')
                 : expandable
                   ? renderIcon(ChevronRight, { class: 'ui-cascader__node-arrow' })
-                  : selected
+                  : selected && !strict && !checkboxMode
                     ? renderIcon(Check, { class: 'ui-cascader__check' })
                     : null
             ]
@@ -744,7 +971,7 @@ export function createCascader(features: UiFeature[] = []) {
           )
         }
 
-        function renderPanel(): VNodeChild {
+        function renderPanel(header: VNodeChild[] = []): VNodeChild {
           if (!open.value && !props.persistent) {
             return null
           }
@@ -756,7 +983,7 @@ export function createCascader(features: UiFeature[] = []) {
               class: ['ui-cascader__dropdown', 'ui-floating-panel', `is-${props.effect || 'light'}`, props.popperClass],
               style: [props.popperStyle, position.value, open.value ? null : { display: 'none' }]
             },
-            [content]
+            [...header, content]
           )
           return props.teleported === false ? panel : h(Teleport, { to: 'body' }, panel)
         }
@@ -774,7 +1001,8 @@ export function createCascader(features: UiFeature[] = []) {
           closePanel,
           clearValue,
           renderValue,
-          renderPanel
+          renderPanel,
+          renderSelectAllBar
         }
       },
       classes: (props, state) => [
@@ -782,7 +1010,11 @@ export function createCascader(features: UiFeature[] = []) {
         props.disabled ? 'is-disabled' : '',
         state.open ? 'is-open' : ''
       ],
-      content: ({ props, state }) => {
+      styles: (props) => ({
+        width: props.fitWidth ? 'fit-content' : undefined,
+        maxWidth: sizeValue(props.maxWidth)
+      }),
+      content: ({ props, state, states }) => {
         const actions: VNodeChild[] = []
         if (props.clearable && state.hasValue && !props.disabled) {
           actions.push(
@@ -828,7 +1060,11 @@ export function createCascader(features: UiFeature[] = []) {
               h('div', { class: 'ui-cascader__actions' }, actions)
             ]
           ),
-          state.renderPanel()
+          state.renderPanel(
+            collectFeatureHooks(states, 'panelHeader')
+              .map((renderHeader) => renderHeader())
+              .filter((node) => node !== null && node !== undefined && node !== false)
+          )
         ]
       }
     },

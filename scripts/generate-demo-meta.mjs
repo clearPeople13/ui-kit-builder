@@ -10,12 +10,11 @@ const distDir = path.join(rootDir, 'dist')
 
 const PACKAGE_LABELS = {
   core: 'Core 基础包',
-  'bg-color': 'BG Color',
-  gradient: 'Gradient',
   full: 'Full 全特性',
   branded: 'Branded 品牌主题',
   chinese: 'Chinese 中国风',
-  cute: 'Cute 可爱主题'
+  cute: 'Cute 可爱主题',
+  antd: 'Ant Design'
 }
 
 function readConsumerDependencies() {

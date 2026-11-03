@@ -1157,6 +1157,260 @@ body {
   color: var(--app-accent);
 }
 
+.pg-repl-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.pg-repl {
+  display: flex;
+  flex-direction: column;
+  width: min(1200px, 100%);
+  height: min(860px, 100%);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.28);
+  overflow: hidden;
+}
+
+.pg-repl__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--app-line);
+}
+
+.pg-repl__title {
+  color: var(--app-ink);
+  font-size: 13.5px;
+}
+
+.pg-repl__pkg {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.pg-repl__flex {
+  flex: 1;
+}
+
+.pg-repl__close {
+  padding: 6px 14px;
+  border: 1px solid var(--app-line);
+  border-radius: 999px;
+  background: #ffffff;
+  color: #475467;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pg-repl__close:hover {
+  border-color: var(--app-accent);
+  color: var(--app-accent);
+}
+
+.pg-repl__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-repl__state {
+  margin: 0;
+  padding: 40px;
+  color: var(--app-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.pg-repl__inner {
+  flex: 1;
+  min-height: 0;
+}
+
+.cp-demo {
+  margin-top: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.cp-demo .pg-stage {
+  border: none;
+  min-height: 300px;
+}
+
+.cp-demo__ops {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.cp-demo__flex {
+  flex: 1;
+}
+
+.cp-demo__code-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #344054;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 140ms ease, border-color 140ms ease;
+}
+
+.cp-demo__code-btn:hover {
+  border-color: var(--app-accent);
+  color: var(--app-accent);
+}
+
+.cp-demo__code {
+  border-top: 1px solid #f0f0f0;
+  background: #f6f8fa;
+  overflow-x: auto;
+}
+
+.cp-demo__code .shiki {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.cp-demo__desc {
+  padding: 14px 16px 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.cp-demo__desc h3 {
+  margin: 0 0 6px;
+  color: var(--app-ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.cp-demo__desc p {
+  margin: 0;
+  color: var(--app-muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.cp-api {
+  margin-bottom: 22px;
+}
+
+.cp-api__export {
+  margin: 0 0 10px;
+  color: var(--app-ink);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cp-api__sec {
+  margin-bottom: 16px;
+}
+
+.cp-api__sec-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--app-ink);
+  font-size: 13.5px;
+  font-weight: 650;
+}
+
+.cp-api__id {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.cp-api__sec.is-locked .cp-api__id {
+  background: #f2f4f7;
+  color: var(--app-faint);
+}
+
+.cp-api__sec-desc {
+  margin: 0 0 8px;
+  color: var(--app-muted);
+  font-size: 12px;
+}
+
+.cp-api__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.cp-api__table th,
+.cp-api__table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.6;
+}
+
+.cp-api__table thead th {
+  background: #fafafa;
+  color: #475467;
+  font-weight: 650;
+}
+
+.cp-api__table td code {
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+
+.cp-api__type {
+  color: #4338ca;
+}
+
+.cp-api__sec.is-locked .cp-api__table {
+  opacity: 0.5;
+}
+
+.cp-api__sec.is-locked .cp-api__table tbody tr:hover {
+  background: transparent;
+}
+
+.cp-api__table tbody tr:hover {
+  background: #fafbff;
+}
+
+
 @media (max-width: 1080px) {
   .app {
     grid-template-columns: 232px minmax(0, 1fr);

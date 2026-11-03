@@ -59,6 +59,8 @@ export function createVirtualList(features: UiFeature[] = []) {
         const items: VNodeChild[] = []
         for (let index = startIndex.value; index < endIndex.value; index++) {
           const item = props.data[index]
+          // 占位行仅在未提供默认插槽时兜底展示；插槽场景把 item=undefined 交给消费方自行渲染骨架
+          const showPlaceholder = index >= props.data.length && !slots.default
           const key =
             props.itemKey && item && typeof item === 'object' ? (item as Record<string, any>)[props.itemKey] : index
           items.push(
@@ -66,7 +68,7 @@ export function createVirtualList(features: UiFeature[] = []) {
               'div',
               {
                 key: key ?? index,
-                class: 'ui-virtual-list__item',
+                class: ['ui-virtual-list__item', showPlaceholder ? 'is-placeholder' : ''],
                 style: {
                   position: 'absolute',
                   top: `${index * itemHeight.value}px`,
@@ -75,7 +77,7 @@ export function createVirtualList(features: UiFeature[] = []) {
                   height: `${itemHeight.value}px`
                 } as CSSProperties
               },
-              renderItemContent(slots, item, index)
+              showPlaceholder ? ['加载中…'] : renderItemContent(slots, item, index)
             )
           )
         }

@@ -223,22 +223,21 @@ export function inputNumberConfig(options: { name: string; baseClass: string; pr
         props.modelValue === undefined || props.modelValue === null || Number.isNaN(Number(props.modelValue))
           ? undefined
           : Number(props.modelValue)
+      const precision = props.precision === undefined ? undefined : Number(props.precision)
+      const roundTo = (next: number) => (precision === undefined ? next : Number(next.toFixed(precision)))
+      const displayValue = value === undefined ? undefined : roundTo(value)
       const commit = (next: number) => {
         emit('update:modelValue', next)
         emit('input', next)
         emit('change', next)
       }
       const stepBy = (direction: number) => {
-        let next = clamp((value ?? 0) + direction * step, min, max)
-        if (props.precision !== undefined) {
-          next = Number(next.toFixed(Number(props.precision)))
-        }
-        commit(next)
+        commit(roundTo(clamp((value ?? 0) + direction * step, min, max)))
       }
       const input = h('input', {
         class: `${options.baseClass}__inner`,
         type: 'number',
-        value: value ?? '',
+        value: displayValue ?? '',
         min: props.min,
         max: props.max,
         step: props.step,

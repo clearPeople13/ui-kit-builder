@@ -8,6 +8,7 @@ import { collectTreeKeys, flattenTreeNodes, normalizeTreeNodes } from '../../sha
 import type { UiTreeNode } from '../../shared/tree'
 import { sameValue } from '../../shared/value'
 import { useFloatingPanel } from '../../shared/panel'
+import { sizeValue } from '../../shared/behavior'
 import { treeSelectMultipleFeature } from './features/multiple/index'
 import { treeSelectFilterableFeature } from './features/filterable/index'
 import { treeSelectPopperFeature } from './features/popper/index'
@@ -22,7 +23,9 @@ const treeSelectBaseProps = {
   props: { type: Object, default: () => ({}) },
   clearable: Boolean,
   emptyText: { type: String, default: '暂无数据' },
-  defaultExpandAll: Boolean
+  defaultExpandAll: Boolean,
+  fitWidth: { type: Boolean },
+  maxWidth: { type: [String, Number] }
 }
 
 function collectNodes(nodes: UiTreeNode[]): UiTreeNode[] {
@@ -329,6 +332,10 @@ export function createTreeSelect(features: UiFeature[] = []) {
         props.size ? `ui-tree-select--${props.size}` : '',
         props.disabled ? 'is-disabled' : ''
       ],
+      styles: (props) => ({
+        width: props.fitWidth ? 'fit-content' : undefined,
+        maxWidth: sizeValue(props.maxWidth)
+      }),
       content: ({ props, state }) => {
         const valueNodes: VNodeChild[] = []
         if (props.multiple && state.hasValue) {

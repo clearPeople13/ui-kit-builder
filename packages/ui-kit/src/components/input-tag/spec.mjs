@@ -34,13 +34,19 @@ export default {
           "name": "effect",
           "type": "string",
           "default": "light",
-          "description": "effect"
+          "description": "标签效果：light / dark / plain"
+        },
+        {
+          "name": "tagType",
+          "type": "string",
+          "default": "primary",
+          "description": "标签类型：primary / success / warning / danger / info"
         },
         {
           "name": "trigger",
           "type": "string",
           "default": "Enter",
-          "description": "trigger"
+          "description": "生成标签按键：Enter / Space / Both"
         },
         {
           "name": "readonly",
@@ -95,7 +101,7 @@ export default {
       "features": {
         "input-tag.clearable": {
           "title": "可清空",
-          "description": "可清空：clearable、clearIcon",
+          "description": "可清空：clearable、clearIcon；点击清空按钮全部移除并触发 clear",
           "module": "packages/ui-kit/src/components/input-tag/features/clearable/index.ts",
           "exportName": "inputTagClearableFeature",
           "requires": [],
@@ -106,11 +112,20 @@ export default {
             },
             {
               "name": "clearIcon",
-              "type": "string | Record<string, any> | (...args: any[]) => any",
-              "default": {
-                "name": "CircleClose",
-                "__name": "circle-close"
-              }
+              "type": "string | Record<string, any> | (...args: any[]) => any"
+            }
+          ]
+        },
+        "input-tag.separator": {
+          "title": "分隔符批量添加",
+          "description": "分隔符批量添加：separator（输入分隔符或粘贴含分隔符文本时一次生成多个标签）",
+          "module": "packages/ui-kit/src/components/input-tag/features/separator/index.ts",
+          "exportName": "inputTagSeparatorFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "separator",
+              "type": "string"
             }
           ]
         },

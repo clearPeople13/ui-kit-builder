@@ -205,10 +205,6 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
           if (typeof props.disabledDate === 'function' && props.disabledDate(date)) {
             return
           }
-          leftMonth.value = startOfMonth(date)
-          if (props.isRange && !props.unlinkPanels) {
-            rightMonth.value = addMonths(leftMonth.value, 1)
-          }
           if (props.isRange) {
             const start = pendingStart.value
             const completed = Boolean(pendingStart.value && pendingEnd.value)
@@ -259,20 +255,24 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
           return typeof props.disabledDate === 'function' ? Boolean(props.disabledDate(date)) : false
         }
 
-        function cellClass(date: Date): string[] {
+        function cellClass(date: Date, outside = false): string[] {
           const start = selectionStart()
           const end = selectionEnd()
           const classes: string[] = []
-          if (sameDay(date, startOfDay(new Date()))) {
+          // 上下月补位格（outside）不参与今天/区间/选中高亮，避免同一日期在两个面板重复高亮
+          if (!outside && sameDay(date, startOfDay(new Date()))) {
             classes.push('is-today')
           }
-          if (props.isRange && start && end && date.getTime() > start.getTime() && date.getTime() < end.getTime()) {
+          if (!outside && props.isRange && start && end && date.getTime() > start.getTime() && date.getTime() < end.getTime()) {
             classes.push('is-in-range')
           }
-          if (sameDay(date, start)) {
-            classes.push('is-selected', 'is-start')
+          if (!outside && sameDay(date, start)) {
+            classes.push('is-selected')
+            if (props.isRange) {
+              classes.push('is-start')
+            }
           }
-          if (props.isRange && sameDay(date, end)) {
+          if (!outside && props.isRange && sameDay(date, end)) {
             classes.push('is-selected', 'is-end')
           }
           if (isDisabled(date)) {
@@ -454,7 +454,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                         ? h('span', { class: 'ui-date-picker-panel__week-number' }, String(isoWeek(row[0].date)))
                         : null,
                       ...row.map((cell) => {
-                        const cellClasses = state.cellClass(cell.date)
+                        const cellClasses = state.cellClass(cell.date, cell.outside)
                         return h(
                           'button',
                           {
@@ -470,7 +470,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                     ])
                   )
                 : cells.map((cell) => {
-                    const cellClasses = state.cellClass(cell.date)
+                    const cellClasses = state.cellClass(cell.date, cell.outside)
                     return h(
                       'button',
                       {

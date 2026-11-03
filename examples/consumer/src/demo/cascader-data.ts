@@ -2,6 +2,7 @@ interface CascaderOption {
   value: string
   label: string
   leaf?: boolean
+  disabled?: boolean
   children?: CascaderOption[]
 }
 
@@ -81,6 +82,19 @@ export const CASCADER_MULTIPLE_VALUE: string[][] = [
 ]
 
 export const CASCADER_DEFAULT_CLEAR_PATH: string[] = ['zhejiang', 'hangzhou', 'zj-hangzhou-1']
+
+const DISABLED_DISTRICT_VALUES = new Set(['zj-hangzhou-3', 'gd-shenzhen-3'])
+
+export const CASCADER_OPTIONS_WITH_DISABLED: CascaderOption[] = CASCADER_OPTIONS.map((province) => ({
+  ...province,
+  children: province.children?.map((city) => ({
+    ...city,
+    children: city.children?.map((district) => ({
+      ...district,
+      disabled: DISABLED_DISTRICT_VALUES.has(district.value)
+    }))
+  }))
+}))
 
 export function cascaderValueOnClear(): string[] {
   return [...CASCADER_DEFAULT_CLEAR_PATH]

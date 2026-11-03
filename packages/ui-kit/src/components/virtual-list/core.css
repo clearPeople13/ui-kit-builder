@@ -12,3 +12,7 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+
+.ui-virtual-list__item.is-placeholder {
+  color: var(--ui-text-color-placeholder);
+}

@@ -37,6 +37,23 @@ export default {
           "description": "multiple"
         },
         {
+          "name": "checkbox",
+          "type": "boolean",
+          "default": null,
+          "description": "多选复选框模式：每级节点都渲染复选框，勾选父级级联选中/取消全部叶子并显示半选态，禁用叶子不可勾选且不计入统计；checkStrictly 时每级独立勾选"
+        },
+        {
+          "name": "checkStrictly",
+          "type": "boolean",
+          "description": "父子不关联：任意节点（含父级）可单独选中，全选=全部已加载节点"
+        },
+        {
+          "name": "emitPath",
+          "type": "boolean",
+          "default": true,
+          "description": "false 时 v-model 只存末级值（多选为末级值数组）"
+        },
+        {
           "name": "props",
           "type": "Record<string, any>",
           "description": "props"
@@ -79,6 +96,16 @@ export default {
           "type": "string",
           "default": "light",
           "description": "effect"
+        },
+        {
+          "name": "fitWidth",
+          "type": "boolean",
+          "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+        },
+        {
+          "name": "maxWidth",
+          "type": "string | number",
+          "description": "最大宽度：超出后文本省略"
         }
       ],
       "features": {
@@ -132,6 +159,19 @@ export default {
               "name": "tagEffect",
               "type": "string",
               "default": "light"
+            }
+          ]
+        },
+        "cascader.select-all": {
+          "title": "全选",
+          "description": "面板顶部全选栏：selectAll；值语义跟随 checkStrictly（父子不关联则全选=全部已加载节点）与 emitPath（false 只存末级值）",
+          "module": "packages/ui-kit/src/components/cascader/features/select-all/index.ts",
+          "exportName": "cascaderSelectAllFeature",
+          "requires": ["cascader.multiple"],
+          "props": [
+            {
+              "name": "selectAll",
+              "type": "boolean"
             }
           ]
         },

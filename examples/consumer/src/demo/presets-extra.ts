@@ -603,16 +603,21 @@ const FORM_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'label', label: '自定义标签', values: { label: '按月付费' } }
   ],
   CheckboxGroup: [
-    { id: 'base', label: '基础', values: { modelValue: ['a'] } },
-    { id: 'both', label: '全选', values: { modelValue: ['a', 'b'] } },
+    { id: 'base', label: '基础', values: { modelValue: ['a'], options: CHECKBOX_OPTIONS } },
+    { id: 'both', label: '全选', values: { modelValue: ['a', 'b'], options: CHECKBOX_OPTIONS } },
     {
       id: 'min',
       label: '最少选两个',
       hint: 'min 为 2 时取消第二个选项会被拦截',
-      values: { modelValue: ['a', 'b'], min: 2 }
+      values: { modelValue: ['a', 'b'], min: 2, options: CHECKBOX_OPTIONS }
     },
-    { id: 'max', label: '最多选一个', hint: 'max 为 1 时再勾选会被拦截', values: { modelValue: ['a'], max: 1 } },
-    { id: 'disabled', label: '整组禁用', values: { modelValue: ['a'], disabled: true } },
+    {
+      id: 'max',
+      label: '最多选一个',
+      hint: 'max 为 1 时再勾选会被拦截',
+      values: { modelValue: ['a'], max: 1, options: CHECKBOX_OPTIONS }
+    },
+    { id: 'disabled', label: '整组禁用', values: { modelValue: ['a'], disabled: true, options: CHECKBOX_OPTIONS } },
     {
       id: 'button',
       label: '按钮组',
@@ -1201,7 +1206,7 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
     {
       id: 'total',
       label: '总数 80',
-      hint: 'total 大于数据长度时按总数计算滚动高度',
+      hint: 'total 大于数据长度时按总数计算滚动高度，超出数据的部分显示"加载中…"占位行',
       values: { data: VIRTUAL_DATA, height: 180, itemSize: 30, total: 80 }
     }
   ],

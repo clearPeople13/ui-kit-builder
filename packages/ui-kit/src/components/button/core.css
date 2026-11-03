@@ -3,7 +3,6 @@
   --ui-button-border: var(--ui-border-color);
   --ui-button-text: var(--ui-text-color-regular);
   --ui-button-hover-bg: var(--ui-color-primary-bg);
-  --ui-button-hover-border: #c6e2ff;
   --ui-button-hover-text: var(--ui-color-primary);
   display: inline-flex;
   align-items: center;
@@ -30,7 +29,7 @@
 
 .ui-button:hover {
   border-color: var(--ui-button-hover-border);
-  background: var(--ui-button-hover-bg);
+  background-color: var(--ui-button-hover-bg);
   color: var(--ui-button-hover-text);
   transform: var(--ui-button-hover-transform);
 }
@@ -60,7 +59,7 @@
   --ui-button-border: var(--ui-color-success);
   --ui-button-text: var(--ui-text-color-inverse);
   --ui-button-hover-bg: var(--ui-color-success-light);
-  --ui-button-hover-border: #85ce61;
+  --ui-button-hover-border: var(--ui-color-success-light);
   --ui-button-hover-text: var(--ui-text-color-inverse);
 }
 
@@ -69,7 +68,7 @@
   --ui-button-border: var(--ui-color-warning);
   --ui-button-text: var(--ui-text-color-inverse);
   --ui-button-hover-bg: var(--ui-color-warning-light);
-  --ui-button-hover-border: #ebb563;
+  --ui-button-hover-border: var(--ui-color-warning-light);
   --ui-button-hover-text: var(--ui-text-color-inverse);
 }
 
@@ -78,7 +77,7 @@
   --ui-button-border: var(--ui-color-info);
   --ui-button-text: var(--ui-text-color-inverse);
   --ui-button-hover-bg: var(--ui-color-info-light);
-  --ui-button-hover-border: #a6a9ad;
+  --ui-button-hover-border: var(--ui-color-info-light);
   --ui-button-hover-text: var(--ui-text-color-inverse);
 }
 
@@ -87,7 +86,7 @@
   --ui-button-border: var(--ui-color-danger);
   --ui-button-text: var(--ui-text-color-inverse);
   --ui-button-hover-bg: var(--ui-color-danger-light);
-  --ui-button-hover-border: #f78989;
+  --ui-button-hover-border: var(--ui-color-danger-light);
   --ui-button-hover-text: var(--ui-text-color-inverse);
 }
 

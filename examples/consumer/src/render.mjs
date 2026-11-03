@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import { createSSRApp, h } from 'vue'
 import { renderToString } from 'vue/server-renderer'
-import { Button as BgColorButton } from '@demo/ui-kit-bg-color'
 import { Button as CoreButton, Input as CoreInput } from '@demo/ui-kit-core'
 import {
   Button as FullButton,
@@ -23,7 +22,7 @@ function render(component, props, slots) {
   return renderToString(createSSRApp({ render: () => h(component, props, slots) }))
 }
 
-for (const pkg of ['@demo/ui-kit-core', '@demo/ui-kit-bg-color', '@demo/ui-kit-full']) {
+for (const pkg of ['@demo/ui-kit-core', '@demo/ui-kit-branded', '@demo/ui-kit-full']) {
   assert.match(import.meta.resolve(`${pkg}/style.css`), /ui-kit\.css$/, `${pkg} 应导出 style.css`)
 }
 
@@ -39,10 +38,10 @@ assert.doesNotMatch(core, /background-color/)
 assert.doesNotMatch(core, /ui-button--bg-color/)
 assert.doesNotMatch(core, /ui-button--gradient/)
 
-const bgColor = await render(BgColorButton, { bgColor: '#3366ff', autoContrast: true }, { default: () => 'BG' })
-assert.match(bgColor, /background-color:\s*#3366ff/i)
-assert.match(bgColor, /color:\s*#ffffff/i)
-assert.match(bgColor, /ui-button--bg-color/)
+const bgOnly = await render(FullButton, { bgColor: '#3366ff', autoContrast: true }, { default: () => 'BG' })
+assert.match(bgOnly, /background-color:\s*#3366ff/i)
+assert.match(bgOnly, /color:\s*#ffffff/i)
+assert.match(bgOnly, /ui-button--bg-color/)
 
 const full = await render(
   FullButton,
@@ -145,5 +144,5 @@ assert.match(suite, /ui-virtual-list__spacer/)
 assert.match(suite, /virtual-a/)
 assert.match(suite, /virtual-b/)
 
-console.log('运行时校验通过: Button(core/bg-color/full) / Input / Scrollbar / Table / 内部组件套件')
+console.log('运行时校验通过: Button(core/full) / Input / Scrollbar / Table / 内部组件套件')
 console.log(`core 渲染: ${core}`)

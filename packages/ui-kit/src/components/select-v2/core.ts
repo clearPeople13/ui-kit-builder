@@ -6,6 +6,7 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { sameValue } from '../../shared/value'
 import { useFloatingPanel } from '../../shared/panel'
+import { sizeValue } from '../../shared/behavior'
 import { selectV2ClearableFeature } from './features/clearable/index'
 import { selectV2FilterableFeature } from './features/filterable/index'
 import { selectV2MultipleFeature } from './features/multiple/index'
@@ -17,7 +18,9 @@ const selectV2BaseProps = {
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: '请选择' },
   disabled: Boolean,
-  size: { type: String, default: '' }
+  size: { type: String, default: '' },
+  fitWidth: { type: Boolean },
+  maxWidth: { type: [String, Number] }
 }
 
 interface V2Option {
@@ -353,6 +356,10 @@ export function createSelectV2(features: UiFeature[] = []) {
         props.size ? `ui-select-v2--${props.size}` : '',
         props.disabled ? 'is-disabled' : ''
       ],
+      styles: (props) => ({
+        width: props.fitWidth ? 'fit-content' : undefined,
+        maxWidth: sizeValue(props.maxWidth)
+      }),
       content: ({ props, state }) => {
         const triggerChildren: VNodeChild[] = []
         if (props.multiple && state.hasValue) {

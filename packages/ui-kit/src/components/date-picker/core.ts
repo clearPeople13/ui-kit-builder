@@ -631,17 +631,21 @@ export function createDatePicker(features: UiFeature[] = []) {
 
         function renderDayCell(date: Date, month: number): VNodeChild {
           const inMonth = date.getMonth() === month
-          const selected = range.value
-            ? isSameDay(date, rangeStart.value) || isSameDay(date, rangeEnd.value)
-            : isSameDay(date, selectedDate.value)
+          // 上下月补位格不参与选中/区间高亮，避免同一日期在相邻月份重复高亮
+          const selected =
+            inMonth &&
+            (range.value
+              ? isSameDay(date, rangeStart.value) || isSameDay(date, rangeEnd.value)
+              : isSameDay(date, selectedDate.value))
           const inRange = Boolean(
-            range.value &&
+            inMonth &&
+              range.value &&
               rangeStart.value &&
               rangeEnd.value &&
               compareDate(date, rangeStart.value) > 0 &&
               compareDate(date, rangeEnd.value) < 0
           )
-          const today = isSameDay(date, new Date())
+          const today = inMonth && isSameDay(date, new Date())
           return h(
             'button',
             {

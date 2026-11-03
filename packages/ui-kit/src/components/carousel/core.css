@@ -115,3 +115,44 @@
 .ui-carousel.is-indicator-outside .ui-carousel__indicators {
   bottom: -20px;
 }
+
+.ui-carousel.is-card {
+  overflow: hidden;
+  background: transparent;
+}
+
+.ui-carousel.is-card .ui-carousel-item {
+  inset: auto;
+  top: 0;
+  left: 25%;
+  width: 50%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0;
+  visibility: visible;
+  transform: scale(0.82);
+  transition: left 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+}
+
+.ui-carousel.is-card .ui-carousel-item.is-prev {
+  left: 0;
+  opacity: 0.55;
+}
+
+.ui-carousel.is-card .ui-carousel-item.is-next {
+  left: 50%;
+  opacity: 0.55;
+}
+
+.ui-carousel.is-card .ui-carousel-item.is-active {
+  z-index: 2;
+  opacity: 1;
+  transform: scale(1);
+  transition: left 0.4s ease, transform 0.4s ease, opacity 0.4s ease;
+}
+
+.ui-carousel.is-card .ui-carousel-item.is-rest {
+  left: 25%;
+  opacity: 0;
+  pointer-events: none;
+}

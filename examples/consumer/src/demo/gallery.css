@@ -484,7 +484,7 @@
   width: 58%;
 }
 
-.calendar-demo .ui-calendar {
+.calendar-demo [class*="-calendar"] {
   font-size: 12px;
 }
 
@@ -598,7 +598,7 @@
   padding: 0;
 }
 
-.timeline-list .ui-timeline-item {
+.timeline-list [class*="-timeline-item"] {
   font-size: 13px;
 }
 
@@ -630,7 +630,7 @@
   width: 100%;
 }
 
-.form-demo .ui-form__inner {
+.form-demo [class*="-form__inner"] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 28px;
@@ -695,7 +695,7 @@
     grid-template-columns: 1fr;
   }
 
-  .form-demo .ui-form__inner,
+  .form-demo [class*="-form__inner"],
   .timeline-columns {
     grid-template-columns: 1fr;
   }
@@ -1015,29 +1015,26 @@
   max-width: 100%;
 }
 
-.pg-stage__canvas > .ui-input,
-.pg-stage__canvas > .ui-input-number,
-.pg-stage__canvas > .ui-input-tag,
-.pg-stage__canvas > .ui-select,
-.pg-stage__canvas > .ui-select-v2,
-.pg-stage__canvas > .ui-date-picker,
-.pg-stage__canvas > .ui-time-picker,
-.pg-stage__canvas > .ui-time-select,
-.pg-stage__canvas > .ui-color-picker,
-.pg-stage__canvas > .ui-cascader,
-.pg-stage__canvas > .ui-tree-select,
-.pg-stage__canvas > .ui-mention,
-.pg-stage__canvas > .ui-autocomplete,
-.pg-stage__canvas > .ui-scrollbar {
+/* 组件根类名随包前缀变化（ui-/acme-/cute-/antd-），统一按类名后缀匹配，-panel 结尾的面板组件排除 */
+.pg-stage__canvas > [class*="-input"],
+/* -selection 是 tree.selection 的状态修饰类（--selection），会误命中 -select，需排除 */
+.pg-stage__canvas > [class*="-select"]:not([class*="-selection"]),
+.pg-stage__canvas > [class*="-date-picker"]:not([class*="panel"]),
+.pg-stage__canvas > [class*="-time-picker"],
+.pg-stage__canvas > [class*="-color-picker"]:not([class*="panel"]),
+.pg-stage__canvas > [class*="-cascader"]:not([class*="panel"]),
+.pg-stage__canvas > [class*="-mention"],
+.pg-stage__canvas > [class*="-autocomplete"],
+.pg-stage__canvas > [class*="-scrollbar"] {
   width: min(360px, 100%);
 }
 
-.pg-stage__canvas > .ui-watermark {
+.pg-stage__canvas > [class*="-watermark"] {
   width: 100%;
 }
 
 /* Row 作为 canvas 弹性子项会收缩到内容宽，栅格百分比无从解析，强制撑满 */
-.pg-stage__canvas > .ui-row {
+.pg-stage__canvas > [class*="-row"] {
   width: 100%;
 }
 
@@ -1050,26 +1047,26 @@
 }
 
 /* 侧栏菜单按真实宽度收窄，水平导航条铺满，折叠态再窄一档 */
-.pg-stage__canvas > .ui-menu {
+.pg-stage__canvas > [class*="-menu"] {
   width: min(300px, 100%);
 }
 
-.pg-stage__canvas > .ui-menu.is-horizontal {
+.pg-stage__canvas > [class*="-menu"].is-horizontal {
   width: 100%;
 }
 
-.pg-stage__canvas > .ui-menu.is-collapse {
+.pg-stage__canvas > [class*="-menu"].is-collapse {
   width: min(200px, 100%);
 }
 
-.pg-stage__canvas > .ui-card,
-.pg-stage__canvas > .ui-collapse,
-.pg-stage__canvas > .ui-descriptions,
-.pg-stage__canvas > .ui-page-header,
-.pg-stage__canvas > .ui-steps,
-.pg-stage__canvas > .ui-timeline,
-.pg-stage__canvas > .ui-tree,
-.pg-stage__canvas > .ui-tree-v2 {
+.pg-stage__canvas > [class*="-card"],
+.pg-stage__canvas > [class*="-collapse"],
+.pg-stage__canvas > [class*="-descriptions"],
+.pg-stage__canvas > [class*="-page-header"],
+.pg-stage__canvas > [class*="-steps"],
+.pg-stage__canvas > [class*="-timeline"],
+/* -tree 同时是 -tree-select 的子串、-selection 会误命中 -select，两者都排除 */
+.pg-stage__canvas > [class*="-tree"]:not([class*="-select"]):not([class*="-selection"]) {
   width: 100%;
 }
 
@@ -2690,17 +2687,17 @@ body.pg-picker-open {
   height: 340px;
 }
 
-.pg-splitter-nested > .ui-splitter {
+.pg-splitter-nested > [class*="-splitter"] {
   height: 100%;
 }
 
 /* 嵌套布局边到边填满面板（对齐 Element Plus 嵌套示例），去掉面板 padding 与内层边框 */
-.pg-splitter-nested .ui-splitter-panel {
+.pg-splitter-nested [class*="-splitter-panel"] {
   padding: 0;
   overflow: hidden;
 }
 
-.pg-splitter-nested .ui-splitter .ui-splitter {
+.pg-splitter-nested [class*="-splitter"] [class*="-splitter"] {
   height: 100%;
   border: none;
   border-radius: 0;
@@ -2732,7 +2729,7 @@ body.pg-picker-open {
   overflow: hidden;
 }
 
-.ui-image-viewer .pg-viewer-gallery__stage .pg-viewer-gallery__photo {
+[class*="-image-viewer"] .pg-viewer-gallery__stage .pg-viewer-gallery__photo {
   display: block;
   width: 100%;
   height: auto;
@@ -2797,7 +2794,7 @@ body.pg-picker-open {
   outline-offset: 2px;
 }
 
-.ui-image-viewer .pg-viewer-gallery__thumb img {
+[class*="-image-viewer"] .pg-viewer-gallery__thumb img {
   display: block;
   width: 100%;
   height: 64px;
@@ -2814,7 +2811,7 @@ body.pg-picker-open {
     gap: 6px;
   }
 
-  .ui-image-viewer .pg-viewer-gallery__thumb img {
+  [class*="-image-viewer"] .pg-viewer-gallery__thumb img {
     height: 46px;
   }
 }
@@ -2934,6 +2931,10 @@ body.pg-picker-open {
   border-bottom: 1px solid #f0f2f7;
   color: #475467;
   font-size: 12.5px;
+}
+
+.pg-virtual-item.is-placeholder {
+  color: #98a2b3;
 }
 
 /* InfiniteScroll：固定高度列表 + 触底追加，状态条用于观察 distance/delay/loading 的真实作用 */

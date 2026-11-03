@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build:core": "node scripts/build-lib.mjs --config profiles/core.json",
-    "build:bg-color": "node scripts/build-lib.mjs --config profiles/bg-color.json",
-    "build:gradient": "node scripts/build-lib.mjs --config profiles/gradient.json",
     "build:full": "node scripts/build-lib.mjs --config profiles/full.json",
+    "build:branded": "node scripts/build-lib.mjs --config profiles/branded.json",
     "build:chinese": "node scripts/build-lib.mjs --config profiles/chinese.json",
     "build:cute": "node scripts/build-lib.mjs --config profiles/cute.json",
+    "build:antd": "node scripts/build-lib.mjs --config profiles/antd.json",
     "build:all": "node scripts/build-all.mjs",
     "meta:demo": "node scripts/generate-demo-meta.mjs",
     "typecheck": "tsc --noEmit",
@@ -20,7 +20,9 @@
     "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\"",
     "verify": "node scripts/verify.mjs",
     "verify:consumer": "npm --prefix examples/consumer run check:all",
-    "demo:consumer": "npm --prefix examples/consumer run dev"
+    "demo:consumer": "npm --prefix examples/consumer run dev",
+    "guardian": "node scripts/guardian/guardian.mjs",
+    "guardian:once": "node scripts/guardian/guardian.mjs --once"
   },
   "dependencies": {
     "@lucide/vue": "1.61.0",

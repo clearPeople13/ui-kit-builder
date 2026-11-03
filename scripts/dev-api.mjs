@@ -31,17 +31,52 @@ function readBody(request) {
 
 const PACKAGE_LABELS = {
   core: 'Core 基础包',
-  'bg-color': 'BG Color',
-  gradient: 'Gradient',
   full: 'Full 全特性',
   branded: 'Branded 品牌主题',
   chinese: 'Chinese 中国风',
-  cute: 'Cute 可爱主题'
+  cute: 'Cute 可爱主题',
+  antd: 'Ant Design'
+}
+
+const PACK_MIME_TYPES = {
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8'
+}
+
+function serveRawPackFile(request, response) {
+  const urlPath = decodeURIComponent((request.url ?? '').split('?')[0])
+  const relative = urlPath.replace(/^\/packs\//, '')
+  const segments = relative.split('/').filter(Boolean)
+  const [packId, ...fileParts] = segments
+  const fileName = fileParts.join('/')
+  if (!packId || !fileName || fileName.includes('..')) {
+    response.statusCode = 400
+    response.end('Bad request')
+    return true
+  }
+  const filePath = path.join(rootDir, 'dist', packId, fileName)
+  const packDir = path.join(rootDir, 'dist', packId)
+  if (!filePath.startsWith(packDir + path.sep) || !fs.existsSync(filePath)) {
+    response.statusCode = 404
+    response.end('Not found')
+    return true
+  }
+  response.setHeader('Content-Type', PACK_MIME_TYPES[path.extname(filePath)] ?? 'application/octet-stream')
+  response.end(fs.readFileSync(filePath))
+  return true
 }
 
 function fsModuleUrl(file, version) {
   const normalized = file.replace(/\\/g, '/')
   return `/@fs/${normalized}?v=${version}`
+}
+
+// /@fs 会被 Vite 做 import 重写（裸 'vue' → 预构建 chunk），宿主页动态 import 需要它；
+// 但 @vue/repl 的 iframe 靠 import map 解析 'vue'，重写会让套件和渲染器各用一份 Vue 副本，
+// ref owner 上下文丢失，因此 iframe 必须用这份原样直出的副本。
+function rawPackUrl(id, fileName, version) {
+  return `/packs/${id}/${fileName}?v=${version}`
 }
 
 function listPresets() {
@@ -114,6 +149,8 @@ function listBuiltPackages() {
     }
     const cssFile = files.find((item) => item.file.endsWith('.css'))?.file
     const cssPath = cssFile ? path.join(dir, cssFile) : ''
+    const jsVersion = Math.round(fs.statSync(jsPath).mtimeMs)
+    const cssVersion = cssPath ? Math.round(fs.statSync(cssPath).mtimeMs) : 0
     packages.push({
       id: entry.name,
       label: PACKAGE_LABELS[entry.name] ?? entry.name,
@@ -130,8 +167,10 @@ function listBuiltPackages() {
         total: meta.totalBytes ?? 0,
         gzip: meta.gzipBytes ?? 0
       },
-      moduleUrl: fsModuleUrl(jsPath, Math.round(fs.statSync(jsPath).mtimeMs)),
-      styleUrl: cssPath ? fsModuleUrl(cssPath, Math.round(fs.statSync(cssPath).mtimeMs)) : ''
+      moduleUrl: fsModuleUrl(jsPath, jsVersion),
+      rawModuleUrl: rawPackUrl(entry.name, jsFile, jsVersion),
+      styleUrl: cssPath ? fsModuleUrl(cssPath, cssVersion) : '',
+      rawStyleUrl: cssPath ? rawPackUrl(entry.name, cssFile, cssVersion) : ''
     })
   }
   const known = Object.keys(PACKAGE_LABELS)
@@ -193,6 +232,14 @@ export function apiPlugin() {
           return
         }
         sendJson(response, 200, { packages: listBuiltPackages() })
+      })
+
+      server.middlewares.use('/packs', (request, response) => {
+        if (request.method !== 'GET') {
+          sendJson(response, 405, { error: '只支持 GET' })
+          return
+        }
+        serveRawPackFile(request, response)
       })
 
       server.middlewares.use('/api/presets', (request, response) => {

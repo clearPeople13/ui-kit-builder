@@ -2,13 +2,38 @@
 import { computed, ref, watch } from 'vue'
 import PlaygroundPreviewHost from '../playground-preview'
 import IconLibrary from './IconLibrary.vue'
+import OnlinePlayground from './OnlinePlayground.vue'
 import PropDrawer from './PropDrawer.vue'
+import { sceneSourceCode } from '../demo-code'
+import { useVueHighlight } from '../use-highlight'
 import { PLAYGROUND_GROUPS, buildBaseValues, type PlaygroundControl, type PlaygroundEntry } from '../playground'
 import { componentById, componentFeaturesOf, featureAvailable, packageById, type DemoPackage } from '../packages'
 import { dropGroupValues, groupDefaults, presetValues, requiredFeatures, sceneViews, type SceneView } from '../scenes'
 import { lazyLoadCascader } from '../cascader-data'
 
 defineOptions({ name: 'ComponentPage' })
+
+interface ApiPropRow {
+  name: string
+  type: string
+  description: string
+  defaultText: string
+  locked: boolean
+}
+
+interface ApiSection {
+  key: string
+  title: string
+  description: string
+  locked: boolean
+  rows: ApiPropRow[]
+}
+
+interface ApiBlock {
+  name: string
+  sections: ApiSection[]
+  methods: string[]
+}
 
 const props = defineProps<{
   componentId: string
@@ -21,6 +46,8 @@ const enabledGroups = ref<Set<string>>(new Set(['core']))
 const disabledDefaultGroups = ref<Set<string>>(new Set())
 const overrides = ref<Record<string, unknown>>({})
 const drawerOpen = ref(false)
+const codeOpen = ref(false)
+const playgroundOpen = ref(false)
 
 const TRIGGER_EXPORTS = new Set(['Dialog', 'Drawer', 'MessageBox', 'Tour', 'Notification', 'ImageViewer'])
 
@@ -94,6 +121,83 @@ const activeEntry = computed<PlaygroundEntry | undefined>(() => {
 const scenes = computed<SceneView[]>(() => {
   const entry = activeEntry.value
   return entry ? sceneViews(entry, target.value, props.componentId) : []
+})
+
+const activeScene = computed<SceneView | undefined>(() => {
+  const current = scenes.value.find((scene) => scene.id === activeSceneId.value)
+  if (current && current.available) {
+    return current
+  }
+  return scenes.value.find((scene) => scene.available) ?? scenes.value[0]
+})
+
+const activeSceneCode = computed(() => {
+  const entry = activeEntry.value
+  return entry ? sceneSourceCode(entry, activeScene.value) : ''
+})
+
+const highlightedCode = useVueHighlight(activeSceneCode)
+
+function formatDefault(value: unknown): string {
+  if (value === undefined || value === null || value === '') {
+    return '—'
+  }
+  if (typeof value === 'string') {
+    return `'${value}'`
+  }
+  if (typeof value === 'boolean' || typeof value === 'number') {
+    return String(value)
+  }
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return '—'
+  }
+}
+
+const apiBlocks = computed<ApiBlock[]>(() => {
+  const comp = component.value
+  if (!comp) {
+    return []
+  }
+  return comp.exports.map((exp) => {
+    const sections: ApiSection[] = []
+    if (exp.coreProps.length) {
+      sections.push({
+        key: 'core',
+        title: '基础属性',
+        description: '',
+        locked: false,
+        rows: exp.coreProps.map((prop) => ({
+          name: prop.name,
+          type: prop.type,
+          description: prop.description ?? '',
+          defaultText: formatDefault(prop.default),
+          locked: false
+        }))
+      })
+    }
+    for (const feature of exp.features) {
+      if (!feature.props.length) {
+        continue
+      }
+      const locked = !featureAvailable(target.value, props.componentId, feature.id)
+      sections.push({
+        key: feature.id,
+        title: feature.title,
+        description: feature.description,
+        locked,
+        rows: feature.props.map((prop) => ({
+          name: prop.name,
+          type: prop.type,
+          description: prop.description ?? '',
+          defaultText: formatDefault(prop.default),
+          locked
+        }))
+      })
+    }
+    return { name: exp.name, sections, methods: exp.methods ?? [] }
+  })
 })
 
 function isDefaultOnControl(control: PlaygroundControl): boolean {
@@ -435,7 +539,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
 
     <section class="cp-block">
       <div class="cp-block__head">
-        <h2 class="cp-block__title">示例场景</h2>
+        <h2 class="cp-block__title">代码演示</h2>
         <button class="cp-link-btn" type="button" @click="resetScene">重置</button>
       </div>
       <div class="cp-scenes">
@@ -451,6 +555,107 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
           <span>{{ scene.label }}</span>
           <span v-if="!scene.available" class="cp-lock">未包含</span>
         </button>
+      </div>
+      <div class="cp-demo">
+        <div class="pg-stage">
+          <div class="pg-stage__canvas">
+            <div v-if="component.id === 'backtop'" id="pg-backtop-scroller" class="pg-backtop-demo">
+              <p class="pg-backtop-demo__hint">滚动此面板，超过 visibilityHeight 后按钮贴在面板右下角内侧</p>
+              <div v-for="row in BACKTOP_DEMO_ROWS" :key="row" class="pg-backtop-demo__row">{{ row }}</div>
+            </div>
+            <div v-if="component.id === 'affix'" id="pg-affix-scroller" class="pg-affix-demo">
+              <p class="pg-affix-demo__hint">在容器内滚动，Affix 到达顶/底边缘后吸附；target 场景指向此容器</p>
+              <div v-for="row in AFFIX_LEADING_ROWS" :key="row" class="pg-affix-demo__row">{{ row }}</div>
+              <PlaygroundPreviewHost
+                :package-id="target.id"
+                :export-name="activeEntry.name"
+                :scene-id="activeSceneId"
+                :values="previewValues"
+                :event-props="activeEntry.previewEvents"
+                @sync="handleSync"
+              />
+              <div v-for="row in AFFIX_DEMO_ROWS" :key="row" class="pg-affix-demo__row">{{ row }}</div>
+            </div>
+            <div v-if="component.id === 'anchor'" class="pg-anchor-demo">
+              <div class="pg-anchor-demo__nav">
+                <PlaygroundPreviewHost
+                  :package-id="target.id"
+                  :export-name="activeEntry.name"
+                  :scene-id="activeSceneId"
+                  :values="previewValues"
+                  :event-props="activeEntry.previewEvents"
+                  @sync="handleSync"
+                />
+              </div>
+              <div class="pg-anchor-demo__body">
+                <p class="pg-anchor-demo__hint">滚动右侧区块观察高亮：按 bound 阈值定位，子级激活时父级链路一起点亮</p>
+                <div class="pg-anchor-demo__scroller">
+                  <section
+                    v-for="section in ANCHOR_SECTIONS"
+                    :id="section.id"
+                    :key="section.id"
+                    :class="anchorSectionClass(section)"
+                  >
+                    <h4>{{ section.title }}</h4>
+                    <p>{{ section.text }}</p>
+                  </section>
+                  <p class="pg-anchor-demo__tail">尾部留白：保证最后一个目标也能滚到容器顶部并高亮</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="component.id === 'tour'" class="pg-anchor-demo__sections">
+              <section v-for="section in LANDMARKS" :id="section.id" :key="section.id" class="pg-anchor-demo__section">
+                <h4>{{ section.title }}</h4>
+                <p>{{ section.text }}</p>
+              </section>
+            </div>
+            <PlaygroundPreviewHost
+              v-if="component.id !== 'affix' && component.id !== 'anchor'"
+              :package-id="target.id"
+              :export-name="activeEntry.name"
+              :scene-id="activeSceneId"
+              :values="previewValues"
+              :event-props="activeEntry.previewEvents"
+              @sync="handleSync"
+            />
+          </div>
+        </div>
+        <div v-if="tracksModelValue" class="pg-stage__value">
+          <span class="pg-stage__value-label">modelValue</span>
+          <code class="pg-stage__value-code">{{ modelValueText }}</code>
+          <span class="pg-stage__value-hint">v-model 实时值</span>
+        </div>
+        <div class="cp-demo__ops">
+          <button class="cp-open-btn" type="button" @click="drawerOpen = true">属性调试 · {{ overrideCount }}</button>
+          <button v-if="needsTrigger" class="cp-open-btn" type="button" @click="openPreview">
+            打开 {{ activeEntry.name }}
+          </button>
+          <button class="cp-demo__code-btn" type="button" @click="playgroundOpen = true">在线调试</button>
+          <span class="cp-demo__flex" />
+          <button
+            class="cp-demo__code-btn"
+            type="button"
+            :aria-expanded="codeOpen"
+            @click="codeOpen = !codeOpen"
+          >
+            {{ codeOpen ? '收起代码' : '展开代码' }}
+          </button>
+        </div>
+        <div v-if="codeOpen" class="cp-demo__code" v-html="highlightedCode" />
+        <div class="cp-demo__desc">
+          <h3>{{ activeScene?.label }}</h3>
+          <p>{{ activeScene?.reason || activeScene?.hint || '该示例未填写描述。' }}</p>
+        </div>
+      </div>
+      <div class="pg-stage__foot">
+        <p class="pg-stage__note">{{ activeEntry.note || activeEntry.componentDescription }}</p>
+        <div class="pg-stage__meta">
+          <span class="pg-stat"
+            ><strong>{{ activeEntry.controls.length }}</strong> / {{ activeEntry.allProps }} 可调</span
+          >
+          <span v-if="lockedFeatures.length" class="pg-stat is-muted">{{ lockedFeatures.length }} 个特性未包含</span>
+          <span v-else-if="featureGroups.length" class="pg-stat">全部特性已包含</span>
+        </div>
       </div>
     </section>
 
@@ -489,90 +694,59 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       <IconLibrary :package-id="target.id" :active-name="activeIconName" @select="handleIconSelect" />
     </section>
 
-    <section class="cp-preview">
-      <div class="cp-preview__bar">
-        <button class="cp-open-btn" type="button" @click="drawerOpen = true">属性调试 · {{ overrideCount }}</button>
-        <span class="cp-preview__hint">逐项开启或修改 props，预览与已启用特性实时联动</span>
-        <button v-if="needsTrigger" class="cp-open-btn" type="button" @click="openPreview">
-          打开 {{ activeEntry.name }}
-        </button>
+    <section class="cp-block">
+      <div class="cp-block__head">
+        <h2 class="cp-block__title">API</h2>
+        <p class="cp-block__hint">灰显区块表示 {{ target.label }} 未启用该特性，对应属性不在构建产物中</p>
       </div>
-      <div class="pg-stage">
-        <div class="pg-stage__canvas">
-          <div v-if="component.id === 'backtop'" id="pg-backtop-scroller" class="pg-backtop-demo">
-            <p class="pg-backtop-demo__hint">滚动此面板，超过 visibilityHeight 后按钮贴在面板右下角内侧</p>
-            <div v-for="row in BACKTOP_DEMO_ROWS" :key="row" class="pg-backtop-demo__row">{{ row }}</div>
-          </div>
-          <div v-if="component.id === 'affix'" id="pg-affix-scroller" class="pg-affix-demo">
-            <p class="pg-affix-demo__hint">在容器内滚动，Affix 到达顶/底边缘后吸附；target 场景指向此容器</p>
-            <div v-for="row in AFFIX_LEADING_ROWS" :key="row" class="pg-affix-demo__row">{{ row }}</div>
-            <PlaygroundPreviewHost
-              :package-id="target.id"
-              :export-name="activeEntry.name"
-              :scene-id="activeSceneId"
-              :values="previewValues"
-              :event-props="activeEntry.previewEvents"
-              @sync="handleSync"
-            />
-            <div v-for="row in AFFIX_DEMO_ROWS" :key="row" class="pg-affix-demo__row">{{ row }}</div>
-          </div>
-          <div v-if="component.id === 'anchor'" class="pg-anchor-demo">
-            <div class="pg-anchor-demo__nav">
-              <PlaygroundPreviewHost
-                :package-id="target.id"
-                :export-name="activeEntry.name"
-                :scene-id="activeSceneId"
-                :values="previewValues"
-                :event-props="activeEntry.previewEvents"
-                @sync="handleSync"
-              />
-            </div>
-            <div class="pg-anchor-demo__body">
-              <p class="pg-anchor-demo__hint">滚动右侧区块观察高亮：按 bound 阈值定位，子级激活时父级链路一起点亮</p>
-              <div class="pg-anchor-demo__scroller">
-                <section
-                  v-for="section in ANCHOR_SECTIONS"
-                  :id="section.id"
-                  :key="section.id"
-                  :class="anchorSectionClass(section)"
-                >
-                  <h4>{{ section.title }}</h4>
-                  <p>{{ section.text }}</p>
-                </section>
-                <p class="pg-anchor-demo__tail">尾部留白：保证最后一个目标也能滚到容器顶部并高亮</p>
-              </div>
-            </div>
-          </div>
-          <div v-if="component.id === 'tour'" class="pg-anchor-demo__sections">
-            <section v-for="section in LANDMARKS" :id="section.id" :key="section.id" class="pg-anchor-demo__section">
-              <h4>{{ section.title }}</h4>
-              <p>{{ section.text }}</p>
-            </section>
-          </div>
-          <PlaygroundPreviewHost
-            v-if="component.id !== 'affix' && component.id !== 'anchor'"
-            :package-id="target.id"
-            :export-name="activeEntry.name"
-            :scene-id="activeSceneId"
-            :values="previewValues"
-            :event-props="activeEntry.previewEvents"
-            @sync="handleSync"
-          />
+      <div v-for="block in apiBlocks" :key="block.name" class="cp-api">
+        <h3 class="cp-api__export">{{ block.name }}</h3>
+        <div
+          v-for="sec in block.sections"
+          :key="sec.key"
+          :class="sec.locked ? 'cp-api__sec is-locked' : 'cp-api__sec'"
+        >
+          <h4 class="cp-api__sec-title">
+            {{ sec.title }}
+            <code v-if="sec.key !== 'core'" class="cp-api__id">{{ sec.key }}</code>
+            <span v-if="sec.locked" class="cp-lock">当前包未启用</span>
+          </h4>
+          <p v-if="sec.description" class="cp-api__sec-desc">{{ sec.description }}</p>
+          <table class="cp-api__table">
+            <thead>
+              <tr>
+                <th>参数</th>
+                <th>说明</th>
+                <th>类型</th>
+                <th>默认值</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in sec.rows" :key="row.name">
+                <td><code>{{ row.name }}</code></td>
+                <td>{{ row.description || '—' }}</td>
+                <td><code class="cp-api__type">{{ row.type }}</code></td>
+                <td><code>{{ row.defaultText }}</code></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </div>
-      <div v-if="tracksModelValue" class="pg-stage__value">
-        <span class="pg-stage__value-label">modelValue</span>
-        <code class="pg-stage__value-code">{{ modelValueText }}</code>
-        <span class="pg-stage__value-hint">v-model 实时值</span>
-      </div>
-      <div class="pg-stage__foot">
-        <p class="pg-stage__note">{{ activeEntry.note || activeEntry.componentDescription }}</p>
-        <div class="pg-stage__meta">
-          <span class="pg-stat"
-            ><strong>{{ activeEntry.controls.length }}</strong> / {{ activeEntry.allProps }} 可调</span
-          >
-          <span v-if="lockedFeatures.length" class="pg-stat is-muted">{{ lockedFeatures.length }} 个特性未包含</span>
-          <span v-else-if="featureGroups.length" class="pg-stat">全部特性已包含</span>
+        <div v-if="block.methods.length" class="cp-api__sec">
+          <h4 class="cp-api__sec-title">Methods</h4>
+          <table class="cp-api__table">
+            <thead>
+              <tr>
+                <th>方法名</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="method in block.methods" :key="method">
+                <td><code>{{ method }}</code></td>
+                <td>—</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -603,5 +777,13 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
     @change="handlePropChange"
     @reset="resetOverrides"
     @close="drawerOpen = false"
+  />
+
+  <OnlinePlayground
+    v-if="playgroundOpen && activeEntry"
+    :package-id="target.id"
+    :export-name="activeEntry.name"
+    :snippet="activeSceneCode"
+    @close="playgroundOpen = false"
   />
 </template>

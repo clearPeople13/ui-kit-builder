@@ -1,0 +1,49 @@
+.ui-cascader__select-all {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--ui-border-color-lighter);
+  line-height: 20px;
+}
+
+.ui-cascader__select-all-box {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-radius-small);
+  background: var(--ui-bg-color);
+  color: var(--ui-color-white, #fff);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.ui-cascader__select-all-box.is-checked {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-color-primary);
+}
+
+.ui-cascader__select-all-box.is-indeterminate {
+  border-color: var(--ui-color-primary);
+  background: var(--ui-color-primary);
+}
+
+.ui-cascader__select-all-label {
+  color: var(--ui-text-color-regular);
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ui-cascader__select-all-count {
+  margin-left: auto;
+  color: var(--ui-text-color-secondary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}

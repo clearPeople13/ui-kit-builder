@@ -35,6 +35,16 @@ export default {
           "type": "string",
           "description": "size",
           "default": ""
+        },
+        {
+          "name": "fitWidth",
+          "type": "boolean",
+          "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
+        },
+        {
+          "name": "maxWidth",
+          "type": "string | number",
+          "description": "最大宽度：超出后文本省略"
         }
       ],
       "features": {

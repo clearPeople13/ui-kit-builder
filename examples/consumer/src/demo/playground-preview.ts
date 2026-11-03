@@ -13,12 +13,11 @@ import {
   type VNode,
   type VNodeChild
 } from 'vue'
-import * as BG_COLOR_KIT from '@demo/ui-kit-bg-color'
+import * as ANTD_KIT from '@demo/ui-kit-antd'
 import * as BRANDED_KIT from '@demo/ui-kit-branded'
 import * as CORE_KIT from '@demo/ui-kit-core'
 import * as CUTE_KIT from '@demo/ui-kit-cute'
 import * as FULL_KIT from '@demo/ui-kit-full'
-import * as GRADIENT_KIT from '@demo/ui-kit-gradient'
 import { FORM_CITY_OPTIONS } from './form-data'
 import { SAMPLE_AVATAR_LIST, SAMPLE_PHOTOS } from './sample-image'
 
@@ -39,11 +38,10 @@ function updateFormField(model: Record<string, unknown> | undefined, key: string
 
 const STATIC_KITS: Record<string, KitModule> = {
   core: CORE_KIT as unknown as KitModule,
-  'bg-color': BG_COLOR_KIT as unknown as KitModule,
-  gradient: GRADIENT_KIT as unknown as KitModule,
   full: FULL_KIT as unknown as KitModule,
   branded: BRANDED_KIT as unknown as KitModule,
-  cute: CUTE_KIT as unknown as KitModule
+  cute: CUTE_KIT as unknown as KitModule,
+  antd: ANTD_KIT as unknown as KitModule
 }
 
 const DYNAMIC_KITS = shallowRef<Record<string, KitModule>>({})
@@ -2931,7 +2929,12 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
         )
     },
     VirtualList: {
-      default: (scope) => h('div', { class: 'pg-virtual-item' }, String(scope?.item ?? ''))
+      default: (scope) =>
+        h(
+          'div',
+          { class: ['pg-virtual-item', scope?.item === undefined ? 'is-placeholder' : ''] },
+          scope?.item === undefined ? '加载中…' : String(scope.item)
+        )
     },
     Tour: {
       default: () => [

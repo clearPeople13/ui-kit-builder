@@ -211,8 +211,6 @@ async function main() {
   const { results } = await buildAllProfiles()
   const byName = Object.fromEntries(results.map((result) => [result.name, result]))
   const core = byName.core
-  const bgColor = byName['bg-color']
-  const gradient = byName.gradient
   const full = byName.full
   const branded = byName.branded
 
@@ -226,11 +224,6 @@ async function main() {
   const coreJs = readOutput(core, '.js')
   const coreCss = readOutput(core, '.css')
   const coreTypes = readFile(core.dir, 'index.d.ts')
-  const bgJs = readOutput(bgColor, '.js')
-  const bgCss = readOutput(bgColor, '.css')
-  const bgTypes = readFile(bgColor.dir, 'index.d.ts')
-  const gradientJs = readOutput(gradient, '.js')
-  const gradientTypes = readFile(gradient.dir, 'index.d.ts')
   const fullJs = readOutput(full, '.js')
   const fullCss = readOutput(full, '.css')
   const fullTypes = readFile(full.dir, 'index.d.ts')
@@ -241,6 +234,8 @@ async function main() {
   const cuteCss = readOutput(byName.cute, '.css')
   const chineseJs = readOutput(byName.chinese, '.js')
   const chineseCss = readOutput(byName.chinese, '.css')
+  const antdJs = readOutput(byName.antd, '.js')
+  const antdCss = readOutput(byName.antd, '.css')
 
   for (const token of [
     'ui-button',
@@ -323,21 +318,6 @@ async function main() {
   assertIncludes(coreTypes, 'export type ButtonProps = ButtonCoreProps', 'core d.ts')
   assertIncludes(coreTypes, 'export declare const activeComponents:', 'core d.ts')
 
-  assertIncludes(bgJs, 'bgColor', 'bg-color JS')
-  assertIncludes(bgJs, 'autoContrast', 'bg-color JS')
-  assertIncludes(bgCss, '.ui-button--bg-color', 'bg-color CSS')
-  assertExcludes(bgJs, 'gradientAngle', 'bg-color JS')
-  assertExcludes(bgJs, 'ui-button--gradient', 'bg-color JS')
-  assertExcludes(bgCss, '.ui-button--gradient', 'bg-color CSS')
-  assertIncludes(bgTypes, 'bgColor', 'bg-color d.ts')
-  assertIncludes(bgTypes, 'export interface ButtonBgColorProps', 'bg-color d.ts')
-  assertExcludes(bgTypes, 'gradientAngle', 'bg-color d.ts')
-  assertExcludes(bgTypes, 'ButtonGradientProps', 'bg-color d.ts')
-  assertIncludes(bgTypes, 'export type ButtonProps = ButtonCoreProps & ButtonBgColorProps', 'bg-color d.ts')
-
-  assertIncludes(gradientJs, 'gradientAngle', 'gradient JS')
-  assertIncludes(gradientTypes, 'ButtonGradientProps', 'gradient d.ts')
-
   assertIncludes(fullJs, 'bgColor', 'full JS')
   assertIncludes(fullJs, 'gradientAngle', 'full JS')
   assertIncludes(fullJs, 'autoInsertSpace', 'full JS')
@@ -402,6 +382,17 @@ async function main() {
   assertExcludes(chineseCss, '.ui-button', 'chinese CSS 前缀')
   assertExcludes(chineseJs, 'ui-button', 'chinese JS 前缀')
 
+  assertIncludes(antdJs, 'antd-button', 'antd JS 前缀')
+  assertIncludes(antdCss, '.antd-button', 'antd CSS 前缀')
+  assertIncludes(antdCss, '--antd-color-primary:#1677ff', 'antd CSS 全局主题')
+  assertIncludes(antdCss, '--antd-button-radius:6px', 'antd CSS 按钮圆角主题')
+  assertIncludes(antdCss, '.antd-menu{--antd-menu-active-color:#1677ff', 'antd CSS 菜单激活色取自主题')
+  assertIncludes(antdCss, '.antd-scrollbar{--antd-scrollbar-thumb-color:rgba(0, 0, 0, 0.25)', 'antd CSS 滚动条主题')
+  assertIncludes(antdCss, '.antd-tag--primary.antd-tag--light', 'antd CSS 皮肤规则')
+  assertExcludes(antdCss, '--ui-', 'antd CSS 前缀')
+  assertExcludes(antdCss, '.ui-button', 'antd CSS 前缀')
+  assertExcludes(antdJs, 'ui-button', 'antd JS 前缀')
+
   for (const result of results) {
     const pkg = packageJsonOf(result)
     assert(pkg.types === './index.d.ts', `${result.name} package.json 应导出类型`)
@@ -414,7 +405,7 @@ async function main() {
       `${result.name} package.json 组件数与注册表不一致`
     )
     assert(pkg.uiKit.prefix === result.prefix, `${result.name} package.json 前缀应一致`)
-    const expectedScrollbarFeatures = ['full', 'branded', 'chinese', 'cute'].includes(result.name) ? 1 : 0
+    const expectedScrollbarFeatures = ['full', 'branded', 'chinese', 'cute', 'antd'].includes(result.name) ? 1 : 0
     assert(
       pkg.uiKit.components.scrollbar.length === expectedScrollbarFeatures,
       `${result.name} Scrollbar 特性数应为 ${expectedScrollbarFeatures}`
@@ -429,11 +420,11 @@ async function main() {
   assert(!coreButtonHtml.includes('ui-button--bg-color'), 'core SSR 不应包含背景色特性类')
   assert(!/style="[^"]*background-color/.test(coreButtonHtml), 'core SSR 不应出现背景色内联样式')
 
-  const bgHtml = await render(bgColor, 'Button', { bgColor: '#3366ff', autoContrast: true })
-  assert(/style="[^"]*background-color/.test(bgHtml), 'bg-color SSR 应出现背景色内联样式')
-  assert(bgHtml.includes('#3366ff'), 'bg-color SSR 应使用传入的背景色')
-  assert(/color:\s*(#ffffff|#fff)/i.test(bgHtml), 'bg-color SSR 应计算白色前景')
-  assert(bgHtml.includes('ui-button--bg-color'), 'bg-color SSR 应包含背景色特性类')
+  const bgHtml = await render(full, 'Button', { bgColor: '#3366ff', autoContrast: true })
+  assert(/style="[^"]*background-color/.test(bgHtml), 'full SSR 应出现背景色内联样式')
+  assert(bgHtml.includes('#3366ff'), 'full SSR 应使用传入的背景色')
+  assert(/color:\s*(#ffffff|#fff)/i.test(bgHtml), 'full SSR 应计算白色前景')
+  assert(bgHtml.includes('ui-button--bg-color'), 'full SSR 应包含背景色特性类')
 
   const gradientHtml = await render(full, 'Button', {
     bgColor: '#3366ff',
@@ -504,7 +495,7 @@ async function main() {
     }))
   )
 
-  const logicTierNames = ['core', 'bg-color', 'gradient', 'full']
+  const logicTierNames = ['core', 'full']
   const logicTiers = results.filter((result) => logicTierNames.includes(result.name))
   assert(
     logicTiers.every((result, index) => index === 0 || result.jsBytes >= logicTiers[index - 1].jsBytes),

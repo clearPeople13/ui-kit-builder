@@ -132,11 +132,15 @@ export function createCascaderPanel(features: UiFeature[] = []) {
 
         watch(
           () => props.modelValue,
-          (value) => {
+          () => {
             if (props.multiple) {
+              const first = selectedPaths.value[0]
+              if (first && !activePath.value.length) {
+                activePath.value = [...first]
+              }
               return
             }
-            const path = toPath(value)
+            const path = toPath(props.modelValue)
             if (path.length) {
               activePath.value = [...path]
             }

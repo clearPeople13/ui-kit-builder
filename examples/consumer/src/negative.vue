@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button as BgColorButton } from '@demo/ui-kit-bg-color'
+import { Button as BrandedButton, Input as BrandedInput } from '@demo/ui-kit-branded'
 import { Button as CoreButton, Input as CoreInput } from '@demo/ui-kit-core'
 import { Button as FullButton } from '@demo/ui-kit-full'
 </script>
@@ -13,20 +13,16 @@ import { Button as FullButton } from '@demo/ui-kit-full'
   <CoreButton plain />
   <CoreButton loading />
 
-  <!-- bg-color 未启用 gradient / appearance -->
-  <BgColorButton gradient />
-  <BgColorButton :gradient-angle="45" />
-  <BgColorButton round />
+  <!-- core Input 未启用 clearable -->
+  <CoreInput clearable />
 
   <!-- full 启用了 gradientAngle，但类型必须是 number -->
   <FullButton :gradient-angle="'45'" />
 
-  <!-- core Input 未启用 clearable -->
-  <CoreInput clearable />
-
   <!-- 对照组：各包已启用属性不应报错 -->
   <CoreButton type="primary" size="small" :disabled="false" />
-  <BgColorButton bg-color="#3366ff" :auto-contrast="true" />
+  <BrandedButton bg-color="#3366ff" :auto-contrast="true" gradient :gradient-angle="45" />
+  <BrandedInput model-value="hello" clearable />
   <FullButton bg-color="#3366ff" :auto-contrast="true" gradient :gradient-angle="45" loading round />
   <CoreInput model-value="hello" placeholder="Name" />
 </template>

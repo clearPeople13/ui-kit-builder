@@ -171,8 +171,6 @@ const SAMPLE_BY_NAME: Record<string, unknown> = {
   total: 120,
   percentage: 62,
   src: SAMPLE_IMAGE_SRC,
-  color: '#3366ff',
-  fill: '#3366ff',
   prefix: '¥',
   suffix: '件',
   name: '示例名称',
@@ -209,6 +207,8 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'Statistic.prefix': '¥',
   'Countdown.value': 3661,
   'Countdown.title': '剩余时间',
+  'Countdown.prefix': '',
+  'Countdown.suffix': '',
   'Watermark.content': 'feature build',
   'Watermark.width': 240,
   'Watermark.height': 120,
@@ -331,6 +331,7 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'VirtualList.data': VIRTUAL_DATA,
   'VirtualList.height': 180,
   'VirtualList.itemSize': 30,
+  'VirtualList.total': 0,
   'Scrollbar.height': '140px',
   'Option.label': '选项一',
   'Option.value': 'a',
@@ -481,7 +482,7 @@ const PREVIEW_NOTES: Record<string, string> = {
   FormItem:
     'FormItem 在 Form 内会自动继承 model、rules、labelWidth、labelPosition 与 size；单独预览时用 error 属性演示错误态，inlineMessage 与 showMessage 需启用校验特性。',
   Cascader:
-    '场景即数据：多选场景折叠标签并支持悬浮 +N 查看；懒加载场景每级请求约 550ms 并显示加载中；虚拟滚动场景首列 400 项只渲染可视窗口。清除按钮在悬浮触发器时出现。',
+    '场景即数据：多选场景折叠标签并支持悬浮 +N 查看，展开两条场景演示 maxCollapseTags=2；复选框场景以 checkbox 渲染叶子勾选；标签场景对比 showAllLevels 全路径与仅末级；懒加载场景每级请求约 550ms 并显示加载中；虚拟滚动场景首列 400 项只渲染可视窗口。清除按钮在悬浮触发器时出现。',
   DatePicker:
     '场景即数据：可清除场景使用自定义清除图标；可编辑场景直接在输入框键入日期回车生效；格式化场景按 YYYY/MM/DD 输出并在清空后回填；区间场景展示“至”分隔、自定义占位、ISO 周数列与左右独立翻月，重新打开时左栏定位开始月、右栏定位结束月。',
   Select:
@@ -795,7 +796,7 @@ function initialValueFor(entryName: string, control: PlaygroundControl): unknown
     } else if (control.kind === 'number') {
       value = undefined
     } else {
-      value = control.kind === 'color' ? '#3366ff' : ''
+      value = ''
     }
   }
   if (control.kind === 'select' && !control.options.includes(String(value))) {

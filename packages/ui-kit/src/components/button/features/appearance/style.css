@@ -6,22 +6,27 @@
 
 .ui-button--primary {
   --ui-button-accent: var(--ui-color-primary);
+  background-image: var(--ui-button-bg-image), var(--ui-gradient-primary);
 }
 
 .ui-button--success {
   --ui-button-accent: var(--ui-color-success);
+  background-image: var(--ui-button-bg-image), var(--ui-gradient-success);
 }
 
 .ui-button--warning {
   --ui-button-accent: var(--ui-color-warning);
+  background-image: var(--ui-button-bg-image), var(--ui-gradient-warning);
 }
 
 .ui-button--info {
   --ui-button-accent: var(--ui-color-info);
+  background-image: var(--ui-button-bg-image), var(--ui-gradient-info);
 }
 
 .ui-button--danger {
   --ui-button-accent: var(--ui-color-danger);
+  background-image: var(--ui-button-bg-image), var(--ui-gradient-danger);
 }
 
 .ui-button.is-plain {
@@ -42,12 +47,18 @@
   padding-right: 4px;
   border-color: transparent;
   background: transparent;
+  box-shadow: none;
   color: var(--ui-button-accent);
 }
 
 .ui-button.is-link {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.ui-button.is-text:active,
+.ui-button.is-link:active {
+  box-shadow: none;
 }
 
 .ui-button.is-text:hover,
