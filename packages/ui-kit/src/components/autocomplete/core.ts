@@ -420,8 +420,8 @@ export function createAutocomplete(features: UiFeature[] = []) {
             },
             [
               loading.value && !props.hideLoading
-                ? h('div', { class: 'ui-autocomplete__loading' }, [
-                    h('span', { class: 'ui-autocomplete__spinner' }),
+                ? h('div', { class: 'ui-loader', role: 'status' }, [
+                    h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
                     h('span', null, '加载中…')
                   ])
                 : h('ul', { class: 'ui-autocomplete__list' }, options),

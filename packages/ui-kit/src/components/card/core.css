@@ -9,6 +9,14 @@
   box-shadow: var(--ui-card-shadow);
 }
 
+.ui-card__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+}
+
 .ui-card__header {
   padding: var(--ui-card-header-padding);
   border-bottom: 1px solid var(--ui-card-header-border-color);

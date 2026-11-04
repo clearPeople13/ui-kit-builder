@@ -65,6 +65,7 @@ const EVENT_PROPS: Record<string, string> = {
   'onUpdate:visible': 'visible',
   'onUpdate:currentPage': 'currentPage',
   'onUpdate:current': 'current',
+  'onUpdate:pageSize': 'pageSize',
   'onUpdate:value': 'value'
 }
 
@@ -2074,6 +2075,65 @@ const TabsEditableDemo = defineComponent({
   }
 })
 
+const CarouselImagesDemo = defineComponent({
+  name: 'CarouselImagesDemo',
+  props: {
+    carousel: { type: Object as PropType<Component>, required: true },
+    item: { type: Object as PropType<Component>, required: true },
+    values: { type: Object as PropType<Record<string, unknown>>, required: true }
+  },
+  setup(props) {
+    return () =>
+      h(props.carousel, props.values, () =>
+        SAMPLE_PHOTOS.map((photo) =>
+          h(props.item, { key: photo.title }, () => h('img', { class: 'pg-slide-img', src: photo.src, alt: photo.title }))
+        )
+      )
+  }
+})
+
+const TIMELINE_PHOTO_DATES = ['2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26']
+
+interface AccountMenuItem {
+  label: string
+  icon: string
+  disabled?: boolean
+  divided?: boolean
+}
+
+const ACCOUNT_MENU_ITEMS: AccountMenuItem[] = [
+  { label: '个人中心', icon: 'CircleUser' },
+  { label: '我的订单', icon: 'Package' },
+  { label: '账户充值', icon: 'CreditCard' },
+  { label: '消息通知', icon: 'Bell' },
+  { label: '账号设置', icon: 'Settings', disabled: true },
+  { label: '退出登录', icon: 'LogOut', divided: true }
+]
+
+const TimelinePhotosDemo = defineComponent({
+  name: 'TimelinePhotosDemo',
+  props: {
+    timeline: { type: Object as PropType<Component>, required: true },
+    item: { type: Object as PropType<Component>, required: true },
+    values: { type: Object as PropType<Record<string, unknown>>, required: true }
+  },
+  setup(props) {
+    return () =>
+      h(props.timeline, props.values, () =>
+        SAMPLE_PHOTOS.map((photo, index) =>
+          h(
+            props.item,
+            { key: photo.title, timestamp: TIMELINE_PHOTO_DATES[index] },
+            () => h('figure', { class: 'pg-timeline-photo' }, [
+              h('img', { class: 'pg-timeline-photo__img', src: photo.thumbnail, alt: photo.title }),
+              h('figcaption', { class: 'pg-timeline-photo__title' }, photo.title)
+            ])
+          )
+        )
+      )
+  }
+})
+
 const INFINITE_BATCH = 6
 const INFINITE_INITIAL = 8
 const INFINITE_TOTAL = 40
@@ -2676,6 +2736,27 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
     }
   })
 
+  const DescriptionsNotifySwitch = defineComponent({
+    name: 'DescriptionsNotifySwitchSample',
+    setup() {
+      const enabled = shallowRef(true)
+      return () =>
+        h(kit('Switch'), {
+          modelValue: enabled.value,
+          activeText: '开启',
+          inactiveText: '关闭',
+          'onUpdate:modelValue': (next: boolean) => {
+            enabled.value = next
+          }
+        })
+    }
+  })
+
+  const renderAccountMenuItems = () =>
+    ACCOUNT_MENU_ITEMS.map((item) =>
+      h(kit('DropdownItem'), { icon: item.icon, disabled: item.disabled, divided: item.divided }, () => item.label)
+    )
+
   return {
     Icon: {},
     Button: { default: () => '按钮' },
@@ -2727,25 +2808,72 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
     Footer: { default: () => 'Footer 底栏' },
     Descriptions: {
       default: () => [
-        h(kit('DescriptionsItem'), { label: '姓名' }, () => '张三'),
-        h(kit('DescriptionsItem'), { label: '城市' }, () => '上海'),
-        h(kit('DescriptionsItem'), { label: '状态' }, () => '稳定')
+        h(kit('DescriptionsItem'), { label: '订单编号', span: 2 }, () => [
+          'DD2026110300188',
+          h(kit('Link'), { href: '#/c/descriptions', style: 'margin-left: 8px;' }, () => '查看物流')
+        ]),
+        h(kit('DescriptionsItem'), { label: '订单状态' }, () => [
+          h(kit('Tag'), { type: 'success' }, () => '已发货'),
+          h(kit('Tag'), { type: 'warning', style: 'margin-left: 6px;' }, () => '加急')
+        ]),
+        h(kit('DescriptionsItem'), { label: '下单时间' }, () => '2026-11-01 10:23:08'),
+        h(kit('DescriptionsItem'), { label: '支付时间' }, () => '2026-11-01 10:24:41'),
+        h(kit('DescriptionsItem'), { label: '客户昵称' }, () => 'ocean_旅行者'),
+        h(kit('DescriptionsItem'), { label: '会员等级' }, () =>
+          h(kit('Rate'), { modelValue: 4, disabled: true, showScore: true, scoreTemplate: '{value} 级' })
+        ),
+        h(kit('DescriptionsItem'), { label: '联系电话' }, () => '138 0000 8888'),
+        h(kit('DescriptionsItem'), { label: '收货地址', span: 3 }, () =>
+          '上海市浦东新区世纪大道 1000 号环球金融中心 21 层 2108 室（工作日 9:00 - 18:00 可签收，周末暂不派送）'
+        ),
+        h(kit('DescriptionsItem'), { label: '商品总额' }, () => '¥1,299.00'),
+        h(kit('DescriptionsItem'), { label: '运费' }, () => '¥12.00'),
+        h(kit('DescriptionsItem'), { label: '优惠金额' }, () => '-¥50.00'),
+        h(kit('DescriptionsItem'), { label: '实付金额' }, () => '¥1,261.00'),
+        h(kit('DescriptionsItem'), { label: '支付方式' }, () => '支付宝（尾号 8888）'),
+        h(kit('DescriptionsItem'), { label: '发票抬头', span: 2 }, () => '上海示例科技有限公司'),
+        h(kit('DescriptionsItem'), { label: '税号' }, () => '91310000MA1FL0000X'),
+        h(kit('DescriptionsItem'), { label: '配送进度', span: 3 }, () =>
+          h(kit('Progress'), { percentage: 70, strokeWidth: 8 })
+        ),
+        h(kit('DescriptionsItem'), { label: '商品清单', span: 3 }, () =>
+          '无线机械键盘 × 1（深空灰 / 红轴）¥399.00；4K 便携显示器 × 1（15.6 英寸 / 带皮套）¥860.00；Type-C 十一合一扩展坞 × 1 ¥40.00。'
+        ),
+        h(kit('DescriptionsItem'), { label: '客户备注', span: 3 }, () =>
+          '请放前台代收，外包装请加气泡膜；如外箱破损请拍照拒收并电话联系。本订单为赠品活动单，发票随箱寄出，请勿拆分包裹。'
+        ),
+        h(kit('DescriptionsItem'), { label: '售后工单' }, () =>
+          h(kit('Badge'), { value: 3, type: 'danger' }, () => h(kit('Button'), { size: 'small' }, () => '售后中心'))
+        ),
+        h(kit('DescriptionsItem'), { label: '短信通知' }, () => h(DescriptionsNotifySwitch)),
+        h(kit('DescriptionsItem'), { label: '服务评分' }, () => h(kit('Rate'), { modelValue: 5, disabled: true })),
+        h(kit('DescriptionsItem'), { label: '跟进人' }, () =>
+          h(kit('AvatarGroup'), null, () => [
+            ...SAMPLE_AVATAR_LIST.map((src) => h(kit('Avatar'), { src, alt: '跟进人' })),
+            h(kit('Avatar'), null, () => 'U')
+          ])
+        ),
+        h(kit('DescriptionsItem'), { label: '订单标签', span: 3 }, () => [
+          h(kit('CheckTag'), { checked: true }, () => '企业采购'),
+          h(kit('CheckTag'), { style: 'margin-left: 6px;' }, () => '复购客户'),
+          h(kit('Tag'), { type: 'danger', effect: 'plain', style: 'margin-left: 6px;' }, () => 'VIP')
+        ]),
+        h(kit('DescriptionsItem'), { label: '最近登录' }, () => '2026-11-02 21:14:36（IP 101.86.xx.xx）'),
+        h(kit('DescriptionsItem'), { label: '服务协议', span: 3 }, () => [
+          h(kit('Link'), { href: '#/c/descriptions' }, () => '《平台交易服务协议》'),
+          h(kit('Link'), { href: '#/c/descriptions', style: 'margin-left: 12px;' }, () => '《隐私政策》'),
+          h(kit('Link'), { href: '#/c/descriptions', style: 'margin-left: 12px;' }, () => '《退换货规则》')
+        ])
       ]
     },
     DescriptionsItem: { default: () => '张三' },
     Dropdown: {
-      default: () => h(kit('Button'), null, () => '下拉菜单'),
-      dropdown: () =>
-        h(kit('DropdownMenu'), null, {
-          default: () => [
-            h(kit('DropdownItem'), null, () => '选项一'),
-            h(kit('DropdownItem'), { divided: true }, () => '选项二')
-          ]
-        })
+      default: () => h(kit('Button'), null, () => '账户中心'),
+      dropdown: () => h(kit('DropdownMenu'), null, { default: renderAccountMenuItems })
     },
     DropdownItem: { default: () => '选项一' },
     DropdownMenu: {
-      default: () => [h(kit('DropdownItem'), null, () => '选项一'), h(kit('DropdownItem'), null, () => '选项二')]
+      default: () => renderAccountMenuItems()
     },
     Form: {
       default: (scope) => {
@@ -3066,6 +3194,22 @@ export default defineComponent({
           key: String(attrs.key),
           tabs: target,
           pane: module.TabPane ?? kitOf(props.packageId)('TabPane')
+        })
+      }
+      if (props.exportName === 'Carousel' && props.sceneId === 'images') {
+        return h(CarouselImagesDemo, {
+          key: String(attrs.key),
+          carousel: target,
+          item: module.CarouselItem ?? kitOf(props.packageId)('CarouselItem'),
+          values: attrs
+        })
+      }
+      if (props.exportName === 'Timeline' && props.sceneId === 'photos') {
+        return h(TimelinePhotosDemo, {
+          key: String(attrs.key),
+          timeline: target,
+          item: module.TimelineItem ?? kitOf(props.packageId)('TimelineItem'),
+          values: attrs
         })
       }
       if (props.exportName === 'TabPane') {

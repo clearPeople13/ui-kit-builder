@@ -548,9 +548,9 @@ export function createSelect(features: UiFeature[] = []) {
           const children: VNodeChild[] = []
           if (props.loading) {
             children.push(
-              h('div', { class: 'ui-select__loading', role: 'status' }, [
-                h('span', { class: 'ui-select__loading-spinner', 'aria-hidden': 'true' }),
-                h('span', { class: 'ui-select__loading-text' }, props.loadingText || '加载中')
+              h('div', { class: 'ui-loader', role: 'status' }, [
+                h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
+                h('span', null, props.loadingText || '加载中')
               ])
             )
           } else if (visibleOptions.value.length) {

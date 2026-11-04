@@ -141,6 +141,13 @@
   cursor: not-allowed;
 }
 
+.ui-transfer__button.is-text {
+  width: auto;
+  height: auto;
+  min-height: var(--ui-transfer-button-size);
+  padding: 0 10px;
+}
+
 .ui-transfer.is-disabled {
   opacity: 0.6;
   cursor: not-allowed;

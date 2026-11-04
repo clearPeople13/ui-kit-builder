@@ -307,7 +307,7 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'Result.subTitle': '相关结果已生成，可以继续下一步。',
   'Empty.description': '暂无数据',
   'Badge.value': 12,
-  'Descriptions.title': '用户信息',
+  'Descriptions.title': '订单详情',
   'Form.model': FORM_MODEL,
   'FormItem.label': '字段名称',
   'FormItem.prop': 'name',
@@ -453,7 +453,7 @@ const INITIAL_ENABLED: Record<string, string[]> = {
 
 const HIDDEN_PROP_NAMES = new Set(['modelModifiers'])
 
-const PREVIEW_EVENT_PROPS = ['modelValue', 'visible', 'currentPage', 'current', 'value']
+const PREVIEW_EVENT_PROPS = ['modelValue', 'visible', 'currentPage', 'current', 'pageSize', 'value']
 
 const CHILD_EXPORT_NOTES: Record<string, string> = {
   TableColumn: 'TableColumn 需作为 Table 的子节点使用。',

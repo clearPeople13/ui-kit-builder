@@ -24,6 +24,12 @@
   animation: ui-popconfirm-in 150ms ease-out;
 }
 
+/* 内容不自滚动：覆盖浮层通用 overflow，避免向上弹出时悬停桥被计入可滚动区域出现假滚动条；
+   共享样式在产物中排在组件样式之后，需要双类提权才能胜出 */
+.ui-popconfirm__panel.ui-floating-panel {
+  overflow: visible;
+}
+
 @keyframes ui-popconfirm-in {
   from {
     opacity: 0;

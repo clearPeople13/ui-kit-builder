@@ -1700,60 +1700,198 @@ export function paginationConfig(options: { name: string; baseClass: string; pro
     name: options.name,
     baseClass: options.baseClass,
     props: options.props,
-    classes: (props) => stateClasses(options.baseClass, props),
-    content: ({ props, emit }) => {
+    emits: [
+      'update:currentPage',
+      'current-change',
+      'update:pageSize',
+      'size-change',
+      'prev-click',
+      'next-click'
+    ],
+    classes: (props) => [
+      ...stateClasses(options.baseClass, props),
+      props.background ? `${options.baseClass}--background` : ''
+    ],
+    setup() {
+      const jumpText = ref('')
+      return {
+        getJumpText: () => jumpText.value,
+        setJumpText: (value: string) => {
+          jumpText.value = value
+        }
+      }
+    },
+    content: ({ props, state, emit, slots }) => {
+      const base = options.baseClass
       const pageCount = Math.max(
         1,
         Number(props.pageCount ?? (Math.ceil(Number(props.total ?? 0) / Number(props.pageSize ?? 10)) || 1))
       )
       const current = clamp(Number(props.currentPage ?? 1), 1, pageCount)
       const disabled = Boolean(props.disabled)
-      const pagerItems = buildPagerItems(current, pageCount, Number(props.pagerCount ?? 7))
+
+      if (props.hideOnSinglePage && pageCount <= 1) {
+        return null
+      }
+
+      const pagerCount = Math.max(5, Number(props.pagerCount) || 7)
+      const pagerItems = buildPagerItems(current, pageCount, pagerCount)
+
       const change = (page: number) => {
         const next = clamp(page, 1, pageCount)
+        if (next === current) {
+          return
+        }
         emit('update:currentPage', next)
         emit('current-change', next)
       }
-      return [
-        h(
-          'button',
-          {
-            class: `${options.baseClass}__prev`,
-            type: 'button',
-            disabled: disabled || current <= 1,
-            'aria-label': 'Previous page',
-            onClick: () => change(current - 1)
+
+      const jumpOffset = Math.max(2, pagerCount - 2)
+
+      const commitJump = () => {
+        const page = Number.parseInt(state.getJumpText(), 10)
+        state.setJumpText('')
+        if (Number.isFinite(page)) {
+          change(page)
+        }
+      }
+
+      const prevNode = h(
+        'button',
+        {
+          class: `${base}__prev`,
+          type: 'button',
+          disabled: disabled || current <= 1,
+          'aria-label': 'Previous page',
+          onClick: () => {
+            emit('prev-click', current - 1)
+            change(current - 1)
+          }
+        },
+        props.prevIcon ? renderIcon(props.prevIcon) : props.prevText || renderIcon(ChevronLeft)
+      )
+
+      const pagerNode = pagerItems.map((item) =>
+        typeof item === 'number'
+          ? h(
+              'button',
+              {
+                key: item,
+                type: 'button',
+                class: [`${base}__pager`, item === current ? 'is-active' : ''],
+                disabled,
+                'aria-current': item === current ? 'page' : undefined,
+                onClick: () => change(item)
+              },
+              String(item)
+            )
+          : h(
+              'button',
+              {
+                key: item,
+                type: 'button',
+                class: `${base}__more`,
+                disabled,
+                'aria-label': item === 'more-left' ? 'Previous pages' : 'Next pages',
+                onClick: () => change(current + (item === 'more-left' ? -jumpOffset : jumpOffset))
+              },
+              '•••'
+            )
+      )
+
+      const nextNode = h(
+        'button',
+        {
+          class: `${base}__next`,
+          type: 'button',
+          disabled: disabled || current >= pageCount,
+          'aria-label': 'Next page',
+          onClick: () => {
+            emit('next-click', current + 1)
+            change(current + 1)
+          }
+        },
+        props.nextIcon ? renderIcon(props.nextIcon) : props.nextText || renderIcon(ChevronRight)
+      )
+
+      const total = Number(props.total ?? 0)
+      const totalNode = h('span', { class: `${base}__total` }, `共 ${total} 条`)
+
+      const pageSizes = Array.isArray(props.pageSizes)
+        ? props.pageSizes.map((size) => Number(size)).filter((size) => Number.isFinite(size) && size > 0)
+        : []
+      const sizesNode = pageSizes.length
+        ? h('span', { class: `${base}__sizes` }, [
+            h(
+              'select',
+              {
+                class: `${base}__sizes-select`,
+                value: Number(props.pageSize ?? pageSizes[0]),
+                disabled,
+                'aria-label': '每页条数',
+                onChange: (event: Event) => {
+                  const next = Number((event.target as HTMLSelectElement).value)
+                  if (!Number.isFinite(next) || next <= 0 || next === Number(props.pageSize)) {
+                    return
+                  }
+                  emit('update:pageSize', next)
+                  emit('size-change', next)
+                }
+              },
+              pageSizes.map((size) => h('option', { key: size, value: size }, `${size} 条/页`))
+            )
+          ])
+        : null
+
+      const jumperNode = h('span', { class: `${base}__jump` }, [
+        '前往',
+        h('input', {
+          class: `${base}__jump-input`,
+          value: state.getJumpText(),
+          disabled,
+          inputmode: 'numeric',
+          'aria-label': '页码',
+          onInput: (event: Event) => {
+            state.setJumpText((event.target as HTMLInputElement).value)
           },
-          props.prevIcon ? renderIcon(props.prevIcon) : props.prevText || renderIcon(ChevronLeft)
-        ),
-        ...pagerItems.map((item) =>
-          typeof item === 'number'
-            ? h(
-                'button',
-                {
-                  key: item,
-                  type: 'button',
-                  class: [`${options.baseClass}__pager`, item === current ? 'is-active' : ''],
-                  disabled,
-                  'aria-current': item === current ? 'page' : undefined,
-                  onClick: () => change(item)
-                },
-                String(item)
-              )
-            : h('span', { key: item, class: `${options.baseClass}__more` }, '•••')
-        ),
-        h(
-          'button',
-          {
-            class: `${options.baseClass}__next`,
-            type: 'button',
-            disabled: disabled || current >= pageCount,
-            'aria-label': 'Next page',
-            onClick: () => change(current + 1)
+          onKeydown: (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+              commitJump()
+            }
           },
-          props.nextIcon ? renderIcon(props.nextIcon) : props.nextText || renderIcon(ChevronRight)
-        )
-      ]
+          onBlur: commitJump
+        }),
+        '页'
+      ])
+
+      const layout =
+        typeof props.layout === 'string' && props.layout.trim() ? props.layout : 'prev, pager, next'
+      const fragment = (part: string): VNodeChild => {
+        switch (part) {
+          case 'total':
+            return totalNode
+          case 'sizes':
+            return sizesNode
+          case 'prev':
+            return prevNode
+          case 'pager':
+            return pagerNode
+          case 'next':
+            return nextNode
+          case 'jumper':
+            return jumperNode
+          case 'slot':
+          case '->':
+            return slots.default?.() ?? null
+          default:
+            return null
+        }
+      }
+      return layout
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .map(fragment)
     }
   }
 }

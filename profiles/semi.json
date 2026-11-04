@@ -1,0 +1,25 @@
+{
+  "name": "semi",
+  "components": "full",
+  "prefix": "semi",
+  "theme": {
+    "global": {
+      "colorPrimary": "#1664ff",
+      "colorPrimaryLight": "#4d88ff",
+      "colorPrimaryDark": "#0e50d9",
+      "colorPrimaryBg": "#edf4ff",
+      "colorPrimaryBgSubtle": "rgba(22, 100, 255, 0.06)",
+      "colorPrimaryBorder": "#b3ccff",
+      "colorSuccess": "#3cc780",
+      "colorWarning": "#ff8a00",
+      "colorDanger": "#f93920",
+      "colorInfo": "#a9aeb8",
+      "radiusSmall": "4px",
+      "radiusBase": "8px",
+      "radiusLarge": "12px",
+      "radiusXl": "16px",
+      "focusRing": "rgba(22, 100, 255, 0.12)",
+      "focusRingSoft": "rgba(22, 100, 255, 0.06)"
+    }
+  }
+}

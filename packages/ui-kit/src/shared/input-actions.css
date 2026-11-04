@@ -1,3 +1,4 @@
+/* 清除按钮以 Select 清除为基准：继承触发区文字色，悬停/聚焦时以 0.75 透明度呈现，悬停图标加深至 1 且无底色 */
 .ui-input__clear,
 .ui-input__password,
 .ui-autocomplete__clear,
@@ -15,15 +16,21 @@
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--ui-text-color-placeholder);
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
 }
 
+.ui-input__password,
+.ui-autocomplete__password,
+.ui-mention__password {
+  color: var(--ui-text-color-placeholder);
+}
+
 .ui-input__clear,
 .ui-autocomplete__clear,
 .ui-mention__clear {
+  color: var(--ui-text-color-placeholder);
   visibility: hidden;
   opacity: 0;
   transition: opacity 0.15s ease, visibility 0.15s ease;
@@ -36,14 +43,18 @@
 .ui-mention--clearable:hover .ui-mention__clear,
 .ui-mention--clearable:focus-within .ui-mention__clear {
   visibility: visible;
-  opacity: 1;
+  opacity: 0.75;
 }
 
-.ui-input__clear:hover,
+.ui-input .ui-input__clear:hover,
+.ui-autocomplete .ui-autocomplete__clear:hover,
+.ui-mention .ui-mention__clear:hover {
+  opacity: 1;
+  color: var(--ui-text-color-regular);
+}
+
 .ui-input__password:hover,
-.ui-autocomplete__clear:hover,
 .ui-autocomplete__password:hover,
-.ui-mention__clear:hover,
 .ui-mention__password:hover {
   color: var(--ui-text-color-regular);
   background: rgba(0, 0, 0, 0.05);

@@ -386,12 +386,6 @@
   font-size: 12px;
 }
 
-.ui-cascader__node-loading {
-  flex: none;
-  color: var(--ui-text-color-secondary);
-  font-size: 12px;
-}
-
 .ui-cascader__node.is-loading {
   cursor: progress;
 }
@@ -438,7 +432,7 @@
   border-color: color-mix(in srgb, var(--ui-text-color-inverse) 12%, transparent);
 }
 
-.ui-cascader__dropdown.is-dark .ui-cascader__node-loading {
+.ui-cascader__dropdown.is-dark .ui-loader {
   color: color-mix(in srgb, var(--ui-text-color-inverse) 45%, transparent);
 }
 

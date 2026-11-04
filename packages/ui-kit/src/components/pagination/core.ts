@@ -14,6 +14,8 @@ const paginationBaseProps = {
   currentPage: { type: Number },
   prevText: { type: String, default: '' },
   nextText: { type: String, default: '' },
+  background: { type: Boolean, default: false },
+  hideOnSinglePage: { type: Boolean, default: false }
 }
 
 export function createPagination(features: UiFeature[] = []) {

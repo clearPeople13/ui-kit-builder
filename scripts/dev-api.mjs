@@ -35,7 +35,21 @@ const PACKAGE_LABELS = {
   branded: 'Branded 品牌主题',
   chinese: 'Chinese 中国风',
   cute: 'Cute 可爱主题',
-  antd: 'Ant Design'
+  antd: 'Ant Design',
+  arco: 'Arco Design',
+  tdesign: 'TDesign 腾讯',
+  naive: 'Naive UI',
+  viewui: 'View Design (iView)',
+  vant: 'Vant 移动端',
+  varlet: 'Varlet 移动端',
+  semi: 'Semi Design',
+  material3: 'Material 3 谷歌',
+  bootstrap: 'Bootstrap',
+  shadcn: 'shadcn/ui',
+  fluent: 'Fluent 2 微软',
+  carbon: 'Carbon IBM',
+  mantine: 'Mantine',
+  ios: 'iOS 苹果'
 }
 
 const PACK_MIME_TYPES = {

@@ -1,0 +1,25 @@
+{
+  "name": "vant",
+  "components": "full",
+  "prefix": "vant",
+  "theme": {
+    "global": {
+      "colorPrimary": "#1989fa",
+      "colorPrimaryLight": "#3d9dfb",
+      "colorPrimaryDark": "#0a6fdb",
+      "colorPrimaryBg": "#e8f3fe",
+      "colorPrimaryBgSubtle": "rgba(25, 137, 250, 0.08)",
+      "colorPrimaryBorder": "#a8d4fd",
+      "colorSuccess": "#07c160",
+      "colorWarning": "#ed6a0c",
+      "colorDanger": "#ee0a24",
+      "colorInfo": "#969799",
+      "radiusSmall": "6px",
+      "radiusBase": "12px",
+      "radiusLarge": "18px",
+      "radiusXl": "24px",
+      "focusRing": "rgba(25, 137, 250, 0.18)",
+      "focusRingSoft": "rgba(25, 137, 250, 0.09)"
+    }
+  }
+}

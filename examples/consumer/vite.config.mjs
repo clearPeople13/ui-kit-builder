@@ -74,6 +74,9 @@ export default defineConfig({
     port: 5174,
     fs: {
       allow: [rootDir, repoDir]
+    },
+    watch: {
+      ignored: ['**/.build/**', '**/dist/**']
     }
   }
 })

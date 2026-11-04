@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { loadRegistry } from '../registry.mjs'
 import { CATEGORY_ORDER, categoryOf } from './demo-categories.mjs'
+import { PROP_DESCRIPTIONS } from './prop-descriptions.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const outputFile = path.join(rootDir, 'examples/consumer/src/demo/meta.json')
@@ -14,7 +15,21 @@ const PACKAGE_LABELS = {
   branded: 'Branded 品牌主题',
   chinese: 'Chinese 中国风',
   cute: 'Cute 可爱主题',
-  antd: 'Ant Design'
+  antd: 'Ant Design',
+  arco: 'Arco Design',
+  tdesign: 'TDesign 腾讯',
+  naive: 'Naive UI',
+  viewui: 'View Design (iView)',
+  vant: 'Vant 移动端',
+  varlet: 'Varlet 移动端',
+  semi: 'Semi Design',
+  material3: 'Material 3 谷歌',
+  bootstrap: 'Bootstrap',
+  shadcn: 'shadcn/ui',
+  fluent: 'Fluent 2 微软',
+  carbon: 'Carbon IBM',
+  mantine: 'Mantine',
+  ios: 'iOS 苹果'
 }
 
 function readConsumerDependencies() {
@@ -83,8 +98,9 @@ function pickProp(prop) {
   if (prop.offValue !== undefined) {
     picked.offValue = prop.offValue
   }
-  if (prop.description) {
-    picked.description = prop.description
+  const description = prop.description && prop.description !== prop.name ? prop.description : PROP_DESCRIPTIONS[prop.name]
+  if (description) {
+    picked.description = description
   }
   return picked
 }

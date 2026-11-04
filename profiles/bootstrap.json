@@ -1,0 +1,25 @@
+{
+  "name": "bootstrap",
+  "components": "full",
+  "prefix": "bootstrap",
+  "theme": {
+    "global": {
+      "colorPrimary": "#0d6efd",
+      "colorPrimaryLight": "#0b5ed7",
+      "colorPrimaryDark": "#0a58ca",
+      "colorPrimaryBg": "#cfe2ff",
+      "colorPrimaryBgSubtle": "rgba(13, 110, 253, 0.08)",
+      "colorPrimaryBorder": "#9ec5fe",
+      "colorSuccess": "#198754",
+      "colorWarning": "#ffc107",
+      "colorDanger": "#dc3545",
+      "colorInfo": "#0dcaf0",
+      "radiusSmall": "4px",
+      "radiusBase": "6px",
+      "radiusLarge": "8px",
+      "radiusXl": "16px",
+      "focusRing": "rgba(13, 110, 253, 0.25)",
+      "focusRingSoft": "rgba(13, 110, 253, 0.12)"
+    }
+  }
+}

@@ -178,10 +178,26 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
   ],
   Carousel: [
     { id: 'base', label: '基础', values: {} },
-    { id: 'card', label: '卡片模式', values: { type: 'card' } },
-    { id: 'vertical', label: '纵向切换', values: { direction: 'vertical' } },
+    {
+      id: 'images',
+      label: '图片轮播',
+      hint: '4 张在线实景图铺满轮播区（object-fit: cover），自动播放、箭头与指示器沿用基础交互',
+      values: {}
+    },
+    { id: 'card', label: '卡片模式', hint: '当前卡居中、左右各露出相邻卡的一角并压暗，其余卡片隐藏', values: { type: 'card' } },
+    {
+      id: 'vertical',
+      label: '纵向切换',
+      hint: 'direction 为 vertical 时切换改为纵向推移（上下滑入滑出），指示器竖排靠右、箭头移到上下两端并转向',
+      values: { direction: 'vertical' }
+    },
     { id: 'arrow-always', label: '箭头常显', values: { arrow: 'always' } },
-    { id: 'indicator-outside', label: '指示器外置', values: { indicatorPosition: 'outside' } },
+    {
+      id: 'indicator-outside',
+      label: '指示器外置',
+      hint: 'indicatorPosition 为 outside 时指示器移到卡片下方，卡片自动预留 26px 空间，不会被裁切',
+      values: { indicatorPosition: 'outside' }
+    },
     { id: 'no-autoplay', label: '关闭自动播放', values: { autoplay: false } }
   ],
   CarouselItem: [
@@ -230,6 +246,12 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
   ],
   Card: [
     { id: 'footer', label: '带页脚', values: { footer: '卡片底部操作区' } },
+    {
+      id: 'cover',
+      label: '封面图',
+      hint: 'cover 传入图片地址后渲染在卡片顶部，object-fit: cover 按卡片宽度裁切，圆角随卡片一起裁掉',
+      values: { cover: SAMPLE_PHOTOS[0].src, header: '峡湾观景台', footer: '拍摄于 2026-10-26' }
+    },
     { id: 'body-style', label: '自定义内边距', values: { bodyStyle: { padding: '24px', background: '#f8fafc' } } },
     { id: 'full', label: '完整结构', values: { header: '构建详情', footer: '更新于 2026-10-26' } }
   ],
@@ -533,6 +555,12 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
   ],
   Timeline: [
     { id: 'base', label: '基础', values: {} },
+    {
+      id: 'photos',
+      label: '图片动态',
+      hint: '每个节点挂一张实景缩略图 + 说明，图片走子项默认插槽，时间线自身只负责节点与连线',
+      values: {}
+    },
     { id: 'center', label: '居中排布', hint: '节点居中、内容居中，连线走中线', values: { mode: 'center' } },
     { id: 'alternate', label: '交替排列', hint: '内容在连线两侧交替出现', values: { mode: 'alternate' } },
     { id: 'reverse', label: '反向顺序', values: { reverse: true } },
@@ -835,7 +863,12 @@ const FORM_PRESETS: Record<string, ScenePreset[]> = {
       hint: 'listType 设为 picture 时文件以缩略图展示',
       values: {
         listType: 'picture',
-        fileList: [{ name: 'preview.png', url: IMAGE, status: 'success', uid: 1 }]
+        fileList: SAMPLE_PHOTOS.slice(0, 3).map((photo, index) => ({
+          name: `${photo.title}.jpg`,
+          url: photo.thumbnail,
+          status: 'success',
+          uid: index + 1
+        }))
       }
     },
     { id: 'limit', label: '最多一个文件', hint: '达到 limit 后继续选择会被拦截', values: { limit: 1 } },
@@ -845,11 +878,12 @@ const FORM_PRESETS: Record<string, ScenePreset[]> = {
       hint: 'listType 为 picture-card 时触发器与文件都是 100px 卡片，状态用遮罩文案呈现',
       values: {
         listType: 'picture-card',
-        fileList: [
-          { name: 'banner.png', url: IMAGE, status: 'success', uid: 1 },
-          { name: 'logo.png', url: IMAGE, status: 'uploading', uid: 2 },
-          { name: 'cover.jpg', url: IMAGE, status: 'fail', uid: 3 }
-        ]
+        fileList: SAMPLE_PHOTOS.map((photo, index) => ({
+          name: `${photo.title}.jpg`,
+          url: photo.thumbnail,
+          status: index === 1 ? 'uploading' : index === 3 ? 'fail' : 'success',
+          uid: index + 1
+        }))
       }
     },
     {
@@ -871,7 +905,7 @@ const FORM_PRESETS: Record<string, ScenePreset[]> = {
       values: {
         listType: 'picture',
         accept: 'image/*',
-        fileList: [{ name: 'poster.png', url: IMAGE, status: 'success', uid: 1 }]
+        fileList: [{ name: 'poster.jpg', url: SAMPLE_PHOTOS[1].thumbnail, status: 'success', uid: 1 }]
       }
     },
     { id: 'disabled', label: '禁用', values: { disabled: true } }

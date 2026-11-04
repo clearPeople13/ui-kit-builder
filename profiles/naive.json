@@ -1,0 +1,24 @@
+{
+  "name": "naive",
+  "components": "full",
+  "prefix": "naive",
+  "theme": {
+    "global": {
+      "colorPrimary": "#18a058",
+      "colorPrimaryLight": "#36ad6a",
+      "colorPrimaryDark": "#0c7a43",
+      "colorPrimaryBg": "rgba(24, 160, 88, 0.1)",
+      "colorPrimaryBgSubtle": "rgba(24, 160, 88, 0.05)",
+      "colorPrimaryBorder": "rgba(24, 160, 88, 0.3)",
+      "colorSuccess": "#18a058",
+      "colorWarning": "#f0a020",
+      "colorDanger": "#d03050",
+      "colorInfo": "#909399",
+      "radiusSmall": "3px",
+      "radiusBase": "6px",
+      "radiusLarge": "10px",
+      "focusRing": "rgba(24, 160, 88, 0.15)",
+      "focusRingSoft": "rgba(24, 160, 88, 0.08)"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "ios",
+  "components": "full",
+  "prefix": "ios",
+  "theme": {
+    "global": {
+      "colorPrimary": "#007aff",
+      "colorPrimaryLight": "#2d9bff",
+      "colorPrimaryDark": "#006be0",
+      "colorPrimaryBg": "#e5f1ff",
+      "colorPrimaryBgSubtle": "rgba(0, 122, 255, 0.08)",
+      "colorPrimaryBorder": "#b8daff",
+      "colorSuccess": "#34c759",
+      "colorWarning": "#ff9500",
+      "colorDanger": "#ff3b30",
+      "colorInfo": "#8e8e93",
+      "radiusSmall": "8px",
+      "radiusBase": "10px",
+      "radiusLarge": "14px",
+      "radiusXl": "20px",
+      "fontFamily": "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
+      "focusRing": "rgba(0, 122, 255, 0.2)",
+      "focusRingSoft": "rgba(0, 122, 255, 0.1)"
+    }
+  }
+}

@@ -1,4 +1,5 @@
-.ui-select__loading {
+/* select 系组件（Select / Autocomplete / Mention / Cascader…）共享的加载态：以 Select 面板加载为唯一基准 */
+.ui-loader {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -8,17 +9,24 @@
   font-size: 13px;
 }
 
-.ui-select__loading-spinner {
+.ui-loader__spinner {
   box-sizing: border-box;
   width: 12px;
   height: 12px;
   border: 2px solid currentColor;
   border-top-color: transparent;
   border-radius: 50%;
-  animation: ui-select-loading-spin 800ms linear infinite;
+  animation: ui-loader-spin 800ms linear infinite;
 }
 
-@keyframes ui-select-loading-spin {
+.ui-loader--inline {
+  flex: none;
+  justify-content: flex-start;
+  padding: 0;
+  font-size: 12px;
+}
+
+@keyframes ui-loader-spin {
   to {
     transform: rotate(360deg);
   }

@@ -1,5 +1,4 @@
 import { createClassFeature } from '../../../../shared/component'
-import './style.css'
 
 export const selectLoadingFeature = createClassFeature({
   id: 'select.select-loading',

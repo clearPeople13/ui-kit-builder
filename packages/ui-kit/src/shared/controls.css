@@ -15,7 +15,7 @@
 }
 
 .ui-floating-panel {
-  position: fixed;
+  position: absolute;
   box-sizing: border-box;
   max-height: min(var(--ui-floating-panel-max-height), 70vh);
   padding: var(--ui-panel-padding);

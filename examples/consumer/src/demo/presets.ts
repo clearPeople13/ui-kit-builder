@@ -9,7 +9,7 @@ import {
 import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './form-data'
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
-import { SELECT_CITY_OPTIONS } from './select-data'
+import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
 
 export interface ScenePreset {
   id: string
@@ -98,6 +98,20 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       label: '渐变',
       requires: 'button.gradient',
       values: { type: 'primary', gradient: true, gradientAngle: 45 }
+    },
+    {
+      id: 'wave',
+      label: '点击水波',
+      requires: 'button.wave',
+      hint: '引入 button.wave 的构建默认开启：点击按钮从触点扩散水波',
+      values: { type: 'primary' }
+    },
+    {
+      id: 'wave-off',
+      label: '关闭水波',
+      requires: 'button.wave',
+      hint: '同一构建下 wave=false，点击无任何动画，与「点击水波」场景对比',
+      values: { type: 'primary', wave: false }
     }
   ],
   Form: [
@@ -323,8 +337,16 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       }
     },
     {
+      id: 'clearable',
+      label: '可清除',
+      hint: '悬停显示与 Select 一致的清除图标：0.75 透明度灰显，悬停图标加深至 1、无底色',
+      requires: 'autocomplete.clearable',
+      values: { clearable: true, modelValue: 'Vue' }
+    },
+    {
       id: 'remote',
       label: '远程搜索 + 加载',
+      hint: 'debounce 500ms：等待期间面板显示与 Select 完全一致的共享加载条（居中灰字 + 12px 旋转圈）',
       requires: 'autocomplete.filterable',
       values: { modelValue: 'v', debounce: 500, autofocus: true }
     },
@@ -416,7 +438,12 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     }
   ],
   Dropdown: [
-    { id: 'base', label: '悬停展开', values: {} },
+    {
+      id: 'base',
+      label: '悬停展开',
+      hint: '六项账户菜单：图标前缀、禁用项、分隔线 + 退出登录；悬停按钮展开',
+      values: {}
+    },
     { id: 'click', label: '点击展开', values: { trigger: 'click' } },
     { id: 'dark', label: '深色面板', values: { trigger: 'click', effect: 'dark' } },
     {
@@ -512,6 +539,12 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
   ],
   SelectV2: [
     { id: 'base', label: '基础', values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai' } },
+    {
+      id: 'virtual',
+      label: '虚拟滚动（1 万条）',
+      hint: '10000 条选项，DOM 只渲染可视区十余行：滚动时内容即时替换；开发者工具 Elements 里数 option 节点，不随数据量增长',
+      values: { options: SELECT_VIRTUAL_10K_OPTIONS, modelValue: '' }
+    },
     {
       id: 'fit-width',
       label: '自适应宽度',
@@ -746,7 +779,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     {
       id: 'lazy',
       label: '逐级懒加载',
-      hint: '打开面板后逐级点击，每级都会请求并显示“加载中…”',
+      hint: '打开面板后逐级点击，每级请求期间行尾显示共享加载条（12px 旋转圈 + 加载中…）',
       requires: 'cascader.lazy',
       values: {
         options: [],
@@ -1262,7 +1295,25 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       }
     }
   ],
-  Pagination: [{ id: 'base', label: '基础', values: { total: 128, currentPage: 3 } }],
+  Pagination: [
+    { id: 'base', label: '基础', values: { total: 128, currentPage: 3 } },
+    { id: 'background', label: '背景块', values: { total: 128, currentPage: 3, background: true } },
+    { id: 'small', label: '小尺寸', values: { total: 128, currentPage: 3, size: 'small' } },
+    {
+      id: 'layout',
+      label: '完整布局',
+      hint: 'layout 组合 total、sizes、jumper，pageSizes 控制每页条数选项',
+      requires: 'pagination.layout',
+      values: {
+        total: 128,
+        currentPage: 3,
+        pageSize: 10,
+        pageSizes: [10, 20, 50, 100],
+        layout: 'total, sizes, prev, pager, next, jumper'
+      }
+    },
+    { id: 'hide-single', label: '单页隐藏', hint: '只有一页时整体隐藏', values: { total: 8, hideOnSinglePage: true } }
+  ],
   Steps: [
     { id: 'base', label: '基础', values: { active: 1 } },
     { id: 'simple', label: '简洁模式', values: { active: 2, simple: true } }
@@ -1288,12 +1339,12 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'max', label: '最大值', values: { value: 120, max: 99 } }
   ],
   Descriptions: [
-    { id: 'base', label: '基础', values: { title: '用户信息' } },
+    { id: 'base', label: '基础', values: { title: '订单详情' } },
     {
       id: 'border',
       label: '带边框',
       requires: 'descriptions.appearance',
-      values: { title: '用户信息', border: true }
+      values: { title: '订单详情', border: true }
     }
   ],
   Tree: [
@@ -1463,6 +1514,12 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       label: '折叠菜单',
       hint: '只保留顶级条目：分组标题与子菜单内容收起，此时点击、悬停都不展开子菜单',
       values: { collapse: true, defaultActive: 'settings' }
+    },
+    {
+      id: 'active-descendant',
+      label: '子项选中父级标识',
+      hint: '默认激活“组件库 → 基础组件 → Button”，两级父菜单保持收起，但标题文字高亮指示子树内有选中项；点开父级可看到具体选中项',
+      values: { defaultActive: 'button', defaultOpeneds: [] }
     }
   ],
   Segmented: [

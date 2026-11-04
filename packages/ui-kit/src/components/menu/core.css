@@ -119,6 +119,10 @@
   font-weight: var(--ui-font-weight-strong);
 }
 
+.ui-sub-menu.is-active > .ui-sub-menu__title {
+  color: var(--ui-menu-item-active-color);
+}
+
 .ui-sub-menu.is-disabled > .ui-sub-menu__title {
   opacity: 0.5;
   cursor: not-allowed;

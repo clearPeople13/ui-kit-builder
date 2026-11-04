@@ -310,7 +310,10 @@ export function createCascaderPanel(features: UiFeature[] = []) {
                 : null,
               h('span', { class: 'ui-cascader-panel__node-label' }, node.label),
               loading
-                ? h('span', { class: 'ui-cascader-panel__node-loading' }, '加载中…')
+                ? h('span', { class: 'ui-loader ui-loader--inline', role: 'status' }, [
+                    h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
+                    h('span', null, '加载中…')
+                  ])
                 : expandable
                   ? renderIcon(ChevronRight, { class: 'ui-cascader-panel__node-arrow' })
                   : selected

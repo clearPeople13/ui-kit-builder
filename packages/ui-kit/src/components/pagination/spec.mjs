@@ -56,6 +56,18 @@ export default {
           "type": "string",
           "default": "",
           "description": "nextText"
+        },
+        {
+          "name": "background",
+          "type": "boolean",
+          "default": false,
+          "description": "background"
+        },
+        {
+          "name": "hideOnSinglePage",
+          "type": "boolean",
+          "default": false,
+          "description": "hideOnSinglePage"
         }
       ],
       "features": {
@@ -73,6 +85,23 @@ export default {
             {
               "name": "nextIcon",
               "type": "string | Record<string, any> | (...args: any[]) => any"
+            }
+          ]
+        },
+        "pagination.layout": {
+          "title": "布局",
+          "description": "布局：layout（total、sizes、prev、pager、next、jumper、slot）、pageSizes",
+          "module": "packages/ui-kit/src/components/pagination/features/layout/index.ts",
+          "exportName": "paginationLayoutFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "layout",
+              "type": "string"
+            },
+            {
+              "name": "pageSizes",
+              "type": "unknown[]"
             }
           ]
         }

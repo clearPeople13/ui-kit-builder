@@ -7,6 +7,7 @@ import { BUTTON_GROUP_CONTEXT, type ButtonGroupContext } from './button-group/co
 import {
   collectFeatureClasses,
   collectFeatureFragments,
+  collectFeatureHooks,
   collectFeatureStyles,
   isFeatureDisabled,
   mergeFeatureProps,
@@ -14,6 +15,16 @@ import {
   transformFeatureContent
 } from '../../shared/feature'
 import './core.css'
+
+function invokeClickHandler(handler: unknown, event: MouseEvent) {
+  if (Array.isArray(handler)) {
+    handler.forEach((item) => invokeClickHandler(item, event))
+    return
+  }
+  if (typeof handler === 'function') {
+    ;(handler as (event: MouseEvent) => void)(event)
+  }
+}
 
 const buttonTypes = ['default', 'primary', 'success', 'warning', 'info', 'danger', '']
 const buttonNativeTypes = ['button', 'submit', 'reset']
@@ -53,6 +64,7 @@ export function createButton(features: UiFeature[] = []) {
       const globalConfig = inject(UI_CONFIG_KEY, undefined)
       const groupContext = inject(BUTTON_GROUP_CONTEXT, null) as ButtonGroupContext | null
       const states = resolveFeatureStates(features, resolved)
+      const clickHooks = collectFeatureHooks(states, 'click')
 
       return function render() {
         const tag = (resolved.tag ?? 'button') as string | Component
@@ -61,11 +73,19 @@ export function createButton(features: UiFeature[] = []) {
         const prefix = collectFeatureFragments(states, 'prefix')
         const suffix = collectFeatureFragments(states, 'suffix')
         const content = transformFeatureContent(states, slots.default?.() ?? null)
+        // 用户 onClick 与特性 click hooks 都要保留：用户处理器先执行
+        const onClick = clickHooks.length
+          ? (event: MouseEvent) => {
+              invokeClickHandler(attrs.onClick, event)
+              clickHooks.forEach((hook) => hook(event))
+            }
+          : undefined
 
         return h(
           tag,
           {
             ...attrs,
+            ...(onClick ? { onClick } : {}),
             type: tag === 'button' ? resolved.nativeType : undefined,
             class: [
               attrs.class,

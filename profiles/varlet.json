@@ -1,0 +1,25 @@
+{
+  "name": "varlet",
+  "components": "full",
+  "prefix": "varlet",
+  "theme": {
+    "global": {
+      "colorPrimary": "#3a7afe",
+      "colorPrimaryLight": "#629bfe",
+      "colorPrimaryDark": "#2f6ae8",
+      "colorPrimaryBg": "#ebf2ff",
+      "colorPrimaryBgSubtle": "rgba(58, 122, 254, 0.06)",
+      "colorPrimaryBorder": "#aecbfd",
+      "colorSuccess": "#00c48f",
+      "colorWarning": "#ff9f00",
+      "colorDanger": "#f44336",
+      "colorInfo": "#00afef",
+      "radiusSmall": "6px",
+      "radiusBase": "10px",
+      "radiusLarge": "16px",
+      "radiusXl": "22px",
+      "focusRing": "rgba(58, 122, 254, 0.15)",
+      "focusRingSoft": "rgba(58, 122, 254, 0.08)"
+    }
+  }
+}

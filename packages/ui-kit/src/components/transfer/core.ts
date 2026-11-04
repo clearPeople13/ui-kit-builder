@@ -163,7 +163,7 @@ export function createTransfer(features: UiFeature[] = []) {
             h(
               'button',
               {
-                class: 'ui-transfer__button',
+                class: ['ui-transfer__button', buttons[0] ? 'is-text' : ''],
                 type: 'button',
                 disabled: !state.leftChecked.value.size,
                 onClick: () => state.moveToRight()
@@ -173,7 +173,7 @@ export function createTransfer(features: UiFeature[] = []) {
             h(
               'button',
               {
-                class: 'ui-transfer__button',
+                class: ['ui-transfer__button', buttons[1] ? 'is-text' : ''],
                 type: 'button',
                 disabled: !state.rightChecked.value.size,
                 onClick: () => state.moveToLeft()

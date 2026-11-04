@@ -18,3 +18,8 @@ export const SELECT_CITY_OPTIONS = [
   { label: '郑州', value: 'zhengzhou' },
   { label: '合肥', value: 'hefei' }
 ]
+
+export const SELECT_VIRTUAL_10K_OPTIONS = Array.from({ length: 10000 }, (_, index) => ({
+  label: `选项 ${index + 1}`,
+  value: index + 1
+}))

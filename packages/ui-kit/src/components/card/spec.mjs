@@ -22,6 +22,12 @@ export default {
           "description": "footer"
         },
         {
+          "name": "cover",
+          "type": "string",
+          "default": "",
+          "description": "封面图地址（渲染于卡片顶部，也可用 cover 插槽自定义）"
+        },
+        {
           "name": "bodyStyle",
           "type": "string | Record<string, any> | any[] | boolean",
           "default": "",

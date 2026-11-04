@@ -49,7 +49,8 @@ export function parsePlacement(placement: string): Placement {
 
 function hoverBridge(
   side: string,
-  box: { left: number; top: number; width: number; height: number }
+  box: { left: number; top: number; width: number; height: number },
+  insetY: boolean
 ): Record<string, string> {
   const { left, top, width, height } = box
   let x = left
@@ -57,9 +58,10 @@ function hoverBridge(
   let bridgeWidth = width
   let bridgeHeight = HOVER_BRIDGE_SIZE
   if (side === 'bottom') {
-    y = top - HOVER_BRIDGE_SIZE
+    // 面板可纵向滚动时桥收进面板内，避免探出部分成为可滚动区域出现假滚动条
+    y = insetY ? top : top - HOVER_BRIDGE_SIZE
   } else if (side === 'top') {
-    y = top + height
+    y = insetY ? top + height - HOVER_BRIDGE_SIZE : top + height
   } else if (side === 'left') {
     x = left + width
     bridgeWidth = HOVER_BRIDGE_SIZE
@@ -112,6 +114,36 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
   let bound = false
   let resizeObserver: ResizeObserver | null = null
   let cappedHeight = 0
+  // null = 未探测；true = 面板挂在 body 下可用文档坐标 absolute（滚动天然跟随）；false = 有定位祖先，退回 fixed 视口坐标
+  let docCoords: boolean | null = null
+  // null = 未探测；true = 面板 overflow-y 可滚动，悬停桥不能探出面板（否则成为可滚动区域出现假滚动条）
+  let panelScrollableY: boolean | null = null
+
+  function useDocumentCoords(): boolean {
+    if (docCoords !== null) {
+      return docCoords
+    }
+    docCoords = true
+    let node = options.panel.value?.parentElement ?? null
+    while (node) {
+      const style = getComputedStyle(node)
+      if (style.position !== 'static' || style.transform !== 'none') {
+        docCoords = false
+        break
+      }
+      node = node.parentElement
+    }
+    return docCoords
+  }
+
+  function canScrollY(): boolean {
+    if (panelScrollableY !== null) {
+      return panelScrollableY
+    }
+    const el = options.panel.value
+    panelScrollableY = el ? getComputedStyle(el).overflowY !== 'visible' : false
+    return panelScrollableY
+  }
 
   function panelScroll(): PanelScroll {
     return options.props.panelScroll === 'close' ? 'close' : 'follow'
@@ -185,6 +217,12 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
       }
     }
     const panelHeight = maxHeight > 0 ? Math.min(height, maxHeight) : height
+    // 桥与箭头是绝对定位子元素，以面板 padding box 为坐标系；offsetWidth/offsetHeight 是 border box，直接用会探出 padding box
+    const borderHeight = el ? el.offsetHeight - el.clientHeight : 0
+    const padWidth = el?.clientWidth || width
+    const naturalPadHeight = el?.clientHeight || panelHeight
+    const padHeight =
+      maxHeight > 0 && maxHeight < height ? Math.max(0, Math.min(naturalPadHeight, maxHeight - borderHeight)) : naturalPadHeight
 
     let left = rect.left
     let top = rect.bottom + gap
@@ -210,13 +248,21 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
       top = clamp(top, VIEWPORT_MARGIN, Math.max(VIEWPORT_MARGIN, vh - panelHeight - VIEWPORT_MARGIN))
     }
 
+    const doc = useDocumentCoords()
+    const sx = doc ? window.scrollX : 0
+    const sy = doc ? window.scrollY : 0
+    const docLeft = left + sx
+    const docTop = top + sy
+
     actualSide.value = side
     actualAlign.value = align
     const style = {
-      left: `${Math.round(left)}px`,
-      top: `${Math.round(top)}px`,
+      position: doc ? 'absolute' : 'fixed',
+      left: `${Math.round(docLeft)}px`,
+      top: `${Math.round(docTop)}px`,
       zIndex: zIndex.value,
-      ...hoverBridge(side, { left, top, width, height: panelHeight })
+      // 桥与箭头是绝对定位的子元素，坐标相对面板 padding box
+      ...hoverBridge(side, { left: 0, top: 0, width: padWidth, height: padHeight }, canScrollY())
     } as CSSProperties
     if (maxHeight > 0 && maxHeight < height) {
       style.maxHeight = `${maxHeight}px`
@@ -230,22 +276,22 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
     }
     position.value = style
 
-    // fixed 坐标，避免被面板自身 overflow 裁剪
+    // 面板子元素坐标系：以面板左上角为原点，避免被面板自身 overflow 裁剪
     const rawArrowOffset = Number(options.arrowOffset?.() ?? VIEWPORT_MARGIN)
     const arrowMargin = Number.isFinite(rawArrowOffset) ? Math.max(0, rawArrowOffset) : VIEWPORT_MARGIN
     const arrow: CSSProperties = {}
     if (side === 'top' || side === 'bottom') {
-      const offsetX = clamp(rect.left + rect.width / 2 - left, arrowMargin, Math.max(arrowMargin, width - arrowMargin))
-      arrow.left = `${Math.round(left + offsetX)}px`
-      arrow.top = `${Math.round(side === 'bottom' ? top - 4 : top + panelHeight - 4)}px`
+      const offsetX = clamp(rect.left + rect.width / 2 - left, arrowMargin, Math.max(arrowMargin, padWidth - arrowMargin))
+      arrow.left = `${Math.round(offsetX)}px`
+      arrow.top = `${Math.round(side === 'bottom' ? -4 : padHeight - 4)}px`
     } else {
       const offsetY = clamp(
         rect.top + rect.height / 2 - top,
         arrowMargin,
-        Math.max(arrowMargin, panelHeight - arrowMargin)
+        Math.max(arrowMargin, padHeight - arrowMargin)
       )
-      arrow.top = `${Math.round(top + offsetY)}px`
-      arrow.left = `${Math.round(side === 'right' ? left - 4 : left + width - 4)}px`
+      arrow.top = `${Math.round(offsetY)}px`
+      arrow.left = `${Math.round(side === 'right' ? -4 : padWidth - 4)}px`
     }
     arrowStyle.value = arrow
   }
@@ -286,6 +332,10 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
       options.close()
       return
     }
+    // 文档坐标 absolute 定位随 window 滚动天然跟随；fixed 回退模式仍需重算
+    if (target === document && useDocumentCoords()) {
+      return
+    }
     update()
   }
 
@@ -313,6 +363,8 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
     window.removeEventListener('resize', handleResize)
     resizeObserver?.disconnect()
     resizeObserver = null
+    docCoords = null
+    panelScrollableY = null
   }
 
   watch(

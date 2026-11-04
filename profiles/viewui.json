@@ -1,0 +1,24 @@
+{
+  "name": "viewui",
+  "components": "full",
+  "prefix": "viewui",
+  "theme": {
+    "global": {
+      "colorPrimary": "#2d8cf0",
+      "colorPrimaryLight": "#57a3f3",
+      "colorPrimaryDark": "#2b85e4",
+      "colorPrimaryBg": "#eaf5fe",
+      "colorPrimaryBgSubtle": "rgba(45, 140, 240, 0.06)",
+      "colorPrimaryBorder": "#a9d4fa",
+      "colorSuccess": "#19be6b",
+      "colorWarning": "#ff9900",
+      "colorDanger": "#ed3f14",
+      "colorInfo": "#808695",
+      "radiusSmall": "4px",
+      "radiusBase": "6px",
+      "radiusLarge": "8px",
+      "focusRing": "rgba(45, 140, 240, 0.2)",
+      "focusRingSoft": "rgba(45, 140, 240, 0.1)"
+    }
+  }
+}

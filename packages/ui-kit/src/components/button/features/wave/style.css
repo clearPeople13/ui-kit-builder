@@ -1,0 +1,26 @@
+.ui-button--wave {
+  position: relative;
+  overflow: hidden;
+}
+
+.ui-button__wave {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ui-button-wave-color, currentColor);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: ui-button-wave-spread 0.55s ease-out forwards;
+}
+
+@keyframes ui-button-wave-spread {
+  to {
+    transform: translate(-50%, -50%) scale(28);
+    opacity: 0;
+  }
+}

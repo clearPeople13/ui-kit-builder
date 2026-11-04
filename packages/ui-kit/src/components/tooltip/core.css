@@ -8,7 +8,6 @@
 }
 
 .ui-tooltip__popper {
-  position: fixed;
   z-index: 3000;
   max-width: 320px;
   padding: 8px 12px;
@@ -18,6 +17,12 @@
   word-break: break-word;
   box-sizing: border-box;
   animation: ui-tooltip-in 130ms ease-out;
+}
+
+/* 内容不自滚动：覆盖浮层通用 overflow，避免向上弹出时悬停桥被计入可滚动区域出现假滚动条；
+   共享样式在产物中排在组件样式之后，需要双类提权才能胜出 */
+.ui-tooltip__popper.ui-floating-panel {
+  overflow: visible;
 }
 
 @keyframes ui-tooltip-in {

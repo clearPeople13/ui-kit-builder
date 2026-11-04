@@ -14,13 +14,13 @@
   transform-origin: center left;
 }
 
-/* 悬停过渡桥：fixed 定位，避免被面板 overflow 计入可滚动区域（向上弹出时会出现假滚动条） */
+/* 悬停过渡桥：相对面板绝对定位，避免被面板 overflow 计入可滚动区域（向上弹出时会出现假滚动条） */
 .ui-floating-panel.is-top::before,
 .ui-floating-panel.is-bottom::before,
 .ui-floating-panel.is-left::before,
 .ui-floating-panel.is-right::before {
   content: '';
-  position: fixed;
+  position: absolute;
   z-index: 0;
   left: var(--ui-floating-bridge-left, 0);
   top: var(--ui-floating-bridge-top, 0);
@@ -29,7 +29,7 @@
 }
 
 .ui-floating-panel > .ui-floating-arrow {
-  position: fixed;
+  position: absolute;
   z-index: 1;
   width: 8px;
   height: 8px;

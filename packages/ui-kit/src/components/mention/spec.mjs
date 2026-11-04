@@ -277,7 +277,7 @@ export default {
             {
               "name": "placement",
               "type": "string",
-              "default": "bottom"
+              "default": "bottom-start"
             },
             {
               "name": "fallbackPlacements",
@@ -286,7 +286,7 @@ export default {
             {
               "name": "offset",
               "type": "number",
-              "default": 0
+              "default": 6
             },
             {
               "name": "showArrow",

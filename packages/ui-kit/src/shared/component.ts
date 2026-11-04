@@ -6,6 +6,7 @@ import './theme.css'
 import './icons.css'
 import './scrollbar.css'
 import './floating.css'
+import './loading.css'
 import {
   collectFeatureAttrs,
   collectFeatureClasses,

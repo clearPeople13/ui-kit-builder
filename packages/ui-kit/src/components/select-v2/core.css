@@ -79,7 +79,7 @@
 .ui-select-v2:focus-within .ui-select-v2__clear,
 .ui-select-v2__trigger.is-open .ui-select-v2__clear {
   visibility: visible;
-  opacity: 1;
+  opacity: 0.75;
 }
 
 .ui-select-v2:hover .ui-select-v2__clear ~ .ui-select-v2__arrow,
@@ -90,7 +90,8 @@
 }
 
 .ui-select-v2 .ui-select-v2__clear:hover {
-  color: var(--ui-color-info);
+  opacity: 1;
+  color: var(--ui-text-color-regular);
 }
 
 .ui-select-v2__arrow {
@@ -124,7 +125,6 @@
 }
 
 .ui-select-v2__dropdown {
-  position: fixed;
   z-index: 3000;
   max-height: min(var(--ui-floating-panel-max-height), 70vh);
   overflow: auto;
@@ -184,6 +184,18 @@
   padding: 6px 10px 4px;
   color: var(--ui-color-info);
   font-size: 12px;
+}
+
+.ui-select-v2__virtual {
+  position: relative;
+}
+
+.ui-select-v2__virtual-window {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  will-change: transform;
 }
 
 .ui-select-v2__empty {

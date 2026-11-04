@@ -43,7 +43,7 @@ export default {
           "name": "indicatorPosition",
           "type": "string",
           "default": "",
-          "description": "indicatorPosition"
+          "description": "指示器位置：'' 悬浮在画面底部，outside 移到卡片下方并自动预留 26px 空间"
         },
         {
           "name": "arrow",
@@ -55,7 +55,7 @@ export default {
           "name": "direction",
           "type": "string",
           "default": "horizontal",
-          "description": "direction"
+          "description": "排列方向：vertical 时切换改为纵向推移（上下滑入滑出），指示器竖排靠右、箭头改上下指向"
         },
         {
           "name": "pauseOnHover",

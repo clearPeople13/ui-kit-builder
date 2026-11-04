@@ -1,0 +1,25 @@
+{
+  "name": "arco",
+  "components": "full",
+  "prefix": "arco",
+  "theme": {
+    "global": {
+      "colorPrimary": "#165dff",
+      "colorPrimaryLight": "#4080ff",
+      "colorPrimaryDark": "#0e42d2",
+      "colorPrimaryBg": "#ebf2ff",
+      "colorPrimaryBgSubtle": "rgba(22, 93, 255, 0.06)",
+      "colorPrimaryBorder": "#bedaff",
+      "colorSuccess": "#00b42a",
+      "colorWarning": "#ff7d00",
+      "colorDanger": "#f53f3f",
+      "colorInfo": "#86909c",
+      "radiusSmall": "2px",
+      "radiusBase": "8px",
+      "radiusLarge": "12px",
+      "radiusXl": "16px",
+      "focusRing": "rgba(22, 93, 255, 0.15)",
+      "focusRingSoft": "rgba(22, 93, 255, 0.08)"
+    }
+  }
+}

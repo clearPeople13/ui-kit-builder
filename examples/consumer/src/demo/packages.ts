@@ -61,9 +61,12 @@ const INSTALLED_IDS = new Set(INSTALLED_PACKAGES.map((item) => item.id))
 export const PACKAGES = shallowRef<DemoPackage[]>([...INSTALLED_PACKAGES])
 
 export function mergeRuntimePackages(list: DemoPackage[]): void {
-  const merged = [...INSTALLED_PACKAGES]
+  // 运行时条目带 styleUrl/moduleUrl，meta.json 里的静态条目没有：同 id 必须用运行时数据覆盖，否则新主题拿不到样式地址
+  const runtimeById = new Map(list.map((item) => [item.id, item]))
+  const merged = INSTALLED_PACKAGES.map((item) => runtimeById.get(item.id) ?? item)
+  const known = new Set(merged.map((item) => item.id))
   for (const item of list) {
-    if (!INSTALLED_IDS.has(item.id)) {
+    if (!known.has(item.id)) {
       merged.push(item)
     }
   }

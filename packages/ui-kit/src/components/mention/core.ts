@@ -124,8 +124,9 @@ export function createMention(features: UiFeature[] = []) {
           close: closePanel,
           trigger: inputRef,
           panel: panelRef,
-          placement: () => props.placement ?? 'bottom',
-          offset: () => Number(props.offset ?? 0),
+          placement: () => props.placement ?? 'bottom-start',
+          offset: () => Number(props.offset ?? 6),
+          matchWidth: () => true,
           fallbackPlacements: () => props.fallbackPlacements as string[] | undefined
         })
 
@@ -394,12 +395,11 @@ export function createMention(features: UiFeature[] = []) {
             },
             [
               props.loading
-                ? h('div', { class: 'ui-mention__loading' }, [
-                    h('span', { class: 'ui-mention__spinner' }),
+                ? h('div', { class: 'ui-loader', role: 'status' }, [
+                    h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
                     h('span', null, '加载中…')
                   ])
-                : null,
-              h('ul', { class: 'ui-mention__list' }, list),
+                : h('ul', { class: 'ui-mention__list' }, list),
               props.showArrow ? h('span', { class: 'ui-floating-arrow', style: floating.arrowStyle.value }) : null
             ]
           )

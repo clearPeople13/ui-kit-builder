@@ -30,6 +30,10 @@ interface V2Option {
   group?: boolean
 }
 
+const VIRTUAL_THRESHOLD = 100
+const VIRTUAL_OVERSCAN = 5
+const VIRTUAL_FALLBACK_ITEM_HEIGHT = 34
+
 function optionFields(props: Record<string, any>) {
   const mapping = props.props ?? {}
   return {
@@ -82,6 +86,8 @@ export function createSelectV2(features: UiFeature[] = []) {
         const query = ref('')
         const triggerRef = ref<HTMLElement>()
         const dropdownRef = ref<HTMLElement>()
+        const listScrollTop = ref(0)
+        const measuredItemHeight = ref(0)
 
         const { position, refresh } = useFloatingPanel({
           props,
@@ -126,9 +132,6 @@ export function createSelectV2(features: UiFeature[] = []) {
         })
 
         const emptyText = computed(() => {
-          if (props.loading) {
-            return props.loadingText || '加载中'
-          }
           if (props.filterable && query.value) {
             return props.noMatchText || '无匹配数据'
           }
@@ -140,12 +143,60 @@ export function createSelectV2(features: UiFeature[] = []) {
             return
           }
           open.value = true
-          nextTick(refresh)
+          listScrollTop.value = 0
+          nextTick(() => {
+            if (dropdownRef.value) {
+              dropdownRef.value.scrollTop = 0
+            }
+            refresh()
+            measureItemHeight()
+          })
           if (props.filterable) {
             nextTick(() => {
               const input = dropdownRef.value?.querySelector('input')
               input?.focus()
             })
+          }
+        }
+
+        // 行高由主题 token 决定（padding/font-size），运行时测量；取不到时先用回退值撑首帧
+        function measureItemHeight() {
+          const option = dropdownRef.value?.querySelector('.ui-select-v2__option')
+          if (option instanceof HTMLElement && option.offsetHeight > 0) {
+            measuredItemHeight.value = option.offsetHeight
+          }
+        }
+
+        interface VirtualWindow {
+          list: V2Option[]
+          itemHeight: number
+          total: number
+          start: number
+          end: number
+        }
+
+        // 分组列表行高不一，回退全量渲染；仅扁平大列表走窗口化
+        function virtualWindow(): VirtualWindow | null {
+          const list = visibleOptions.value
+          if (list.length <= VIRTUAL_THRESHOLD || list.some((option) => option.group)) {
+            return null
+          }
+          const itemHeight = measuredItemHeight.value || VIRTUAL_FALLBACK_ITEM_HEIGHT
+          const total = list.length
+          const viewHeight = dropdownRef.value?.clientHeight || 274
+          const start = Math.max(0, Math.floor(listScrollTop.value / itemHeight) - VIRTUAL_OVERSCAN)
+          const end = Math.min(total, Math.ceil((listScrollTop.value + viewHeight) / itemHeight) + VIRTUAL_OVERSCAN)
+          return { list, itemHeight, total, start, end }
+        }
+
+        function handleListScroll(event: Event) {
+          listScrollTop.value = (event.target as HTMLElement).scrollTop
+        }
+
+        function resetListScroll() {
+          listScrollTop.value = 0
+          if (dropdownRef.value) {
+            dropdownRef.value.scrollTop = 0
           }
         }
 
@@ -195,6 +246,7 @@ export function createSelectV2(features: UiFeature[] = []) {
 
         function handleFilter(event: Event) {
           query.value = (event.target as HTMLInputElement).value
+          resetListScroll()
           emit('filter-change', query.value)
           if (props.remote && typeof props.remoteMethod === 'function') {
             props.remoteMethod(query.value)
@@ -265,6 +317,31 @@ export function createSelectV2(features: UiFeature[] = []) {
           return nodes
         }
 
+        function renderOptionNode(option: V2Option): VNodeChild {
+          if (option.group) {
+            return h('div', { class: 'ui-select-v2__group', key: `group-${option.label}` }, option.label)
+          }
+          const selected = selectedValues.value.some((value) => sameValue(value, option.value))
+          return h(
+            'div',
+            {
+              key: `option-${option.label}-${String(option.value)}`,
+              class: [
+                'ui-select-v2__option',
+                {
+                  'is-selected': selected,
+                  'is-disabled': option.disabled
+                }
+              ],
+              onClick: () => selectOption(option)
+            },
+            [
+              h('span', { class: 'ui-select-v2__option-label' }, option.label),
+              selected ? renderIcon(Check, { class: 'ui-select-v2__check' }) : null
+            ]
+          )
+        }
+
         function renderDropdown(): VNodeChild {
           if (!open.value) {
             return null
@@ -283,35 +360,34 @@ export function createSelectV2(features: UiFeature[] = []) {
               ])
             )
           }
-          if (!visibleOptions.value.length) {
+          if (props.loading) {
+            children.push(
+              h('div', { class: 'ui-loader', role: 'status' }, [
+                h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
+                h('span', null, props.loadingText || '加载中')
+              ])
+            )
+          } else if (!visibleOptions.value.length) {
             children.push(h('div', { class: 'ui-select-v2__empty' }, emptyText.value))
           } else {
-            for (const option of visibleOptions.value) {
-              if (option.group) {
-                children.push(h('div', { class: 'ui-select-v2__group', key: `group-${option.label}` }, option.label))
-                continue
-              }
-              const selected = selectedValues.value.some((value) => sameValue(value, option.value))
+            const win = virtualWindow()
+            if (win) {
               children.push(
-                h(
-                  'div',
-                  {
-                    key: `option-${option.label}-${String(option.value)}`,
-                    class: [
-                      'ui-select-v2__option',
-                      {
-                        'is-selected': selected,
-                        'is-disabled': option.disabled
-                      }
-                    ],
-                    onClick: () => selectOption(option)
-                  },
-                  [
-                    h('span', { class: 'ui-select-v2__option-label' }, option.label),
-                    selected ? renderIcon(Check, { class: 'ui-select-v2__check' }) : null
-                  ]
-                )
+                h('div', { class: 'ui-select-v2__virtual', style: { height: `${win.total * win.itemHeight}px` } }, [
+                  h(
+                    'div',
+                    {
+                      class: 'ui-select-v2__virtual-window',
+                      style: { transform: `translateY(${win.start * win.itemHeight}px)` }
+                    },
+                    win.list.slice(win.start, win.end).map(renderOptionNode)
+                  )
+                ])
               )
+            } else {
+              for (const option of visibleOptions.value) {
+                children.push(renderOptionNode(option))
+              }
             }
           }
           const dropdown = h(
@@ -320,7 +396,8 @@ export function createSelectV2(features: UiFeature[] = []) {
               ref: dropdownRef,
               class: ['ui-select-v2__dropdown', `is-${props.effect || 'light'}`, props.popperClass],
               style: [props.popperStyle as CSSProperties, position.value],
-              onKeydown: handleKeydown
+              onKeydown: handleKeydown,
+              onScroll: handleListScroll
             },
             children
           )

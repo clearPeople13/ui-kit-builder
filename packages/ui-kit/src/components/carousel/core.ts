@@ -9,6 +9,7 @@ import './core.css'
 interface CarouselContext {
   active: () => number
   length: () => number
+  direction: () => string
   register: (item: CarouselItemMeta) => number
 }
 interface CarouselItemMeta {
@@ -73,7 +74,12 @@ export function createCarousel(features: UiFeature[] = []) {
           return items.value.length - 1
         }
 
-        provide(CAROUSEL_CONTEXT, { active: () => active.value, length: () => items.value.length, register })
+        provide(CAROUSEL_CONTEXT, {
+          active: () => active.value,
+          length: () => items.value.length,
+          direction: () => props.direction,
+          register
+        })
 
         function startTimer() {
           stopTimer()
@@ -218,6 +224,17 @@ export function createCarouselItem(features: UiFeature[] = []) {
           },
           get relation() {
             return relation()
+          },
+          get slide() {
+            if (!context || context.direction() !== 'vertical') {
+              return null
+            }
+            const length = context.length()
+            if (length < 2 || context.active() === index) {
+              return 0
+            }
+            const forward = (index - context.active() + length) % length
+            return forward <= length / 2 ? forward : forward - length
           }
         }
       },
@@ -225,8 +242,11 @@ export function createCarouselItem(features: UiFeature[] = []) {
         state.active ? 'is-active' : '',
         state.relation === 'prev' ? 'is-prev' : '',
         state.relation === 'next' ? 'is-next' : '',
-        state.relation === 'rest' ? 'is-rest' : ''
+        state.relation === 'rest' ? 'is-rest' : '',
+        state.slide !== null ? 'is-slide' : ''
       ],
+      styles: (_props, state) =>
+        state.slide !== null && !state.active ? ({ transform: `translateY(${state.slide * 100}%)` } as Record<string, string>) : {},
       content: ({ props, slots }) =>
         h('div', { class: 'ui-carousel-item__inner' }, [slots.default?.() ?? props.label ?? null])
     },

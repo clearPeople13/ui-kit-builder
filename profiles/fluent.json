@@ -1,0 +1,25 @@
+{
+  "name": "fluent",
+  "components": "full",
+  "prefix": "fluent",
+  "theme": {
+    "global": {
+      "colorPrimary": "#0f6cbd",
+      "colorPrimaryLight": "#115ea3",
+      "colorPrimaryDark": "#0c3b5e",
+      "colorPrimaryBg": "#ebf3fc",
+      "colorPrimaryBgSubtle": "rgba(15, 108, 189, 0.06)",
+      "colorPrimaryBorder": "#b4d0f0",
+      "colorSuccess": "#107c41",
+      "colorWarning": "#f7630c",
+      "colorDanger": "#c50f1f",
+      "colorInfo": "#8a8886",
+      "radiusSmall": "2px",
+      "radiusBase": "4px",
+      "radiusLarge": "6px",
+      "radiusXl": "8px",
+      "focusRing": "rgba(15, 108, 189, 0.2)",
+      "focusRingSoft": "rgba(15, 108, 189, 0.1)"
+    }
+  }
+}

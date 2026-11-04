@@ -143,7 +143,7 @@ function formatDefault(value: unknown): string {
     return '—'
   }
   if (typeof value === 'string') {
-    return `'${value}'`
+    return value
   }
   if (typeof value === 'boolean' || typeof value === 'number') {
     return String(value)

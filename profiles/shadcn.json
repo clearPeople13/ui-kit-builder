@@ -1,0 +1,33 @@
+{
+  "name": "shadcn",
+  "components": "full",
+  "prefix": "shadcn",
+  "theme": {
+    "global": {
+      "colorPrimary": "#09090b",
+      "colorPrimaryLight": "#18181b",
+      "colorPrimaryDark": "#000000",
+      "colorPrimaryBg": "#f4f4f5",
+      "colorPrimaryBgSubtle": "#fafafa",
+      "colorPrimaryBorder": "#e4e4e7",
+      "colorSuccess": "#10b981",
+      "colorWarning": "#f59e0b",
+      "colorDanger": "#ef4444",
+      "colorInfo": "#71717a",
+      "textColorPrimary": "#09090b",
+      "textColorRegular": "#3f3f46",
+      "textColorPlaceholder": "#a1a1aa",
+      "borderColor": "#e4e4e7",
+      "fillColor": "#f4f4f5",
+      "radiusSmall": "6px",
+      "radiusBase": "8px",
+      "radiusLarge": "12px",
+      "radiusXl": "16px",
+      "shadowBase": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+      "shadowMd": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)",
+      "shadowLg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
+      "focusRing": "rgba(24, 24, 27, 0.15)",
+      "focusRingSoft": "rgba(24, 24, 27, 0.08)"
+    }
+  }
+}

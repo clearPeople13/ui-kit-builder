@@ -1,0 +1,33 @@
+{
+  "name": "material3",
+  "components": "full",
+  "prefix": "material3",
+  "theme": {
+    "global": {
+      "colorPrimary": "#6750a4",
+      "colorPrimaryLight": "#735cac",
+      "colorPrimaryDark": "#564094",
+      "colorPrimaryBg": "#eaddff",
+      "colorPrimaryBgSubtle": "#f3edf7",
+      "colorPrimaryBorder": "#cdc0e6",
+      "colorSuccess": "#146c2e",
+      "colorWarning": "#825500",
+      "colorDanger": "#b3261e",
+      "colorDangerBg": "#f9dedc",
+      "colorInfo": "#625b71",
+      "textColorPrimary": "#1c1b1f",
+      "textColorRegular": "#49454f",
+      "textColorPlaceholder": "#79747e",
+      "radiusSmall": "6px",
+      "radiusBase": "12px",
+      "radiusLarge": "16px",
+      "radiusXl": "28px",
+      "fontFamily": "Roboto, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+      "shadowBase": "0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15)",
+      "shadowMd": "0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3)",
+      "shadowLg": "0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3)",
+      "focusRing": "rgba(103, 80, 164, 0.2)",
+      "focusRingSoft": "rgba(103, 80, 164, 0.1)"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "mantine",
+  "components": "full",
+  "prefix": "mantine",
+  "theme": {
+    "global": {
+      "colorPrimary": "#228be6",
+      "colorPrimaryLight": "#1c7ed6",
+      "colorPrimaryDark": "#1971c2",
+      "colorPrimaryBg": "#e7f5ff",
+      "colorPrimaryBgSubtle": "rgba(34, 139, 230, 0.06)",
+      "colorPrimaryBorder": "#74c0fc",
+      "colorSuccess": "#40c057",
+      "colorWarning": "#fd7e14",
+      "colorDanger": "#fa5252",
+      "colorInfo": "#868e96",
+      "radiusSmall": "4px",
+      "radiusBase": "8px",
+      "radiusLarge": "16px",
+      "radiusXl": "24px",
+      "focusRing": "rgba(34, 139, 230, 0.2)",
+      "focusRingSoft": "rgba(34, 139, 230, 0.1)"
+    }
+  }
+}

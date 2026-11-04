@@ -1,3 +1,36 @@
-.ui-input-tag--clearable .ui-input-tag__clear {
+.ui-input-tag__clear {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   margin-left: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.ui-input-tag--clearable:hover .ui-input-tag__clear,
+.ui-input-tag--clearable:focus-within .ui-input-tag__clear {
+  visibility: visible;
+  opacity: 0.75;
+}
+
+.ui-input-tag .ui-input-tag__clear:hover {
+  opacity: 1;
+  color: var(--ui-text-color-regular);
+}
+
+.ui-input-tag__clear:focus-visible {
+  outline: 2px solid var(--ui-focus-ring);
+  outline-offset: 1px;
 }

@@ -1,4 +1,4 @@
-import { h, onBeforeUnmount, ref, watch } from 'vue'
+import { h, isVNode, onBeforeUnmount, ref, watch } from 'vue'
 import { ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -31,6 +31,31 @@ function toDelay(value: unknown, fallback: number): number {
   }
   const delay = Number(value)
   return Number.isFinite(delay) ? Math.max(0, delay) : fallback
+}
+
+// 收起状态的子菜单不渲染子项，无法靠注册表反查祖先链；改从插槽 vnode 树收集子树内所有 index
+function collectMenuIndices(node: unknown, out: string[]): void {
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      collectMenuIndices(item, out)
+    }
+    return
+  }
+  if (!isVNode(node)) {
+    return
+  }
+  const index = (node.props as Record<string, unknown> | null)?.index
+  if (typeof index === 'string' && index) {
+    out.push(index)
+  }
+  const children = node.children
+  if (Array.isArray(children)) {
+    collectMenuIndices(children, out)
+  } else if (children && typeof children === 'object') {
+    for (const value of Object.values(children)) {
+      collectMenuIndices(typeof value === 'function' ? (value as () => unknown)() : value, out)
+    }
+  }
 }
 
 const menuBaseProps = {
@@ -209,7 +234,7 @@ export function createSubMenu(features: UiFeature[] = []) {
       name: 'UiSubMenu',
       baseClass: 'ui-sub-menu',
       props: subMenuBaseProps,
-      setup(props, { inject, provide }) {
+      setup(props, { inject, provide, slots }) {
         const context = inject(MENU_CONTEXT, null) as MenuContext | null
         const owner = inject(SUBMENU_OWNER, '') as string
         if (props.index) {
@@ -266,6 +291,16 @@ export function createSubMenu(features: UiFeature[] = []) {
           get opened() {
             return Boolean(props.index) && Boolean(context?.isOpened(props.index as string))
           },
+          // 激活项是否在本子菜单的子树内（子项选中、父级收起时给标题一个高亮标识）
+          get activeDescendant() {
+            const current = context?.active() ?? ''
+            if (!current || !props.index) {
+              return false
+            }
+            const indices: string[] = []
+            collectMenuIndices(slots.default?.(), indices)
+            return indices.includes(current)
+          },
           get mode() {
             return context?.mode() ?? 'vertical'
           },
@@ -285,7 +320,11 @@ export function createSubMenu(features: UiFeature[] = []) {
         onMouseenter: state.handleEnter,
         onMouseleave: state.handleLeave
       }),
-      classes: (props, state) => [state.opened ? 'is-opened' : '', props.disabled ? 'is-disabled' : ''],
+      classes: (props, state) => [
+        state.opened ? 'is-opened' : '',
+        state.activeDescendant ? 'is-active' : '',
+        props.disabled ? 'is-disabled' : ''
+      ],
       content: ({ props, slots, state }) => {
         const arrowIcon = state.opened
           ? state.mode === 'horizontal'

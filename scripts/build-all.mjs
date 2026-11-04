@@ -5,7 +5,28 @@ import { buildProfile } from './build-lib.mjs'
 import { writeDemoMeta } from './generate-demo-meta.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
-const profileNames = ['core', 'full', 'branded', 'chinese', 'cute', 'antd']
+const profileNames = [
+  'core',
+  'full',
+  'branded',
+  'chinese',
+  'cute',
+  'antd',
+  'arco',
+  'tdesign',
+  'naive',
+  'viewui',
+  'vant',
+  'varlet',
+  'semi',
+  'material3',
+  'bootstrap',
+  'shadcn',
+  'fluent',
+  'carbon',
+  'mantine',
+  'ios'
+]
 
 function delta(base, target) {
   return {

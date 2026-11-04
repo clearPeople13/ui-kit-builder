@@ -1,0 +1,24 @@
+{
+  "name": "tdesign",
+  "components": "full",
+  "prefix": "tdesign",
+  "theme": {
+    "global": {
+      "colorPrimary": "#0052d9",
+      "colorPrimaryLight": "#266fe8",
+      "colorPrimaryDark": "#0034b5",
+      "colorPrimaryBg": "#e3edff",
+      "colorPrimaryBgSubtle": "rgba(0, 82, 217, 0.06)",
+      "colorPrimaryBorder": "#b5cfff",
+      "colorSuccess": "#00a870",
+      "colorWarning": "#ed7b2f",
+      "colorDanger": "#d54941",
+      "colorInfo": "#a6a6a6",
+      "radiusSmall": "3px",
+      "radiusBase": "6px",
+      "radiusLarge": "9px",
+      "focusRing": "rgba(0, 82, 217, 0.15)",
+      "focusRingSoft": "rgba(0, 82, 217, 0.08)"
+    }
+  }
+}

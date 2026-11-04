@@ -56,9 +56,24 @@
   justify-content: center;
   min-width: 24px;
   height: 30px;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--ui-pagination-more-color);
+  font: inherit;
   font-size: 12px;
   letter-spacing: 1px;
+  cursor: pointer;
+  transition: color 120ms ease;
+}
+
+.ui-pagination__more:hover:not(:disabled) {
+  color: var(--ui-color-primary);
+}
+
+.ui-pagination__more:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .ui-pagination--background .ui-pagination__pager {

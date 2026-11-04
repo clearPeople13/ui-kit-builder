@@ -200,6 +200,21 @@ export default {
               "description": "渐变角度"
             }
           ]
+        },
+        "button.wave": {
+          "title": "点击水波",
+          "description": "点击时从触点扩散水波动画，水波颜色取按钮文字色保证对比；引入特性即默认开启，可用 wave=false 按按钮关闭。未引入特性的构建完全没有动画代码。",
+          "module": "packages/ui-kit/src/components/button/features/wave/index.ts",
+          "exportName": "buttonWaveFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "wave",
+              "type": "boolean",
+              "default": true,
+              "description": "点击水波动画（引入特性后默认开启）"
+            }
+          ]
         }
       }
     },

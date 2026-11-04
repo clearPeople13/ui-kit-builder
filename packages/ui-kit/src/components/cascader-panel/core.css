@@ -94,12 +94,6 @@
   font-size: 12px;
 }
 
-.ui-cascader-panel__node-loading {
-  flex: none;
-  color: var(--ui-text-color-secondary, #909399);
-  font-size: 12px;
-}
-
 .ui-cascader-panel__check-icon {
   flex: none;
   color: var(--ui-color-primary, #409eff);
