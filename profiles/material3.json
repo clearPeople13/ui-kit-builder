@@ -28,6 +28,16 @@
       "shadowLg": "0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3)",
       "focusRing": "rgba(103, 80, 164, 0.2)",
       "focusRingSoft": "rgba(103, 80, 164, 0.1)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-ripple 0.6s cubic-bezier(0.08, 0.82, 0.17, 1) forwards, ui-button-wave-fade 0.8s cubic-bezier(0.08, 0.82, 0.17, 1) forwards",
+        "wave-shadow": "none",
+        "wave-color": "currentcolor",
+        "wave-fade-duration": "0.8s",
+        "wave-opacity": "0.4"
+      }
+    },
+    "rawCss": "@property --ui-button-wave-r {\n  syntax: '<percentage>';\n  inherits: false;\n  initial-value: 0%;\n}\n@keyframes ui-button-wave-ripple {\n  to { --ui-button-wave-r: var(--ui-button-wave-ripple-size, 120%); }\n}\n@keyframes ui-button-wave-fade {\n  to { opacity: 0; }\n}"
   }
 }

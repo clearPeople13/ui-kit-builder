@@ -123,6 +123,13 @@ function buildThemeCss(theme, prefix) {
     }
   }
 
+  // theme.rawCss：皮肤自带的任意 CSS（自定义 @keyframes / 类等），构建时原样附加并统一做前缀改写，
+  // 用 ui- 前缀编写即等价于包内源码，不需要二开库就能上任意动画
+  const rawCss = typeof theme.rawCss === 'string' ? theme.rawCss.trim() : ''
+  if (rawCss) {
+    blocks.push(`\n/* ui-kit theme raw css */\n${rawCss}\n`)
+  }
+
   return blocks.length ? `\n/* ui-kit theme overrides */\n${blocks.join('\n')}\n` : ''
 }
 

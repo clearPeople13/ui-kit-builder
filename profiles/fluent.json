@@ -20,6 +20,14 @@
       "radiusXl": "8px",
       "focusRing": "rgba(15, 108, 189, 0.2)",
       "focusRingSoft": "rgba(15, 108, 189, 0.1)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-fluent 0.6s ease forwards",
+        "wave-fade-duration": "0.6s",
+        "wave-opacity": "0.4"
+      }
+    },
+    "rawCss": "@keyframes ui-button-wave-fluent {\n  0% { box-shadow: 0 0 0 0 var(--ui-button-wave-color); opacity: var(--ui-button-wave-opacity, 0.4); }\n  100% { box-shadow: 0 0 10px 10px transparent; opacity: 0; }\n}"
   }
 }

@@ -14,7 +14,11 @@ const CLASS_RE = /^\.ui-([a-z0-9-]+)$/
 const RUNTIME_OWNED = new Set([
   '--ui-popper-arrow-offset',
   '--ui-divider-border-style',
-  '--ui-form-label-width'
+  '--ui-form-label-width',
+  // 点击水波：动画/JS 每帧驱动，主题里配了也会被盖掉
+  '--ui-button-wave-r',
+  '--ui-button-wave-origin-x',
+  '--ui-button-wave-origin-y'
 ])
 const COLOR_RE = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\()/i
 

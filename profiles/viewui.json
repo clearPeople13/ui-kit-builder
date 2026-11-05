@@ -19,6 +19,14 @@
       "radiusLarge": "8px",
       "focusRing": "rgba(45, 140, 240, 0.2)",
       "focusRingSoft": "rgba(45, 140, 240, 0.1)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-viewui 0.4s ease forwards",
+        "wave-fade-duration": "0.4s",
+        "wave-opacity": "0.35"
+      }
+    },
+    "rawCss": "@keyframes ui-button-wave-viewui {\n  0% { background: var(--ui-button-wave-color); opacity: 0; }\n  30% { background: var(--ui-button-wave-color); opacity: var(--ui-button-wave-opacity, 0.35); }\n  100% { background: var(--ui-button-wave-color); opacity: 0; }\n}"
   }
 }

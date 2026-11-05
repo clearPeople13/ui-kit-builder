@@ -79,7 +79,10 @@
         <div class="component-list" id="component-list"></div>
         <p class="empty-hint" id="empty-hint" hidden>没有匹配的组件。</p>
 
-        <p class="step__next"><a class="step__next-link" href="#step-features">下一步：挑功能 →</a></p>
+        <p class="step__next">
+          <span class="step__gate" id="gate-components" hidden>先启用至少 1 个组件才能继续</span>
+          <a class="step__next-link" href="#step-features" id="next-components">下一步：挑功能 →</a>
+        </p>
       </section>
 
       <section class="panel step" id="step-features" aria-labelledby="step-features-title">
@@ -115,7 +118,9 @@
           第 1 步还没有启用任何组件。先回去选几个组件，这里就会出现可勾选的功能。
         </p>
 
-        <p class="step__next"><a class="step__next-link" href="#step-theme">下一步：调主题（可选）→</a></p>
+        <p class="step__next">
+          <a class="step__next-link" href="#step-theme" id="next-features">下一步：调主题（可选）→</a>
+        </p>
       </section>
 
       <section class="panel step" id="step-theme" aria-labelledby="step-theme-title">
@@ -153,6 +158,11 @@
           <p class="toolbar__status" id="preset-status"></p>
         </div>
 
+        <div class="theme-errors" id="theme-errors" hidden>
+          <span class="theme-errors__text" id="theme-errors-text"></span>
+          <button type="button" class="link-button" id="theme-errors-jump">定位到第一个</button>
+        </div>
+
         <div class="theme-layout">
           <div class="theme-main">
             <div class="toolbar toolbar--theme">
@@ -165,6 +175,7 @@
                 autocomplete="off"
               />
               <div class="toolbar__actions">
+                <button type="button" class="button button--small" id="theme-filter-modified" aria-pressed="false">仅看已修改</button>
                 <button type="button" class="button button--small" id="theme-expand">展开全部</button>
                 <button type="button" class="button button--small" id="theme-collapse">收起全部</button>
               </div>
@@ -192,7 +203,10 @@
           <pre class="config__body" id="theme-css-body"></pre>
         </div>
 
-        <p class="step__next"><a class="step__next-link" href="#step-build">下一步：生成包 →</a></p>
+        <p class="step__next">
+          <span class="step__gate" id="gate-theme" hidden>有非法变量取值，修正后才能继续</span>
+          <a class="step__next-link" href="#step-build" id="next-theme">下一步：生成包 →</a>
+        </p>
       </section>
 
       <section class="panel step" id="step-build" aria-labelledby="step-build-title">
@@ -264,6 +278,7 @@
               <button type="button" class="button" id="download-config">下载配置</button>
             </div>
 
+            <p class="step__gate" id="build-gate" hidden></p>
             <p class="hint" id="build-hint">构建会在 dist/&lt;包名后缀&gt; 输出独立包。</p>
             <div class="output" id="build-output" hidden></div>
           </aside>

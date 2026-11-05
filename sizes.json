@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-03T10:18:17.900Z",
+  "generatedAt": "2026-11-04T10:12:59.603Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -195,19 +195,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 534848,
-          "gzipBytes": 126763
+          "bytes": 536564,
+          "gzipBytes": 127264
         },
         {
           "file": "ui-kit.css",
-          "bytes": 231281,
-          "gzipBytes": 31715
+          "bytes": 231823,
+          "gzipBytes": 31844
         }
       ],
-      "jsBytes": 534848,
-      "cssBytes": 231281,
-      "totalBytes": 766129,
-      "gzipBytes": 158277
+      "jsBytes": 536564,
+      "cssBytes": 231823,
+      "totalBytes": 768387,
+      "gzipBytes": 158898
     },
     "full": {
       "name": "full",
@@ -338,8 +338,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -658,7 +657,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -820,19 +818,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 604439,
-          "gzipBytes": 141796
+          "bytes": 605031,
+          "gzipBytes": 141945
         },
         {
           "file": "ui-kit.css",
-          "bytes": 248418,
-          "gzipBytes": 33947
+          "bytes": 248538,
+          "gzipBytes": 33991
         }
       ],
-      "jsBytes": 604439,
-      "cssBytes": 248418,
-      "totalBytes": 852857,
-      "gzipBytes": 175815
+      "jsBytes": 605031,
+      "cssBytes": 248538,
+      "totalBytes": 853569,
+      "gzipBytes": 176001
     },
     "branded": {
       "name": "branded",
@@ -963,8 +961,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -1283,7 +1280,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -1445,19 +1441,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141868
+          "bytes": 606851,
+          "gzipBytes": 142020
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260030,
-          "gzipBytes": 34623
+          "bytes": 260546,
+          "gzipBytes": 34784
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 260030,
-      "totalBytes": 866281,
-      "gzipBytes": 176585
+      "jsBytes": 606851,
+      "cssBytes": 260546,
+      "totalBytes": 867397,
+      "gzipBytes": 176893
     },
     "chinese": {
       "name": "chinese",
@@ -1588,8 +1584,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -1908,7 +1903,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -2070,19 +2064,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608969,
-          "gzipBytes": 142021
+          "bytes": 609581,
+          "gzipBytes": 142174
         },
         {
           "file": "ui-kit.css",
-          "bytes": 295894,
-          "gzipBytes": 38289
+          "bytes": 296454,
+          "gzipBytes": 38452
         }
       ],
-      "jsBytes": 608969,
-      "cssBytes": 295894,
-      "totalBytes": 904863,
-      "gzipBytes": 180449
+      "jsBytes": 609581,
+      "cssBytes": 296454,
+      "totalBytes": 906035,
+      "gzipBytes": 180760
     },
     "cute": {
       "name": "cute",
@@ -2213,8 +2207,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -2533,7 +2526,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -2695,19 +2687,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141869
+          "bytes": 606851,
+          "gzipBytes": 142022
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275363,
-          "gzipBytes": 37563
+          "bytes": 275997,
+          "gzipBytes": 37742
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 275363,
-      "totalBytes": 881614,
-      "gzipBytes": 179537
+      "jsBytes": 606851,
+      "cssBytes": 275997,
+      "totalBytes": 882848,
+      "gzipBytes": 179865
     },
     "antd": {
       "name": "antd",
@@ -2838,8 +2830,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -3158,7 +3149,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -3320,19 +3310,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141868
+          "bytes": 606851,
+          "gzipBytes": 142020
         },
         {
           "file": "ui-kit.css",
-          "bytes": 280152,
-          "gzipBytes": 37721
+          "bytes": 280794,
+          "gzipBytes": 37902
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 280152,
-      "totalBytes": 886403,
-      "gzipBytes": 179689
+      "jsBytes": 606851,
+      "cssBytes": 280794,
+      "totalBytes": 887645,
+      "gzipBytes": 180018
     },
     "arco": {
       "name": "arco",
@@ -3463,8 +3453,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -3783,7 +3772,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -3945,19 +3933,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141867
+          "bytes": 606851,
+          "gzipBytes": 142019
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260009,
-          "gzipBytes": 34601
+          "bytes": 260918,
+          "gzipBytes": 34881
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 260009,
-      "totalBytes": 866260,
-      "gzipBytes": 176561
+      "jsBytes": 606851,
+      "cssBytes": 260918,
+      "totalBytes": 867769,
+      "gzipBytes": 176987
     },
     "tdesign": {
       "name": "tdesign",
@@ -4088,8 +4076,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -4408,7 +4395,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -4570,19 +4556,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608969,
-          "gzipBytes": 142017
+          "bytes": 609581,
+          "gzipBytes": 142170
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276585,
-          "gzipBytes": 35130
+          "bytes": 277160,
+          "gzipBytes": 35290
         }
       ],
-      "jsBytes": 608969,
-      "cssBytes": 276585,
-      "totalBytes": 885554,
-      "gzipBytes": 177274
+      "jsBytes": 609581,
+      "cssBytes": 277160,
+      "totalBytes": 886741,
+      "gzipBytes": 177581
     },
     "naive": {
       "name": "naive",
@@ -4713,8 +4699,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -5033,7 +5018,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -5195,19 +5179,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 607157,
-          "gzipBytes": 141923
+          "bytes": 607761,
+          "gzipBytes": 142076
         },
         {
           "file": "ui-kit.css",
-          "bytes": 265551,
-          "gzipBytes": 34745
+          "bytes": 266207,
+          "gzipBytes": 34933
         }
       ],
-      "jsBytes": 607157,
-      "cssBytes": 265551,
-      "totalBytes": 872708,
-      "gzipBytes": 176774
+      "jsBytes": 607761,
+      "cssBytes": 266207,
+      "totalBytes": 873968,
+      "gzipBytes": 177112
     },
     "viewui": {
       "name": "viewui",
@@ -5338,8 +5322,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -5658,7 +5641,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -5820,19 +5802,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608063,
-          "gzipBytes": 141963
+          "bytes": 608671,
+          "gzipBytes": 142114
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271055,
-          "gzipBytes": 34953
+          "bytes": 271682,
+          "gzipBytes": 35109
         }
       ],
-      "jsBytes": 608063,
-      "cssBytes": 271055,
-      "totalBytes": 879118,
-      "gzipBytes": 177026
+      "jsBytes": 608671,
+      "cssBytes": 271682,
+      "totalBytes": 880353,
+      "gzipBytes": 177336
     },
     "vant": {
       "name": "vant",
@@ -5963,8 +5945,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -6283,7 +6264,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -6445,19 +6425,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141870
+          "bytes": 606851,
+          "gzipBytes": 142020
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260013,
-          "gzipBytes": 34597
+          "bytes": 261058,
+          "gzipBytes": 34889
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 260013,
-      "totalBytes": 866264,
-      "gzipBytes": 176561
+      "jsBytes": 606851,
+      "cssBytes": 261058,
+      "totalBytes": 867909,
+      "gzipBytes": 176999
     },
     "varlet": {
       "name": "varlet",
@@ -6588,8 +6568,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -6908,7 +6887,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -7070,19 +7048,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608063,
-          "gzipBytes": 141967
+          "bytes": 608671,
+          "gzipBytes": 142121
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271083,
-          "gzipBytes": 34952
+          "bytes": 271722,
+          "gzipBytes": 35124
         }
       ],
-      "jsBytes": 608063,
-      "cssBytes": 271083,
-      "totalBytes": 879146,
-      "gzipBytes": 177030
+      "jsBytes": 608671,
+      "cssBytes": 271722,
+      "totalBytes": 880393,
+      "gzipBytes": 177356
     },
     "semi": {
       "name": "semi",
@@ -7213,8 +7191,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -7533,7 +7510,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -7695,19 +7671,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606251,
-          "gzipBytes": 141870
+          "bytes": 606851,
+          "gzipBytes": 142024
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260012,
-          "gzipBytes": 34599
+          "bytes": 260614,
+          "gzipBytes": 34772
         }
       ],
-      "jsBytes": 606251,
-      "cssBytes": 260012,
-      "totalBytes": 866263,
-      "gzipBytes": 176562
+      "jsBytes": 606851,
+      "cssBytes": 260614,
+      "totalBytes": 867465,
+      "gzipBytes": 176882
     },
     "material3": {
       "name": "material3",
@@ -7838,8 +7814,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -8158,7 +8133,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -8320,19 +8294,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 610781,
-          "gzipBytes": 142113
+          "bytes": 611401,
+          "gzipBytes": 142267
         },
         {
           "file": "ui-kit.css",
-          "bytes": 288167,
-          "gzipBytes": 35585
+          "bytes": 289033,
+          "gzipBytes": 35850
         }
       ],
-      "jsBytes": 610781,
-      "cssBytes": 288167,
-      "totalBytes": 898948,
-      "gzipBytes": 177835
+      "jsBytes": 611401,
+      "cssBytes": 289033,
+      "totalBytes": 900434,
+      "gzipBytes": 178243
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -8463,8 +8437,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -8783,7 +8756,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -8945,19 +8917,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 610781,
-          "gzipBytes": 142117
+          "bytes": 611401,
+          "gzipBytes": 142270
         },
         {
           "file": "ui-kit.css",
-          "bytes": 287686,
-          "gzipBytes": 35421
+          "bytes": 288373,
+          "gzipBytes": 35575
         }
       ],
-      "jsBytes": 610781,
-      "cssBytes": 287686,
-      "totalBytes": 898467,
-      "gzipBytes": 177668
+      "jsBytes": 611401,
+      "cssBytes": 288373,
+      "totalBytes": 899774,
+      "gzipBytes": 177965
     },
     "shadcn": {
       "name": "shadcn",
@@ -9088,8 +9060,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -9408,7 +9379,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -9570,19 +9540,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608063,
-          "gzipBytes": 141966
+          "bytes": 608671,
+          "gzipBytes": 142123
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271462,
-          "gzipBytes": 35051
+          "bytes": 272087,
+          "gzipBytes": 35206
         }
       ],
-      "jsBytes": 608063,
-      "cssBytes": 271462,
-      "totalBytes": 879525,
-      "gzipBytes": 177128
+      "jsBytes": 608671,
+      "cssBytes": 272087,
+      "totalBytes": 880758,
+      "gzipBytes": 177439
     },
     "fluent": {
       "name": "fluent",
@@ -9713,8 +9683,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -10033,7 +10002,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -10195,19 +10163,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608063,
-          "gzipBytes": 141962
+          "bytes": 608671,
+          "gzipBytes": 142116
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271078,
-          "gzipBytes": 34957
+          "bytes": 271638,
+          "gzipBytes": 35120
         }
       ],
-      "jsBytes": 608063,
-      "cssBytes": 271078,
-      "totalBytes": 879141,
-      "gzipBytes": 177031
+      "jsBytes": 608671,
+      "cssBytes": 271638,
+      "totalBytes": 880309,
+      "gzipBytes": 177347
     },
     "carbon": {
       "name": "carbon",
@@ -10338,8 +10306,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -10658,7 +10625,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -10820,19 +10786,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608063,
-          "gzipBytes": 141967
+          "bytes": 608671,
+          "gzipBytes": 142121
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271100,
-          "gzipBytes": 34963
+          "bytes": 271727,
+          "gzipBytes": 35145
         }
       ],
-      "jsBytes": 608063,
-      "cssBytes": 271100,
-      "totalBytes": 879163,
-      "gzipBytes": 177040
+      "jsBytes": 608671,
+      "cssBytes": 271727,
+      "totalBytes": 880398,
+      "gzipBytes": 177376
     },
     "mantine": {
       "name": "mantine",
@@ -10963,8 +10929,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -11283,7 +11248,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -11445,19 +11409,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608969,
-          "gzipBytes": 142021
+          "bytes": 609581,
+          "gzipBytes": 142174
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276615,
-          "gzipBytes": 35140
+          "bytes": 277599,
+          "gzipBytes": 35420
         }
       ],
-      "jsBytes": 608969,
-      "cssBytes": 276615,
-      "totalBytes": 885584,
-      "gzipBytes": 177289
+      "jsBytes": 609581,
+      "cssBytes": 277599,
+      "totalBytes": 887180,
+      "gzipBytes": 177721
     },
     "ios": {
       "name": "ios",
@@ -11588,8 +11552,7 @@
           "button.loading",
           "button.auto-insert-space",
           "button.bg-color",
-          "button.gradient",
-          "button.wave"
+          "button.gradient"
         ],
         "calendar": [
           "calendar.range"
@@ -11908,7 +11871,6 @@
         "button.auto-insert-space",
         "button.bg-color",
         "button.gradient",
-        "button.wave",
         "calendar.range",
         "card.appearance",
         "carousel.methods",
@@ -12070,19 +12032,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 605345,
-          "gzipBytes": 141826
+          "bytes": 605941,
+          "gzipBytes": 141980
         },
         {
           "file": "ui-kit.css",
-          "bytes": 254577,
-          "gzipBytes": 34480
+          "bytes": 255174,
+          "gzipBytes": 34639
         }
       ],
-      "jsBytes": 605345,
-      "cssBytes": 254577,
-      "totalBytes": 859922,
-      "gzipBytes": 176388
+      "jsBytes": 605941,
+      "cssBytes": 255174,
+      "totalBytes": 861115,
+      "gzipBytes": 176699
     }
   },
   "features": {}

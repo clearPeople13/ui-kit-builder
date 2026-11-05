@@ -178,11 +178,10 @@ const state = {
   preset: '',
   // 上次预设填充的变量名集合，切换预设时只回收这些项，保留用户手工覆盖
   presetKeys: new Set(),
+  themeOnlyModified: false,
   preview: null,
 }
 
-let copyTimer = 0
-let themeCopyTimer = 0
 let isBuilding = false
 let estimateTimer = 0
 let estimateSeq = 0
@@ -246,6 +245,15 @@ const elements = {
   presetBadge: document.querySelector('#preset-badge'),
   presetOptions: document.querySelector('#preset-options'),
   presetStatus: document.querySelector('#preset-status'),
+  nextComponents: document.querySelector('#next-components'),
+  gateComponents: document.querySelector('#gate-components'),
+  nextTheme: document.querySelector('#next-theme'),
+  gateTheme: document.querySelector('#gate-theme'),
+  buildGate: document.querySelector('#build-gate'),
+  themeFilterModified: document.querySelector('#theme-filter-modified'),
+  themeErrors: document.querySelector('#theme-errors'),
+  themeErrorsText: document.querySelector('#theme-errors-text'),
+  themeErrorsJump: document.querySelector('#theme-errors-jump'),
 }
 
 /* ---------- 数据 ---------- */
@@ -336,6 +344,19 @@ function removeWithDependents(entry, featureId) {
   }
 }
 
+// 依赖级联新勾选的功能卡闪一下，让用户看见"自动带上了前置项"
+function flashAddedFeatures(entry, before) {
+  const grid = entry.nodes.featureGroup?.querySelector('.feature-grid')
+  if (!grid) {return}
+  for (const featureId of entry.selected) {
+    if (before.has(featureId)) {continue}
+    const card = grid.querySelector(`[data-feature="${featureId}"]`)
+    if (!card) {continue}
+    card.classList.add('is-dep-flash')
+    window.setTimeout(() => card.classList.remove('is-dep-flash'), 1200)
+  }
+}
+
 /* ---------- 通用渲染 ---------- */
 
 function createElement(tag, className, text) {
@@ -343,6 +364,84 @@ function createElement(tag, className, text) {
   if (className) {node.className = className}
   if (text !== undefined) {node.textContent = text}
   return node
+}
+
+/* ---------- Toast ---------- */
+
+let toastSeq = 0
+
+function showToast(message, type = 'info') {
+  let container = document.querySelector('.toast-container')
+  if (!container) {
+    container = createElement('div', 'toast-container')
+    container.setAttribute('aria-live', 'polite')
+    document.body.append(container)
+  }
+  const toast = createElement('div', `toast toast--${type}`, message)
+  const id = ++toastSeq
+  toast.dataset.toast = String(id)
+  container.append(toast)
+  while (container.children.length > 3) {container.firstElementChild.remove()}
+  window.setTimeout(() => {
+    toast.classList.add('is-leaving')
+    window.setTimeout(() => toast.remove(), 250)
+  }, 2600)
+}
+
+/* ---------- 危险操作内联二次确认 ---------- */
+
+function inlineConfirm(button, confirmLabel, action) {
+  if (button.dataset.confirming === '1') {
+    window.clearTimeout(Number(button.dataset.timer))
+    delete button.dataset.confirming
+    delete button.dataset.timer
+    button.classList.remove('is-confirm')
+    button.textContent = button.dataset.label
+    action()
+    return
+  }
+  button.dataset.label = button.textContent
+  button.dataset.confirming = '1'
+  button.textContent = confirmLabel
+  button.classList.add('is-confirm')
+  const timer = window.setTimeout(() => {
+    delete button.dataset.confirming
+    delete button.dataset.timer
+    button.classList.remove('is-confirm')
+    button.textContent = button.dataset.label
+  }, 3000)
+  button.dataset.timer = String(timer)
+}
+
+/* ---------- 步骤门禁 ---------- */
+
+function syncStepGates() {
+  const stats = selectionStats()
+  const invalid = invalidOverrides()
+
+  const noComponents = stats.components === 0
+  elements.gateComponents.hidden = !noComponents
+  elements.nextComponents.classList.toggle('is-disabled', noComponents)
+
+  const themeBlocked = invalid.length > 0
+  elements.gateTheme.hidden = !themeBlocked
+  elements.nextTheme.classList.toggle('is-disabled', themeBlocked)
+
+  const buildBlocked = noComponents || themeBlocked
+  elements.buildButton.disabled = isBuilding || buildBlocked
+  elements.buildGate.hidden = !buildBlocked
+  elements.buildGate.textContent = noComponents
+    ? '先回到第 1 步启用至少 1 个组件，再生成包。'
+    : `主题变量 ${invalid.join('、')} 取值非法（不能为空，不能含 ; { }），先修正。`
+
+  elements.themeErrors.hidden = invalid.length === 0
+  elements.themeErrorsText.textContent = invalid.length
+    ? `${invalid.length} 个变量取值非法：${invalid.slice(0, 3).join('、')}${invalid.length > 3 ? ' 等' : ''}`
+    : ''
+}
+
+function gateNextLink(event) {
+  if (event.currentTarget.classList.contains('is-disabled')) {event.preventDefault()}
 }
 
 function renderPropChip(prop) {
@@ -508,7 +607,14 @@ function renderList() {
     const count = createElement('span', 'category__count')
     const toggle = createElement('button', 'link-button')
     toggle.type = 'button'
-    toggle.addEventListener('click', () => toggleCategory(group))
+    toggle.addEventListener('click', () => {
+      const allEnabled = group.entries.every(entry => entry.enabled)
+      if (allEnabled) {
+        inlineConfirm(toggle, '确认全部取消？', () => toggleCategory(group))
+        return
+      }
+      toggleCategory(group)
+    })
     meta.append(count, toggle)
     head.append(titles, meta)
     group.countNode = count
@@ -562,7 +668,6 @@ function renderCategoryTabs() {
     )
     button.addEventListener('click', () => {
       state.activeCategory = item.id
-      elements.search.value = ''
       syncCategoryTabs()
       applySearch()
     })
@@ -597,6 +702,19 @@ function applySearch() {
   }
 
   elements.emptyHint.hidden = visible > 0
+  if (!visible && query) {
+    const clear = createElement('button', 'link-button', '清除搜索')
+    clear.type = 'button'
+    clear.addEventListener('click', () => {
+      elements.search.value = ''
+      applySearch()
+      elements.search.focus()
+    })
+    elements.emptyHint.replaceChildren(document.createTextNode('没有匹配的组件。 '), clear)
+  }
+  else {
+    elements.emptyHint.textContent = '没有匹配的组件。'
+  }
   if (query) {
     elements.listStatus.textContent = `匹配 ${visible} 个组件`
     return
@@ -657,9 +775,6 @@ function applyPreset(preset) {
     syncEntry(entry)
   }
   for (const group of state.groups) {syncCategoryDom(group)}
-  elements.search.value = ''
-  state.activeCategory = 'all'
-  syncCategoryTabs()
   applySearch()
   onSelectionChanged()
 }
@@ -707,9 +822,11 @@ function buildFeatureCard(entry, feature) {
   input.className = 'feature-card__input'
   input.setAttribute('aria-label', `启用 ${feature.title}`)
   input.addEventListener('change', () => {
+    const before = new Set(entry.selected)
     if (input.checked) {addWithDependencies(entry, feature.id)}
     else {removeWithDependents(entry, feature.id)}
     syncEntry(entry)
+    flashAddedFeatures(entry, before)
     onSelectionChanged()
   })
 
@@ -759,8 +876,10 @@ function buildFeatureGroup(entry) {
   all.addEventListener('click', (event) => {
     event.preventDefault()
     event.stopPropagation()
+    const before = new Set(entry.selected)
     for (const feature of entry.featureList) {addWithDependencies(entry, feature.id)}
     syncEntry(entry)
+    flashAddedFeatures(entry, before)
     onSelectionChanged()
   })
   const none = createElement('button', 'link-button', '清空')
@@ -911,6 +1030,7 @@ function onSelectionChanged() {
   applyFeatureSearch()
   renderConfig()
   resetBuildResult()
+  syncStepGates()
   scheduleEstimate()
 }
 
@@ -1122,19 +1242,43 @@ function applyThemeSearch() {
         info ? tokenLabel(info.token) : '',
         scopeTitle(info?.scope ?? 'global'),
       ].join(' ').toLowerCase()
-      const matched = !query || haystack.includes(query)
+      const modified = (state.overrides.get(row.dataset.var) ?? '') !== ''
+      const matched = (!query || haystack.includes(query)) && (!state.themeOnlyModified || modified)
       row.hidden = !matched
       if (matched) {groupMatches += 1}
     }
     group.hidden = groupMatches === 0
-    if (query && groupMatches) {group.open = true}
+    if (groupMatches && (query || state.themeOnlyModified)) {group.open = true}
     visible += groupMatches
   }
 
   elements.themeEmpty.hidden = visible > 0
+  if (!visible && (query || state.themeOnlyModified)) {
+    const clear = createElement('button', 'link-button', '清除筛选')
+    clear.type = 'button'
+    clear.addEventListener('click', () => {
+      elements.themeSearch.value = ''
+      state.themeOnlyModified = false
+      syncThemeFilterButton()
+      applyThemeSearch()
+      elements.themeSearch.focus()
+    })
+    elements.themeEmpty.replaceChildren(document.createTextNode('没有匹配的变量。 '), clear)
+  }
+  else {
+    elements.themeEmpty.textContent = '没有匹配的变量。'
+  }
+  const filterSuffix = state.themeOnlyModified ? '（仅已修改）' : ''
   elements.themeStatus.textContent = query
-    ? `匹配 ${visible} 项变量`
-    : state.themeBaseStatus
+    ? `匹配 ${visible} 项变量${filterSuffix}`
+    : state.themeOnlyModified
+      ? `已修改 ${visible} 项变量`
+      : state.themeBaseStatus
+}
+
+function syncThemeFilterButton() {
+  elements.themeFilterModified.classList.toggle('is-active', state.themeOnlyModified)
+  elements.themeFilterModified.setAttribute('aria-pressed', state.themeOnlyModified ? 'true' : 'false')
 }
 
 function expandThemeGroups(open) {
@@ -1160,6 +1304,23 @@ function focusThemeScope(scope) {
   group.scrollIntoView({ behavior: 'smooth', block: 'center' })
   group.classList.add('is-flash')
   window.setTimeout(() => group.classList.remove('is-flash'), 1400)
+}
+
+function jumpToFirstInvalid() {
+  elements.themeSearch.value = ''
+  state.themeOnlyModified = false
+  syncThemeFilterButton()
+  applyThemeSearch()
+  for (const refs of state.themeRows.values()) {
+    if (!refs.row.classList.contains('is-invalid')) {continue}
+    const group = refs.row.closest('.theme-group')
+    if (group) {group.open = true}
+    refs.row.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    refs.row.classList.add('is-flash')
+    window.setTimeout(() => refs.row.classList.remove('is-flash'), 1400)
+    refs.text.focus({ preventScroll: true })
+    return
+  }
 }
 
 function setOverride(name, raw) {
@@ -1277,6 +1438,8 @@ function onThemeChanged() {
   renderThemeCss()
   applyPreviewTheme()
   renderConfig()
+  syncStepGates()
+  if (state.themeOnlyModified) {applyThemeSearch()}
 }
 
 function resetAllOverrides() {
@@ -1604,7 +1767,7 @@ function renderEstimateNumbers(payload) {
 }
 
 function renderEstimateEmpty() {
-  elements.estimateCard.classList.remove('is-loading', 'is-error')
+  elements.estimateCard.classList.remove('is-loading', 'is-error', 'is-stale')
   elements.estimateBadge.textContent = '未选组件'
   elements.estimateNumbers.replaceChildren(
     createElement('p', 'estimate__placeholder', '第 1 步选上组件后，这里会自动试算包体积。'),
@@ -1616,13 +1779,13 @@ function renderEstimateEmpty() {
 
 function setEstimateLoading() {
   elements.estimateCard.classList.add('is-loading')
-  elements.estimateCard.classList.remove('is-error')
+  elements.estimateCard.classList.remove('is-error', 'is-stale')
   elements.estimateBadge.textContent = '试算中…'
   elements.estimateNote.textContent = '正在实际构建试算包（约 1–2 秒）…'
 }
 
 function renderEstimate(payload, previous, measured = false) {
-  elements.estimateCard.classList.remove('is-loading', 'is-error')
+  elements.estimateCard.classList.remove('is-loading', 'is-error', 'is-stale')
   elements.estimateBadge.textContent = measured ? '构建实测' : '试算完成'
   renderEstimateNumbers(payload)
   if (measured) {
@@ -1639,7 +1802,7 @@ function renderEstimate(payload, previous, measured = false) {
 }
 
 function renderEstimateError(message) {
-  elements.estimateCard.classList.remove('is-loading')
+  elements.estimateCard.classList.remove('is-loading', 'is-stale')
   elements.estimateCard.classList.add('is-error')
   elements.estimateBadge.textContent = '试算失败'
   if (!estimateLast) {
@@ -1655,7 +1818,12 @@ function renderEstimateError(message) {
 function scheduleEstimate() {
   estimateSeq += 1
   window.clearTimeout(estimateTimer)
-  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 500)
+  if (estimateLast) {
+    elements.estimateCard.classList.add('is-stale')
+    elements.estimateBadge.textContent = '已过期'
+    elements.estimateNote.textContent = '选择已变化，正在重新试算…'
+  }
+  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 700)
 }
 
 async function runEstimate(seq) {
@@ -1752,9 +1920,9 @@ function resetBuildResult() {
 
 function setBuildingState(value) {
   isBuilding = value
-  elements.buildButton.disabled = value
   elements.buildButton.textContent = value ? '生成中…' : '生成 npm 包'
   if (value) {elements.buildHint.textContent = '正在打包所选组件与功能…'}
+  syncStepGates()
 }
 
 function renderBuildOutput(result) {
@@ -1763,7 +1931,21 @@ function renderBuildOutput(result) {
   elements.buildOutput.replaceChildren()
 
   elements.buildOutput.append(createElement('p', 'output__title', '构建成功'))
-  elements.buildOutput.append(createElement('p', 'output__path', `${result.dir}/`))
+  const pathRow = createElement('p', 'output__path')
+  pathRow.append(document.createTextNode(`${result.dir}/`))
+  const copyPath = createElement('button', 'link-button', '复制路径')
+  copyPath.type = 'button'
+  copyPath.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(result.dir)
+      showToast('产物路径已复制', 'success')
+    }
+    catch {
+      showToast('复制失败，请手动选择复制', 'error')
+    }
+  })
+  pathRow.append(' ', copyPath)
+  elements.buildOutput.append(pathRow)
 
   const summary = createElement(
     'p',
@@ -1847,10 +2029,12 @@ async function buildSelected() {
     renderBuildOutput(payload)
     adoptBuildResult(payload)
     elements.buildHint.textContent = '产物已写入本地 dist 目录，可直接安装使用。'
+    showToast(`构建成功，产物在 ${payload.dir}/`, 'success')
   }
   catch (error) {
     renderBuildError(error.message)
     elements.buildHint.textContent = '构建接口仅在 npm run dev 下可用；也可运行 npm run build:all。'
+    showToast(`构建失败：${error.message}`, 'error')
   }
   finally {
     setBuildingState(false)
@@ -1862,37 +2046,21 @@ async function buildSelected() {
 async function copyConfig() {
   try {
     await navigator.clipboard.writeText(elements.configJson.textContent)
-    flashCopyLabel('已复制')
+    showToast('build.config.json 已复制', 'success')
   }
   catch {
-    flashCopyLabel('复制失败')
+    showToast('复制失败，请手动选择复制', 'error')
   }
-}
-
-function flashCopyLabel(label) {
-  window.clearTimeout(copyTimer)
-  elements.copyConfig.textContent = label
-  copyTimer = window.setTimeout(() => {
-    elements.copyConfig.textContent = '复制'
-  }, 1600)
 }
 
 async function copyThemeCss() {
   try {
     await navigator.clipboard.writeText(elements.themeCssBody.textContent)
-    flashThemeCopyLabel('已复制')
+    showToast('theme.css 已复制', 'success')
   }
   catch {
-    flashThemeCopyLabel('复制失败')
+    showToast('复制失败，请手动选择复制', 'error')
   }
-}
-
-function flashThemeCopyLabel(label) {
-  window.clearTimeout(themeCopyTimer)
-  elements.copyThemeCss.textContent = label
-  themeCopyTimer = window.setTimeout(() => {
-    elements.copyThemeCss.textContent = '复制'
-  }, 1600)
 }
 
 function downloadConfig() {
@@ -1905,6 +2073,7 @@ function downloadConfig() {
   anchor.download = 'build.config.json'
   anchor.click()
   URL.revokeObjectURL(url)
+  showToast('build.config.json 已开始下载', 'success')
 }
 
 /* ---------- 步骤导航 ---------- */
@@ -1921,15 +2090,29 @@ function initStepNav() {
     }
   }
 
-  const observer = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.isIntersecting) {
-        activate(entry.target.id)
-        break
-      }
+  let ticking = false
+  function updateActive() {
+    ticking = false
+    // 取滚动位置上方 42% 处为基准线，激活最后一个越过基准线的步骤
+    const marker = window.scrollY + window.innerHeight * 0.42
+    let current = sections[0]
+    for (const section of sections) {
+      const top = section.getBoundingClientRect().top + window.scrollY
+      if (top <= marker) {current = section}
+      else {break}
     }
-  }, { rootMargin: '-42% 0px -50% 0px', threshold: 0 })
-  for (const section of sections) {observer.observe(section)}
+    if (current) {activate(current.id)}
+  }
+
+  function onScroll() {
+    if (ticking) {return}
+    ticking = true
+    window.requestAnimationFrame(updateActive)
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll)
+  updateActive()
 
   for (const link of links) {
     link.addEventListener('click', () => activate(link.getAttribute('href').slice(1)))
@@ -1938,24 +2121,34 @@ function initStepNav() {
 
 /* ---------- 初始化 ---------- */
 
+function enableAllFeatures() {
+  for (const entry of state.order) {
+    if (!entry.enabled) {continue}
+    const before = new Set(entry.selected)
+    for (const feature of entry.featureList) {addWithDependencies(entry, feature.id)}
+    syncEntry(entry)
+    flashAddedFeatures(entry, before)
+  }
+  onSelectionChanged()
+}
+
+function clearAllFeatures() {
+  for (const entry of state.order) {
+    if (!entry.enabled) {continue}
+    entry.selected.clear()
+    syncEntry(entry)
+  }
+  onSelectionChanged()
+}
+
 function bindEvents() {
   elements.search.addEventListener('input', handleComponentSearch)
   elements.featureSearch.addEventListener('input', applyFeatureSearch)
-  elements.allFeatures.addEventListener('click', () => {
-    for (const entry of state.order) {
-      if (!entry.enabled) {continue}
-      for (const feature of entry.featureList) {addWithDependencies(entry, feature.id)}
-      syncEntry(entry)
-    }
-    onSelectionChanged()
-  })
+  elements.allFeatures.addEventListener('click', enableAllFeatures)
   elements.clearFeatures.addEventListener('click', () => {
-    for (const entry of state.order) {
-      if (!entry.enabled) {continue}
-      entry.selected.clear()
-      syncEntry(entry)
-    }
-    onSelectionChanged()
+    const anySelected = state.order.some(entry => entry.enabled && entry.selected.size > 0)
+    if (!anySelected) {return}
+    inlineConfirm(elements.clearFeatures, '确认全部关闭？', clearAllFeatures)
   })
   elements.packageSuffix.addEventListener('input', () => {
     resetBuildResult()
@@ -1970,12 +2163,22 @@ function bindEvents() {
   elements.themeSearch.addEventListener('input', applyThemeSearch)
   elements.themeExpand.addEventListener('click', () => expandThemeGroups(true))
   elements.themeCollapse.addEventListener('click', () => expandThemeGroups(false))
-  elements.themeResetAll.addEventListener('click', resetAllOverrides)
+  elements.themeFilterModified.addEventListener('click', () => {
+    state.themeOnlyModified = !state.themeOnlyModified
+    syncThemeFilterButton()
+    applyThemeSearch()
+  })
+  elements.themeErrorsJump.addEventListener('click', jumpToFirstInvalid)
+  elements.themeResetAll.addEventListener('click', () => {
+    inlineConfirm(elements.themeResetAll, '确认重置全部？', resetAllOverrides)
+  })
   elements.copyThemeCss.addEventListener('click', copyThemeCss)
   elements.themeJump.addEventListener('click', scrollToTheme)
   elements.copyConfig.addEventListener('click', copyConfig)
   elements.downloadConfig.addEventListener('click', downloadConfig)
   elements.buildButton.addEventListener('click', buildSelected)
+  elements.nextComponents.addEventListener('click', gateNextLink)
+  elements.nextTheme.addEventListener('click', gateNextLink)
 }
 
 async function init() {
@@ -2023,6 +2226,8 @@ async function init() {
   renderThemeCss()
   renderConfig()
   syncNavCounts()
+  syncStepGates()
+  syncThemeFilterButton()
   renderEstimateEmpty()
   scheduleEstimate()
   initPreview()

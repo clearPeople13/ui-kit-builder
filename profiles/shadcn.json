@@ -28,6 +28,14 @@
       "shadowLg": "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)",
       "focusRing": "rgba(24, 24, 27, 0.15)",
       "focusRingSoft": "rgba(24, 24, 27, 0.08)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-shadcn 0.3s ease forwards",
+        "wave-fade-duration": "0.3s",
+        "wave-opacity": "0.2"
+      }
+    },
+    "rawCss": "@keyframes ui-button-wave-shadcn {\n  0% { background: var(--ui-button-wave-color); opacity: 0; }\n  30% { background: var(--ui-button-wave-color); opacity: var(--ui-button-wave-opacity, 0.2); }\n  100% { background: var(--ui-button-wave-color); opacity: 0; }\n}"
   }
 }

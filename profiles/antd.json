@@ -34,7 +34,6 @@
       "color-info-strong": "rgba(0, 0, 0, 0.88)",
       "color-info-bg": "#f5f5f5",
       "color-info-border": "#f0f0f0",
-
       "text-color-primary": "rgba(0, 0, 0, 0.88)",
       "text-color-regular": "rgba(0, 0, 0, 0.65)",
       "text-color-secondary": "rgba(0, 0, 0, 0.45)",
@@ -48,7 +47,6 @@
       "text-color-inverse": "#ffffff",
       "text-color-inverse-muted": "rgba(255, 255, 255, 0.65)",
       "text-color-inverse-subtle": "rgba(255, 255, 255, 0.45)",
-
       "border-color": "#d9d9d9",
       "border-color-light": "#f0f0f0",
       "border-color-lighter": "#f0f0f0",
@@ -61,7 +59,6 @@
       "border-color-soft": "#d9d9d9",
       "border-color-disabled": "#d9d9d9",
       "border-color-inverse": "#ffffff",
-
       "fill-color": "rgba(0, 0, 0, 0.04)",
       "fill-color-light": "rgba(0, 0, 0, 0.02)",
       "fill-color-hover": "rgba(0, 0, 0, 0.04)",
@@ -72,7 +69,6 @@
       "bg-color-dark": "#1f1f1f",
       "bg-color-dark-elevated": "#1f1f1f",
       "mask-color": "#000000",
-
       "radius-xs": "2px",
       "radius-small": "4px",
       "radius-md": "6px",
@@ -81,7 +77,6 @@
       "radius-large": "8px",
       "radius-xl": "12px",
       "radius-pill": "999px",
-
       "shadow-xs": "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)",
       "shadow-sm": "0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px 0 rgba(0, 0, 0, 0.02)",
       "shadow-md": "0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)",
@@ -98,7 +93,6 @@
       "shadow-tour": "0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05)",
       "shadow-inset": "inset 0 0 0 1px rgba(5, 5, 5, 0.06)",
       "shadow-inset-strong": "inset 0 0 0 1px rgba(0, 0, 0, 0.15)",
-
       "font-family": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
       "font-size-base": "14px",
       "font-size-small": "12px",
@@ -108,7 +102,6 @@
       "font-weight-strong": "600",
       "font-weight-bold": "600",
       "letter-spacing": "normal",
-
       "focus-ring": "rgba(5, 145, 255, 0.1)",
       "focus-ring-soft": "rgba(5, 145, 255, 0.1)",
       "floating-panel-max-height": "256px",
@@ -118,7 +111,6 @@
       "scrollbar-thumb-hover": "rgba(0, 0, 0, 0.45)",
       "scrollbar-track": "rgba(5, 5, 5, 0.06)",
       "scrollbar-radius": "4px",
-
       "select-option-padding": "5px 12px",
       "select-option-selected-font-weight": "600",
       "select-v2-option-padding": "5px 12px",
@@ -126,12 +118,10 @@
       "time-select-option-padding": "0 14px",
       "autocomplete-option-padding": "5px 12px",
       "mention-option-padding": "5px 12px",
-
       "dialog-mask-backdrop": "none",
       "drawer-mask-backdrop": "none",
       "message-box-mask-backdrop": "none",
       "tour-mask-backdrop": "none",
-
       "alert-accent-width": "4px",
       "alert-accent": "#1677ff",
       "alert-bg": "#e6f4ff",
@@ -160,7 +150,6 @@
       "alert-warning-bg": "#fffbe6",
       "alert-warning-border": "#ffe58f",
       "alert-warning-text": "rgba(0, 0, 0, 0.88)",
-
       "badge-animation": "none",
       "badge-border-color": "#ffffff",
       "badge-border-width": "1px",
@@ -172,7 +161,6 @@
       "badge-min-width": "20px",
       "badge-padding-x": "0",
       "badge-radius": "10px",
-
       "button-active-transform": "none",
       "button-bg-image": "none",
       "button-font-size": "14px",
@@ -190,7 +178,6 @@
       "button-shadow": "0 2px 0 rgba(0, 0, 0, 0.02)",
       "button-shadow-active": "none",
       "button-transition": "background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1)",
-
       "calendar-bg": "#ffffff",
       "calendar-border-color": "#f0f0f0",
       "calendar-header-bg": "transparent",
@@ -229,7 +216,6 @@
       "calendar-weekdays-color": "rgba(0, 0, 0, 0.45)",
       "calendar-weekdays-font-weight": "400",
       "calendar-weekdays-letter-spacing": "normal",
-
       "card-bg": "#ffffff",
       "card-border-color": "#f0f0f0",
       "card-body-padding": "24px",
@@ -253,15 +239,12 @@
       "card-shadow": "none",
       "card-shadow-always": "none",
       "card-shadow-hover": "none",
-
       "checkbox-border-width": "1px",
       "checkbox-box-size": "16px",
       "checkbox-box-size-large": "20px",
       "checkbox-box-size-small": "16px",
-
       "date-picker-header-padding": "0 8px",
       "date-picker-title-font-weight": "400",
-
       "dialog-body-padding": "8px 24px 0",
       "dialog-footer-bg": "transparent",
       "dialog-footer-padding": "12px 24px 20px",
@@ -271,22 +254,18 @@
       "dialog-title-font-size": "16px",
       "dialog-title-font-weight": "600",
       "dialog-width": "520px",
-
       "drawer-footer-bg": "transparent",
       "drawer-header-bg": "transparent",
-
       "gradient-danger": "none",
       "gradient-info": "none",
       "gradient-primary": "none",
       "gradient-success": "none",
       "gradient-warning": "none",
-
       "input-height": "32px",
       "input-padding-x": "11px",
       "input-radius": "6px",
       "input-tag-padding": "0 8px",
       "input-textarea-padding": "4px 11px",
-
       "menu-border-color": "#f0f0f0",
       "menu-group-title-color": "rgba(0, 0, 0, 0.45)",
       "menu-group-title-font-weight": "400",
@@ -320,13 +299,11 @@
       "sub-menu-body-line-width": "0",
       "sub-menu-body-padding-left": "24px",
       "sub-menu-open-color": "rgba(0, 0, 0, 0.88)",
-
       "message-box-body-line-height": "1.5714285714",
       "message-box-footer-padding": "12px 24px 20px",
       "message-box-header-padding": "20px 24px 0",
       "message-box-title-font-size": "16px",
       "message-box-title-font-weight": "600",
-
       "message-padding": "9px 12px",
       "notification-padding": "20px 24px",
       "message-accent": "#1677ff",
@@ -367,7 +344,6 @@
       "notification-error-accent": "#ff4d4f",
       "notification-error-bg": "#ffffff",
       "notification-error-border": "transparent",
-
       "pagination-active-bg": "#ffffff",
       "pagination-active-border-color": "#1677ff",
       "pagination-active-color": "#1677ff",
@@ -385,15 +361,12 @@
       "pagination-item-radius": "6px",
       "pagination-item-size": "32px",
       "pagination-more-color": "rgba(0, 0, 0, 0.25)",
-
       "radio-box-size": "16px",
       "radio-box-size-large": "20px",
       "radio-box-size-small": "16px",
-
       "rate-active-color": "#fadb14",
       "rate-text-color": "rgba(0, 0, 0, 0.88)",
       "rate-void-color": "rgba(0, 0, 0, 0.06)",
-
       "step-description-color": "rgba(0, 0, 0, 0.45)",
       "step-finish-icon-bg": "#ffffff",
       "step-finish-icon-border-color": "#1677ff",
@@ -419,7 +392,6 @@
       "step-title-color": "rgba(0, 0, 0, 0.45)",
       "step-title-font-weight": "600",
       "step-title-letter-spacing": "normal",
-
       "slider-bar-bg": "#91caff",
       "slider-bar-radius": "2px",
       "slider-button-bg": "#ffffff",
@@ -438,12 +410,10 @@
       "slider-tooltip-color": "#ffffff",
       "slider-tooltip-font-weight": "400",
       "slider-tooltip-radius": "6px",
-
       "splitter-radius": "8px",
       "splitter-bar-bg": "transparent",
       "splitter-bar-grip": "rgba(0, 0, 0, 0.45)",
       "splitter-bar-line": "rgba(5, 5, 5, 0.06)",
-
       "table-bg": "#ffffff",
       "table-border-color": "#f0f0f0",
       "table-cell-padding": "16px 16px",
@@ -478,7 +448,6 @@
       "table-summary-color": "rgba(0, 0, 0, 0.88)",
       "table-summary-border-color": "#f0f0f0",
       "table-summary-font-weight": "400",
-
       "tabs-ink-height": "2px",
       "tabs-nav-gap": "32px",
       "tabs-nav-item-active-font-weight": "400",
@@ -519,7 +488,6 @@
       "tabs-vertical-nav-border-left": "none",
       "tabs-vertical-nav-border-right": "1px solid rgba(5, 5, 5, 0.06)",
       "tabs-vertical-nav-gap": "32px",
-
       "tag-border-width": "1px",
       "tag-font-size": "12px",
       "tag-font-size-large": "14px",
@@ -533,10 +501,8 @@
       "tag-padding-x-small": "7px",
       "tag-radius": "4px",
       "tag-shadow": "none",
-
       "tour-title-font-size": "16px",
       "tour-title-font-weight": "600",
-
       "transfer-panel-bg": "#ffffff",
       "transfer-panel-border-color": "#d9d9d9",
       "transfer-panel-radius": "8px",
@@ -544,7 +510,6 @@
       "transfer-button-size": "40px",
       "transfer-header-font-weight": "400",
       "transfer-header-padding": "12px 16px",
-
       "tree-node-min-height": "28px"
     },
     "components": {
@@ -565,7 +530,14 @@
       },
       "timeline": {
         "dot-color": "#1677ff"
+      },
+      "button": {
+        "wave-spread": "8px",
+        "wave-animation": "ui-button-wave-spread 0.4s cubic-bezier(0.08, 0.82, 0.17, 1) forwards, ui-button-wave-fade 1.6s cubic-bezier(0.08, 0.82, 0.17, 1) forwards",
+        "wave-fade-duration": "1.6s",
+        "wave-opacity": "0.35"
       }
-    }
+    },
+    "rawCss": "@keyframes ui-button-wave-spread {\n  to { box-shadow: 0 0 0 var(--ui-button-wave-spread, 6px) var(--ui-button-wave-color); }\n}\n@keyframes ui-button-wave-fade {\n  to { opacity: 0; }\n}"
   }
 }

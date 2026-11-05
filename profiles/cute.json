@@ -387,7 +387,10 @@
     },
     "components": {
       "button": {
-        "radius": "999px"
+        "radius": "999px",
+        "wave-animation": "ui-button-wave-cute 0.5s ease forwards",
+        "wave-fade-duration": "0.5s",
+        "wave-opacity": "0.3"
       },
       "card": {
         "radius": "24px"
@@ -432,6 +435,7 @@
       "timeline": {
         "dotColor": "#ffc0d6"
       }
-    }
+    },
+    "rawCss": "@keyframes ui-button-wave-cute {\n  0% { transform: scale(1); background: var(--ui-button-wave-color); opacity: var(--ui-button-wave-opacity, 0.3); }\n  35% { transform: scale(0.9); opacity: var(--ui-button-wave-opacity, 0.3); }\n  65% { transform: scale(1.03); opacity: 0.15; }\n  100% { transform: scale(1); opacity: 0; }\n}"
   }
 }

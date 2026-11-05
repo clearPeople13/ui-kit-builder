@@ -21,6 +21,15 @@
       "fontFamily": "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif",
       "focusRing": "rgba(0, 122, 255, 0.2)",
       "focusRingSoft": "rgba(0, 122, 255, 0.1)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-ios 0.3s ease forwards",
+        "wave-fade-duration": "0.3s",
+        "wave-opacity": "0.3",
+        "wave-color": "#ffffff"
+      }
+    },
+    "rawCss": "@keyframes ui-button-wave-ios {\n  0% { background: var(--ui-button-wave-color); opacity: 0; }\n  30% { background: var(--ui-button-wave-color); opacity: var(--ui-button-wave-opacity, 0.3); }\n  100% { background: var(--ui-button-wave-color); opacity: 0; }\n}"
   }
 }

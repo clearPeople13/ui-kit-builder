@@ -1,0 +1,22 @@
+/* 点击效果机制层：库不提供任何预设动画。皮肤在 theme.components.button 配 wave-animation
+   （完整 animation 简写值，指向皮肤 theme.rawCss 注入的 @keyframes），配了才有效果；
+   几何/圆心/颜色兜底由机制提供，全部外观 token 见 profiles/antd.json、material3.json、naive.json */
+.ui-button--wave {
+  position: relative;
+  --ui-button-wave-color: auto;
+}
+
+.ui-button__wave {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--ui-button-wave-opacity, 0.2);
+  background-image: radial-gradient(
+    circle at var(--ui-button-wave-origin-x, 50%) var(--ui-button-wave-origin-y, 50%),
+    var(--ui-button-wave-color) 0 var(--ui-button-wave-r, 0%),
+    transparent calc(var(--ui-button-wave-r, 0%) + 1px)
+  );
+  box-shadow: var(--ui-button-wave-shadow, 0 0 0 0 var(--ui-button-wave-color));
+  animation: var(--ui-button-wave-animation, none);
+}

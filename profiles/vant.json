@@ -20,6 +20,14 @@
       "radiusXl": "24px",
       "focusRing": "rgba(25, 137, 250, 0.18)",
       "focusRingSoft": "rgba(25, 137, 250, 0.09)"
-    }
+    },
+    "components": {
+      "button": {
+        "wave-animation": "ui-button-wave-vant 0.5s ease forwards",
+        "wave-fade-duration": "0.5s",
+        "wave-opacity": "0.35"
+      }
+    },
+    "rawCss": "@property --ui-button-wave-r {\n  syntax: '<percentage>';\n  inherits: false;\n  initial-value: 0%;\n}\n@keyframes ui-button-wave-vant {\n  0% { background-image: radial-gradient(circle at var(--ui-button-wave-origin-x, 50%) var(--ui-button-wave-origin-y, 50%), var(--ui-button-wave-color) 0 var(--ui-button-wave-r, 0%), transparent calc(var(--ui-button-wave-r, 0%) + 1px)); opacity: var(--ui-button-wave-opacity, 0.35); }\n  100% { --ui-button-wave-r: 140%; background-image: radial-gradient(circle at var(--ui-button-wave-origin-x, 50%) var(--ui-button-wave-origin-y, 50%), var(--ui-button-wave-color) 0 var(--ui-button-wave-r, 0%), transparent calc(var(--ui-button-wave-r, 0%) + 1px)); opacity: 0; }\n}"
   }
 }

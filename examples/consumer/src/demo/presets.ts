@@ -99,20 +99,6 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       requires: 'button.gradient',
       values: { type: 'primary', gradient: true, gradientAngle: 45 }
     },
-    {
-      id: 'wave',
-      label: '点击水波',
-      requires: 'button.wave',
-      hint: '引入 button.wave 的构建默认开启：点击按钮从触点扩散水波',
-      values: { type: 'primary' }
-    },
-    {
-      id: 'wave-off',
-      label: '关闭水波',
-      requires: 'button.wave',
-      hint: '同一构建下 wave=false，点击无任何动画，与「点击水波」场景对比',
-      values: { type: 'primary', wave: false }
-    }
   ],
   Form: [
     {
