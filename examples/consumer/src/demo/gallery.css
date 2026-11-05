@@ -3165,6 +3165,104 @@ body.pg-picker-open {
   background: #eef2ff;
 }
 
+/* 表格自定义单元格 / 表头 / 展开行 / 空态 */
+
+.pg-table-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pg-table-edit {
+  width: 100%;
+}
+
+.pg-table-edit > * {
+  width: 100%;
+}
+
+.pg-table-edit-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pg-table-expand {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 24px;
+}
+
+.pg-table-expand__item,
+.pg-table-expand__remark {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #334155;
+}
+
+.pg-table-expand__remark {
+  grid-column: 1 / -1;
+}
+
+.pg-table-expand__label {
+  flex: none;
+  color: #64748b;
+}
+
+.pg-table-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pg-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.pg-table-cell--accent {
+  color: #4338ca;
+  font-weight: 600;
+}
+
+tr.pg-table-row--muted > td {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+
+th.pg-table-head--accent::after {
+  content: "表头类名";
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #4338ca;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.pg-table-methods {
+  display: grid;
+  gap: 12px;
+}
+
+.pg-table-methods__bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pg-table-methods__count {
+  margin-left: auto;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
 .pg-preview-missing {
   padding: 10px 14px;
   border: 1px dashed #f04438;

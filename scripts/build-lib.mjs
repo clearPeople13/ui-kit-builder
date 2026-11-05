@@ -100,10 +100,159 @@ function themeDeclarations(tokens, scope, declarations) {
   }
 }
 
-function buildThemeCss(theme, prefix) {
+const CSS_VAR_REF_RE = /var\(\s*(--[a-z0-9-]+)/gi
+const ROOT_BLOCK_RE = /:root\{([^{}]*)\}/g
+
+function collectVarRefs(text, target) {
+  for (const match of text.matchAll(CSS_VAR_REF_RE)) {
+    target.add(match[1])
+  }
+}
+
+function walkCssFiles(dir, visit) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const target = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      walkCssFiles(target, visit)
+    } else if (entry.name.endsWith('.css')) {
+      visit(target)
+    }
+  }
+}
+
+function collectUnselectedTokenRefs(registry, selection, prefix) {
+  const refs = new Set()
+  const srcDir = path.join(rootDir, 'packages/ui-kit/src')
+  const componentsDir = path.join(srcDir, 'components')
+  for (const id of registry.order) {
+    if (id in selection) {
+      continue
+    }
+    const dir = path.join(componentsDir, id)
+    if (!fs.existsSync(dir)) {
+      continue
+    }
+    walkCssFiles(dir, (file) => collectVarRefs(fs.readFileSync(file, 'utf8'), refs))
+  }
+  // 共享 CSS 按 @import 跟着组件进包：没被包内 CSS 引用时，这些令牌同样没有消费者
+  walkCssFiles(path.join(srcDir, 'shared'), (file) => collectVarRefs(fs.readFileSync(file, 'utf8'), refs))
+  if (prefix === 'ui') {
+    return refs
+  }
+  return new Set([...refs].map((name) => name.replace(/^--ui-/, `--${prefix}-`)))
+}
+
+function splitDeclarations(body) {
+  const parts = []
+  let current = ''
+  let quote = ''
+  let depth = 0
+  for (const char of body) {
+    if (quote) {
+      current += char
+      if (char === quote) {
+        quote = ''
+      }
+      continue
+    }
+    if (char === '"' || char === "'") {
+      quote = char
+    } else if (char === '(') {
+      depth += 1
+    } else if (char === ')') {
+      depth = Math.max(0, depth - 1)
+    } else if (char === ';' && depth === 0) {
+      parts.push(current)
+      current = ''
+      continue
+    }
+    current += char
+  }
+  if (current.trim()) {
+    parts.push(current)
+  }
+  return parts
+}
+
+function parseRootDeclarations(body) {
+  return splitDeclarations(body)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((raw) => {
+      const colon = raw.indexOf(':')
+      if (colon <= 0) {
+        return { name: '', value: '', raw }
+      }
+      return { name: raw.slice(0, colon).trim(), value: raw.slice(colon + 1), raw }
+    })
+}
+
+// 组件级令牌只服务于组件自身 CSS：组件没进包时声明也没有消费者。
+// 只裁「包内无任何 var() 引用、且被未选中组件引用」的 :root 声明，通用令牌保持原样。
+function pruneUnusedThemeVars(css, unselectedRefs) {
+  if (!unselectedRefs.size) {
+    return css
+  }
+  const blocks = [...css.matchAll(ROOT_BLOCK_RE)]
+  if (!blocks.length) {
+    return css
+  }
+  const parsed = blocks.map((block) => parseRootDeclarations(block[1]))
+  let outside = css
+  for (const block of blocks) {
+    outside = outside.replace(block[0], '')
+  }
+  const referenced = new Set()
+  collectVarRefs(outside, referenced)
+
+  const kept = new Set()
+  for (const declarations of parsed) {
+    for (const decl of declarations) {
+      if (!decl.name || referenced.has(decl.name) || !unselectedRefs.has(decl.name)) {
+        kept.add(decl.name)
+      }
+    }
+  }
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const declarations of parsed) {
+      for (const decl of declarations) {
+        if (!kept.has(decl.name)) {
+          continue
+        }
+        const refs = new Set()
+        collectVarRefs(decl.value, refs)
+        for (const ref of refs) {
+          if (!referenced.has(ref)) {
+            referenced.add(ref)
+            changed = true
+          }
+        }
+      }
+    }
+    for (const declarations of parsed) {
+      for (const decl of declarations) {
+        if (!kept.has(decl.name) && referenced.has(decl.name)) {
+          kept.add(decl.name)
+          changed = true
+        }
+      }
+    }
+  }
+
+  let index = 0
+  return css.replace(ROOT_BLOCK_RE, (full, body) => {
+    const survivors = parsed[index++].filter((decl) => kept.has(decl.name))
+    return survivors.length ? `:root{${survivors.map((decl) => decl.raw).join(';')}}` : ''
+  })
+}
+
+function buildThemeCss(theme, prefix, activeComponents) {
   if (!theme || typeof theme !== 'object') {
     return ''
   }
+  const active = Array.isArray(activeComponents) ? new Set(activeComponents) : null
   const blocks = []
   const rootDeclarations = []
   themeDeclarations(theme.global ?? theme.tokens ?? {}, prefix, rootDeclarations)
@@ -112,6 +261,9 @@ function buildThemeCss(theme, prefix) {
   }
 
   for (const [componentId, tokens] of Object.entries(theme.components ?? {})) {
+    if (active && !active.has(componentId)) {
+      continue
+    }
     const name = toThemeToken(componentId)
     if (!name) {
       continue
@@ -492,9 +644,14 @@ export async function buildProfile({
   }
 
   const cssFile = outputFiles.find((file) => file.endsWith('.css'))
-  const themeCss = buildThemeCss(theme, profilePrefix)
+  const themeCss = buildThemeCss(theme, profilePrefix, activeComponents)
   if (cssFile && themeCss) {
     fs.appendFileSync(path.join(outDir, cssFile), rewritePrefix(themeCss, profilePrefix), 'utf8')
+  }
+  if (cssFile) {
+    const cssPath = path.join(outDir, cssFile)
+    const unselectedRefs = collectUnselectedTokenRefs(registry, selection, profilePrefix)
+    fs.writeFileSync(cssPath, pruneUnusedThemeVars(fs.readFileSync(cssPath, 'utf8'), unselectedRefs), 'utf8')
   }
 
   const files = outputFiles.map((file) => readFileStats(outDir, file))

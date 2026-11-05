@@ -2,7 +2,7 @@ export const tableSummaryFeature = {
   id: 'table.summary',
   props: {
     showSummary: { type: Boolean },
-    sumText: { type: String, default: 'Sum' },
+    sumText: { type: String, default: '合计' },
     summaryMethod: { type: Function }
   },
   setup(props: { showSummary?: boolean; sumText?: string; summaryMethod?: Function }) {
@@ -15,13 +15,16 @@ export const tableSummaryFeature = {
       }
       return columns.map((column, index) => {
         if (index === 0) {
-          return props.sumText ?? 'Sum'
+          return props.sumText ?? '合计'
         }
-        const total = rows.reduce((sum, row) => {
-          const value = Number(row?.[column.prop])
-          return Number.isFinite(value) ? sum + value : sum
-        }, 0)
-        return total || ''
+        const values = rows
+          .map((row) => row?.[column.prop])
+          .filter((value) => value !== '' && value !== null && value !== undefined && Number.isFinite(Number(value)))
+          .map((value) => Number(value))
+        if (!values.length) {
+          return ''
+        }
+        return values.reduce((sum, value) => sum + value, 0)
       })
     }
 

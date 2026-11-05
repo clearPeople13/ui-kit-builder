@@ -8254,7 +8254,7 @@
     {
       "id": "table",
       "title": "Table 表格",
-      "description": "对齐主流组件库的 Table / TableColumn，基础渲染与排序、选择、汇总特性拆分。",
+      "description": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。",
       "order": 10,
       "category": "数据展示",
       "exports": [
@@ -8298,7 +8298,7 @@
               "name": "fit",
               "type": "boolean",
               "default": true,
-              "description": "列宽自撑满"
+              "description": "自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间"
             },
             {
               "name": "showHeader",
@@ -8331,32 +8331,116 @@
             {
               "name": "emptyText",
               "type": "string",
+              "default": "暂无数据",
               "description": "空数据文案"
             },
             {
               "name": "tableLayout",
               "type": "string",
               "default": "fixed",
-              "description": "表格布局"
+              "description": "表格布局算法：fixed 固定列宽 / auto 内容撑开"
             },
             {
               "name": "showOverflowTooltip",
               "type": "boolean",
               "default": false,
-              "description": "溢出省略"
+              "description": "单元格内容溢出时以省略号显示并带 title 提示"
             }
           ],
           "features": [
             {
               "id": "table.sort",
               "title": "排序",
-              "description": "表头点击排序，支持默认排序、自定义比较与排序序列。",
+              "description": "表头点击排序，支持默认排序、多列排序、自定义比较与排序序列。",
               "props": [
                 {
                   "name": "defaultSort",
-                  "type": "Record<string, any>",
+                  "type": "Record<string, any> | any[]",
                   "default": {},
-                  "description": "默认排序 { prop, order }"
+                  "description": "默认排序，单个 { prop, order } 或数组"
+                },
+                {
+                  "name": "multiSort",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "开启多列排序"
+                }
+              ]
+            },
+            {
+              "id": "table.tree",
+              "title": "树形数据",
+              "description": "按 children 字段展开树形行，支持默认展开、缩进与展开控制方法。",
+              "props": [
+                {
+                  "name": "treeProps",
+                  "type": "Record<string, any>",
+                  "default": {
+                    "children": "children"
+                  },
+                  "description": "子节点字段映射 { children, hasChildren }"
+                },
+                {
+                  "name": "defaultExpandAll",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "默认展开全部节点"
+                },
+                {
+                  "name": "treeIndent",
+                  "type": "number",
+                  "default": 16,
+                  "description": "每级缩进像素"
+                }
+              ]
+            },
+            {
+              "id": "table.resize",
+              "title": "列宽拖拽",
+              "description": "拖拽表头右侧手柄调整列宽，双击手柄恢复默认宽度。",
+              "props": [
+                {
+                  "name": "resizable",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "开启列宽拖拽"
+                },
+                {
+                  "name": "minColumnWidth",
+                  "type": "number",
+                  "default": 60,
+                  "description": "拖拽最小列宽"
+                }
+              ]
+            },
+            {
+              "id": "table.span",
+              "title": "合并单元格",
+              "description": "通过 spanMethod 返回 [rowspan, colspan] 合并单元格。",
+              "props": [
+                {
+                  "name": "spanMethod",
+                  "type": "Function",
+                  "description": "合并方法，返回 [rowspan, colspan]"
+                }
+              ]
+            },
+            {
+              "id": "table.loading",
+              "title": "加载状态",
+              "description": "在表格区域展示加载遮罩，可自定义加载文案。",
+              "props": [
+                {
+                  "name": "loading",
+                  "type": "boolean",
+                  "default": false,
+                  "description": "显示加载遮罩"
+                },
+                {
+                  "name": "loadingText",
+                  "type": "string",
+                  "default": "",
+                  "description": "加载文案"
                 }
               ]
             },
@@ -8374,7 +8458,7 @@
                 {
                   "name": "sumText",
                   "type": "string",
-                  "default": "Sum",
+                  "default": "合计",
                   "description": "合计文案"
                 },
                 {
@@ -8392,6 +8476,8 @@
             }
           ],
           "methods": [
+            "toggleTreeExpand",
+            "setAllTreeExpansion",
             "clearSelection",
             "getSelectionRows",
             "toggleRowSelection",
@@ -8422,7 +8508,7 @@
             {
               "name": "width",
               "type": "string | number",
-              "description": "列宽"
+              "description": "列宽，数字按 px 处理；不设时按 minWidth 参与剩余空间分配"
             },
             {
               "name": "minWidth",
@@ -8434,7 +8520,7 @@
               "name": "fixed",
               "type": "boolean | string",
               "default": false,
-              "description": "固定列"
+              "description": "冻结列：true / left 靠左，right 靠右，纯 CSS sticky 实现"
             },
             {
               "name": "align",
@@ -8446,7 +8532,7 @@
               "name": "headerAlign",
               "type": "string",
               "default": "",
-              "description": "表头对齐"
+              "description": "表头对齐，留空时跟随 align"
             },
             {
               "name": "className",
@@ -8464,17 +8550,17 @@
               "name": "showOverflowTooltip",
               "type": "boolean",
               "default": false,
-              "description": "内容溢出省略"
+              "description": "该列内容溢出时省略并显示 title 提示"
             },
             {
               "name": "index",
               "type": "number | Function",
-              "description": "索引列起始值或计算函数"
+              "description": "索引列起始偏移（数字）或 (index) => number 计算函数"
             },
             {
               "name": "formatter",
               "type": "Function",
-              "description": "单元格格式化函数"
+              "description": "单元格格式化函数 (row, column, value, index) => any"
             }
           ],
           "features": [
@@ -8509,7 +8595,7 @@
             {
               "id": "table.selection",
               "title": "选择列配置",
-              "description": "为 selection 列配置可选行判断与跨页保留选择。",
+              "description": "为 selection 列配置 selectable 判断哪些行可勾选。",
               "props": [
                 {
                   "name": "selectable",
@@ -10793,20 +10879,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 536564,
-          "gzipBytes": 127264
+          "bytes": 547638,
+          "gzipBytes": 130312
         },
         {
           "file": "ui-kit.css",
-          "bytes": 231823,
-          "gzipBytes": 31844
+          "bytes": 233162,
+          "gzipBytes": 32183
         }
       ],
       "sizes": {
-        "js": 536564,
-        "css": 231823,
-        "total": 768387,
-        "gzip": 158898
+        "js": 547638,
+        "css": 233162,
+        "total": 780800,
+        "gzip": 162236
       }
     },
     {
@@ -10945,6 +11031,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -11247,6 +11337,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -11672,6 +11766,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -11751,20 +11849,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 605031,
-          "gzipBytes": 141945
+          "bytes": 624694,
+          "gzipBytes": 147309
         },
         {
           "file": "ui-kit.css",
-          "bytes": 248538,
-          "gzipBytes": 33991
+          "bytes": 252588,
+          "gzipBytes": 34817
         }
       ],
       "sizes": {
-        "js": 605031,
-        "css": 248538,
-        "total": 853569,
-        "gzip": 176001
+        "js": 624694,
+        "css": 252588,
+        "total": 877282,
+        "gzip": 182089
       }
     },
     {
@@ -11903,6 +12001,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -12205,6 +12307,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -12630,6 +12736,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -12709,20 +12819,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142020
+          "bytes": 626542,
+          "gzipBytes": 147382
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260546,
-          "gzipBytes": 34784
+          "bytes": 264794,
+          "gzipBytes": 35602
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 260546,
-        "total": 867397,
-        "gzip": 176893
+        "js": 626542,
+        "css": 264794,
+        "total": 891336,
+        "gzip": 182982
       }
     },
     {
@@ -12861,6 +12971,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -13163,6 +13277,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -13588,6 +13706,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -13667,20 +13789,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142022
+          "bytes": 626542,
+          "gzipBytes": 147382
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275997,
-          "gzipBytes": 37742
+          "bytes": 280245,
+          "gzipBytes": 38559
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 275997,
-        "total": 882848,
-        "gzip": 179865
+        "js": 626542,
+        "css": 280245,
+        "total": 906787,
+        "gzip": 185963
       }
     },
     {
@@ -13819,6 +13941,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -14121,6 +14247,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -14546,6 +14676,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -14625,20 +14759,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142020
+          "bytes": 626542,
+          "gzipBytes": 147382
         },
         {
           "file": "ui-kit.css",
-          "bytes": 280794,
-          "gzipBytes": 37902
+          "bytes": 285042,
+          "gzipBytes": 38718
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 280794,
-        "total": 887645,
-        "gzip": 180018
+        "js": 626542,
+        "css": 285042,
+        "total": 911584,
+        "gzip": 186117
       }
     },
     {
@@ -14777,6 +14911,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -15079,6 +15217,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -15504,6 +15646,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -15583,20 +15729,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142019
+          "bytes": 626542,
+          "gzipBytes": 147381
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260918,
-          "gzipBytes": 34881
+          "bytes": 265166,
+          "gzipBytes": 35693
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 260918,
-        "total": 867769,
-        "gzip": 176987
+        "js": 626542,
+        "css": 265166,
+        "total": 891708,
+        "gzip": 183081
       }
     },
     {
@@ -15735,6 +15881,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -16037,6 +16187,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -16462,6 +16616,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -16541,20 +16699,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 609581,
-          "gzipBytes": 142170
+          "bytes": 629314,
+          "gzipBytes": 147519
         },
         {
           "file": "ui-kit.css",
-          "bytes": 277160,
-          "gzipBytes": 35290
+          "bytes": 281705,
+          "gzipBytes": 36039
         }
       ],
       "sizes": {
-        "js": 609581,
-        "css": 277160,
-        "total": 886741,
-        "gzip": 177581
+        "js": 629314,
+        "css": 281705,
+        "total": 911019,
+        "gzip": 183579
       }
     },
     {
@@ -16693,6 +16851,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -16995,6 +17157,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -17420,6 +17586,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -17499,20 +17669,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 607761,
-          "gzipBytes": 142076
+          "bytes": 627466,
+          "gzipBytes": 147435
         },
         {
           "file": "ui-kit.css",
-          "bytes": 266207,
-          "gzipBytes": 34933
+          "bytes": 270554,
+          "gzipBytes": 35740
         }
       ],
       "sizes": {
-        "js": 607761,
-        "css": 266207,
-        "total": 873968,
-        "gzip": 177112
+        "js": 627466,
+        "css": 270554,
+        "total": 898020,
+        "gzip": 183176
       }
     },
     {
@@ -17651,6 +17821,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -17953,6 +18127,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -18378,6 +18556,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -18457,20 +18639,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608671,
-          "gzipBytes": 142114
+          "bytes": 628390,
+          "gzipBytes": 147467
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271682,
-          "gzipBytes": 35109
+          "bytes": 276128,
+          "gzipBytes": 35859
         }
       ],
       "sizes": {
-        "js": 608671,
-        "css": 271682,
-        "total": 880353,
-        "gzip": 177336
+        "js": 628390,
+        "css": 276128,
+        "total": 904518,
+        "gzip": 183336
       }
     },
     {
@@ -18609,6 +18791,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -18911,6 +19097,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -19336,6 +19526,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -19415,20 +19609,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142020
+          "bytes": 626542,
+          "gzipBytes": 147381
         },
         {
           "file": "ui-kit.css",
-          "bytes": 261058,
-          "gzipBytes": 34889
+          "bytes": 265306,
+          "gzipBytes": 35706
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 261058,
-        "total": 867909,
-        "gzip": 176999
+        "js": 626542,
+        "css": 265306,
+        "total": 891848,
+        "gzip": 183091
       }
     },
     {
@@ -19567,6 +19761,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -19869,6 +20067,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -20294,6 +20496,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -20373,20 +20579,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608671,
-          "gzipBytes": 142121
+          "bytes": 628390,
+          "gzipBytes": 147474
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271722,
-          "gzipBytes": 35124
+          "bytes": 276168,
+          "gzipBytes": 35874
         }
       ],
       "sizes": {
-        "js": 608671,
-        "css": 271722,
-        "total": 880393,
-        "gzip": 177356
+        "js": 628390,
+        "css": 276168,
+        "total": 904558,
+        "gzip": 183359
       }
     },
     {
@@ -20525,6 +20731,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -20827,6 +21037,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -21252,6 +21466,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -21331,20 +21549,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 606851,
-          "gzipBytes": 142024
+          "bytes": 626542,
+          "gzipBytes": 147385
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260614,
-          "gzipBytes": 34772
+          "bytes": 264862,
+          "gzipBytes": 35586
         }
       ],
       "sizes": {
-        "js": 606851,
-        "css": 260614,
-        "total": 867465,
-        "gzip": 176882
+        "js": 626542,
+        "css": 264862,
+        "total": 891404,
+        "gzip": 182972
       }
     },
     {
@@ -21483,6 +21701,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -21785,6 +22007,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -22210,6 +22436,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -22289,20 +22519,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 611401,
-          "gzipBytes": 142267
+          "bytes": 631162,
+          "gzipBytes": 147612
         },
         {
           "file": "ui-kit.css",
-          "bytes": 289033,
-          "gzipBytes": 35850
+          "bytes": 293776,
+          "gzipBytes": 36584
         }
       ],
       "sizes": {
-        "js": 611401,
-        "css": 289033,
-        "total": 900434,
-        "gzip": 178243
+        "js": 631162,
+        "css": 293776,
+        "total": 924938,
+        "gzip": 184235
       }
     },
     {
@@ -22441,6 +22671,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -22743,6 +22977,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -23168,6 +23406,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -23247,20 +23489,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 611401,
-          "gzipBytes": 142270
+          "bytes": 631162,
+          "gzipBytes": 147612
         },
         {
           "file": "ui-kit.css",
-          "bytes": 288373,
-          "gzipBytes": 35575
+          "bytes": 293116,
+          "gzipBytes": 36310
         }
       ],
       "sizes": {
-        "js": 611401,
-        "css": 288373,
-        "total": 899774,
-        "gzip": 177965
+        "js": 631162,
+        "css": 293116,
+        "total": 924278,
+        "gzip": 183955
       }
     },
     {
@@ -23399,6 +23641,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -23701,6 +23947,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -24126,6 +24376,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -24205,20 +24459,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608671,
-          "gzipBytes": 142123
+          "bytes": 628390,
+          "gzipBytes": 147475
         },
         {
           "file": "ui-kit.css",
-          "bytes": 272087,
-          "gzipBytes": 35206
+          "bytes": 276533,
+          "gzipBytes": 35960
         }
       ],
       "sizes": {
-        "js": 608671,
-        "css": 272087,
-        "total": 880758,
-        "gzip": 177439
+        "js": 628390,
+        "css": 276533,
+        "total": 904923,
+        "gzip": 183444
       }
     },
     {
@@ -24357,6 +24611,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -24659,6 +24917,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -25084,6 +25346,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -25163,20 +25429,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608671,
-          "gzipBytes": 142116
+          "bytes": 628390,
+          "gzipBytes": 147470
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271638,
-          "gzipBytes": 35120
+          "bytes": 276084,
+          "gzipBytes": 35871
         }
       ],
       "sizes": {
-        "js": 608671,
-        "css": 271638,
-        "total": 880309,
-        "gzip": 177347
+        "js": 628390,
+        "css": 276084,
+        "total": 904474,
+        "gzip": 183356
       }
     },
     {
@@ -25315,6 +25581,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -25617,6 +25887,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -26042,6 +26316,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -26121,20 +26399,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608671,
-          "gzipBytes": 142121
+          "bytes": 628390,
+          "gzipBytes": 147474
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271727,
-          "gzipBytes": 35145
+          "bytes": 276173,
+          "gzipBytes": 35895
         }
       ],
       "sizes": {
-        "js": 608671,
-        "css": 271727,
-        "total": 880398,
-        "gzip": 177376
+        "js": 628390,
+        "css": 276173,
+        "total": 904563,
+        "gzip": 183379
       }
     },
     {
@@ -26273,6 +26551,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -26575,6 +26857,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -27000,6 +27286,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -27079,20 +27369,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 609581,
-          "gzipBytes": 142174
+          "bytes": 629314,
+          "gzipBytes": 147525
         },
         {
           "file": "ui-kit.css",
-          "bytes": 277599,
-          "gzipBytes": 35420
+          "bytes": 282144,
+          "gzipBytes": 36171
         }
       ],
       "sizes": {
-        "js": 609581,
-        "css": 277599,
-        "total": 887180,
-        "gzip": 177721
+        "js": 629314,
+        "css": 282144,
+        "total": 911458,
+        "gzip": 183720
       }
     },
     {
@@ -27231,6 +27521,10 @@
         "switch.icons",
         "switch.loading",
         "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
         "table.summary",
         "table.methods",
         "table.column-sort",
@@ -27533,6 +27827,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -27958,6 +28256,10 @@
         ],
         "table": [
           "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
           "table.summary",
           "table.methods",
           "table.column-sort",
@@ -28037,20 +28339,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 605941,
-          "gzipBytes": 141980
+          "bytes": 625618,
+          "gzipBytes": 147343
         },
         {
           "file": "ui-kit.css",
-          "bytes": 255174,
-          "gzipBytes": 34639
+          "bytes": 259323,
+          "gzipBytes": 35446
         }
       ],
       "sizes": {
-        "js": 605941,
-        "css": 255174,
-        "total": 861115,
-        "gzip": 176699
+        "js": 625618,
+        "css": 259323,
+        "total": 884941,
+        "gzip": 182775
       }
     }
   ]

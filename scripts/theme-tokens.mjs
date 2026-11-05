@@ -21,9 +21,24 @@ const RUNTIME_OWNED = new Set([
   '--ui-button-wave-origin-y'
 ])
 const COLOR_RE = /^(#[0-9a-f]{3,8}|(rgb|hsl)a?\()/i
+const VAR_REF_RE = /var\(\s*(--ui-[a-z0-9-]+)/g
+const IMPORT_RE = /@import\s+['"]([^'"]+)['"]/g
 
 function stripComments(css) {
   return css.replace(/\/\*[\s\S]*?\*\//g, '')
+}
+
+function walkCssFiles(dir) {
+  const files = []
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const target = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      files.push(...walkCssFiles(target))
+    } else if (entry.name.endsWith('.css')) {
+      files.push(target)
+    }
+  }
+  return files
 }
 
 function cssFiles() {
@@ -94,8 +109,70 @@ export function loadThemeTokens() {
   }
 
   const files = cssFiles()
+  const contents = new Map()
+  function readCss(file) {
+    if (!contents.has(file)) {
+      contents.set(file, stripComments(fs.readFileSync(file, 'utf8')))
+    }
+    return contents.get(file)
+  }
+
+  // 记录每个全局令牌被哪些组件消费：面板只展示「已选组件会用到的」变量。
+  // 共享 CSS 按 @import 归属到引入它的组件；theme.css 由 component.ts 直接引入，任何包都会带上，不归属单一组件。
+  const sharedDir = path.join(srcDir, 'shared')
+  const sharedFiles = new Set(files.filter((item) => item.owner === 'shared').map((item) => item.file))
+  const componentFiles = []
+  const componentsDir = path.join(srcDir, 'components')
+  for (const entry of fs.readdirSync(componentsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue
+    }
+    for (const file of walkCssFiles(path.join(componentsDir, entry.name))) {
+      componentFiles.push({ file, owner: entry.name })
+    }
+  }
+  const sharedImporters = new Map()
+  for (const { file, owner } of componentFiles) {
+    for (const match of readCss(file).matchAll(IMPORT_RE)) {
+      const target = path.resolve(path.dirname(file), match[1])
+      if (!sharedFiles.has(target)) {
+        continue
+      }
+      const set = sharedImporters.get(target) ?? new Set()
+      set.add(owner)
+      sharedImporters.set(target, set)
+    }
+  }
+  // theme.css 由 component.ts 直接引入，任何包都会带上；非 :root 规则里用到的变量始终有效
+  const alwaysRefs = new Set()
+  const themeCss = stripComments(fs.readFileSync(path.join(sharedDir, 'theme.css'), 'utf8'))
+  for (const match of themeCss.replace(/:root\s*\{[^{}]*\}/g, '').matchAll(VAR_REF_RE)) {
+    alwaysRefs.add(match[1])
+  }
+  const tokenOwners = new Map()
+  function recordOwners(css, owners) {
+    if (!owners.size) {
+      return
+    }
+    for (const match of css.matchAll(VAR_REF_RE)) {
+      const set = tokenOwners.get(match[1]) ?? new Set()
+      for (const id of owners) {
+        set.add(id)
+      }
+      tokenOwners.set(match[1], set)
+    }
+  }
+  for (const { file, owner } of componentFiles) {
+    recordOwners(readCss(file), new Set([owner]))
+  }
+  for (const { file } of files) {
+    if (sharedFiles.has(file)) {
+      recordOwners(readCss(file), sharedImporters.get(file) ?? new Set())
+    }
+  }
+
   for (const { file, owner } of files) {
-    const css = stripComments(fs.readFileSync(file, 'utf8'))
+    const css = readCss(file)
     RULE_RE.lastIndex = 0
     let rule
     while ((rule = RULE_RE.exec(css))) {
@@ -170,6 +247,10 @@ export function loadThemeTokens() {
     }
   }
 
+  for (const token of global) {
+    token.owners = [...(tokenOwners.get(token.var) ?? [])].sort()
+    token.always = alwaysRefs.has(token.var)
+  }
   global.sort((left, right) => left.var.localeCompare(right.var))
   const sortedComponents = {}
   for (const key of Object.keys(components).sort()) {

@@ -1,0 +1,43 @@
+.ui-table__tree-indent {
+  display: inline-block;
+  height: 1px;
+  vertical-align: middle;
+}
+
+.ui-table__tree-toggle,
+.ui-table__tree-leaf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.ui-table__tree-toggle {
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-xs);
+  background: transparent;
+  color: var(--ui-text-color-secondary);
+  cursor: pointer;
+}
+
+.ui-table__tree-toggle:hover {
+  background: var(--ui-fill-color-hover);
+  color: var(--ui-color-primary);
+}
+
+.ui-table__tree-arrow {
+  width: 6px;
+  height: 6px;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  transform: translate(-2px, 0) rotate(-45deg);
+  transition: transform 0.18s ease;
+}
+
+.ui-table__tree-toggle.is-expanded .ui-table__tree-arrow {
+  transform: translate(0, -2px) rotate(45deg);
+}

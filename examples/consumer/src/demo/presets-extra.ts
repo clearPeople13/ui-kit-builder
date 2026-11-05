@@ -1110,28 +1110,66 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       values: { span: 6, offset: 6 }
     }
   ],
-  Table: [
-    { id: 'highlight', label: '高亮当前行', values: { data: TABLE_ROWS, highlightCurrentRow: true } },
-    { id: 'small', label: '紧凑尺寸', values: { data: TABLE_ROWS, size: 'small' } },
-    { id: 'max-height', label: '固定高度滚动', values: { data: TABLE_ROWS, maxHeight: 220 } },
-    { id: 'no-header', label: '隐藏表头', values: { data: TABLE_ROWS, showHeader: false } }
-  ],
   TableColumn: [
     { id: 'index', label: '索引列', values: { type: 'index', label: '#', width: 52 } },
+    {
+      id: 'index-method',
+      label: '序号计算函数',
+      hint: 'index 传函数时按行下标计算，示例返回 (index + 1) * 10',
+      values: { type: 'index', label: '序号', width: 72, index: (index: number) => (index + 1) * 10 }
+    },
     { id: 'name', label: '名称列', values: { prop: 'name', label: '名称' } },
     { id: 'width', label: '固定列宽', values: { prop: 'name', label: '名称', width: 160 } },
+    { id: 'min-width', label: '最小列宽', values: { prop: 'name', label: '名称', minWidth: 200 } },
     { id: 'center', label: '居中对齐', values: { prop: 'status', label: '状态', align: 'center' } },
+    { id: 'right', label: '右对齐', values: { prop: 'amount', label: '预算', align: 'right' } },
+    {
+      id: 'formatter',
+      label: '格式化函数',
+      hint: 'formatter 的返回值优先于原始字段，示例把预算格式化为 ¥ 千分位',
+      values: {
+        prop: 'amount',
+        label: '预算',
+        width: 140,
+        formatter: (row: { amount?: unknown }) => `¥${Number(row.amount).toLocaleString('zh-CN')}`
+      }
+    },
+    {
+      id: 'header-align',
+      label: '表头单独对齐',
+      hint: '单元格右对齐、表头居中：headerAlign 与 align 各自生效',
+      values: { prop: 'amount', label: '预算', align: 'right', headerAlign: 'center' }
+    },
+    {
+      id: 'class-name',
+      label: '自定义单元格类名',
+      hint: 'className 只落在数据单元格上，宿主用这类名补强调样式',
+      values: { prop: 'name', label: '名称', className: 'pg-table-cell--accent' }
+    },
+    {
+      id: 'label-class',
+      label: '表头类名',
+      hint: 'labelClassName 只落在表头单元格上，示例在标题后追加“表头类名”标记',
+      values: { prop: 'status', label: '状态', width: 120, labelClassName: 'pg-table-head--accent' }
+    },
     {
       id: 'sortable',
       label: '可排序',
-      requires: 'table.column-sort',
+      requires: ['table.sort', 'table.column-sort'],
       values: { prop: 'name', label: '名称', sortable: true }
+    },
+    {
+      id: 'sort-orders',
+      label: '只升序 / 降序',
+      hint: 'sortOrders 去掉 null：第三次点击回到升序，不会取消排序',
+      requires: ['table.sort', 'table.column-sort'],
+      values: { prop: 'amount', label: '预算', sortable: true, sortOrders: ['ascending', 'descending'] }
     },
     {
       id: 'selection',
       label: '选择列',
       requires: 'table.selection',
-      values: { type: 'selection', label: '选择' }
+      values: { type: 'selection', width: 48, align: 'center' }
     }
   ],
   TableV2: [

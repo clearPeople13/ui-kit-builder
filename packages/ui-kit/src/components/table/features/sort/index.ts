@@ -1,4 +1,12 @@
-import { ref } from 'vue'
+import { h, ref } from 'vue'
+import type { VNodeChild } from 'vue'
+import type { UiFeature } from '../../../../shared/feature'
+import './style.css'
+
+interface SortState {
+  prop: string
+  order: string
+}
 
 function compareValues(left: any, right: any): number {
   if (left === right) {
@@ -16,17 +24,46 @@ function compareValues(left: any, right: any): number {
   return String(left).localeCompare(String(right), 'zh-Hans-CN')
 }
 
-export const tableSortFeature = {
+function normalizeDefaultSort(value: unknown): SortState[] {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item) => item && typeof item === 'object' && typeof item.prop === 'string' && item.prop)
+      .map((item) => ({ prop: item.prop, order: item.order ?? 'ascending' }))
+  }
+  if (value && typeof value === 'object') {
+    const item = value as { prop?: string; order?: string }
+    if (typeof item.prop === 'string' && item.prop) {
+      return [{ prop: item.prop, order: item.order ?? 'ascending' }]
+    }
+  }
+  return []
+}
+
+export const tableSortFeature: UiFeature = {
   id: 'table.sort',
   props: {
-    defaultSort: { type: Object, default: () => ({}) }
+    defaultSort: { type: [Object, Array], default: () => ({}) },
+    multiSort: { type: Boolean }
   },
-  setup(props: { defaultSort?: { prop?: string; order?: string } }) {
-    const initial = props.defaultSort ?? {}
-    const state = ref({ prop: initial.prop ?? '', order: initial.prop ? (initial.order ?? 'ascending') : '' })
+  setup(props, { emit }) {
+    const sorts = ref<SortState[]>(normalizeDefaultSort(props.defaultSort))
 
     function tableSortState(column: { prop?: string }) {
-      return state.value.prop && state.value.prop === column.prop ? state.value : {}
+      const index = sorts.value.findIndex((item) => item.prop && item.prop === column.prop)
+      if (index < 0) {
+        return {}
+      }
+      return { prop: column.prop, order: sorts.value[index].order, index }
+    }
+
+    function emitChange(next: SortState[], column?: Record<string, any>) {
+      const primary = next.find((item) => item.order)
+      emit('sort-change', {
+        column,
+        prop: primary?.prop ?? '',
+        order: primary?.order ?? '',
+        sorts: next.map((item) => ({ prop: item.prop, order: item.order }))
+      })
     }
 
     function tableHeaderClick(column: Record<string, any>) {
@@ -37,30 +74,85 @@ export const tableSortFeature = {
         Array.isArray(column.sortOrders) && column.sortOrders.length
           ? column.sortOrders
           : ['ascending', 'descending', null]
-      const current = state.value.prop === column.prop ? state.value.order : ''
-      const next = orders[(orders.indexOf(current) + 1) % orders.length]
-      state.value = next ? { prop: column.prop, order: next } : { prop: '', order: '' }
+      const existingIndex = sorts.value.findIndex((item) => item.prop === column.prop)
+      const current = existingIndex >= 0 ? sorts.value[existingIndex].order : ''
+      const nextOrder: string | null = orders[(orders.indexOf(current) + 1) % orders.length] ?? null
+      let next: SortState[]
+      if (props.multiSort) {
+        next = sorts.value.map((item) => ({ ...item }))
+        if (existingIndex >= 0) {
+          if (nextOrder) {
+            next[existingIndex] = { prop: column.prop, order: nextOrder }
+          } else {
+            next.splice(existingIndex, 1)
+          }
+        } else if (nextOrder) {
+          next.push({ prop: column.prop, order: nextOrder })
+        }
+      } else {
+        next = nextOrder ? [{ prop: column.prop, order: nextOrder }] : []
+      }
+      sorts.value = next
+      emitChange(next, column)
     }
 
     function tableRows(rows: any[], columns: Array<Record<string, any>>) {
-      const active = state.value
-      if (!active.prop) {
+      const active = sorts.value.filter((item) => item.prop && item.order)
+      if (!active.length) {
         return rows
       }
-      const column = columns.find((item) => item.prop === active.prop)
-      if (!column) {
+      const comparators: ((left: any, right: any) => number)[] = []
+      for (const item of active) {
+        const column = columns.find((entry) => entry.prop === item.prop)
+        if (!column) {
+          continue
+        }
+        const direction = item.order === 'descending' ? -1 : 1
+        const compare =
+          typeof column.sortMethod === 'function'
+            ? (left: any, right: any) => column.sortMethod(left, right)
+            : (left: any, right: any) => compareValues(left?.[item.prop], right?.[item.prop])
+        comparators.push((left, right) => compare(left, right) * direction)
+      }
+      if (!comparators.length) {
         return rows
       }
-      const direction = active.order === 'descending' ? -1 : 1
-      const comparator =
-        typeof column.sortMethod === 'function'
-          ? (left: any, right: any) => column.sortMethod(left, right)
-          : (left: any, right: any) => compareValues(left?.[active.prop], right?.[active.prop])
-      return [...rows].sort((left, right) => comparator(left, right) * direction)
+      return [...rows].sort((left, right) => {
+        for (const comparator of comparators) {
+          const result = comparator(left, right)
+          if (result) {
+            return result
+          }
+        }
+        return 0
+      })
+    }
+
+    function tableHeaderExtra({ column }: { column: Record<string, any> }) {
+      const extras: VNodeChild[] = []
+      if (column.sortable) {
+        const active = sorts.value.find((item) => item.prop === column.prop)
+        extras.push(
+          h('span', {
+            class: ['ui-table__sort-caret', active?.order ? `is-${active.order}` : ''],
+            'aria-hidden': 'true'
+          })
+        )
+      }
+      if (props.multiSort) {
+        const active = sorts.value.filter((item) => item.order)
+        if (active.length >= 2) {
+          const index = active.findIndex((item) => item.prop === column.prop)
+          if (index >= 0) {
+            extras.push(h('span', { class: 'ui-table__sort-index' }, String(index + 1)))
+          }
+        }
+      }
+      return extras.length ? extras : null
     }
 
     return {
-      hooks: { tableRows, tableHeaderClick, tableSortState }
+      hooks: { tableRows, tableHeaderClick, tableSortState, tableHeaderExtra }
     }
   }
 }

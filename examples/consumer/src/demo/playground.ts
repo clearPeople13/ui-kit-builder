@@ -3,6 +3,7 @@ import { CASCADER_DEFAULT_CLEAR_PATH, CASCADER_OPTIONS } from './cascader-data'
 import { FORM_MODEL } from './form-data'
 import { SAMPLE_AVATAR_A, SAMPLE_IMAGE_SRC, SAMPLE_PHOTOS } from './sample-image'
 import { SELECT_CITY_OPTIONS } from './select-data'
+import { TABLE_DEMO_ROWS } from './table-data'
 
 interface MetaProp {
   name: string
@@ -235,8 +236,8 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'Menu.backgroundColor': '',
   'Menu.textColor': '',
   'Menu.activeTextColor': '',
-  'Table.data': TABLE_ROWS,
-  'Table.height': 280,
+  'Table.data': TABLE_DEMO_ROWS,
+  'Table.rowKey': 'id',
   'TableV2.columns': TABLE_V2_COLUMNS,
   'TableV2.data': TABLE_ROWS,
   'TableV2.width': 620,

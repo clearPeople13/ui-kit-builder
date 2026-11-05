@@ -454,6 +454,7 @@
   --ui-table-expand-border-color: var(--ui-border-color);
   --ui-table-expand-color: var(--ui-text-color-regular);
   --ui-table-expanded-row-bg: var(--ui-fill-color-subtle);
+  --ui-table-fixed-shadow-color: color-mix(in srgb, var(--ui-mask-color) 16%, transparent);
   --ui-table-header-bg: var(--ui-fill-color-subtle);
   --ui-table-header-border-color: var(--ui-border-color-light);
   --ui-table-header-color: var(--ui-color-info-strong);
@@ -467,6 +468,7 @@
   --ui-table-summary-color: inherit;
   --ui-table-summary-border-color: var(--ui-border-color-light);
   --ui-table-summary-font-weight: var(--ui-font-weight-strong);
+  --ui-table-sort-caret-color: var(--ui-text-color-placeholder);
   --ui-tabs-ink-height: 2px;
   --ui-tabs-nav-gap: 2px;
   --ui-tabs-nav-item-active-font-weight: var(--ui-font-weight-medium);

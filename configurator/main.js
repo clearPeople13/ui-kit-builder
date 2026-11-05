@@ -77,20 +77,59 @@ const PRESETS = [
 ]
 
 const GLOBAL_GROUPS = [
-  { id: 'color', title: '品牌与状态色', hint: '主色按钮、选中态、成功/警告提示', match: token => token.startsWith('color-') },
+  {
+    id: 'color',
+    title: '品牌与状态色',
+    hint: '主色、状态色与渐变',
+    match: token => token.startsWith('color-') || token.startsWith('gradient-'),
+  },
   { id: 'text', title: '文字颜色', hint: '正文、次要说明、占位文字', match: token => token.startsWith('text-color-') },
   {
     id: 'surface',
     title: '背景与边框',
     hint: '页面底色、卡片、分割线',
-    match: token => token === 'bg-color' || token.startsWith('fill-color') || token.startsWith('border-color'),
+    match: token => token === 'bg-color'
+      || token.startsWith('bg-color-')
+      || token.startsWith('fill-color')
+      || token.startsWith('border-color'),
   },
   { id: 'radius', title: '圆角', hint: '按钮、输入框、卡片', match: token => token.startsWith('radius-') },
-  { id: 'font', title: '字号', hint: '基础字号与大小号文本', match: token => token.startsWith('font-size-') },
+  {
+    id: 'font',
+    title: '字体与字重',
+    hint: '字号、字体、字重与字距',
+    match: token => token.startsWith('font-size-')
+      || token.startsWith('font-family')
+      || token.startsWith('font-weight-')
+      || token === 'font-smoothing'
+      || token === 'letter-spacing',
+  },
   { id: 'shadow', title: '阴影', hint: '卡片、浮层的投影', match: token => token.startsWith('shadow-') },
-  { id: 'scrollbar', title: '滚动条', hint: '粗细与配色', match: token => token.startsWith('scrollbar-') },
-  { id: 'other', title: '其他', hint: '浮层高度等', match: () => true },
+  { id: 'scrollbar', title: '页面滚动条', hint: '浏览器与画布滚动条', match: token => token.startsWith('scrollbar-') },
+  { id: 'interaction', title: '交互与焦点', hint: '键盘焦点环与强调描边', match: token => token.startsWith('focus-ring') },
+  {
+    id: 'overlay',
+    title: '浮层与遮罩',
+    hint: '浮层最大高度、面板内边距、遮罩',
+    match: token => token.startsWith('floating-panel-') || token === 'panel-padding' || token === 'mask-color',
+  },
 ]
+
+// 组件 CSS 里存在不在组件 id 内的令牌前缀，归组时映射回组件
+const TOKEN_PREFIX_ALIASES = [
+  ['sub-menu-', 'menu'],
+  ['step-', 'steps'],
+]
+
+function componentFamily(token) {
+  for (const id of state.tokenPrefixes) {
+    if (token.startsWith(`${id}-`)) {return id}
+  }
+  for (const [prefix, id] of TOKEN_PREFIX_ALIASES) {
+    if (token.startsWith(prefix)) {return id}
+  }
+  return ''
+}
 
 const TOKEN_LABELS = {
   'color-primary': '主色',
@@ -169,11 +208,15 @@ const state = {
   tokens: { global: [], components: {} },
   // 变量名 → 用户输入原值；空串视为未覆盖
   overrides: new Map(),
-  // 变量名 → { token, scope, def }，scope 为 global 或组件 id
+  // 变量名 → { token, scope, def, owners }，scope 为 global 或组件 id；owners 是消费该全局变量的组件
   varIndex: new Map(),
-  // 变量名 → 行 DOM 引用，用于回写与状态同步
+  // 组件 id 按长度倒序，用于把令牌前缀匹配到最长组件名（select-v2 优先于 select）
+  tokenPrefixes: [],
+  // 变量名 → 行 DOM 引用，用于回写与状态同步；只包含当前可见变量
   themeRows: new Map(),
   themeBaseStatus: '',
+  // 最近一次主题面板渲染时的已选组件快照，用于判断是否需要重建面板
+  themeEnabledKey: '',
   presets: [],
   preset: '',
   // 上次预设填充的变量名集合，切换预设时只回收这些项，保留用户手工覆盖
@@ -249,6 +292,7 @@ const elements = {
   gateComponents: document.querySelector('#gate-components'),
   nextTheme: document.querySelector('#next-theme'),
   gateTheme: document.querySelector('#gate-theme'),
+  themeEmptyState: document.querySelector('#theme-empty-state'),
   buildGate: document.querySelector('#build-gate'),
   themeFilterModified: document.querySelector('#theme-filter-modified'),
   themeErrors: document.querySelector('#theme-errors'),
@@ -281,6 +325,7 @@ function createEntry(component) {
 
   const featureList = [...features.values()]
   const vars = state.tokens.components?.[component.id] ?? []
+  const searchFields = buildSearchFields(component, coreProps, featureList, vars)
   return {
     ...component,
     coreProps,
@@ -291,7 +336,8 @@ function createEntry(component) {
     enabled: true,
     selected: new Set(),
     nodes: null,
-    haystack: buildHaystack(component, coreProps, featureList, vars),
+    searchFields,
+    haystack: searchFields.map(field => field.text).join(' ').toLowerCase(),
     nameHaystack: [
       component.id,
       component.title,
@@ -300,22 +346,23 @@ function createEntry(component) {
   }
 }
 
-function buildHaystack(component, coreProps, features, vars) {
-  const parts = [
-    component.id,
-    component.title,
-    ...component.exports.map(item => item.name),
-    ...coreProps.keys(),
-    ...vars.flatMap(token => [token.var, token.token]),
-    ...features.flatMap(feature => [
-      feature.id,
-      feature.title,
-      feature.description,
-      ...feature.props.map(prop => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
-      ...(feature.methods ?? []).flatMap(method => [method.name, method.signature, method.description ?? '']),
-    ]),
-  ]
-  return parts.join(' ').toLowerCase()
+function buildSearchFields(component, coreProps, features, vars) {
+  return [
+    { label: '组件名', text: `${component.id} ${component.title}` },
+    { label: '导出名', text: component.exports.map(item => item.name).join(' ') },
+    { label: '属性', text: [...coreProps.keys()].join(' ') },
+    { label: '样式变量', text: vars.flatMap(token => [token.var, token.token]).join(' ') },
+    {
+      label: '功能',
+      text: features.flatMap(feature => [
+        feature.id,
+        feature.title,
+        feature.description,
+        ...feature.props.map(prop => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
+        ...(feature.methods ?? []).flatMap(method => [method.name, method.signature, method.description ?? '']),
+      ]).join(' '),
+    },
+  ].filter(field => field.text)
 }
 
 function buildGroups() {
@@ -423,9 +470,13 @@ function syncStepGates() {
   elements.gateComponents.hidden = !noComponents
   elements.nextComponents.classList.toggle('is-disabled', noComponents)
 
-  const themeBlocked = invalid.length > 0
+  const themeBlocked = noComponents || invalid.length > 0
   elements.gateTheme.hidden = !themeBlocked
+  elements.gateTheme.textContent = noComponents
+    ? '还没有启用任何组件，先回第 1 步至少启用 1 个'
+    : '有非法变量取值，修正后才能继续'
   elements.nextTheme.classList.toggle('is-disabled', themeBlocked)
+  elements.themeEmptyState.hidden = !noComponents
 
   const buildBlocked = noComponents || themeBlocked
   elements.buildButton.disabled = isBuilding || buildBlocked
@@ -478,6 +529,7 @@ function buildNode(entry) {
     details,
     checkbox: null,
     count: null,
+    match: null,
     featureInputs: new Map(),
     featureGroup: null,
     featureCount: null,
@@ -505,7 +557,10 @@ function buildNode(entry) {
     createElement('span', 'component__title', entry.title),
     createElement('code', 'component__id', entry.id),
   )
-  text.append(titleRow)
+  const match = createElement('span', 'component__match')
+  match.hidden = true
+  entry.nodes.match = match
+  text.append(titleRow, match)
 
   const meta = createElement('span', 'component__meta')
   meta.append(createElement(
@@ -647,8 +702,16 @@ function syncCategoryDom(group) {
   if (!group?.countNode) {return}
   const total = group.entries.length
   const enabled = group.entries.filter(entry => entry.enabled).length
-  group.countNode.textContent = `已启用 ${enabled} / ${total}`
-  group.countNode.classList.toggle('is-empty', enabled === 0)
+  const query = elements.search.value.trim().toLowerCase()
+  if (query) {
+    const matched = group.entries.filter(entry => entry.haystack.includes(query)).length
+    group.countNode.textContent = `匹配 ${matched} · 已启用 ${enabled} / ${total}`
+    group.countNode.classList.toggle('is-empty', matched === 0)
+  }
+  else {
+    group.countNode.textContent = `已启用 ${enabled} / ${total}`
+    group.countNode.classList.toggle('is-empty', enabled === 0)
+  }
   group.toggleNode.textContent = enabled === total ? '全部取消' : '全部启用'
 }
 
@@ -685,6 +748,54 @@ function syncCategoryTabs() {
   }
 }
 
+function snippetAt(text, index, query) {
+  const start = Math.max(0, index - 18)
+  const end = Math.min(text.length, index + query.length + 18)
+  return {
+    before: `${start > 0 ? '…' : ''}${text.slice(start, index)}`,
+    hit: text.slice(index, index + query.length),
+    after: `${text.slice(index + query.length, end)}${end < text.length ? '…' : ''}`,
+  }
+}
+
+function matchInfoFor(entry, query) {
+  if (!query) {return null}
+  for (const field of entry.searchFields) {
+    const index = field.text.toLowerCase().indexOf(query)
+    if (index !== -1) {return { label: field.label, ...snippetAt(field.text, index, query) }}
+  }
+  const index = entry.haystack.indexOf(query)
+  return index === -1 ? null : { label: '内容', ...snippetAt(entry.haystack, index, query) }
+}
+
+function renderMatchHint(entry, query) {
+  const info = matchInfoFor(entry, query)
+  if (!info) {
+    entry.nodes.match.hidden = true
+    entry.nodes.match.replaceChildren()
+    return
+  }
+  entry.nodes.match.replaceChildren(
+    document.createTextNode(`命中${info.label}：${info.before}`),
+    createElement('mark', '', info.hit),
+    document.createTextNode(info.after),
+  )
+  entry.nodes.match.hidden = false
+}
+
+function createStatusAction(label, action) {
+  const button = createElement('button', 'link-button toolbar__status-action', label)
+  button.type = 'button'
+  button.addEventListener('click', action)
+  return button
+}
+
+function clearComponentSearch() {
+  elements.search.value = ''
+  applySearch()
+  elements.search.focus()
+}
+
 function applySearch() {
   const query = elements.search.value.trim().toLowerCase()
   let visible = 0
@@ -695,33 +806,41 @@ function applySearch() {
     for (const entry of group.entries) {
       const matched = categoryVisible && (!query || entry.haystack.includes(query))
       entry.nodes.details.hidden = !matched
+      renderMatchHint(entry, matched ? query : '')
       if (matched) {groupVisible += 1}
     }
     group.node.hidden = groupVisible === 0
+    syncCategoryDom(group)
     visible += groupVisible
   }
 
   elements.emptyHint.hidden = visible > 0
   if (!visible && query) {
-    const clear = createElement('button', 'link-button', '清除搜索')
-    clear.type = 'button'
-    clear.addEventListener('click', () => {
-      elements.search.value = ''
-      applySearch()
-      elements.search.focus()
-    })
-    elements.emptyHint.replaceChildren(document.createTextNode('没有匹配的组件。 '), clear)
+    elements.emptyHint.replaceChildren(
+      document.createTextNode('没有匹配的组件。 '),
+      createStatusAction('清除搜索', clearComponentSearch),
+    )
   }
   else {
     elements.emptyHint.textContent = '没有匹配的组件。'
   }
   if (query) {
-    elements.listStatus.textContent = `匹配 ${visible} 个组件`
+    elements.listStatus.replaceChildren(
+      document.createTextNode(`匹配 ${visible} 个组件`),
+      createStatusAction(`清除搜索，查看全部 ${state.order.length} 个`, clearComponentSearch),
+    )
     return
   }
   if (state.activeCategory !== 'all') {
     const group = state.groups.find(item => item.id === state.activeCategory)
-    elements.listStatus.textContent = `${group.title}：${visible} 个组件`
+    elements.listStatus.replaceChildren(
+      document.createTextNode(`${group.title}：${visible} 个组件`),
+      createStatusAction('查看全部组件', () => {
+        state.activeCategory = 'all'
+        syncCategoryTabs()
+        applySearch()
+      }),
+    )
     return
   }
   elements.listStatus.textContent = `共 ${state.order.length} 个组件，分 ${state.groups.length} 类；展开某行可以看它的运行时属性和样式变量`
@@ -961,6 +1080,8 @@ function applyFeatureSearch() {
     matched += groupMatches
   }
 
+  elements.featurePanel.classList.toggle('is-empty', matchedGroups === 0)
+
   if (!enabledEntries.length) {
     elements.featureEmpty.hidden = false
     elements.featureEmpty.textContent = '第 1 步还没有启用任何组件。先回去选几个组件，这里就会出现可勾选的功能。'
@@ -1028,6 +1149,11 @@ function onSelectionChanged() {
   syncNavCounts()
   syncPresetState()
   applyFeatureSearch()
+  if (syncThemePanelForSelection()) {
+    renderThemeCounts()
+    renderThemeCss()
+    applyPreviewTheme()
+  }
   renderConfig()
   resetBuildResult()
   syncStepGates()
@@ -1042,6 +1168,46 @@ function tokenLabel(token) {
 
 function camelToken(token) {
   return token.replace(/-([a-z0-9])/g, (_, char) => char.toUpperCase())
+}
+
+function indexThemeTokens() {
+  state.varIndex.clear()
+  for (const token of state.tokens.global ?? []) {
+    state.varIndex.set(token.var, {
+      var: token.var,
+      token: token.token,
+      scope: 'global',
+      def: token.value,
+      owners: token.owners ?? [],
+      always: Boolean(token.always),
+    })
+  }
+  for (const [scope, tokens] of Object.entries(state.tokens.components ?? {})) {
+    for (const token of tokens) {
+      state.varIndex.set(token.var, {
+        var: token.var,
+        token: token.token,
+        scope,
+        def: token.value,
+      })
+    }
+  }
+}
+
+function componentEnabled(id) {
+  return Boolean(state.components.get(id)?.enabled)
+}
+
+// 与构建期裁剪同一口径：全局变量只要还有一个已选组件会读它，就算有效
+function isTokenActive(info) {
+  if (!info) {return false}
+  if (info.scope !== 'global') {return componentEnabled(info.scope)}
+  if (info.always) {return true}
+  if (!info.owners?.length) {
+    const family = componentFamily(info.token)
+    return !family || componentEnabled(family)
+  }
+  return info.owners.some(componentEnabled)
 }
 
 function isValidThemeValue(value) {
@@ -1128,12 +1294,6 @@ function buildVarRow(token, scope) {
   fields.append(reset)
   row.append(fields)
 
-  state.varIndex.set(token.var, {
-    var: token.var,
-    token: token.token,
-    scope,
-    def: token.value,
-  })
   state.themeRows.set(token.var, {
     row,
     color: colorInput,
@@ -1164,14 +1324,15 @@ function buildVarRow(token, scope) {
   return row
 }
 
-function buildVarGroup({ key, scope, title, subtitle, tokens, open }) {
-  const details = createElement('details', 'theme-group')
+function buildVarGroup({ key, scope, title, subtitle, tokens, open, showScope = false }) {
+  const details = createElement('details', 'theme-group theme-group--leaf')
   details.dataset.scope = key
+  details.dataset.title = title
   details.open = open
 
   const summary = createElement('summary', 'theme-group__summary')
   const titleRow = createElement('span', 'theme-group__title', title)
-  if (scope !== 'global') {
+  if (showScope && scope !== 'global') {
     titleRow.append(createElement('code', '', scope))
   }
   summary.append(
@@ -1186,18 +1347,91 @@ function buildVarGroup({ key, scope, title, subtitle, tokens, open }) {
   return details
 }
 
-function renderThemePanel() {
-  const globals = state.tokens.global ?? []
-  const groups = GLOBAL_GROUPS.map(group => ({ ...group, tokens: [] }))
+function buildCategoryGroup({ key, title, hint, tokenTotal, children }) {
+  const details = createElement('details', 'theme-group theme-group--category')
+  details.dataset.scope = key
+  details.dataset.title = title
+
+  const summary = createElement('summary', 'theme-group__summary')
+  const titleRow = createElement('span', 'theme-group__title', title)
+  if (hint) {titleRow.append(createElement('span', 'theme-group__hint', hint))}
+  summary.append(
+    titleRow,
+    createElement('span', 'theme-group__meta', `${children.length} 个组件 · ${tokenTotal} 项`),
+  )
+
+  const body = createElement('div', 'theme-subgroups theme-subgroups--nested')
+  body.append(...children)
+  details.append(summary, body)
+  return details
+}
+
+function buildThemeSection({ key, title, hint, count, children }) {
+  const section = createElement('section', 'theme-section')
+  section.dataset.section = key
+
+  const head = createElement('div', 'theme-section__head')
+  const text = createElement('div', 'theme-section__text')
+  text.append(
+    createElement('span', 'theme-section__label', title),
+    createElement('span', 'theme-section__hint', hint),
+  )
+  head.append(text, createElement('span', 'theme-section__count', count))
+
+  const body = createElement('div', 'theme-subgroups')
+  body.append(...children)
+  section.append(head, body)
+  return section
+}
+
+function enabledComponentsKey() {
+  return state.order.filter(entry => entry.enabled).map(entry => entry.id).join(',')
+}
+
+function buildThemeBuckets({ enabled, globals, componentTokens }) {
+  const semanticGroups = GLOBAL_GROUPS.map(group => ({ ...group, tokens: [] }))
+  const unmatchedGlobals = []
   for (const token of globals) {
-    const target = groups.find(group => group.match(token.token)) ?? groups[groups.length - 1]
-    target.tokens.push(token)
+    const group = semanticGroups.find(item => item.match(token.token))
+    if (group) {group.tokens.push(token)}
+    else {unmatchedGlobals.push(token)}
   }
 
-  const fragment = document.createDocumentFragment()
-  for (const group of groups) {
+  const buckets = new Map()
+  function bucketOf(id) {
+    if (!buckets.has(id)) {buckets.set(id, { id, global: [], scoped: [] })}
+    return buckets.get(id)
+  }
+  const familyless = []
+  for (const token of unmatchedGlobals) {
+    const family = componentFamily(token.token)
+    if (family) {bucketOf(family).global.push(token)}
+    else {familyless.push(token)}
+  }
+
+  for (const [id, tokens] of Object.entries(componentTokens ?? {})) {
+    if (!tokens.length || !enabled.has(id)) {continue}
+    bucketOf(id).scoped.push(...tokens)
+  }
+
+  return { semanticGroups, unmatchedGlobals: familyless, buckets }
+}
+
+function renderThemePanel() {
+  const enabled = new Set(state.order.filter(entry => entry.enabled).map(entry => entry.id))
+  const allGlobals = state.tokens.global ?? []
+  const globals = allGlobals.filter(token => isTokenActive(state.varIndex.get(token.var)))
+  const { semanticGroups, unmatchedGlobals, buckets } = buildThemeBuckets({
+    enabled,
+    globals,
+    componentTokens: state.tokens.components,
+  })
+
+  state.themeRows.clear()
+  const semanticNodes = []
+  for (const group of semanticGroups) {
     if (!group.tokens.length) {continue}
-    fragment.append(buildVarGroup({
+    semanticNodes.push(buildVarGroup({
       key: `global-${group.id}`,
       scope: 'global',
       title: group.title,
@@ -1206,33 +1440,123 @@ function renderThemePanel() {
       open: group.id === 'color' || group.id === 'radius',
     }))
   }
-
-  const componentScopes = state.order
-    .filter(entry => state.tokens.components?.[entry.id]?.length)
-    .map(entry => [entry.id, state.tokens.components[entry.id]])
-  for (const [scope, tokens] of componentScopes) {
-    fragment.append(buildVarGroup({
-      key: scope,
-      scope,
-      title: scopeTitle(scope),
-      subtitle: '只影响这个组件',
-      tokens,
+  if (unmatchedGlobals.length) {
+    semanticNodes.push(buildVarGroup({
+      key: 'global-unmatched',
+      scope: 'global',
+      title: '未归类变量',
+      subtitle: '前缀没有对应到任何组件',
+      tokens: unmatchedGlobals,
       open: false,
     }))
   }
-  elements.themeGroups.replaceChildren(fragment)
 
-  const componentTotal = componentScopes.reduce((total, [, tokens]) => total + tokens.length, 0)
-  state.themeBaseStatus = `全局 ${globals.length} 项 · 组件级 ${componentTotal} 项，共 ${componentScopes.length} 个组件有单独变量`
+  let semanticTotal = 0
+  for (const group of semanticGroups) {semanticTotal += group.tokens.length}
+  semanticTotal += unmatchedGlobals.length
+
+  const categoryNodes = []
+  let componentTotal = 0
+  let componentGroups = 0
+  function appendComponentCategory({ id, title, hint, ids }) {
+    const children = []
+    let categoryTotal = 0
+    for (const componentId of ids) {
+      const bucket = buckets.get(componentId)
+      if (!bucket) {continue}
+      buckets.delete(componentId)
+      const tokens = [...bucket.global, ...bucket.scoped]
+      if (!tokens.length) {continue}
+      const selected = enabled.has(componentId)
+      children.push(buildVarGroup({
+        key: componentId,
+        scope: componentId,
+        title: scopeTitle(componentId),
+        subtitle: selected ? '只影响这个组件' : '未选组件 · 随共享样式带入',
+        tokens,
+        open: false,
+        showScope: true,
+      }))
+      categoryTotal += tokens.length
+      componentTotal += tokens.length
+    }
+    componentGroups += children.length
+    if (!children.length) {return}
+    categoryNodes.push(buildCategoryGroup({
+      key: `category-${id}`,
+      title,
+      hint,
+      tokenTotal: categoryTotal,
+      children,
+    }))
+  }
+  for (const category of CATEGORIES) {
+    appendComponentCategory(category)
+  }
+  if (buckets.size) {
+    appendComponentCategory({
+      id: 'other',
+      title: '其他组件',
+      hint: '未归入上面分类的组件',
+      ids: [...buckets.keys()],
+    })
+  }
+
+  const sections = [
+    buildThemeSection({
+      key: 'semantic',
+      title: '全局通用变量',
+      hint: '所有组件共用的基础样式，与选择哪些组件无关',
+      count: `${semanticTotal} 项`,
+      children: semanticNodes,
+    }),
+  ]
+  if (categoryNodes.length) {
+    sections.push(buildThemeSection({
+      key: 'component',
+      title: '组件专属变量',
+      hint: '按组件分组，只列出有变量的组件；未勾选组件的专属变量不打包，标“随共享样式带入”的变量仍会产出',
+      count: `${componentTotal} 项 · ${componentGroups} 个组件`,
+      children: categoryNodes,
+    }))
+  }
+  elements.themeGroups.replaceChildren(...sections)
+
+  const hiddenScopes = Object.entries(state.tokens.components ?? {})
+    .filter(([scope]) => !enabled.has(scope))
+    .reduce((total, [, tokens]) => total + tokens.length, 0)
+  const hidden = allGlobals.length - globals.length + hiddenScopes
+  let hiddenModified = 0
+  for (const [name, raw] of state.overrides) {
+    if (raw !== '' && !isTokenActive(state.varIndex.get(name))) {hiddenModified += 1}
+  }
+  const keptNote = hiddenModified ? `，其中 ${hiddenModified} 项修改已保留` : ''
+  const note = hidden ? `；未选组件的 ${hidden} 项已隐藏${keptNote}` : ''
+  state.themeBaseStatus = `共 ${semanticTotal + componentTotal} 项：全局通用 ${semanticTotal} 项 · 组件专属 ${componentTotal} 项（${componentGroups} 个组件）${note}`
   elements.themeStatus.textContent = state.themeBaseStatus
-  elements.themeTotal.textContent = String(globals.length + componentTotal)
+  elements.themeTotal.textContent = String(semanticTotal + componentTotal)
+  state.themeEnabledKey = enabledComponentsKey()
+}
+
+function syncThemePanelForSelection() {
+  if (enabledComponentsKey() === state.themeEnabledKey) {return false}
+  renderThemePanel()
+  if (elements.themeSearch.value.trim() || state.themeOnlyModified) {applyThemeSearch()}
+  return true
+}
+
+function matchesGroupTitle(node, query) {
+  if (!node || !query) {return false}
+  return (node.dataset.title ?? '').toLowerCase().includes(query)
 }
 
 function applyThemeSearch() {
   const query = elements.themeSearch.value.trim().toLowerCase()
   let visible = 0
 
-  for (const group of elements.themeGroups.querySelectorAll('.theme-group')) {
+  for (const group of elements.themeGroups.querySelectorAll('.theme-group--leaf')) {
+    const category = group.closest('.theme-group--category')
+    const titleHit = matchesGroupTitle(group, query) || matchesGroupTitle(category, query)
     let groupMatches = 0
     for (const row of group.querySelectorAll('.var-row')) {
       const info = state.varIndex.get(row.dataset.var)
@@ -1243,13 +1567,23 @@ function applyThemeSearch() {
         scopeTitle(info?.scope ?? 'global'),
       ].join(' ').toLowerCase()
       const modified = (state.overrides.get(row.dataset.var) ?? '') !== ''
-      const matched = (!query || haystack.includes(query)) && (!state.themeOnlyModified || modified)
+      const matched = (!query || titleHit || haystack.includes(query)) && (!state.themeOnlyModified || modified)
       row.hidden = !matched
       if (matched) {groupMatches += 1}
     }
     group.hidden = groupMatches === 0
-    if (groupMatches && (query || state.themeOnlyModified)) {group.open = true}
+    if (groupMatches && (query || state.themeOnlyModified)) {
+      group.open = true
+      if (category) {category.open = true}
+    }
     visible += groupMatches
+  }
+
+  for (const category of elements.themeGroups.querySelectorAll('.theme-group--category')) {
+    category.hidden = ![...category.querySelectorAll('.theme-group--leaf')].some(leaf => !leaf.hidden)
+  }
+  for (const section of elements.themeGroups.querySelectorAll('.theme-section')) {
+    section.hidden = ![...section.querySelectorAll('.theme-group--leaf')].some(leaf => !leaf.hidden)
   }
 
   elements.themeEmpty.hidden = visible > 0
@@ -1283,7 +1617,8 @@ function syncThemeFilterButton() {
 
 function expandThemeGroups(open) {
   for (const group of elements.themeGroups.querySelectorAll('.theme-group')) {
-    if (!group.hidden) {group.open = open}
+    if (open && group.hidden) {continue}
+    group.open = open
   }
 }
 
@@ -1293,13 +1628,17 @@ function scrollToTheme() {
 }
 
 function focusThemeScope(scope) {
-  const group = elements.themeGroups.querySelector(`.theme-group[data-scope="${scope}"]`)
+  const group = elements.themeGroups.querySelector(`.theme-group--leaf[data-scope="${scope}"]`)
   if (!group) {
     scrollToTheme()
     return
   }
   elements.themeSearch.value = ''
+  state.themeOnlyModified = false
+  syncThemeFilterButton()
   applyThemeSearch()
+  const category = group.closest('.theme-group--category')
+  if (category) {category.open = true}
   group.open = true
   group.scrollIntoView({ behavior: 'smooth', block: 'center' })
   group.classList.add('is-flash')
@@ -1313,8 +1652,12 @@ function jumpToFirstInvalid() {
   applyThemeSearch()
   for (const refs of state.themeRows.values()) {
     if (!refs.row.classList.contains('is-invalid')) {continue}
-    const group = refs.row.closest('.theme-group')
-    if (group) {group.open = true}
+    const group = refs.row.closest('.theme-group--leaf')
+    if (group) {
+      const category = group.closest('.theme-group--category')
+      if (category) {category.open = true}
+      group.open = true
+    }
     refs.row.scrollIntoView({ behavior: 'smooth', block: 'center' })
     refs.row.classList.add('is-flash')
     window.setTimeout(() => refs.row.classList.remove('is-flash'), 1400)
@@ -1373,7 +1716,7 @@ function syncVarRow(name) {
 function invalidOverrides() {
   const names = []
   for (const [name, raw] of state.overrides) {
-    if (!isValidThemeValue(raw)) {names.push(name)}
+    if (!isValidThemeValue(raw) && isTokenActive(state.varIndex.get(name))) {names.push(name)}
   }
   return names
 }
@@ -1383,7 +1726,7 @@ function themeFromOverrides() {
   const components = {}
   for (const [name, raw] of state.overrides) {
     const info = state.varIndex.get(name)
-    if (!info || !isValidThemeValue(raw)) {continue}
+    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {continue}
     const key = camelToken(info.token)
     if (info.scope === 'global') {global[key] = raw.trim()}
     else {
@@ -1402,7 +1745,7 @@ function themeCssText(prefix, rootSelector = ':root') {
   const scopeDeclarations = new Map()
   for (const [name, raw] of state.overrides) {
     const info = state.varIndex.get(name)
-    if (!info || !isValidThemeValue(raw)) {continue}
+    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {continue}
     const declaration = `  ${rewriteVarName(name, prefix)}: ${raw.trim()};`
     if (info.scope === 'global') {globalDeclarations.push(declaration)}
     else {
@@ -1424,12 +1767,18 @@ function renderThemeCss() {
 }
 
 function renderThemeCounts() {
-  const valid = [...state.overrides.values()].filter(isValidThemeValue).length
+  let modified = 0
+  let total = 0
+  for (const [name, raw] of state.overrides) {
+    if (raw === '') {continue}
+    total += 1
+    if (isTokenActive(state.varIndex.get(name))) {modified += 1}
+  }
   const invalid = invalidOverrides().length
-  elements.themeCount.textContent = String(valid)
+  elements.themeCount.textContent = String(modified)
   elements.themeCount.classList.toggle('is-invalid', invalid > 0)
-  elements.navTheme.textContent = `${valid} 项`
-  elements.themeResetAll.disabled = valid === 0 && invalid === 0
+  elements.navTheme.textContent = `${modified} 项`
+  elements.themeResetAll.disabled = total === 0
 }
 
 function onThemeChanged() {
@@ -1443,11 +1792,8 @@ function onThemeChanged() {
 }
 
 function resetAllOverrides() {
-  for (const name of [...state.themeRows.keys()]) {
-    if (!state.overrides.has(name)) {continue}
-    state.overrides.delete(name)
-    syncVarRow(name)
-  }
+  state.overrides.clear()
+  for (const name of state.themeRows.keys()) {syncVarRow(name)}
   state.presetKeys = new Set()
   onThemeChanged()
   renderPresetStatus(presetById(state.preset))
@@ -2199,7 +2545,9 @@ async function init() {
   state.name = registry.name
   state.version = registry.version
   state.tokens = registry.tokens ?? { global: [], components: {} }
+  indexThemeTokens()
   state.order = registry.components.map(component => createEntry(component))
+  state.tokenPrefixes = state.order.map(entry => entry.id).sort((left, right) => right.length - left.length)
   for (const entry of state.order) {state.components.set(entry.id, entry)}
   state.groups = buildGroups()
   for (const group of state.groups) {

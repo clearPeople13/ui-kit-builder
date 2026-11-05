@@ -20,6 +20,7 @@ import * as CUTE_KIT from '@demo/ui-kit-cute'
 import * as FULL_KIT from '@demo/ui-kit-full'
 import { FORM_CITY_OPTIONS } from './form-data'
 import { SAMPLE_AVATAR_LIST, SAMPLE_PHOTOS } from './sample-image'
+import { TableColumnDemo, TableSceneDemo } from './table-demo'
 
 type SampleSlot = (scope?: Record<string, unknown>) => VNodeChild
 type SampleSlots = Record<string, SampleSlot>
@@ -3169,6 +3170,28 @@ export default defineComponent({
             emit('sync', propName, value)
           }
         }
+      }
+      if (props.exportName === 'Table') {
+        // 列骨架要跟场景走：冻结、排序、树形、合并这些能力只靠 props 拼不出来
+        const tableKit = kitOf(props.packageId)
+        return h(TableSceneDemo, {
+          key: String(attrs.key),
+          table: target,
+          column: module.TableColumn ?? tableKit('TableColumn'),
+          kit: tableKit,
+          values: attrs,
+          sceneId: props.sceneId
+        })
+      }
+      if (props.exportName === 'TableColumn') {
+        // 单列需要前后参照列才有对照，全部塞进一张带真实数据的表里
+        const tableKit = kitOf(props.packageId)
+        return h(TableColumnDemo, {
+          key: String(attrs.key),
+          table: module.Table ?? tableKit('Table'),
+          column: target,
+          values: attrs
+        })
       }
       if (props.exportName === 'Select' && props.sceneId === 'loading') {
         return h(SelectLoadingDemo, { key: String(attrs.key), select: target, values: attrs })

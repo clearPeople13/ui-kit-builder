@@ -10,6 +10,7 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
+import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS } from './table-data'
 
 export interface ScenePreset {
   id: string
@@ -20,12 +21,6 @@ export interface ScenePreset {
 }
 
 const SELECT_CLEAR_OPTIONS = [{ label: '全部', value: 'all' }, ...SELECT_CITY_OPTIONS]
-
-const TABLE_ROWS = [
-  { id: 1, name: 'Button', city: '上海', status: '稳定' },
-  { id: 2, name: 'Input', city: '杭州', status: '内测' },
-  { id: 3, name: 'Table', city: '成都', status: '规划' }
-]
 
 const TREE_DATA = [
   {
@@ -969,9 +964,216 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'circle', label: '环形', values: { type: 'circle', percentage: 72 } }
   ],
   Table: [
-    { id: 'base', label: '基础', values: { data: TABLE_ROWS } },
-    { id: 'stripe', label: '斑马纹 + 边框', values: { data: TABLE_ROWS, stripe: true, border: true } },
-    { id: 'empty', label: '空数据', values: { data: [] } }
+    { id: 'base', label: '基础表格', hint: '十行数据、七列，行高与边框走主题令牌', values: {} },
+    {
+      id: 'fit',
+      label: '自动铺满剩余宽度',
+      hint: '设了 width 的列保持原宽，未设 width 的列从 minWidth 起步均分剩余空间',
+      values: {}
+    },
+    {
+      id: 'stripe',
+      label: '斑马纹 + 边框',
+      hint: 'stripe 隔行底色，border 补齐纵向分隔线',
+      values: { stripe: true, border: true }
+    },
+    { id: 'small', label: '紧凑尺寸', values: { size: 'small', height: 240 } },
+    { id: 'large', label: '宽松尺寸', values: { size: 'large' } },
+    {
+      id: 'highlight',
+      label: '高亮当前行',
+      hint: '点击行切换高亮，current-change 带回整行数据',
+      values: { highlightCurrentRow: true }
+    },
+    { id: 'no-header', label: '隐藏表头', values: { showHeader: false } },
+    {
+      id: 'auto-layout',
+      label: '内容自适应布局',
+      hint: 'tableLayout="auto" 由浏览器按内容分配列宽，适合列少且文案长度不固定的表格',
+      values: { tableLayout: 'auto', fit: false }
+    },
+    {
+      id: 'empty-text',
+      label: '自定义空文案',
+      hint: 'emptyText 替换默认“暂无数据”；需要图文内容时改用 empty 插槽',
+      values: { data: [], emptyText: '没有匹配的组件' }
+    },
+    {
+      id: 'fixed-height',
+      label: '固定高度滚动',
+      hint: 'height 锁住可视区，表头 sticky 不随内容滚走',
+      values: { height: 220 }
+    },
+    {
+      id: 'max-height',
+      label: '最大高度 + 24 行',
+      hint: 'maxHeight 只在内容超高时出现内部滚动条',
+      values: { maxHeight: 220, data: TABLE_LONG_ROWS }
+    },
+    {
+      id: 'overflow',
+      label: '列内容省略',
+      hint: '表格级 showOverflowTooltip 让所有文本列单行省略，悬停看 title',
+      values: { showOverflowTooltip: true }
+    },
+    { id: 'empty', label: '空数据', values: { data: [] } },
+    {
+      id: 'empty-slot',
+      label: '自定义空态',
+      hint: 'empty 插槽整块接管空数据区域，可以放插画与重置按钮',
+      values: { data: [] }
+    },
+    {
+      id: 'fixed-left',
+      label: '左冻结两列',
+      hint: '单表结构：选择列与名称列 sticky 在左侧，横向滚动时其余列从下面穿过',
+      values: { height: 300, border: true }
+    },
+    {
+      id: 'fixed-right',
+      label: '右冻结操作列',
+      hint: '右侧 sticky 只需要量出右边界偏移，不复制第二张表',
+      values: { height: 300, border: true }
+    },
+    {
+      id: 'fixed-both',
+      label: '双向冻结',
+      hint: '左名称 + 右操作同时固定，中间六列滚动，接缝阴影跟随滚动方向出现',
+      values: { height: 300, border: true, stripe: true }
+    },
+    {
+      id: 'sort',
+      label: '单列排序',
+      hint: '默认按预算倒序；点击表头在升序 / 降序 / 取消之间循环',
+      requires: ['table.sort', 'table.column-sort'],
+      values: { defaultSort: { prop: 'amount', order: 'descending' } }
+    },
+    {
+      id: 'multi-sort',
+      label: '多列排序',
+      hint: '先按状态升序，再按预算降序；表头上的序号就是比较优先级',
+      requires: ['table.sort', 'table.column-sort'],
+      values: {
+        multiSort: true,
+        defaultSort: [
+          { prop: 'status', order: 'ascending' },
+          { prop: 'amount', order: 'descending' }
+        ]
+      }
+    },
+    {
+      id: 'selection',
+      label: '多选列',
+      hint: '表头全选与行选择联动，selection-change 带回选中行数组',
+      requires: 'table.selection',
+      values: {}
+    },
+    {
+      id: 'selectable',
+      label: '部分行禁选',
+      hint: 'selectable 返回 false 的行复选框禁用，全选只统计可选行',
+      requires: 'table.selection',
+      values: { highlightCurrentRow: true }
+    },
+    {
+      id: 'methods',
+      label: '实例方法控制选择',
+      hint: '通过 ref 调用 toggleAllSelection / clearSelection，选择结果由 selection-change 实时回传',
+      requires: 'table.methods',
+      values: {}
+    },
+    {
+      id: 'expand',
+      label: '展开行',
+      hint: 'expand 列的默认插槽就是展开区内容，展开行跨满整行',
+      values: {}
+    },
+    {
+      id: 'span',
+      label: '合并单元格',
+      hint: 'spanMethod 把同区域首行合并 3 行，被合并的格子不再渲染',
+      requires: 'table.span',
+      values: { data: TABLE_SPAN_ROWS, border: true, stripe: true }
+    },
+    {
+      id: 'tree',
+      label: '树形数据',
+      hint: 'children 嵌套展开为树形行，首列渲染缩进与折叠箭头',
+      requires: 'table.tree',
+      values: { data: TABLE_TREE_ROWS }
+    },
+    {
+      id: 'tree-expanded',
+      label: '树形默认全展开',
+      hint: 'defaultExpandAll=true，挂载即展开所有父节点；仍可逐级收起',
+      requires: 'table.tree',
+      values: { data: TABLE_TREE_ROWS, defaultExpandAll: true }
+    },
+    {
+      id: 'resize',
+      label: '拖拽列宽',
+      hint: '拖表头右缘改列宽，双击手柄恢复默认；resize-change 输出 key 与宽度',
+      requires: 'table.resize',
+      values: { resizable: true, border: true, height: 240 }
+    },
+    {
+      id: 'summary',
+      label: '合计行',
+      hint: '默认对所有数值列求和，首列显示 sumText，可换 summaryMethod',
+      requires: 'table.summary',
+      values: { showSummary: true, sumText: '合计', height: 240 }
+    },
+    {
+      id: 'loading',
+      label: '加载遮罩',
+      hint: 'loading 覆盖整表并锁住指针，loadingText 可自定义文案',
+      requires: 'table.loading',
+      values: { data: TABLE_LONG_ROWS, loading: true, loadingText: '正在加载组件数据…', height: 260 }
+    },
+    {
+      id: 'custom',
+      label: '自定义单元格与表头',
+      hint: '默认插槽接管单元格（Tag / Progress / 操作按钮），header 插槽在标题后追加标记',
+      values: {}
+    },
+    {
+      id: 'row-style',
+      label: '行类名与行样式',
+      hint: 'rowClassName 给“规划”行加灰底，rowStyle 让需求数 ≥ 100 的行整体加粗',
+      values: {}
+    },
+    {
+      id: 'comprehensive',
+      label: '综合：冻结 + 多选 + 排序 + 拖拽 + 合计',
+      hint: '所有能力同时开：横向滚动、双向冻结、多列排序、列宽拖拽与底部合计',
+      requires: ['table.sort', 'table.column-sort', 'table.selection', 'table.resize', 'table.summary'],
+      values: {
+        height: 320,
+        stripe: true,
+        border: true,
+        highlightCurrentRow: true,
+        resizable: true,
+        showSummary: true,
+        sumText: '合计',
+        multiSort: true,
+        defaultSort: [{ prop: 'amount', order: 'descending' }]
+      }
+    },
+    {
+      id: 'editable',
+      label: '复杂：表内编辑 + 双向冻结',
+      hint: '40 行数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，左右冻结、可拖列宽、底部合计',
+      requires: ['table.selection', 'table.resize', 'table.summary'],
+      values: {
+        height: 440,
+        stripe: true,
+        border: true,
+        resizable: true,
+        showSummary: true,
+        sumText: '合计',
+        rowKey: 'id'
+      }
+    }
   ],
   Tabs: [
     { id: 'base', label: '基础', values: {} },

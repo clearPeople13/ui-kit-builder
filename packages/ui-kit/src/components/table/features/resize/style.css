@@ -1,0 +1,32 @@
+.ui-table__resizer {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  z-index: 6;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.ui-table__resizer.is-left {
+  right: auto;
+  left: -5px;
+}
+
+.ui-table__resizer::after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 50%;
+  width: 2px;
+  border-radius: 1px;
+  background: transparent;
+  transform: translateX(-50%);
+}
+
+.ui-table__resizer:hover::after,
+.ui-table__resizer:active::after {
+  background: var(--ui-color-primary);
+}
