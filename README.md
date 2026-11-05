@@ -61,4 +61,4 @@ npm run verify:consumer  # 消费方校验（类型、负向用例、运行时�
 
 ## License
 
-[MIT](./LICENSE)
+[Apache-2.0](./LICENSE)
