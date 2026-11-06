@@ -53,11 +53,17 @@ npm run demo:consumer
 ## 质量检查
 
 ```bash
+npm test               # 组件单元测试（Vitest + @vue/test-utils，跑前先构建 full 产物）
+npm run test:watch     # 单元测试增量模式
+npm run test:coverage  # 单元测试覆盖率
 npm run typecheck      # TypeScript 类型检查
 npm run lint           # ESLint
 npm run verify         # 库级校验（构建产物、API 一致性等）
 npm run verify:consumer  # 消费方校验（类型、负向用例、运行时渲染）
 ```
+
+组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`；
+`tests/findings.spec.ts` 用 `it.fails` 记录已知缺陷，背景与缺陷清单见 `REQUIREMENTS.md`、`KNOWLEDGE.md`。
 
 ## License
 

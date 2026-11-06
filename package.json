@@ -30,9 +30,13 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\"",
-    "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\"",
+    "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.config.ts\"",
+    "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.config.ts\"",
     "verify": "node scripts/verify.mjs",
+    "pretest": "npm run build:full",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "verify:consumer": "npm --prefix examples/consumer run check:all",
     "demo:consumer": "npm --prefix examples/consumer run dev",
     "guardian": "node scripts/guardian/guardian.mjs",
@@ -46,11 +50,14 @@
   "devDependencies": {
     "@types/chroma-js": "3.1.3",
     "@vue/server-renderer": "3.5.44",
+    "@vue/test-utils": "^2.5.1",
     "eslint": "^9.39.0",
+    "happy-dom": "^21.0.4",
     "playwright": "^1.64.1",
     "prettier": "^3.6.2",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.46.2",
-    "vite": "7.3.7"
+    "vite": "7.3.7",
+    "vitest": "^3.2.7"
   }
 }
