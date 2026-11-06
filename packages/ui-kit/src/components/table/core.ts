@@ -988,8 +988,10 @@ export function createTable(features: UiFeature[] = []) {
         }
         // auto 布局的列宽由浏览器按内容决定，拆表后表头与表体无法保证对齐，仍走单表
         const autoLayout = resolved.tableLayout === 'auto'
+        // 用透明右边框而不是 padding：二者都能把内容区收成 body clientWidth，
+        // 但 overflow 裁剪到 padding box，边框能把滚动内容挡在滚动条槽之外，冻结列右侧不会透出下层列内容
         const gutterStyle: CSSProperties | undefined = scrollbarGutter.value
-          ? { paddingRight: `${scrollbarGutter.value}px` }
+          ? { borderRight: `${scrollbarGutter.value}px solid transparent` }
           : undefined
 
         function renderInner(target: typeof tableRef, children: VNodeChild[]) {
