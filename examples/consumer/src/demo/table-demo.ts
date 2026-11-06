@@ -229,6 +229,7 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   'heavy-data': HEAVY_BLUEPRINT,
   'heavy-data-20k': HEAVY_BLUEPRINT,
   'heavy-variable': HEAVY_VARIABLE_BLUEPRINT,
+  'heavy-tree': [COLUMN.treeName, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.desc],
   sort: SORT_BLUEPRINT,
   'multi-sort': SORT_BLUEPRINT,
   selection: [COLUMN.selection, COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],

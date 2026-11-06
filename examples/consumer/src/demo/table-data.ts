@@ -183,6 +183,46 @@ export function makeHeavyRows(count: number): TableHeavyRow[] {
   })
 }
 
+// 树形虚拟滚动压测数据：三层结构（20 组 × 10 项 × 25 叶子）全展开 5220 行，
+// desc 行数 5~50 行不等（行高约 100~1000px），全部由行号推导的确定性生成
+export function makeHeavyTreeRows(): TableTreeRow[] {
+  const cities = ['上海', '杭州', '成都', '深圳', '北京', '武汉', '南京', '西安', '苏州', '广州']
+  const owners = ['黄博', '李雯', '周子墨', '陈可', '孙悦', '吴桐', '林静', '赵一鸣', '何嘉', '郑凯', '冯远', '许晴']
+  const modules = ['按钮', '输入框', '选择器', '表格', '表单', '日期', '弹窗', '导航', '树形', '上传', '图表', '布局']
+  const statuses = ['稳定', '内测', '规划']
+  let serial = 0
+  function makeRow(depth: number, label: string): TableTreeRow {
+    serial += 1
+    const pseudo = (serial * 2654435761) % 100000
+    const lineCount = 4 + (pseudo % 45)
+    const desc = Array.from(
+      { length: lineCount },
+      (_value, line) =>
+        line === 0 ? `第 1 行：深度 ${depth} 的压测数据。` : `第 ${line + 1} 行：确定性树形压测数据。`
+    ).join('\n')
+    return {
+      id: `heavy-tree-${serial}`,
+      name: label,
+      city: cities[serial % cities.length],
+      owner: owners[serial % owners.length],
+      status: statuses[serial % statuses.length],
+      progress: pseudo % 101,
+      amount: ((pseudo % 420) + 40) * 900,
+      date: `2026-${String((serial % 4) + 9).padStart(2, '0')}-${String((serial % 27) + 1).padStart(2, '0')}`,
+      desc
+    }
+  }
+  return Array.from({ length: 20 }, (_root, rootIndex) => ({
+    ...makeRow(0, `${modules[rootIndex % modules.length]}组-${String(rootIndex + 1).padStart(2, '0')}`),
+    children: Array.from({ length: 10 }, (_child, childIndex) => ({
+      ...makeRow(1, `子项-${rootIndex + 1}-${childIndex + 1}`),
+      children: Array.from({ length: 25 }, (_leaf, leafIndex) =>
+        makeRow(2, `叶子-${rootIndex + 1}-${childIndex + 1}-${leafIndex + 1}`)
+      )
+    }))
+  }))
+}
+
 // 复杂大表（编辑 + 冻结 + 合计 + 合并）每个合并块的行数
 export const HEAVY_GROUP_SIZE = 50
 
@@ -195,6 +235,7 @@ export interface TableTreeRow {
   progress: number
   amount: number
   date: string
+  desc?: string
   children?: TableTreeRow[]
 }
 

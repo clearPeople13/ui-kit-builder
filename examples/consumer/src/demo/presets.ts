@@ -10,7 +10,7 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
-import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, makeHeavyRows } from './table-data'
+import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, makeHeavyRows, makeHeavyTreeRows } from './table-data'
 
 export interface ScenePreset {
   id: string
@@ -1239,6 +1239,20 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       hint: '50000 行压测数据，说明列 1-4 行不等导致行高不一致，virtual 按实测行高定位，滚动不跳行',
       requires: 'table.resize',
       values: { data: makeHeavyRows(50000), height: 420, stripe: true, resizable: true, virtual: true }
+    },
+    {
+      id: 'heavy-tree',
+      label: '树形：大数据 · 行高 100~1000 不等',
+      hint: '三层树全展开 5220 行，说明列 4~48 行不等（行高约 100~1000px），virtual 按实测行高定位，展开收起照常工作',
+      requires: 'table.tree',
+      values: {
+        data: makeHeavyTreeRows(),
+        rowKey: 'id',
+        defaultExpandAll: true,
+        height: 420,
+        stripe: true,
+        virtual: true
+      }
     }
   ],
   Tabs: [

@@ -535,19 +535,19 @@ export function createTable(features: UiFeature[] = []) {
       // 行高实测值（按 rowKey），虚拟滚动撑占位高度用；未测到的行用回退行高
       const measuredRowHeights = shallowRef<Map<any, number>>(new Map())
 
-      // 未测行回退高：用已测行的均值。首行只采样一次会远低于变量行高的真实均值，
-      // 总滚动高被严重低估，拖滚动条时每次实测顶高总高、浏览器又按拇指位重算 scrollTop，
-      // 互相喂成无限更新；首窗实测后均值即贴近真实分布，总高一次到位不再持续增长
+      // 未测行回退高：用已测行的中位数。均值会被个别超高行带偏——一行 1600px 在
+      // 几十个样本里就能把全体未测行估算抬高几十 px、总高虚增百万级，拇指和锚点
+      // 跟着大幅漂移；中位数对极端值零影响。首行只采样一次会远低于变量行高的真实
+      // 分布，总滚动高被严重低估，拖滚动条时每次实测顶高总高、浏览器又按拇指位重算
+      // scrollTop，互相喂成无限更新；首窗实测后中位数即贴近真实分布，总高一次到位
       const fallbackRowHeight = computed(() => {
         const heights = measuredRowHeights.value
         if (!heights.size) {
           return measuredRowHeight.value || VIRTUAL_FALLBACK_ROW_HEIGHT
         }
-        let total = 0
-        for (const height of heights.values()) {
-          total += height
-        }
-        return total / heights.size
+        const samples = [...heights.values()].sort((a, b) => a - b)
+        const mid = samples.length >> 1
+        return samples.length % 2 ? samples[mid] : (samples[mid - 1] + samples[mid]) / 2
       })
 
       // 每行顶部偏移前缀和：高度表变化时重算一次 O(N)，滚动帧只读不算
@@ -738,7 +738,7 @@ export function createTable(features: UiFeature[] = []) {
 
       function measureRowHeight() {
         // 首窗实测前的临时回退高只采样一次：变量行高场景下首行高会随窗口变化，
-        // 每次更新都重采样会让总滚动高跟着跳；有实测值后回退高走 fallbackRowHeight 均值
+        // 每次更新都重采样会让总滚动高跟着跳；有实测值后回退高走 fallbackRowHeight 中位数
         if (!resolved.virtual || typeof window === 'undefined' || measuredRowHeight.value) {
           return
         }
