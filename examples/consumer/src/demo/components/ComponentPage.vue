@@ -136,7 +136,7 @@ const activeSceneCode = computed(() => {
   return entry ? sceneSourceCode(entry, activeScene.value) : ''
 })
 
-const highlightedCode = useVueHighlight(activeSceneCode)
+const highlightedCode = useVueHighlight(activeSceneCode, codeOpen)
 
 function formatDefault(value: unknown): string {
   if (value === undefined || value === null || value === '') {
