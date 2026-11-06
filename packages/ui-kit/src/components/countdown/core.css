@@ -31,3 +31,8 @@
 .ui-countdown.is-finished .ui-countdown__value {
   color: var(--ui-color-danger);
 }
+
+/* 时间数字的主题落点：值与 __value 的继承一致，不额外改变渲染 */
+.ui-countdown__time {
+  font-variant-numeric: tabular-nums;
+}

@@ -25,7 +25,7 @@ let fullSweep: MountSweep
  * 属于源码欠账，记在 REQUIREMENTS.md 的 F-35 / F-36；补上样式后把这份清单清空，
  * 别让用例退化成永远为真。
  */
-const DEAD_CLASS_NAMES = ['-countdown__time', '-watermark__layer']
+const DEAD_CLASS_NAMES: string[] = []
 
 const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
 

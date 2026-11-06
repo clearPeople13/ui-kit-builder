@@ -8,3 +8,8 @@
   position: relative;
   z-index: 1;
 }
+
+/* 图层由内联样式定位，这里补上不可选中与主题可覆写的落点 */
+.ui-watermark__layer {
+  user-select: none;
+}

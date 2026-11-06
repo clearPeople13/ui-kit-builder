@@ -129,7 +129,7 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 五批共记录 36 条缺陷：F-1…F-33 已全部修复，F-34（换机器签出即 CRLF、门禁第一段报 144 个文件）以 `.gitattributes` 修掉，F-35 / F-36（`countdown__time`、`watermark__layer` 是发出但无规则的 Dead 类名）待修，修好后必须清空 `tests/profiles/every-profile.spec.ts` 里的 `DEAD_CLASS_NAMES`；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- 五批共记录 36 条缺陷：F-1…F-33 已全部修复，F-34（换机器签出即 CRLF、门禁第一段报 144 个文件）以 `.gitattributes` 修掉，F-35 / F-36（`countdown__time`、`watermark__layer` 曾是发出但无规则的死类名）已补样式并清空 `tests/profiles/every-profile.spec.ts` 的 `DEAD_CLASS_NAMES`——这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
