@@ -3098,7 +3098,6 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
     Drawer: { default: () => '抽屉内容，可通过右侧属性面板调整方向与尺寸。' },
     MessageBox: { default: () => '确认内容' },
     Watermark: { default: () => h('div', { class: 'pg-panel pg-watermark-panel' }, '水印覆盖区域') },
-    AutoResizer: { default: () => h('div', { class: 'pg-panel' }, '自动测量内容') },
     OnlyChild: { default: () => h('div', { class: 'pg-panel' }, '唯一子节点') },
     CollapseTransition: { default: () => h('div', { class: 'pg-panel' }, '过渡内容') },
     Loading: { default: () => h('div', { class: 'pg-panel' }, '加载区域内容') }

@@ -35,7 +35,7 @@ const GROUPED = {
   ],
   数据展示: [
     'table',
-    'table-v2',
+
     'tree',
     'tree-v2',
     'tree-select',

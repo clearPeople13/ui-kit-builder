@@ -69,12 +69,6 @@ function formatFileSize(value: unknown): string {
 
 const VIRTUAL_DATA = Array.from({ length: 60 }, (_value, index) => `列表项 ${index + 1}`)
 
-const TABLE_V2_COLUMNS = [
-  { key: 'name', dataKey: 'name', title: '名称', width: 160 },
-  { key: 'city', dataKey: 'city', title: '城市', width: 110 },
-  { key: 'status', dataKey: 'status', title: '状态' }
-]
-
 const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
   Affix: [
     { id: 'base', label: '基础', values: {} },
@@ -1172,21 +1166,6 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       values: { type: 'selection', width: 48, align: 'center' }
     }
   ],
-  TableV2: [
-    { id: 'base', label: '基础', values: { columns: TABLE_V2_COLUMNS, data: TABLE_ROWS, width: 480, height: 260 } },
-    {
-      id: 'row-height',
-      label: '行高 64',
-      values: { columns: TABLE_V2_COLUMNS, data: TABLE_ROWS, width: 480, height: 260, rowHeight: 64 }
-    },
-    {
-      id: 'header-height',
-      label: '表头高 72',
-      values: { columns: TABLE_V2_COLUMNS, data: TABLE_ROWS, width: 480, height: 260, headerHeight: 72 }
-    },
-    { id: 'tall', label: '更高视口', values: { columns: TABLE_V2_COLUMNS, data: TABLE_ROWS, width: 480, height: 360 } }
-  ],
-  AutoResizer: [{ id: 'base', label: '基础', values: {} }],
   Tabs: [
     { id: 'bottom', label: '底部标签', values: { tabPosition: 'bottom' } },
     { id: 'right', label: '右侧标签', values: { tabPosition: 'right' } },

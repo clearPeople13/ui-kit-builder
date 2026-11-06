@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-05T11:00:02.559Z",
+  "generatedAt": "2026-11-06T01:39:55.391Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -81,7 +81,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -174,7 +173,6 @@
         "steps": [],
         "switch": [],
         "table": [],
-        "table-v2": [],
         "tabs": [],
         "tag": [],
         "text": [],
@@ -195,19 +193,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 547638,
-          "gzipBytes": 130312
+          "bytes": 541986,
+          "gzipBytes": 128880
         },
         {
           "file": "ui-kit.css",
-          "bytes": 233162,
-          "gzipBytes": 32183
+          "bytes": 229995,
+          "gzipBytes": 31715
         }
       ],
-      "jsBytes": 547638,
-      "cssBytes": 233162,
-      "totalBytes": 780800,
-      "gzipBytes": 162236
+      "jsBytes": 541986,
+      "cssBytes": 229995,
+      "totalBytes": 771981,
+      "gzipBytes": 160382
     },
     "full": {
       "name": "full",
@@ -289,7 +287,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -571,9 +568,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -781,7 +775,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -826,19 +819,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 624694,
-          "gzipBytes": 147309
+          "bytes": 618768,
+          "gzipBytes": 145924
         },
         {
           "file": "ui-kit.css",
-          "bytes": 252588,
-          "gzipBytes": 34817
+          "bytes": 249421,
+          "gzipBytes": 34336
         }
       ],
-      "jsBytes": 624694,
-      "cssBytes": 252588,
-      "totalBytes": 877282,
-      "gzipBytes": 182089
+      "jsBytes": 618768,
+      "cssBytes": 249421,
+      "totalBytes": 868189,
+      "gzipBytes": 180245
     },
     "branded": {
       "name": "branded",
@@ -920,7 +913,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -1202,9 +1194,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -1412,7 +1401,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -1457,19 +1445,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147382
+          "bytes": 620598,
+          "gzipBytes": 145993
         },
         {
           "file": "ui-kit.css",
-          "bytes": 264794,
-          "gzipBytes": 35602
+          "bytes": 261553,
+          "gzipBytes": 35110
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 264794,
-      "totalBytes": 891336,
-      "gzipBytes": 182982
+      "jsBytes": 620598,
+      "cssBytes": 261553,
+      "totalBytes": 882151,
+      "gzipBytes": 181137
     },
     "chinese": {
       "name": "chinese",
@@ -1551,7 +1539,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -1833,9 +1820,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -2043,7 +2027,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -2088,19 +2071,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 629314,
-          "gzipBytes": 147524
+          "bytes": 623343,
+          "gzipBytes": 146135
         },
         {
           "file": "ui-kit.css",
-          "bytes": 300999,
-          "gzipBytes": 39197
+          "bytes": 297647,
+          "gzipBytes": 38781
         }
       ],
-      "jsBytes": 629314,
-      "cssBytes": 300999,
-      "totalBytes": 930313,
-      "gzipBytes": 186766
+      "jsBytes": 623343,
+      "cssBytes": 297647,
+      "totalBytes": 920990,
+      "gzipBytes": 184996
     },
     "cute": {
       "name": "cute",
@@ -2182,7 +2165,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -2464,9 +2446,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -2674,7 +2653,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -2719,19 +2697,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147382
+          "bytes": 620598,
+          "gzipBytes": 145996
         },
         {
           "file": "ui-kit.css",
-          "bytes": 280245,
-          "gzipBytes": 38559
+          "bytes": 277004,
+          "gzipBytes": 38065
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 280245,
-      "totalBytes": 906787,
-      "gzipBytes": 185963
+      "jsBytes": 620598,
+      "cssBytes": 277004,
+      "totalBytes": 897602,
+      "gzipBytes": 184121
     },
     "antd": {
       "name": "antd",
@@ -2813,7 +2791,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -3095,9 +3072,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -3305,7 +3279,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -3350,19 +3323,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147382
+          "bytes": 620598,
+          "gzipBytes": 145993
         },
         {
           "file": "ui-kit.css",
-          "bytes": 285042,
-          "gzipBytes": 38718
+          "bytes": 281801,
+          "gzipBytes": 38227
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 285042,
-      "totalBytes": 911584,
-      "gzipBytes": 186117
+      "jsBytes": 620598,
+      "cssBytes": 281801,
+      "totalBytes": 902399,
+      "gzipBytes": 184272
     },
     "arco": {
       "name": "arco",
@@ -3444,7 +3417,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -3726,9 +3698,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -3936,7 +3905,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -3981,19 +3949,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147381
+          "bytes": 620598,
+          "gzipBytes": 145992
         },
         {
           "file": "ui-kit.css",
-          "bytes": 265166,
-          "gzipBytes": 35693
+          "bytes": 261925,
+          "gzipBytes": 35206
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 265166,
-      "totalBytes": 891708,
-      "gzipBytes": 183081
+      "jsBytes": 620598,
+      "cssBytes": 261925,
+      "totalBytes": 882523,
+      "gzipBytes": 181236
     },
     "tdesign": {
       "name": "tdesign",
@@ -4075,7 +4043,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -4357,9 +4324,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -4567,7 +4531,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -4612,19 +4575,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 629314,
-          "gzipBytes": 147519
+          "bytes": 623343,
+          "gzipBytes": 146128
         },
         {
           "file": "ui-kit.css",
-          "bytes": 281705,
-          "gzipBytes": 36039
+          "bytes": 278353,
+          "gzipBytes": 35620
         }
       ],
-      "jsBytes": 629314,
-      "cssBytes": 281705,
-      "totalBytes": 911019,
-      "gzipBytes": 183579
+      "jsBytes": 623343,
+      "cssBytes": 278353,
+      "totalBytes": 901696,
+      "gzipBytes": 181812
     },
     "naive": {
       "name": "naive",
@@ -4706,7 +4669,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -4988,9 +4950,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -5198,7 +5157,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -5243,19 +5201,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 627466,
-          "gzipBytes": 147435
+          "bytes": 621513,
+          "gzipBytes": 146048
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270554,
-          "gzipBytes": 35740
+          "bytes": 267276,
+          "gzipBytes": 35300
         }
       ],
-      "jsBytes": 627466,
-      "cssBytes": 270554,
-      "totalBytes": 898020,
-      "gzipBytes": 183176
+      "jsBytes": 621513,
+      "cssBytes": 267276,
+      "totalBytes": 888789,
+      "gzipBytes": 181389
     },
     "viewui": {
       "name": "viewui",
@@ -5337,7 +5295,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -5619,9 +5576,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -5829,7 +5783,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -5874,19 +5827,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 628390,
-          "gzipBytes": 147467
+          "bytes": 622428,
+          "gzipBytes": 146077
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276128,
-          "gzipBytes": 35859
+          "bytes": 272813,
+          "gzipBytes": 35421
         }
       ],
-      "jsBytes": 628390,
-      "cssBytes": 276128,
-      "totalBytes": 904518,
-      "gzipBytes": 183336
+      "jsBytes": 622428,
+      "cssBytes": 272813,
+      "totalBytes": 895241,
+      "gzipBytes": 181555
     },
     "vant": {
       "name": "vant",
@@ -5968,7 +5921,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -6250,9 +6202,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -6460,7 +6409,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -6505,19 +6453,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147381
+          "bytes": 620598,
+          "gzipBytes": 145993
         },
         {
           "file": "ui-kit.css",
-          "bytes": 265306,
-          "gzipBytes": 35706
+          "bytes": 262065,
+          "gzipBytes": 35213
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 265306,
-      "totalBytes": 891848,
-      "gzipBytes": 183091
+      "jsBytes": 620598,
+      "cssBytes": 262065,
+      "totalBytes": 882663,
+      "gzipBytes": 181247
     },
     "varlet": {
       "name": "varlet",
@@ -6599,7 +6547,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -6881,9 +6828,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -7091,7 +7035,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -7136,19 +7079,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 628390,
-          "gzipBytes": 147474
+          "bytes": 622428,
+          "gzipBytes": 146086
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276168,
-          "gzipBytes": 35874
+          "bytes": 272853,
+          "gzipBytes": 35437
         }
       ],
-      "jsBytes": 628390,
-      "cssBytes": 276168,
-      "totalBytes": 904558,
-      "gzipBytes": 183359
+      "jsBytes": 622428,
+      "cssBytes": 272853,
+      "totalBytes": 895281,
+      "gzipBytes": 181576
     },
     "semi": {
       "name": "semi",
@@ -7230,7 +7173,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -7512,9 +7454,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -7722,7 +7661,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -7767,19 +7705,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 626542,
-          "gzipBytes": 147385
+          "bytes": 620598,
+          "gzipBytes": 145995
         },
         {
           "file": "ui-kit.css",
-          "bytes": 264862,
-          "gzipBytes": 35586
+          "bytes": 261621,
+          "gzipBytes": 35098
         }
       ],
-      "jsBytes": 626542,
-      "cssBytes": 264862,
-      "totalBytes": 891404,
-      "gzipBytes": 182972
+      "jsBytes": 620598,
+      "cssBytes": 261621,
+      "totalBytes": 882219,
+      "gzipBytes": 181126
     },
     "material3": {
       "name": "material3",
@@ -7861,7 +7799,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -8143,9 +8080,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -8353,7 +8287,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -8398,19 +8331,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 631162,
-          "gzipBytes": 147612
+          "bytes": 625173,
+          "gzipBytes": 146222
         },
         {
           "file": "ui-kit.css",
-          "bytes": 293776,
-          "gzipBytes": 36584
+          "bytes": 290350,
+          "gzipBytes": 36191
         }
       ],
-      "jsBytes": 631162,
-      "cssBytes": 293776,
-      "totalBytes": 924938,
-      "gzipBytes": 184235
+      "jsBytes": 625173,
+      "cssBytes": 290350,
+      "totalBytes": 915523,
+      "gzipBytes": 182492
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -8492,7 +8425,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -8774,9 +8706,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -8984,7 +8913,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -9029,19 +8957,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 631162,
-          "gzipBytes": 147612
+          "bytes": 625173,
+          "gzipBytes": 146225
         },
         {
           "file": "ui-kit.css",
-          "bytes": 293116,
-          "gzipBytes": 36310
+          "bytes": 289690,
+          "gzipBytes": 35917
         }
       ],
-      "jsBytes": 631162,
-      "cssBytes": 293116,
-      "totalBytes": 924278,
-      "gzipBytes": 183955
+      "jsBytes": 625173,
+      "cssBytes": 289690,
+      "totalBytes": 914863,
+      "gzipBytes": 182213
     },
     "shadcn": {
       "name": "shadcn",
@@ -9123,7 +9051,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -9405,9 +9332,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -9615,7 +9539,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -9660,19 +9583,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 628390,
-          "gzipBytes": 147475
+          "bytes": 622428,
+          "gzipBytes": 146087
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276533,
-          "gzipBytes": 35960
+          "bytes": 273218,
+          "gzipBytes": 35518
         }
       ],
-      "jsBytes": 628390,
-      "cssBytes": 276533,
-      "totalBytes": 904923,
-      "gzipBytes": 183444
+      "jsBytes": 622428,
+      "cssBytes": 273218,
+      "totalBytes": 895646,
+      "gzipBytes": 181661
     },
     "fluent": {
       "name": "fluent",
@@ -9754,7 +9677,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -10036,9 +9958,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -10246,7 +10165,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -10291,19 +10209,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 628390,
-          "gzipBytes": 147470
+          "bytes": 622428,
+          "gzipBytes": 146081
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276084,
-          "gzipBytes": 35871
+          "bytes": 272769,
+          "gzipBytes": 35433
         }
       ],
-      "jsBytes": 628390,
-      "cssBytes": 276084,
-      "totalBytes": 904474,
-      "gzipBytes": 183356
+      "jsBytes": 622428,
+      "cssBytes": 272769,
+      "totalBytes": 895197,
+      "gzipBytes": 181570
     },
     "carbon": {
       "name": "carbon",
@@ -10385,7 +10303,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -10667,9 +10584,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -10877,7 +10791,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -10922,19 +10835,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 628390,
-          "gzipBytes": 147474
+          "bytes": 622428,
+          "gzipBytes": 146086
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276173,
-          "gzipBytes": 35895
+          "bytes": 272858,
+          "gzipBytes": 35456
         }
       ],
-      "jsBytes": 628390,
-      "cssBytes": 276173,
-      "totalBytes": 904563,
-      "gzipBytes": 183379
+      "jsBytes": 622428,
+      "cssBytes": 272858,
+      "totalBytes": 895286,
+      "gzipBytes": 181596
     },
     "mantine": {
       "name": "mantine",
@@ -11016,7 +10929,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -11298,9 +11210,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -11508,7 +11417,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -11553,19 +11461,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 629314,
-          "gzipBytes": 147525
+          "bytes": 623343,
+          "gzipBytes": 146135
         },
         {
           "file": "ui-kit.css",
-          "bytes": 282144,
-          "gzipBytes": 36171
+          "bytes": 278792,
+          "gzipBytes": 35751
         }
       ],
-      "jsBytes": 629314,
-      "cssBytes": 282144,
-      "totalBytes": 911458,
-      "gzipBytes": 183720
+      "jsBytes": 623343,
+      "cssBytes": 278792,
+      "totalBytes": 902135,
+      "gzipBytes": 181953
     },
     "ios": {
       "name": "ios",
@@ -11647,7 +11555,6 @@
         "steps",
         "switch",
         "table",
-        "table-v2",
         "tabs",
         "tag",
         "text",
@@ -11929,9 +11836,6 @@
           "table.column-sort",
           "table.selection"
         ],
-        "table-v2": [
-          "table-v2.table-v2-sortable"
-        ],
         "tabs": [
           "tabs.closable",
           "tabs.lazy",
@@ -12139,7 +12043,6 @@
         "table.methods",
         "table.column-sort",
         "table.selection",
-        "table-v2.table-v2-sortable",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -12184,19 +12087,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 625618,
-          "gzipBytes": 147343
+          "bytes": 619683,
+          "gzipBytes": 145955
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259323,
-          "gzipBytes": 35446
+          "bytes": 256119,
+          "gzipBytes": 34944
         }
       ],
-      "jsBytes": 625618,
-      "cssBytes": 259323,
-      "totalBytes": 884941,
-      "gzipBytes": 182775
+      "jsBytes": 619683,
+      "cssBytes": 256119,
+      "totalBytes": 875802,
+      "gzipBytes": 180911
     }
   },
   "features": {}

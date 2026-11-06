@@ -151,12 +151,6 @@ const MENTION_OPTIONS = [
   { value: 'carol', label: 'Carol' }
 ]
 
-const TABLE_V2_COLUMNS = [
-  { key: 'name', dataKey: 'name', title: '名称', width: 160, sortable: true },
-  { key: 'city', dataKey: 'city', title: '城市', width: 100 },
-  { key: 'status', dataKey: 'status', title: '状态' }
-]
-
 const VIRTUAL_DATA = Array.from({ length: 40 }, (_value, index) => `列表项 ${index + 1}`)
 
 const SAMPLE_BY_NAME: Record<string, unknown> = {
@@ -168,7 +162,6 @@ const SAMPLE_BY_NAME: Record<string, unknown> = {
   label: '标签名称',
   options: SELECT_CITY_OPTIONS,
   data: TABLE_ROWS,
-  columns: TABLE_V2_COLUMNS,
   total: 120,
   percentage: 62,
   src: SAMPLE_IMAGE_SRC,
@@ -238,10 +231,6 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'Menu.activeTextColor': '',
   'Table.data': TABLE_DEMO_ROWS,
   'Table.rowKey': 'id',
-  'TableV2.columns': TABLE_V2_COLUMNS,
-  'TableV2.data': TABLE_ROWS,
-  'TableV2.width': 620,
-  'TableV2.height': 260,
   'Tree.data': TREE_DATA,
   'TreeSelect.data': TREE_DATA,
   'TreeSelect.modelValue': 'button',
@@ -391,7 +380,6 @@ const INITIAL_ENABLED: Record<string, string[]> = {
   Steps: ['active'],
   Menu: ['defaultActive', 'defaultOpeneds'],
   Table: ['data'],
-  TableV2: ['columns', 'data', 'width', 'height'],
   Tree: ['data'],
   TreeSelect: ['data', 'modelValue'],
   TreeV2: ['data'],
@@ -547,8 +535,7 @@ const PREVIEW_NOTES: Record<string, string> = {
   FocusTrap:
     'FocusTrap 是一个只处理 Tab 焦点的容器：默认 trapped=false 时它什么都不做（连监听器都不挂），必须在场景或调试台里显式打开 trapped 才会接管按键。接管后它在 window 捕获阶段听 keydown/focusout——Tab 落在首/末控件（或焦点已在容器外）时才 preventDefault，loop=true 才把焦点转到另一端，loop=false 只拦住按键、焦点停在原地；焦点越出边界则触发 focusout 并在下一帧用 focusStartEl（first/last/container 或元素）把它拉回。focusTrapEl 会整块替换边界元素，本库暂无组件引用它。预览把真实焦点位置、当前边界和被拉回次数都读出来：先用「焦点送首位/末位」把光标放到边界上再按「模拟 Tab」，因为合成按键只能复现 FocusTrap 自己接管的那几跳，中间位置那一跳是浏览器默认 Tab 顺序的事。',
   Overlay:
-    'Overlay 就是最底下那块遮罩：一个铺满视口、半透明加背景模糊的容器，除了盖住内容和吃掉落在它上面的点击，不干任何业务事。它只有一个 prop：zIndex，直接写成内联 style.z-index（字符串会被转成数字）；CSS 里刻意不配 z-index，这样传与不传的差别才看得见。它没有 visible/modelValue，挂不挂载由上层 v-if 决定，点空白关不关也由上层绑不绑 onClick 决定，内容走默认插槽（容器是 flex 居中）。想只遮局部就用 attrs class 把 position 换成 absolute，配合父级的 position:relative 即可。带滚动锁定、Esc 关闭、teleport 的那套是内部配置 overlayConfig，Dialog/Drawer 等走的是它，与本组件无关；本库暂无组件消费独立导出的 Overlay。预览把遮罩矩形、舞台中心的命中元素、每个按钮实际收到几次点击都读出来，「按坐标点」先走 elementFromPoint 再派发事件，等价于真实鼠标只能点中最靠上的那个元素：层级 1 与层级 3000 两个场景唯一的差别就是那张 z-index=10 的对照卡片能不能被点着。只有工具条被示例抬高在遮罩之上以便随时操作，侧边栏、场景标签这些是真的被盖住。',
-  AutoResizer: 'AutoResizer 需要可测量的父容器。'
+    'Overlay 就是最底下那块遮罩：一个铺满视口、半透明加背景模糊的容器，除了盖住内容和吃掉落在它上面的点击，不干任何业务事。它只有一个 prop：zIndex，直接写成内联 style.z-index（字符串会被转成数字）；CSS 里刻意不配 z-index，这样传与不传的差别才看得见。它没有 visible/modelValue，挂不挂载由上层 v-if 决定，点空白关不关也由上层绑不绑 onClick 决定，内容走默认插槽（容器是 flex 居中）。想只遮局部就用 attrs class 把 position 换成 absolute，配合父级的 position:relative 即可。带滚动锁定、Esc 关闭、teleport 的那套是内部配置 overlayConfig，Dialog/Drawer 等走的是它，与本组件无关；本库暂无组件消费独立导出的 Overlay。预览把遮罩矩形、舞台中心的命中元素、每个按钮实际收到几次点击都读出来，「按坐标点」先走 elementFromPoint 再派发事件，等价于真实鼠标只能点中最靠上的那个元素：层级 1 与层级 3000 两个场景唯一的差别就是那张 z-index=10 的对照卡片能不能被点着。只有工具条被示例抬高在遮罩之上以便随时操作，侧边栏、场景标签这些是真的被盖住。'
 }
 
 const PLAYGROUND_STATS = { components: META.components.length, exports: 0, controls: 0, skipped: 0 }

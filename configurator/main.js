@@ -31,7 +31,7 @@ const CATEGORIES = [
     ids: [
       'avatar', 'calendar', 'card', 'carousel', 'collapse', 'collection', 'descriptions', 'empty',
       'image', 'image-viewer', 'pagination', 'progress', 'result', 'skeleton', 'statistic', 'table',
-      'table-v2', 'timeline', 'tree', 'tree-v2', 'watermark', 'countdown',
+      'timeline', 'tree', 'tree-v2', 'watermark', 'countdown',
     ],
   },
   {

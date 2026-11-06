@@ -286,7 +286,7 @@ const TITLES = {
   steps: 'Steps 步骤条',
   switch: 'Switch 开关',
   table: 'Table 表格',
-  'table-v2': 'TableV2 虚拟化表格',
+
   tabs: 'Tabs 标签页',
   tag: 'Tag 标签',
   text: 'Text 文本',
