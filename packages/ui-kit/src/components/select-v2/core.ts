@@ -14,7 +14,11 @@ import { selectV2PopperFeature } from './features/popper/index'
 import './core.css'
 
 const selectV2BaseProps = {
-  modelValue: { type: [Array, String, Number, Boolean, Object] },
+  // Boolean 出现在联合类型里且没写 default 时，Vue 会把"未传"归一成 false，
+  // 于是未受控的 SelectV2 一上来就带着一个 false 选中值：占位符被吃掉，
+  // value:false 的选项还会自动高亮（同 F-2 / F-4 / F-13 / F-14 / F-37 一类）。
+  // 显式 default: undefined 保住"没传就是没传"，isEmptyValue 的三条判空才成立。
+  modelValue: { type: [Array, String, Number, Boolean, Object], default: undefined },
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: '请选择' },
   disabled: Boolean,
