@@ -378,14 +378,24 @@ function generateEntry(entryFile, registry, selection) {
   const imports = []
   const statements = []
   const activeFeatures = []
+  // 同一个特性可以被同组件的多个导出共享（如 table.selection 同时挂在 Table 与 TableColumn 上），
+  // 这里按"导出名 + 模块"去重，避免生成重复的 import 语句与重复的特性 id；
+  // createXxx 的参数表仍按各导出自己的 featureIds 传，不受影响
+  const importedFeatures = new Set()
 
   for (const item of items) {
     const { export: entry } = item
     imports.push(`import { ${entry.createExport} } from '${toImportPath(entryDir, entry.module)}'`)
     for (const featureId of item.featureIds) {
       const feature = entry.features[featureId]
-      imports.push(`import { ${feature.exportName} } from '${toImportPath(entryDir, feature.module)}'`)
-      activeFeatures.push(featureId)
+      const importKey = `${feature.exportName}@${feature.module}`
+      if (!importedFeatures.has(importKey)) {
+        importedFeatures.add(importKey)
+        imports.push(`import { ${feature.exportName} } from '${toImportPath(entryDir, feature.module)}'`)
+      }
+      if (!activeFeatures.includes(featureId)) {
+        activeFeatures.push(featureId)
+      }
     }
     const args = item.featureIds.map((featureId) => entry.features[featureId].exportName)
     statements.push(`export const ${entry.name} = ${entry.createExport}([${args.join(', ')}])`)
@@ -429,8 +439,18 @@ export function normalizePropType(type) {
   const parts = []
   let current = ''
   let depth = 0
+  let previous = ''
 
   for (const char of String(type)) {
+    // `=>` 里的右尖括号不是闭合括号：把它算进 depth 会让计数穿到负数，
+    // 箭头函数之后的顶层联合就被并进返回类型（见 REQUIREMENTS.md F-28）
+    if (char === '>' && previous === '=') {
+      previous = ''
+      current += char
+      continue
+    }
+    previous = char
+
     if (OPEN_BRACKETS.includes(char)) {
       depth += 1
     } else if (CLOSE_BRACKETS.includes(char)) {
@@ -474,7 +494,8 @@ function generateTypes(registry, selection) {
   ]
   const lines = [`import type { ${vueTypeImports.join(', ')} } from 'vue'`, '']
 
-  const activeFeatures = items.flatMap((item) => item.featureIds)
+  // 与 generateEntry 同步：同组件多导出共享特性时只记一次，避免 d.ts 元组出现重复 id
+  const activeFeatures = [...new Set(items.flatMap((item) => item.featureIds))]
   const activeComponents = Object.keys(selection)
 
   for (const item of items) {

@@ -147,7 +147,7 @@ export default {
             },
             {
               "name": "inputValidator",
-              "type": "(value: string) => boolean | string | undefined",
+              "type": "(value: string) => (boolean | string | undefined)",
               "description": "inputValidator"
             },
             {

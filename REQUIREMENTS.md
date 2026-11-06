@@ -65,8 +65,8 @@
 ## 6. 后续批次建议
 
 - 第二批已交付（分支 `feature/20261106-component-tests-batch2`，内容见 §7），其缺陷也已清除（分支 `fix/20261107-component-defects-batch2`，内容见 §7.1）
-- 第三批：构建器侧（`scripts/build-lib.mjs` 的裁剪结果断言、`meta.json` 体积阈值）与主题令牌快照
-- 第四批（质量门禁）：真实浏览器层的布局 / 定位 / 拖拽 / 滚动断言、控制台告警归零、可访问性、产物契约与类型快照，收敛成一条 `npm run quality`
+- 第三批已交付（分支 `feature/20261107-tests-batch3`，内容见 §8）：构建器侧的裁剪契约、产物自证信息、体积阈值与主题令牌快照，附带清掉构建器缺陷 F-26、F-28，并记录 F-27
+- 第四批（质量门禁）：真实浏览器层的布局 / 定位 / 拖拽 / 滚动断言、控制台告警归零、可访问性，收敛成一条 `npm run quality`
 - 缺陷修复已按"单独分支 + 单独 PR"完成（`fix/20261106-component-defects`），每条 `it.fails` 守卫都降级为组件文件里的常规用例；后续批次沿用同一约定
 - §5 的 F-1~F-10、§7.1 的 F-11~F-25 均已修复，守卫文件 `tests/findings.spec.ts` 按约定删除
 
@@ -110,3 +110,26 @@
 回归覆盖：15 条守卫全部降级为组件文件里的常规用例，`tests/findings.spec.ts` 删除；新增 [tests/components/feature-class-switch.spec.ts](tests/components/feature-class-switch.spec.ts)（18 条）专测特性开关类名跟随 props。全量 28 个测试文件、612 条用例通过。
 
 F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成常量求值的特性才是缺陷，已改 17 个；`--popper`、`--validate`、`--format`、`autocomplete--filterable` 一类结构性类名没有对应开关，其特性 CSS 为空或仅由 core 选择器引用，保留常量形式并在源码注释里说明。
+
+## 8. 第三批交付（6 个构建器侧测试文件、68 条用例，分支 `feature/20261107-tests-batch3`）
+
+组件用例只跑 `dist/full` 这一份产物，管的是"组件行为对不对"；构建器管的是"装进包里的是不是选中的那一份"，这两件事互看不到。第三批把后者单独建成一套用例：`vitest.build.config.ts`（`environment: 'node'`，只读文本、起 happy-dom 反而拖慢）跑 `tests/build/**`，先 `npm run build:all` 产出 20 份 profile 再断言，命令是 `npm run test:build`，`npm run test:all` 一次跑完两侧。
+
+| 文件                                                                           | 用例 | 盯住的缺口                                                                                                                                                     |
+| ------------------------------------------------------------------------------ | ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [tests/build/profile-contract.spec.ts](tests/build/profile-contract.spec.ts)   | 10   | `meta.json` 是否自证：四个产物文件齐全、`selection` 与当前 `spec.mjs` 同源（防陈旧产物）、字节数与磁盘真实值一致、`package.json` 与 `sizes.json` 是同一份事实  |
+| [tests/build/tree-shaking.spec.ts](tests/build/tree-shaking.spec.ts)           | 9    | 裁剪结果与选择一致：入口 import 表、136 个可标记特性 × 20 份产物的命中矩阵、临时探针只装 button/input/table 时的类名与体积下界                                 |
+| [tests/build/size-budget.spec.ts](tests/build/size-budget.spec.ts)             | 7    | 体积阈值：core 严格最小、特性增量在带内、主题 CSS 增幅 ≤ 1.25×、前缀长度带来的体积差 ≤ 2%                                                                      |
+| [tests/build/theme-tokens.spec.ts](tests/build/theme-tokens.spec.ts)           | 10   | 令牌落盘：profile 声明的 1664 个令牌逐个在产物 CSS 里出现且不被静默丢弃、皮肤不发明新令牌、组件级皮肤块与未选中组件令牌的裁剪、20 份生效令牌表指纹快照         |
+| [tests/build/builder-functions.spec.ts](tests/build/builder-functions.spec.ts) | 17   | 构建器纯函数：`sanitizeName` / `sanitizePrefix`（空前缀必须 400 而不是静默退回 `ui`）/ `rewritePrefix` 的边界 / `normalizePropType` / 图标名单三方对齐         |
+| [tests/build/types-contract.spec.ts](tests/build/types-contract.spec.ts)       | 15   | `index.d.ts` 与 `spec.mjs` 同源：导出面、属性表、方法表、特性接口注释、图标网关开关、`activeComponents`/`activeFeatures` 三方（d.ts / meta.json / 运行时）一致 |
+
+本批顺带清掉与记录三条构建器侧缺陷，见 §8.1。全量：`npm test` 28 文件 612 条 + `npm run test:build` 6 文件 68 条，共 680 条通过；消费方 `npm run verify:consumer` 的正向类型、8 条反向报错与运行时渲染全部保持通过。
+
+### 8.1 第三批构建器侧缺陷清单（分支 `feature/20261107-tests-batch3`）
+
+| 编号 | 位置                    | 原现象                                                                           | 根因                                                                                                                                       | 修复                                                                                                                                                                                               | 回归用例                                                                                                                                                                      |
+| ---- | ----------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-26 | `scripts/build-lib.mjs` | `meta.features` 报 179 条，入口 `entry.ts` 出现重复 import 语句                  | 同一个特性可以挂在同组件的多个导出上（`table.selection` 同时在 `Table` 与 `TableColumn`），`generateEntry` 按"导出 × 特性"逐条推送，没去重 | 入口生成按 `导出名 + 模块` 去重 import、按特性 id 去重 `activeFeatures`；类型生成侧同样按 id 去重                                                                                                  | `profile-contract.spec.ts`「features 是 registry 声明顺序下的特性 id，且不含重复项」+ `tree-shaking.spec.ts`「entry.ts 的特性 import 恰好等于被选中的特性模块，且没有重复行」 |
+| F-27 | `scripts/build-all.mjs` | `sizes.json.features` 恒为空对象，构建器界面拿不到"单个特性的体积成本"           | 增量靠"恰好等于 `requires` 与 `requires + [id]` 的两份 profile"配对求得；仓库里除 core（0 特性）外 19 份都是全特性集，任何配对都不成立     | 本批不改口径，先把事实钉住：`size-budget.spec.ts` 重算出"能被现有 profile 对测出增量"的集合恰好是空集，用例注释写明后果                                                                            | `size-budget.spec.ts`「features 段恰好等于"能用现有 profile 对测出增量"的特性集合」                                                                                           |
+| F-28 | `normalizePropType`     | `index.d.ts` 里出现 `((...args: any[]) => any \| any[])`，数组分支被吞进返回类型 | 括号深度表把 `=>` 的 `>` 当右括号，深度穿到负数，箭头函数之后的顶层 `\|` 不再拆分                                                          | 深度计算跳过 `=` 之后的 `>`；两份 `spec.mjs` 把有歧义的类型写成显式括号（`((...args: any[]) => any) \| any[]`、`(value: string) => (boolean \| string \| undefined)`），生成器 `tsType` 同步补括号 | `builder-functions.spec.ts`「F-28：=> 的右尖括号不计入括号深度」「d.ts 里每一行属性类型都已规范化且幂等」                                                                     |

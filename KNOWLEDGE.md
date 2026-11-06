@@ -14,14 +14,18 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 
 1. 改完源码必须先 `npm run build:full`（`npm test` 的 `pretest` 已自动做这件事），否则跑的是旧产物
 2. 组件在源码里是 `createXxx(features)` 工厂，产物里导出的是"工厂 + 默认导出实例"；用例统一用导出的实例组件（`Button`、`Table`），不直接测工厂
-3. 特性裁剪是否生效属于构建层校验（`scripts/verify.mjs`），不在单测职责内
+3. 特性裁剪是否生效不看组件行为，走构建器侧用例（`tests/build/**`，见 §8），与组件用例是两套环境、两条命令
 
 ## 2. 目录与命名
 
 ```
-vitest.config.ts              environment: happy-dom，include: tests/**/*.spec.ts，alias @ui-kit-full
+vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
+vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
 tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件；首批 12 个 + 第二批 15 个 + 特性开关专项 1 个，共 28 个文件 612 条）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
+tests/build/_helpers.ts       构建器侧用例的公共读盘工具：profile 清单、产物文本缓存、特性标记求解、令牌表解析
+tests/build/*.spec.ts         构建器侧契约用例（6 个文件 68 条），断言对象是 dist/ 下的 20 份产物与 scripts/ 的纯函数
+tests/build/__snapshots__/    两份快照：tree-shaking 的"无可标记字面量特性"清单、theme-tokens 的 20 份令牌指纹
 ```
 
 缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：两批共 25 条缺陷全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
@@ -98,14 +102,30 @@ tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的
 npm test              # 先 build:full 再 vitest run（约 3s + 1.5s）
 npm run test:watch    # 增量
 npm run test:coverage # 覆盖率报告（未设阈值门禁）
+npm run test:build    # 先 build:all（20 份 profile）再跑 tests/build/**，约 15s + 5s
+npm run test:all      # 组件侧 + 构建器侧一次跑完
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 两批组件用例（首批 12 个 + 第二批 15 个组件，外加 `feature-class-switch.spec.ts` 专项）共 28 个文件、612 条，全绿；剩余未接入的是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件
-- 第三批（构建裁剪契约：`scripts/build-lib.mjs` 结果、`meta.json` 体积阈值、`index.d.ts` 与主题令牌快照）与第四批（真实浏览器层 + 统一质量门禁）是接下来的缺口，见 `REQUIREMENTS.md` §6
+- 两批组件用例（首批 12 个 + 第二批 15 个组件，外加 `feature-class-switch.spec.ts` 专项）共 28 个文件、612 条，全绿；第三批构建器侧用例 6 个文件、68 条（见 §8）同样全绿，合计 680 条；剩余未接入的组件是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件
+- 第四批（真实浏览器层 + 统一质量门禁）是接下来的缺口：布局 / 定位 / 拖拽 / 虚拟滚动的真实尺寸断言、控制台与 Vue 告警归零、可访问性、`npm run quality` 一条命令收敛，见 `REQUIREMENTS.md` §6
 - 已知不可测维度：ColorPicker 的 SV 板 / 色相拖拽、Table 的 `resize` 拖拽列宽、各浮层的真实定位坐标，都依赖 `getBoundingClientRect()` 的实际尺寸，happy-dom 下只能断言静态结构——这三类要靠浏览器层补，不是单测的锅
 - 两批共 25 条缺陷（F-1…F-10、F-11…F-25）已全部修复，`tests/findings.spec.ts` 退役；再发现缺陷时重建该文件，并按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
 - `tsconfig.json` 的 `include` 只有 `packages/**/*.ts`，测试文件不参与 `npm run typecheck`；若要让用例也受类型约束，需要单独加 `tests` 目录配置
-- 修复只在 `dist/full` 上验证过，`core` 等裁剪 profile 里不存在的特性（如 `table.methods`）没有额外用例，改动这类特性时记得补对应 profile 的断言
+- 组件的运行时行为只在 `dist/full` 上验证过；第三批补的是"产物存在性与结构"（20 份 profile 的裁剪、令牌、类型），不是"裁剪后组件还照常工作"。要补这一层，得按 profile 起 alias 再跑一遍关键用例，属于第四批质量门禁的范围
 - `npm run verify` 有 17 项预存在失败（在未改动的 `main` 工作树上也同样失败，与本次改动无关）：15 项是 `scripts/verify.mjs:408` 把 Scrollbar 特性数按 profile 名单写死成 0/1，与实际 20 个 profile 全部含 1 个特性不符；外加"组件数量应为 91，实际 90"和 cute / chinese 两个主题的 `--<x>-button-radius` 令牌断言过期。需要在质量门禁批次里一并修正
+
+## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
+
+- **两份 vitest 配置不能合**：`tests/build/**` 只读文本、起 happy-dom 会让 68 条慢到分钟级；组件用例依赖 `dist/full`，构建器侧依赖全部 20 份产物，所以 `pretest` 走 `build:full`、`pretest:build` 走 `build:all`。改源码后只跑 `npm test` 不会刷新主题产物，`npm run test:build` 前的 `build:all` 才是唯一可靠前提
+- **`meta.json` 是"上次构建"的事实，不是"当前源码"的事实**：`profile-contract.spec.ts` 里 `selection` 用例专门用当前 `registry.mjs` 重算一遍再比对，产物过期会直接红；同理 `sizes.json` 与 `dist/<profile>/meta.json` 逐字段对齐，只改一边会挂
+- **体积阈值按"带"不按"点"**：gzip 对拼接串不满足可加性（core 的 `js+css` 合并 gzip 反而比两文件 gzip 之和大 108 字节），所以自洽用例只能重算 `zlib.gzipSync(js+css, {level:9})` 再逐字节比，不能写成"合并值 ≤ 分量之和"
+- **前缀长度本身就是体积变量**：`rewritePrefix` 会把 `ui-` 换成 profile 前缀，`chinese`（7 字符）比 `antd`（4 字符）CSS 大近 4 kB，主题之间的差异只能按"前缀 + 皮肤"两个来源解释，不能假设同尺寸
+- **裁剪判定不能只看类名是否存在**：`shared/floating.css` 会给全部 90 个组件枚举 `.ui-*-panel__dropdown`，未选中组件的类名照样在包里。判"这个组件没进包"要用它的私有 BEM 选择器（`_helpers.ts` 的 `ownElementSelector`，取该组件 CSS 里没出现在共享 CSS 的那个 `__element`）加 `create<Id>` 在 JS 里缺席，两条一起才算证据
+- **令牌裁剪判"没有 var() 消费者"**：`pruneUnusedThemeVars` 只裁 `:root` 里"包内无 `var()` 引用、且被未选中组件引用"的声明。取证据要用未选中组件 CSS 里的 `var(--ui-x-…)` 名单，再排除选中组件与 `shared/*.css` 仍在引用的项——直接拿 `--ui-dialog-*` 的全部出现位置去断言会误伤（`shared/theme.css` 里是声明不是消费）
+- **压缩器会吃掉注释标记**：`buildThemeCss` 留下的 `/* ui-kit theme raw css */` 在产物里被 minify 删掉，任何按这条注释找 rawCss 的断言都必红；要验证 rawCss 就断言它的内容（`@keyframes`）以及它同样过了前缀改写
+- **值也要过前缀改写**：`rewritePrefix` 作用于整段 CSS 文本，profile 里写 `"wave-animation": "ui-button-wave-spread 0.4s …"`，产物里是 `antd-button-wave-spread`。比对令牌值必须先 `localize(value, prefix)`，否则只能命中 `prefix === 'ui'` 的两份产物
+- **`spec.mjs` 是当前事实，不是生成物**：`scripts/generate-suite.mjs` 只在最初搭骨架时跑过一次，之后各组件的 `spec.mjs` 手工维护；改动类型字符串时两边都要改（F-28 就同时动了 `normalizePropType`、两份 `spec.mjs` 与 `generate-suite.mjs` 的 `tsType`），否则重新生成会把修正抹掉
+- **探针构建写 `.tmp/`，退出必须清理**：`tree-shaking`/`theme-tokens`/`types-contract` 各自 `buildProfile({ outDir: '.tmp/…-probe' })`，`afterAll` 里除了删 `.tmp/<probe>` 还要删 `.build/<probe>`（入口 TS 落在那里），漏删会污染 `dist` 目录清单断言
+- **快照只在改设计时期望变更**：`tests/build/__snapshots__/` 两份——"无可标记字面量的特性清单"（42 条，新增纯 hooks 复用型特性时会变长，属于要求当面确认的信号）与"20 份令牌指纹"（改任何皮肤令牌值都会变红，防止误提交主题调整）

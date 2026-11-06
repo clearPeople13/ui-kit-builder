@@ -383,7 +383,7 @@
             },
             {
               "name": "fetchSuggestions",
-              "type": "(...args: any[]) => any | any[]",
+              "type": "((...args: any[]) => any) | any[]",
               "description": "获取输入建议项的方法"
             },
             {
@@ -5614,7 +5614,7 @@
                 },
                 {
                   "name": "inputValidator",
-                  "type": "(value: string) => boolean | string | undefined",
+                  "type": "(value: string) => (boolean | string | undefined)",
                   "description": "输入框校验函数"
                 },
                 {
@@ -10943,7 +10943,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -11747,8 +11746,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 639639,
-          "gzipBytes": 151830
+          "bytes": 639620,
+          "gzipBytes": 151829
         },
         {
           "file": "ui-kit.css",
@@ -11757,9 +11756,9 @@
         }
       ],
       "sizes": {
-        "js": 639639,
+        "js": 639620,
         "css": 250588,
-        "total": 890227,
+        "total": 890208,
         "gzip": 186173
       }
     },
@@ -11906,7 +11905,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -12710,7 +12708,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151942
         },
         {
@@ -12720,9 +12718,9 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 262792,
-        "total": 904273,
+        "total": 904254,
         "gzip": 187119
       }
     },
@@ -12869,7 +12867,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -13673,7 +13670,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151946
         },
         {
@@ -13683,10 +13680,10 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 278243,
-        "total": 919724,
-        "gzip": 190115
+        "total": 919705,
+        "gzip": 190116
       }
     },
     {
@@ -13832,7 +13829,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -14636,7 +14632,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151942
         },
         {
@@ -14646,10 +14642,10 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 283040,
-        "total": 924521,
-        "gzip": 190264
+        "total": 924502,
+        "gzip": 190265
       }
     },
     {
@@ -14795,7 +14791,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -15599,7 +15594,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151941
         },
         {
@@ -15609,9 +15604,9 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 263164,
-        "total": 904645,
+        "total": 904626,
         "gzip": 187216
       }
     },
@@ -15758,7 +15753,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -16562,7 +16556,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 644244,
+          "bytes": 644225,
           "gzipBytes": 152090
         },
         {
@@ -16572,10 +16566,10 @@
         }
       ],
       "sizes": {
-        "js": 644244,
+        "js": 644225,
         "css": 279700,
-        "total": 923944,
-        "gzip": 187765
+        "total": 923925,
+        "gzip": 187766
       }
     },
     {
@@ -16721,7 +16715,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -17525,7 +17518,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 642402,
+          "bytes": 642383,
           "gzipBytes": 151981
         },
         {
@@ -17535,9 +17528,9 @@
         }
       ],
       "sizes": {
-        "js": 642402,
+        "js": 642383,
         "css": 268551,
-        "total": 910953,
+        "total": 910934,
         "gzip": 187311
       }
     },
@@ -17684,7 +17677,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -18488,8 +18480,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643323,
-          "gzipBytes": 152029
+          "bytes": 643304,
+          "gzipBytes": 152033
         },
         {
           "file": "ui-kit.css",
@@ -18498,9 +18490,9 @@
         }
       ],
       "sizes": {
-        "js": 643323,
+        "js": 643304,
         "css": 274124,
-        "total": 917447,
+        "total": 917428,
         "gzip": 187505
       }
     },
@@ -18647,7 +18639,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -19451,7 +19442,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151943
         },
         {
@@ -19461,9 +19452,9 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 263304,
-        "total": 904785,
+        "total": 904766,
         "gzip": 187231
       }
     },
@@ -19610,7 +19601,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -20414,7 +20404,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643323,
+          "bytes": 643304,
           "gzipBytes": 152037
         },
         {
@@ -20424,9 +20414,9 @@
         }
       ],
       "sizes": {
-        "js": 643323,
+        "js": 643304,
         "css": 274164,
-        "total": 917487,
+        "total": 917468,
         "gzip": 187527
       }
     },
@@ -20573,7 +20563,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -21377,7 +21366,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641481,
+          "bytes": 641462,
           "gzipBytes": 151948
         },
         {
@@ -21387,9 +21376,9 @@
         }
       ],
       "sizes": {
-        "js": 641481,
+        "js": 641462,
         "css": 262860,
-        "total": 904341,
+        "total": 904322,
         "gzip": 187111
       }
     },
@@ -21536,7 +21525,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -22340,7 +22328,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 646086,
+          "bytes": 646067,
           "gzipBytes": 152255
         },
         {
@@ -22350,9 +22338,9 @@
         }
       ],
       "sizes": {
-        "js": 646086,
+        "js": 646067,
         "css": 291769,
-        "total": 937855,
+        "total": 937836,
         "gzip": 188501
       }
     },
@@ -22499,7 +22487,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -23303,8 +23290,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 646086,
-          "gzipBytes": 152255
+          "bytes": 646067,
+          "gzipBytes": 152256
         },
         {
           "file": "ui-kit.css",
@@ -23313,10 +23300,10 @@
         }
       ],
       "sizes": {
-        "js": 646086,
+        "js": 646067,
         "css": 291109,
-        "total": 937195,
-        "gzip": 188215
+        "total": 937176,
+        "gzip": 188216
       }
     },
     {
@@ -23462,7 +23449,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -24266,7 +24252,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643323,
+          "bytes": 643304,
           "gzipBytes": 152039
         },
         {
@@ -24276,9 +24262,9 @@
         }
       ],
       "sizes": {
-        "js": 643323,
+        "js": 643304,
         "css": 274529,
-        "total": 917852,
+        "total": 917833,
         "gzip": 187613
       }
     },
@@ -24425,7 +24411,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -25229,7 +25214,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643323,
+          "bytes": 643304,
           "gzipBytes": 152032
         },
         {
@@ -25239,9 +25224,9 @@
         }
       ],
       "sizes": {
-        "js": 643323,
+        "js": 643304,
         "css": 274080,
-        "total": 917403,
+        "total": 917384,
         "gzip": 187522
       }
     },
@@ -25388,7 +25373,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -26192,7 +26176,7 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643323,
+          "bytes": 643304,
           "gzipBytes": 152037
         },
         {
@@ -26202,9 +26186,9 @@
         }
       ],
       "sizes": {
-        "js": 643323,
+        "js": 643304,
         "css": 274169,
-        "total": 917492,
+        "total": 917473,
         "gzip": 187546
       }
     },
@@ -26351,7 +26335,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -27155,8 +27138,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 644244,
-          "gzipBytes": 152094
+          "bytes": 644225,
+          "gzipBytes": 152099
         },
         {
           "file": "ui-kit.css",
@@ -27165,9 +27148,9 @@
         }
       ],
       "sizes": {
-        "js": 644244,
+        "js": 644225,
         "css": 280139,
-        "total": 924383,
+        "total": 924364,
         "gzip": 187908
       }
     },
@@ -27314,7 +27297,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -28118,8 +28100,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640560,
-          "gzipBytes": 151883
+          "bytes": 640541,
+          "gzipBytes": 151889
         },
         {
           "file": "ui-kit.css",
@@ -28128,10 +28110,10 @@
         }
       ],
       "sizes": {
-        "js": 640560,
+        "js": 640541,
         "css": 257322,
-        "total": 897882,
-        "gzip": 186895
+        "total": 897863,
+        "gzip": 186896
       }
     }
   ]

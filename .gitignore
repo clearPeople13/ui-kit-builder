@@ -2,6 +2,7 @@ node_modules/
 dist/
 .build/
 shots/
+.tmp/
 .tmp-snapshot.txt
 configurator-preview.png
 configurator-test.png
