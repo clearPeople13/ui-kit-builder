@@ -20,7 +20,7 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 
 ```
 vitest.config.ts              environment: happy-dom，include: tests/**/*.spec.ts，alias @ui-kit-full
-tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件）
+tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件；首批 12 个 + 第二批 15 个）
 tests/findings.spec.ts        已知缺陷守卫（it.fails）；缺陷清零时该文件不保留，修好后把用例迁回组件文件
 ```
 
@@ -28,8 +28,9 @@ tests/findings.spec.ts        已知缺陷守卫（it.fails）；缺陷清零时
 
 - 用例标题、注释一律中文，描述"可观察到的行为"而不是实现细节
 - 每个文件顶部定义 `mountXxx(props)` 辅助函数，把公共 props（`modelValue`、`data`、`attachTo: document.body`）收敛到一处
-- 需要 teleport / body 查询的组件（Select、Dialog、Tabs、Table、Tree、Pagination）在 `afterEach` 里清 `document.body.innerHTML`
+- 需要 teleport / body 查询的组件（Select、Dialog、Tabs、Table、Tree、Pagination、Dropdown、Popover、Tooltip、DatePicker、TimePicker、ColorPicker、Image）在 `afterEach` 里清 `document.body.innerHTML`
 - 需要重新渲染断言时统一 `await nextTick()`，不要依赖 `flushPromises`
+- 一批用例挂过多个实例时（日期/时间/颜色类），用 `mounted` 数组登记 wrapper，`afterEach` 里统一 `unmount()` 再清 body，避免残留面板互相干扰
 
 ## 3. 踩过的坑（写新用例前先读）
 
@@ -43,6 +44,13 @@ tests/findings.spec.ts        已知缺陷守卫（it.fails）；缺陷清零时
 - **Button 的两字中文自动插空格**：`autoInsertSpace` 默认开启，`确 定` 这类断言容易写错；测试文本统一用四字以上
 - **水波纹、虚拟滚动等依赖计时器/尺寸**：`vi.useFakeTimers()` + `advanceTimersByTime(2200)` 测波波纹清理；happy-dom 无真实布局，虚拟滚动只断言渲染行数而非滚动位置
 - **Pagination 跳页提交时机**：只在 `keydown`（Enter）与 `blur` 提交，`keyup`/`change` 不提交；越界夹到首末页，非法值直接忽略
+- **浮层"收起"有两套口径**：`triggerConfig` 家族（Dropdown、Popover、Tooltip、Avatar 组浮层）面板常驻 DOM，靠 `display: none` + `aria-hidden` 收起，判断"是否展开"要读 `style.display` 或 `aria-expanded`，`querySelector` 命中不代表展开；DatePicker、TimePicker、TimeSelect 则是收起时整块移除 DOM，必须 `await nextTick()`（必要时再补一次宏任务）才能观察到 `null`。用错口径会得出"disabled 仍能展开"这类假缺陷。
+- **依赖系统时钟的断言统一在 `beforeEach` 冻结**：`vi.useFakeTimers({ toFake: ['Date'] })` + `vi.setSystemTime(...)` 只冻日期、保留真实 `setTimeout`，写用例时按需在 `it` 内单独开计时器假实现。凡是"今天/此刻"类按钮，`beforeEach` 里冻结，别只在某一条用例内部调用——跨午夜后未冻结的用例会集体变红（date-picker 就因此踩过一次）。`afterEach` 记得 `vi.useRealTimers()`。
+- **teleport 归属判定用 `wrapper.element.contains(node)`**：面板是否留在组件内看这个，而不是 `findAll('body > *')`；`attachTo: document.body` 时根节点本身也在 body 下，直接比较 `parentElement` 会误判。
+- **`getAttribute('value')` 读到的是初始属性**：受控输入框（TimeSelect 的隐藏 input、DatePicker 的输入框）变更后要用 `element.value`；`attributes()` 系列只在 VTU wrapper 上存在。
+- **TimeSelect 的 `step` 只认 `'HH:mm'`**：写成 `'30 min'`/`'15 min'` 会退化成逐分钟，`format: 'HH:mm:ss'` 又把 `ss` 当字面量拼进文案（F-17）；断言选项数前先确认 step 写法。
+- **纯 CSS/布局驱动的路径在 happy-dom 下测不到**：ColorPicker 的 SV 板与色相拖拽、Table 的 `resize` 拖拽列宽，`getBoundingClientRect()` 恒为 0×0，只能断言静态类名与内联百分比，不要为了凑覆盖去伪造 rect。
+- **特性开关类名恒挂是系统性缺陷**：`createClassFeature({ className: () => 'ui-x--y' })` 这种"无参常量"写法不接 props，组件无论如何都会挂上该类名（`packages/ui-kit/src/features/**` 里 178 个特性目录，59 个常量形式）。第二批用 F-11 一条抽样守卫覆盖，不要给每个组件重复写一条。
 
 ## 4. 断言口径速查
 
@@ -58,12 +66,25 @@ tests/findings.spec.ts        已知缺陷守卫（it.fails）；缺陷清零时
 | Dialog | 全屏时面板内联样式清空交给 CSS；`top` 存在时 `align-self: flex-start`；`modal: false` 时遮罩与 `ui-dialog--modal` 类名一起去掉 | 关闭统一走 `update:modelValue(false)` + `close`；`beforeClose(done)` 接管三种关闭路径；`lockScroll` 改 `documentElement.style.overflow` |
 | Tree | 缩进是 `padding-left: level*indent+4`；叶子用空 span 占位 | `node-click`/`node-expand`/`check-change`/`update:checked-keys`；`filterNodeMethod(value, raw)` 第二参是原始数据 |
 | Pagination | 页码是 `.ui-pagination__pager`（不是 `__pager-item`），省略号 `.ui-pagination__more`；默认 `pagerCount` 为 7 | `update:currentPage`/`current-change`/`prev-click`/`next-click`/`update:pageSize`/`size-change` |
+| Menu | 点击落在 `.ui-menu-item__inner`（外层容器不响应）；`is-horizontal`、SubMenu 的 `is-opened`/`is-disabled`；`backgroundColor`/`textColor`/`activeTextColor` 写根节点内联变量 `--ui-menu-bg`、`--ui-menu-text-color`、`--ui-menu-active-color` | `select`/`open`/`close`；禁用项与缺少 `index` 的项不抛 `select`；子项选中时父标题带激活标识；悬停延迟走 `showTimeout`/`hideTimeout`，SubMenu 可覆盖 Menu 的值 |
+| Dropdown / Popover / Tooltip | 同属 `triggerConfig` 家族：浮层常驻 DOM，收起靠 `display: none` + `aria-hidden`。Dropdown 面板 `maxHeight` 缺省 240px，`trigger` 数组取首项、未知值回退 hover；Popover `width` 缺省 150px、`content` 插槽优先于属性；Tooltip 根节点只有触发区，`effect` 未知值回退 dark，`rawContent` 才按 HTML 渲染 | 三者都是 `show`/`hide`（Tooltip 额外 `update:visible`）；`hideOnClick`（Dropdown）/面板内部点击不收起（Popover、Tooltip）；`persistent: false` 才在收起后移除 DOM；`visible` 受控存在缺陷（F-13/F-14） |
+| Upload | 列表项状态文案（未识别状态原样展示、无状态则不渲染节点）；`picture-card` 用遮罩显示状态并给加号触发区；无地址图片项用扩展名占位、未知扩展名回退 `FILE` | `change` + `update:file-list`（载荷是 File 数组）、`remove` + `onRemove`；`accept` 按扩展名/MIME 前缀/完整类型三种匹配；`beforeUpload`/`beforeRemove` 返回 `false` 丢弃；超 `limit` 走 `onExceed` 且只保留可用名额 |
+| DatePicker | 单元格 `.ui-date-picker__cell`，6 周 42 格，补位带 `is-outside`；`is-today` 与 `is-selected` 共用类名；month/year 粒度换成对应选择表；range 双标题 | `update:modelValue` + `change` + `visible-change`（`[[true],[false]]`）；月表选月只换月份、再选日才提交；`readonly` 写入输入框但拦截提交；清空后需使用方回写 `modelValue` 输入框才变空；`type: 'dates'` 仍是单选（F-15） |
+| TimePicker / TimeSelect | TimePicker 无 `<input>`，触发区是 `div[role=combobox]`（range 模式改为 2 个 `__field` + `__separator`），面板按需挂载 3 列 24/60/60，页脚两个 `__action`（此刻 / 确定）。TimeSelect 用隐藏 `<input type="hidden">` 镜像值，选项 `.ui-time-select__option`，默认 09:00→17:30 步 30 分钟，`minTime`/`maxTime` 是过滤而非禁用 | TimePicker 单项点击即提交，`此刻` 取当前时间（range 且已过点时夹到另一端）；`disabledHours/Minutes/Seconds` 产出 `is-disabled` 且不提交；range 载荷是数组并保留未改动端的原值；`editable`/`readonly`/`id`/`name` 无承载控件（F-16），`type` 声明不生效。TimeSelect 清空抛 `undefined`（`valueOnClear` 生效），`format` 的 `ss` 是字面量（F-17） |
+| ColorPicker / ColorPickerPanel | 触发区 `__swatch` + `__value`，色值统一归一化（`red`→`#ff0000`、`#abc`→`#aabbcc`），有值时挂 `has-value`；面板常驻、靠 `display` 收起，子节点顺序 `__sv`/`__hue`/`__fields`/`__footer`，页脚按钮固定「清空 / 确定」；预置项 `__predefine-item[title=原始文案]`。Panel 是内联形态，类名恒带 `--appearance` | hex 输入只在 `change` 提交（同值也抛），乱码既不提交也不回滚；取预置色不收起；`确定` 抛当前色 + `change` 并收起；清空抛 `clear`/`''`；清空后未回写时显示兜底色 `#409eff`（F-18）、非法值被当成有值（F-19）、Panel 空值回吐 `#40a0ff`（F-20） |
+| Progress | 折线/circle/dashboard 三形态；`color` 支持字符串、阈值数组（乱序也按百分比升序命中最高档，低于全部阈值不着色）与函数；`indeterminate` 隐藏百分比文本；`strokeWidth` 为 0 回落缺省；circle 的半径与 `stroke-dasharray` 由宽度和线宽推导 | 无事件；`percentage` 越界夹到 [0, 100]；`status` 落状态类名、缺省不附加；`id`/`aria-label` 透传根节点 |
+| Badge | 根节点是 `span`，缺省带 `ui-badge--danger`（`type: ''` 时只剩 `--popper`）；内容在 `sup.ui-badge__content`；`isDot` 渲染空文本圆点且不受 `showZero` 影响 | 无事件；超 `max` 折叠为 `max+`、恰等于 `max` 不折叠、字符串值不截断；`hidden` 追加 `is-hidden` 并移除 `sup` |
+| Avatar / AvatarGroup | 数字 `size` 换算成宽高与字号内联样式，字符串原样；`shape` 落 `is-circle`/`is-square`；`icon` 追加 icons 类名。组的 `shape`/`size` 类名落根节点（`size: 'default'` 不产生尺寸类名），折叠项受 `maxCollapseAvatars` 控制并显示剩余数量 | 组内子头像在注册后一次 tick 才齐；折叠项悬停展开 teleport 浮层（`tooltip: false` 时改为点击切换）；组未声明 `gap` 属性，透传后变成 DOM 属性（F-25） |
+| Skeleton | 缺省 1 组 3 行并标记最后一行；`rows`/`count` 为 0 夹到 1；`variant` 落 `is-{variant}`，`image` 变体带内置图标、其余没有；`animated` 追加密铺类名 | 无事件；`loading: false` 且有默认插槽时渲染真实内容、无插槽渲染为空节点；`throttle`（数字或 `{delay, trailing}` 形式）延迟占位渲染 |
+| Carousel | 轨道 + 2 个箭头 + 指示器，条目状态只保留 `is-*` 类；`indicatorPosition`/`arrow`/`type`/`direction` 落状态类名（`arrow: 'never'` 只是类名钩子，箭头仍在 DOM 且可点）；纵向模式给非激活条目 `translateY` 位移；指示器 `aria-label` 优先 `label` 再 `name`，都未传时用自动生成的条目名（F-24） | 不支持 `v-model`，内部切换不抛 `modelValue`/`change`（F-23）；`interval` 低于 500ms 夹到 500ms；`pauseOnHover` 默认开启；`trigger` 默认 hover，`click` 时悬停不切换；实例方法 `next`/`prev`/`setActiveItem` 两端回绕 |
+| Image | 根是 `span` 容器 + 内层 `img`，空属性不输出；`fit` 落 `ui-image--fit-*`；`lazy` 输出 `loading="lazy"` 且优先于 `loading` 属性；预览层默认 teleport 到 body，`previewTeleported: false` 时留在组件内；`zIndex` 作用于预览层而不是根节点 | 有 `src` 即可预览并回退当前 `src`；`initialIndex` 定初始位置、`showProgress` 显示页码；`infinite` 默认首尾循环，关掉后夹住；滚轮按 `zoomRate` 缩放并夹在 `maxScale` 内；`closeOnPressEscape` 默认开、点遮罩默认不关（需 `hideOnClickModal`） |
+| Transfer | 面板标题/计数由 `titles` 与勾选数驱动；`buttonTexts` 有值时按钮变文字态并加 `is-text`；`props` 映射 `key`/`label`/`disabled`，原始值数组以序号为键、元素为标签；`label` 缺失回退 `key`、`key` 缺失回退序号；非数组的 `data`/`modelValue` 按空列表处理 | `update:modelValue` + `change`，其中 `change` 的 direction 恒为 `'right'`（F-21）；移动后清空勾选；`leftDefaultChecked` 会把 `disabled` 项也勾上（F-22）；`filterable` 两侧各自收窄，筛选只隐藏已勾选项、不影响移动载荷 |
 
 ## 5. 新增用例的标准流程
 
-1. 写一个临时探针文件（如 `tests/_probe.spec.ts`）把目标组件的真实 DOM、类名、emit 载荷打印出来
-2. 依据打印结果写正式用例，不要凭直觉猜类名或事件名
-3. `npx vitest run tests/components/xxx.spec.ts` 跑到全绿
+1. 写一个临时探针文件（如 `tests/_probe.spec.ts`，第二批用 `tests/_probe_<组件>.spec.ts` 分组）把目标组件的真实 DOM、类名、内联样式与 emit 载荷打印出来
+2. 依据打印结果写正式用例，不要凭直觉猜类名或事件名；第二批经验：一个探针不够，浮层显隐、range 形态、页脚按钮这类分叉要拆成 2–6 个探针逐个确认
+3. `npx vitest run tests/components/xxx.spec.ts` 跑到全绿（注意它不会重建产物，源码或 `dist` 过期时先 `npm run build:full`）
 4. 删除探针文件（探针不进仓库）
 5. 发现"应该是 A但实际是 B"时：先判断是测试写错还是库缺陷；确认是缺陷就加 `it.fails` 守卫 + 根因注释，并同步 `REQUIREMENTS.md` 缺陷表
 6. `npx prettier --write tests/**/*.ts`、`npx eslint tests`、`npm run test` 全绿后提交
@@ -78,8 +99,9 @@ npm run test:coverage # 覆盖率报告（未设阈值门禁）
 
 ## 7. 未覆盖 / 待办
 
-- 第二批组件（Menu、Dropdown、Popover、Tooltip、Upload、DatePicker、TimePicker、ColorPicker、Carousel、Image、Progress、Badge、Avatar、Skeleton、Transfer）尚未接入
+- 第二批 15 个组件（Menu、Dropdown、Popover、Tooltip、Upload、DatePicker、TimePicker + TimeSelect、ColorPicker + ColorPickerPanel、Progress、Badge、Avatar + AvatarGroup、Skeleton、Carousel、Image、Transfer）已接入，共 319 条组件用例 + 15 条缺陷守卫；剩余未接入的是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件与第三批（构建器侧裁剪结果断言、`meta.json` 体积阈值、主题令牌快照）
+- 已知不可测维度：ColorPicker 的 SV 板 / 色相拖拽、Table 的 `resize` 拖拽列宽、各浮层的真实定位坐标，都依赖 `getBoundingClientRect()` 的实际尺寸，happy-dom 下只能断言静态结构
+- `tests/findings.spec.ts` 现存 F-11…F-25 共 15 条 `it.fails` 守卫，对应 `REQUIREMENTS.md` §7.1 缺陷表；修复时沿用首批约定，把守卫降级为组件文件里的常规回归用例后删除该文件
 - `tsconfig.json` 的 `include` 只有 `packages/**/*.ts`，测试文件不参与 `npm run typecheck`；若要让用例也受类型约束，需要单独加 `tests` 目录配置
-- Table 的 `resize` 特性（拖拽列宽）依赖真实布局，happy-dom 下只验证了 `resize-change` 之外的静态部分
-- 首批记录的 F-1…F-9 已随 `fix/20261106-component-defects` 修完并迁回组件用例，`tests/findings.spec.ts` 暂时删除；后续批次再发现缺陷时重建该文件即可
+- 首批记录的 F-1…F-9 已随 `fix/20261106-component-defects` 修完并迁回组件用例
 - 修复只在 `dist/full` 上验证过，`core` 等裁剪 profile 里不存在的特性（如 `table.methods`）没有额外用例，改动这类特性时记得补对应 profile 的断言
