@@ -34,6 +34,7 @@ tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__p
 tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
 tests/browser/*.spec.ts       浏览器层用例（8 个文件 42 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线
+tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
 tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
 ```
 
@@ -112,21 +113,24 @@ npm test              # 先 build:full 再 vitest run（约 3s + 1.5s）
 npm run test:watch    # 增量
 npm run test:coverage # 覆盖率报告（未设阈值门禁）
 npm run test:build    # 先 build:all（20 份 profile）再跑 tests/build/**，约 15s + 5s
-npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 15s
+npm run test:profiles # 先 build:all 再把 20 份产物逐个 import 挂载，约 20s
+npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 60s
 npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需执行）
-npm run test:all      # 组件侧 + 构建器侧 + 浏览器层一次跑完
-npm run quality       # 唯一门禁：格式 → 类型 → lint → 库级校验 → 三层用例 → 消费方校验
+npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层一次跑完
+npm run quality       # 唯一门禁（九段）：格式 → 类型 → lint → 库级校验 → 四层用例 → 消费方校验
+npm run ci            # 同 quality，但逐段给结论与耗时，并落机读的 ci-report.json
+npm run ci:fast       # 只跑秒级四段（格式 / 类型 / lint / 库级校验）
+npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九段）钩子
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 四层用例合计 739 条全绿：组件侧 30 文件 629 条、构建器侧 6 文件 68 条、浏览器层 8 文件 42 条（其中 6 条是布局基线）；剩余未接入单元用例的组件是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件，它们的默认渲染由 `console-clean.spec.ts` 与 `attributes.spec.ts` 在全家桶层兜住
+- 四层用例合计 840 条全绿：组件侧 30 文件 629 条、构建器侧 6 文件 68 条、profile 运行时 1 文件 101 条（20 份产物 × 5 项 + 总数守卫）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；剩余未接入单元用例的组件由 `console-clean.spec.ts`、`attributes.spec.ts` 在全家桶层兜底，并正在按第六批逐个补齐
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
-- 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、以及"裁剪后产物是否照常工作"（`dist/full` 之外的 19 份 profile 只验结构与体积，没验运行时）
-- 四批共 33 条缺陷（F-1…F-33）已全部修复，`tests/findings.spec.ts` 退役；再发现缺陷时重建该文件，并按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
-- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与三份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
-- 组件的运行时行为只在 `dist/full` 上验证过；第三批补的是"产物存在性与结构"（20 份 profile 的裁剪、令牌、类型），不是"裁剪后组件还照常工作"。要补这一层，得按 profile 起 alias 再跑一遍关键用例，属于第四批质量门禁的范围
-- `npm run verify` 有 17 项预存在失败（在未改动的 `main` 工作树上也同样失败，与本次改动无关）：15 项是 `scripts/verify.mjs:408` 把 Scrollbar 特性数按 profile 名单写死成 0/1，与实际 20 个 profile 全部含 1 个特性不符；外加"组件数量应为 91，实际 90"和 cute / chinese 两个主题的 `--<x>-button-radius` 令牌断言过期。需要在质量门禁批次里一并修正
+- 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
+- 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
+- 五批共记录 36 条缺陷：F-1…F-33 已全部修复，F-34（换机器签出即 CRLF、门禁第一段报 144 个文件）以 `.gitattributes` 修掉，F-35 / F-36（`countdown__time`、`watermark__layer` 是发出但无规则的 Dead 类名）待修，修好后必须清空 `tests/profiles/every-profile.spec.ts` 里的 `DEAD_CLASS_NAMES`；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
 
@@ -161,3 +165,13 @@ npm run quality       # 唯一门禁：格式 → 类型 → lint → 库级校�
 - 改样式或布局导致基线变红时，先读差异（谁从哪儿挪到哪儿），确认是预期变化再 `npm run snap:layout` 重录；把重录当成默认动作等于关掉这道门
 - 基线在别的机器上缺失时该用例自动跳过（`it.skipIf`），不会凭空报错；但录入模式下锚点找不到元素会当场失败，这是防"锚点写错却全绿"的保险
 - `_scratch/`、`.tmp/`、`.trae-html-share-packages/` 是本地草稿目录，已同时进 `.gitignore` 与 `eslint.config.mjs` 的 ignores——临时探针脚本写完就扔，别让它混进 lint 与提交
+
+## 11. profile 运行时层的坑（写 tests/profiles/\*\* 前先读）
+
+- **动态 import 要用 `pathToFileURL(...).href`**：happy-dom 环境下 `import.meta.url` 不是 file 协议，`fileURLToPath` 会直接抛 "The URL must be of scheme file"；仓库根路径取 `resolve(process.cwd(), 'dist')` 最稳
+- **先换前缀再排序**：跨 profile 比结构骨架时，若先按原类名排序再归一前缀，`antd-switch` 会排在 `is-checked` 前、`ui-switch` 排在后，比出来的"漂移"只是字母顺序
+- **类名 token 不要在取 token 时就归一**：前缀隔离这条断言要的就是"品牌产物里不该出现 `ui-`"，归一后它永远查不出问题
+- **特性集不同就不该要求同构**：关掉 `badge.popper` 的产物少一个 `--popper` 类名是正确结果，比对前提是 `package.json` 的 `uiKit.components[id]` 特性清单与 `full` 完全相同
+- **空属性挂载必然带来一批 Vue 抱怨**（Missing required prop / Invalid prop），与裁剪无关，单独归桶；剩下的告警才是"这份产物装不上"的证据
+- **状态修饰类允许没有独立规则**：`前缀-组件--修饰`（Alert 的 `--light`、Rate 的 `--void`）可以由基础规则兜底，样式覆盖断言只查 `前缀-组件` 与 `前缀-组件__元素` 两类结构性类名，否则会把设计选择报成缺陷
+- **`ci.mjs` 经钩子直接起时 Windows 需要 shell**：`spawnSync('npm.cmd', ...)` 在 `shell: false` 下会 ENOENT 且毫无输出，表现为"0.0s 秒失败"

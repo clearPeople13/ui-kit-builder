@@ -186,3 +186,46 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；`sweep-shots.mjs` 顺带过了一遍 `eslint --fix`。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
 
 仍存在的缺口，按重要性排列：没有 CI 与提交钩子，`npm run quality` 目前靠本地自觉执行；布局基线只比几何矩形不比像素，且非本机平台自动跳过；浏览器层 8 个文件串行执行约 15 s，profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据；覆盖率未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入。
+
+## 10. 第五批交付（全 profile 运行时校验 + 门禁阶段化与提交钩子，分支 `feature/20261107-every-profile-runtime`）
+
+§9.4 里排在第三位的缺口——"profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据"——本批补齐；同时把"靠本地自觉执行 `npm run quality`"换成机制。
+
+### 10.1 门禁清单（更新后共九段）
+
+`npm run quality` 与 `npm run ci` 同序：格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → 消费方校验。`node scripts/ci.mjs` 与 `npm run quality` 的区别是它给出逐段结论与耗时，并落一份机读的 `ci-report.json`（已 gitignore），任何 runner 都能只看退出码与 JSON 判定，不必 grep 终端输出。
+
+| 段落     | 命令                                   | 说明                                                                     |
+| -------- | -------------------------------------- | ------------------------------------------------------------------------ |
+| 秒级四段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验，`.githooks/pre-commit` 就是它             |
+| 全量九段 | `npm run ci`                           | 含三层用例、profile 运行时与消费方校验，`.githooks/pre-push` 就是它      |
+| 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位                                             |
+| 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
+
+### 10.2 profile 运行时用例（`tests/profiles/**`，101 条）
+
+| 断言                                                       | 抓的是什么                                                                             |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| 全部导出挂得起、零异常，且渲染出真实节点的导出数不低于阈值 | 裁剪把组件代码切断了（例如特性依赖没跟着进来）                                         |
+| 挂载过程不产生与裁剪无关的控制台告警                       | 产物内部运行时报错，happy-dom 下静默失败的那类                                         |
+| 类名前缀完全隔离，品牌产物里不残留 `ui-` 默认前缀          | 前缀改写漏点，宿主换主题时样式互相打架                                                 |
+| 组件根类名与元素类名在自家 CSS 里有规则                    | JS 发了类名而 CSS 被裁掉，页面变成裸 HTML                                              |
+| 同特性集组件在每份产物里的标签 + 类名骨架与 `full` 一致    | 裁剪顺带改了 DOM 结构；特性集不同则不比对（关掉 popper 的 Badge 少一个类名是正确结果） |
+
+支撑件 `tests/profiles/_load.ts`：从 `dist/<profile>/package.json` 的 `uiKit.prefix` 与 `uiKit.components` 取前缀与特性清单，动态 import 该产物并逐个 `mount`；`normalizePrefix` 先换前缀再排序，否则 `antd-switch` 与 `ui-switch` 会因首字母不同排到不同位置，比出来的"结构漂移"其实只是类名顺序。
+
+### 10.3 第五批已知缺陷清单
+
+| 编号 | 位置                               | 现象                                                                       | 根因                                                                                                                | 状态                                                                                                                      |
+| ---- | ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| F-34 | 仓库 git 配置 / `.prettierrc.json` | 换一台机器全新 clone 后 `npm run quality` 第一段就红：144 个文件格式不合规 | `core.autocrlf=true` 把签出文本变成 CRLF，而 `endOfLine: "lf"` 不容许；门禁此前只在"本机首次构建出来的工作树"上成立 | 已修：新增 `.gitattributes`（`* text=auto eol=lf` + 二进制标注）并全仓 renormalize，main `539877a`                        |
+| F-35 | `countdown/core.ts:110`            | 发出 `ui-countdown__time` 类名，20 份产物里没有任何一条规则选中它          | 时间文本从未有过专属样式，数字抖动时宽度会跳                                                                        | 待修：补 `font-variant-numeric: tabular-nums` 一档规则后清空 `tests/profiles/every-profile.spec.ts` 的 `DEAD_CLASS_NAMES` |
+| F-36 | `watermark` 核心                   | `ui-watermark__layer` 同样是死类名                                         | 图层靠内联样式定位，类名只是占位                                                                                    | 待修：要么补样式规则，要么删掉这个不发功能的类名                                                                          |
+
+同批还发现 `ui-rate__icon--void` 无独立规则，但状态修饰类允许由基础规则兜底（Alert 的默认 `effect=light` 同理），不计入缺陷，用例也只对 `前缀-组件` 与 `前缀-组件__元素` 两类结构性类名要求样式覆盖。
+
+### 10.4 交付说明与仍存的缺口
+
+新增一层不改变任何产物内容：`sizes.json` 与 20 份 `dist/**` 在本批未动。九段门禁在本机一次跑通的体量约为组件层 30 s + 构建器层 15 s + profile 层 20 s + 浏览器层 60 s。
+
+仍存在的缺口：布局基线仍只比几何矩形不比像素；覆盖率仍未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入；`ci.mjs` 目前只在本机与钩子里生效，仓库还没有服务端 runner——Gitee 上这两个 Issue 的评论功能处于关闭状态，`PATCH /repos/.../issues/{number}` 对这类 Issue 返回 404，结案的评论需要开 Issue 评论权限或改用 Web 界面补。
