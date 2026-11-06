@@ -759,8 +759,10 @@ export function createTable(features: UiFeature[] = []) {
       let scrollActive = false
       // 贴底锁：滚到最底部后锁定尾部窗口。实测提交会让总高收缩，锚定回写把 scrollTop
       // 顶离底部、尾部钳制随之失效（最后几行闪现后消失）；锁定后用户向上滚动超过一个
-      // 视口才解锁，提交引起的微小位移不解锁
-      let stickToBottom = false
+      // 视口才解锁，提交引起的微小位移不解锁。
+      // 必须是响应式：解锁发生在 flushScrollState 里，而此刻 bodyScrollTop 往往已同步
+      // 过同值，普通变量解锁不会触发重渲染，窗口会永远卡在钳制态（一次性跳顶复现）
+      const stickToBottom = shallowRef(false)
       function scheduleRowMeasure() {
         if (!resolved.virtual || typeof window === 'undefined' || rowMeasureFrame) {
           return
@@ -769,6 +771,77 @@ export function createTable(features: UiFeature[] = []) {
           rowMeasureFrame = 0
           flushRowMeasure()
         })
+      }
+
+      // 实测值先攒到 pending 再分批合并进正式高度表：每次停稳都提交会让总高被反复
+      // 修正、拇指跟着微跳；修正幅度不足总高 0.3% 时继续攒，静止 800ms 或攒够幅度才
+      // 一次合并，把一串微小抖动聚成一次稀有修正
+      const PENDING_COMMIT_IDLE_MS = 800
+      const PENDING_COMMIT_MIN_RATIO = 0.003
+      let pendingRowHeights: Map<any, number> | null = null
+      let pendingCommitTimer: ReturnType<typeof setTimeout> | undefined
+
+      function pendingTotalDelta(next: Map<any, number>): number {
+        const list = pipelineRows.value
+        const committed = measuredRowHeights.value
+        const fallback = fallbackRowHeight.value
+        let delta = 0
+        for (let index = 0; index < list.length; index += 1) {
+          const key = rowKeyOf(list[index], index)
+          delta += (next.get(key) ?? committed.get(key) ?? fallback) - (committed.get(key) ?? fallback)
+        }
+        return delta
+      }
+
+      function commitPendingRowHeights() {
+        if (pendingCommitTimer) {
+          clearTimeout(pendingCommitTimer)
+          pendingCommitTimer = undefined
+        }
+        const pending = pendingRowHeights
+        pendingRowHeights = null
+        if (!pending) {
+          return
+        }
+        const list = pipelineRows.value
+        const committed = measuredRowHeights.value
+        // 首个高度有变化的行做锚点：偏移修正量回写 scrollTop，视线内容不跳
+        let firstRow = -1
+        for (let index = 0; index < list.length; index += 1) {
+          const key = rowKeyOf(list[index], index)
+          if ((pending.get(key) ?? 0) !== (committed.get(key) ?? 0)) {
+            firstRow = index
+            break
+          }
+        }
+        const wrapperEl = wrapper.value
+        const viewH = wrapperEl?.clientHeight ?? 0
+        const oldTotal = rowMetrics.value.offsets[list.length] ?? 0
+        // 提交前已贴底：修正总高后把滚动位置钉到新底部并上锁；否则锚点回写
+        // 可能把 scrollTop 顶离底部，尾部钳制随之失效（最后几行闪现后消失）；
+        // 在提交点判定，两个总高和滚动位置都是现值，不依赖 rAF 时序
+        const wasAtBottom = wrapperEl ? wrapperEl.scrollTop >= oldTotal - viewH - 1 : false
+        const before = firstRow >= 0 ? (rowMetrics.value.offsets[firstRow] ?? 0) : 0
+        measuredRowHeights.value = pending
+        if (wasAtBottom) {
+          const newTotal = rowMetrics.value.offsets[list.length] ?? 0
+          stickToBottom.value = true
+          if (wrapperEl) {
+            wrapperEl.scrollTop = Math.max(0, newTotal - viewH)
+          }
+          return
+        }
+        if (firstRow < 0 || stickToBottom.value) {
+          return
+        }
+        if (!wrapperEl) {
+          return
+        }
+        const after = rowMetrics.value.offsets[firstRow] ?? 0
+        const delta = after - before
+        if (Math.abs(delta) > 0.5) {
+          wrapperEl.scrollTop += delta
+        }
       }
 
       function flushRowMeasure() {
@@ -780,16 +853,14 @@ export function createTable(features: UiFeature[] = []) {
         if (!bodyEl) {
           return
         }
-        const next = new Map(measuredRowHeights.value)
+        const next = new Map(pendingRowHeights ?? measuredRowHeights.value)
         const trs = bodyEl.querySelectorAll(':scope > tr[data-row-index]')
-        const measured: number[] = []
         let changed = false
         for (const tr of Array.from(trs)) {
           const index = Number(tr.getAttribute('data-row-index'))
           if (!Number.isInteger(index) || index < 0 || index >= list.length) {
             continue
           }
-          measured.push(index)
           const key = rowKeyOf(list[index], index)
           const height = (tr as HTMLElement).getBoundingClientRect().height
           if (Math.abs((next.get(key) ?? 0) - height) > 0.5) {
@@ -797,21 +868,25 @@ export function createTable(features: UiFeature[] = []) {
             changed = true
           }
         }
-        if (!changed || !measured.length) {
+        if (!changed) {
           return
         }
-        const firstRow = Math.min(...measured)
-        const before = rowMetrics.value.offsets[firstRow] ?? 0
-        measuredRowHeights.value = next
-        const wrapperEl = wrapper.value
-        if (!wrapperEl) {
+        pendingRowHeights = next
+        const total = rowMetrics.value.offsets[list.length] || 1
+        if (Math.abs(pendingTotalDelta(next)) < total * PENDING_COMMIT_MIN_RATIO) {
+          if (!pendingCommitTimer) {
+            pendingCommitTimer = setTimeout(function idleCommit() {
+              pendingCommitTimer = undefined
+              if (scrollActive) {
+                pendingCommitTimer = setTimeout(idleCommit, PENDING_COMMIT_IDLE_MS)
+                return
+              }
+              commitPendingRowHeights()
+            }, PENDING_COMMIT_IDLE_MS)
+          }
           return
         }
-        const after = rowMetrics.value.offsets[firstRow] ?? 0
-        const delta = after - before
-        if (!stickToBottom && Math.abs(delta) > 0.5) {
-          wrapperEl.scrollTop += delta
-        }
+        commitPendingRowHeights()
       }
 
       // 滚动事件在拖动原生滚动条时频率高于屏幕刷新率（实测 >100Hz），
@@ -819,6 +894,7 @@ export function createTable(features: UiFeature[] = []) {
       // 主线程吃紧时浏览器合并丢弃鼠标位移，拇指表现为不跟手；
       // 全部合并进 rAF，每帧最多一轮：状态同步 + 固定区对齐 + 窗口推进一次完成
       let scrollFrame = 0
+      let lastMaxScrollTop = 0
       function flushScrollState() {
         scrollFrame = 0
         updateScrollState()
@@ -830,11 +906,19 @@ export function createTable(features: UiFeature[] = []) {
         if (resolved.virtual) {
           const maxTop = element.scrollHeight - element.clientHeight
           if (element.scrollTop >= maxTop - 1) {
-            stickToBottom = true
+            stickToBottom.value = true
           }
-          else if (stickToBottom && maxTop - element.scrollTop > element.clientHeight) {
-            stickToBottom = false
+          else if (stickToBottom.value) {
+            // 用户上滚：scrollTop 退了一个视口以上且总高没变才解锁；
+            // 总高变高是实测提交扩的，把滚动位置钉回新底部，锁不丢
+            if (maxTop - element.scrollTop > element.clientHeight && maxTop <= lastMaxScrollTop + 0.5) {
+              stickToBottom.value = false
+            }
+            else if (maxTop > lastMaxScrollTop + 0.5 && element.scrollTop < maxTop - 1) {
+              element.scrollTop = maxTop
+            }
           }
+          lastMaxScrollTop = maxTop
           bodyScrollTop.value = element.scrollTop
         }
       }
@@ -849,6 +933,16 @@ export function createTable(features: UiFeature[] = []) {
             scrollActive = false
             scheduleRowMeasure()
           }, SCROLL_SETTLE_MS)
+          // 窗口推进同步做：scroll 事件到 rAF 回调之间内容会滞后拇指约一帧，
+          // 快速拖动时拇指与内容暂时错位；bodyScrollTop 写入交给 Vue 调度器
+          // 去重（同一渲染 effect 一帧只跑一次），不会恢复成每事件一渲染；
+          // 布局读写与贴底判定仍留在 rAF 里每帧一轮
+          if (!scrollFrame) {
+            const element = wrapper.value
+            if (element) {
+              bodyScrollTop.value = element.scrollTop
+            }
+          }
         }
         if (scrollFrame || typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
           if (!scrollFrame) {
@@ -901,6 +995,11 @@ export function createTable(features: UiFeature[] = []) {
           clearTimeout(scrollSettleTimer)
         }
         scrollSettleTimer = undefined
+        if (pendingCommitTimer) {
+          clearTimeout(pendingCommitTimer)
+        }
+        pendingCommitTimer = undefined
+        pendingRowHeights = null
       })
 
       interface CellOptions {
@@ -1293,7 +1392,7 @@ export function createTable(features: UiFeature[] = []) {
           // 贴底钳制：总滚动高是实测+均值估算，直接映射可能到不了最后一行
           // （尾部未测行的估算高度变成永远够不着的空白占位），滚动贴底时
           // 把窗口尾部钳到真实末行、底部占位清零，保证最后几行可见可测
-          if (stickToBottom || top + viewHeight >= rowOffsets[rows.length] - 1) {
+          if (stickToBottom.value || top + viewHeight >= rowOffsets[rows.length] - 1) {
             windowEnd = rows.length
             const tailCount = Math.ceil(viewHeight / fallbackRowHeight.value) + overscan
             windowStart = Math.max(0, rows.length - tailCount)
