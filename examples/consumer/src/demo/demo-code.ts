@@ -1,6 +1,6 @@
 import type { PlaygroundControl, PlaygroundEntry } from './playground'
 import type { SceneView } from './scenes'
-import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS, makeHeavyRows } from './table-data'
+import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS, makeHeavyRows, makeHeavyTreeRows } from './table-data'
 import { tableSceneBlueprint, type TableColumnSpec } from './table-demo'
 
 export function kebabCase(name: string): string {
@@ -337,12 +337,16 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     imports.add('Button')
   }
 
+  // 大数据示例只输出生成器调用，不内联数据本身：树形场景根节点只有 20 个，
+  // 按顶层长度判断兜不住，展开后是 5220 行、序列化近 4MB，代码高亮会同步阻塞数秒
   const heavyRowSource =
-    Array.isArray(rows) && rows.length > 500
-      ? `const rows = ref((${makeHeavyRows.toString()})(${rows.length}))`
-      : sceneId === 'editable-heavy'
-        ? `const rows = ref((${makeHeavyRows.toString()})(${heavyRows}).map((row) => ({ ...row, dirty: false })))`
-        : `const rows = ref(${toJsLiteral(rows)})`
+    sceneId === 'heavy-tree'
+      ? `const rows = ref((${makeHeavyTreeRows.toString()})())`
+      : Array.isArray(rows) && rows.length > 500
+        ? `const rows = ref((${makeHeavyRows.toString()})(${rows.length}))`
+        : sceneId === 'editable-heavy'
+          ? `const rows = ref((${makeHeavyRows.toString()})(${heavyRows}).map((row) => ({ ...row, dirty: false })))`
+          : `const rows = ref(${toJsLiteral(rows)})`
   const hoisted = [heavyRowSource, ...parts.hoisted]
   if (blueprint.some((spec) => spec.cell === 'tag')) {
     hoisted.push("const STATUS_TAG_TYPE = { 稳定: 'success', 内测: 'warning', 规划: 'info' }")
