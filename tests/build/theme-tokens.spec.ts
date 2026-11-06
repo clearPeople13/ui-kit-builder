@@ -59,11 +59,11 @@ function hasDeclaration(css: string, name: string, value: string) {
 
 function themeGroups(config: Record<string, any>) {
   const theme = config.theme ?? {}
-  const groups: Array<{ scope: string; componentId?: string; tokens: Record<string, unknown> }> = [
+  const groups: Array<{ scope: string; componentId?: string; tokens: Record<string, any> }> = [
     { scope: 'global', tokens: theme.global ?? theme.tokens ?? {} }
   ]
   for (const [componentId, tokens] of Object.entries(theme.components ?? {})) {
-    groups.push({ scope: componentId, componentId, tokens: tokens as Record<string, unknown> })
+    groups.push({ scope: componentId, componentId, tokens: tokens as Record<string, any> })
   }
   return groups
 }
@@ -91,7 +91,7 @@ describe('令牌落盘', () => {
 
   it('驼峰令牌键会被转成短横线变量名', () => {
     const antd = bundleOf('antd')
-    const colorPrimary = (antd.config.theme.global as Record<string, unknown>).colorPrimary
+    const colorPrimary = (antd.config.theme.global as Record<string, any>).colorPrimary
     expect(hasDeclaration(antd.css, '--antd-color-primary', String(colorPrimary))).toBe(true)
     expect(antd.css.includes('--antd-colorPrimary')).toBe(false)
   })

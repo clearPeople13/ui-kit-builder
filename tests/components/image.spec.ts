@@ -3,7 +3,7 @@ import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Image, ImageViewer } from '@ui-kit-full'
 
-function mountImage(props: Record<string, unknown> = {}) {
+function mountImage(props: Record<string, any> = {}) {
   return mount(Image, { props, attachTo: document.body })
 }
 

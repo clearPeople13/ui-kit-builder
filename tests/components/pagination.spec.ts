@@ -3,7 +3,7 @@ import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Pagination } from '@ui-kit-full'
 
-async function setup(props: Record<string, unknown> = {}) {
+async function setup(props: Record<string, any> = {}) {
   const wrapper = mount(Pagination, {
     props: { total: 95, currentPage: 1, pageSize: 10, ...props },
     attachTo: document.body

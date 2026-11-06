@@ -5,7 +5,7 @@ export const dialogPopperFeature = createClassFeature({
   id: 'dialog.popper',
   props: {
     appendTo: { type: [String, Object], default: 'body' },
-    appendToBody: { type: Boolean },
+    appendToBody: { type: Boolean }
   },
   className: () => 'ui-dialog--popper'
 })

@@ -19,6 +19,7 @@ scripts/                  构建、元数据生成、校验等脚本
 configurator/ + index.html  可视化构建器
 examples/consumer/        组件调试台（Vite + Vue 3）
 dist/                     构建产物（每个 profile 一个包）
+tests/                    组件 / 构建器 / 真实浏览器三层用例与布局基线
 ```
 
 ## 快速开始
@@ -57,18 +58,23 @@ npm test               # 组件单元测试（Vitest + @vue/test-utils，跑前�
 npm run test:watch     # 单元测试增量模式
 npm run test:coverage  # 单元测试覆盖率
 npm run test:build     # 构建器侧契约测试（跑前先构建全部 20 份 profile）
-npm run test:all       # 组件侧 + 构建器侧一次跑完
-npm run typecheck      # TypeScript 类型检查
+npm run test:browser   # 真实浏览器层（Playwright + Chromium，跑前先构建 full 产物）
+npm run snap:layout    # 重新录入布局基线（改动样式/布局后按需执行）
+npm run test:all       # 组件侧 + 构建器侧 + 浏览器层一次跑完
+npm run typecheck      # TypeScript 类型检查（库 + 用例两份 tsconfig）
 npm run lint           # ESLint
 npm run verify         # 库级校验（构建产物、API 一致性等）
 npm run verify:consumer  # 消费方校验（类型、负向用例、运行时渲染）
+npm run quality        # 唯一门禁：格式 → 类型 → lint → 库级校验 → 三层用例 → 消费方校验
 ```
 
 组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`；
-当前覆盖 27 个组件、612 条用例（28 个文件，含 `feature-class-switch.spec.ts` 的特性开关类名专项）。
+当前覆盖 30 个文件、629 条用例（含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层）。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
 特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约，共 68 条。
-用例暴露的缺陷先以 `tests/findings.spec.ts` 里的 `it.fails` 守卫记录，修复后降级为组件文件里的常规回归用例、守卫文件退役；两批共 25 条缺陷已全部走完这个流程。
+浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
+布局与几何基线（`npm run snap:layout` 录入、漂移即报错）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"，共 42 条。
+用例暴露的缺陷先以 `tests/findings.spec.ts` 里的 `it.fails` 守卫记录，修复后降级为组件文件里的常规回归用例、守卫文件退役；四批共 33 条缺陷（F-1…F-33）已全部走完这个流程。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## License

@@ -9,7 +9,7 @@ const rows = [
   { key: 3, label: '选项三', disabled: true }
 ]
 
-function mountTransfer(props: Record<string, unknown> = {}) {
+function mountTransfer(props: Record<string, any> = {}) {
   return mount(Transfer, { props: { data: rows, modelValue: [], ...props }, attachTo: document.body })
 }
 
@@ -273,7 +273,7 @@ describe('Transfer', () => {
   })
 
   it('data 或 modelValue 非数组时按空列表处理', () => {
-    const wrapper = mountTransfer({ data: null, modelValue: 'x' } as Record<string, unknown>)
+    const wrapper = mountTransfer({ data: null, modelValue: 'x' } as Record<string, any>)
     expect(countOf(wrapper, 'left')).toBe('0/0')
     expect(countOf(wrapper, 'right')).toBe('0/0')
     expect(wrapper.findAll('.ui-transfer__item')).toHaveLength(0)

@@ -3,6 +3,7 @@ import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { wrapperConfig } from '../../shared/behavior'
+import { mergeStyles } from '../../shared/utils'
 import './core.css'
 
 const popperBaseProps = {
@@ -82,15 +83,15 @@ export function createPopperContent(features: UiFeature[] = []) {
         props.virtualTriggering ? 'is-virtual' : ''
       ],
       styles: (props) =>
-        ({
+        mergeStyles(
           // 定位基准由 strategy 决定：absolute 认最近的定位祖先，fixed 认视口。
           // 缺了这一行面板就是 static，宿主写的 left/top 与 zIndex 全都不生效。
-          position: props.strategy === 'fixed' ? 'fixed' : 'absolute',
-          ...(props.style && typeof props.style === 'object' && !Array.isArray(props.style) ? props.style : {}),
-          ...(props.zIndex !== undefined ? { zIndex: Number(props.zIndex) } : {}),
-          ...(props.gpuAcceleration === false ? {} : { willChange: 'transform', transform: 'translateZ(0)' }),
-          '--ui-popper-arrow-offset': `${Number(props.arrowOffset) || 0}px`
-        }) as CSSProperties,
+          { position: props.strategy === 'fixed' ? 'fixed' : 'absolute' },
+          props.style,
+          props.zIndex !== undefined ? { zIndex: Number(props.zIndex) } : {},
+          props.gpuAcceleration === false ? {} : { willChange: 'transform', transform: 'translateZ(0)' },
+          { '--ui-popper-arrow-offset': `${Number(props.arrowOffset) || 0}px` }
+        ) as CSSProperties,
       attrs: (props) => ({
         id: props.id,
         role: 'tooltip',

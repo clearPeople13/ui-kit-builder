@@ -16,7 +16,7 @@ const dialogBaseProps = {
   title: { type: String, default: '' },
   top: { type: String },
   width: { type: [String, Number] },
-  zIndex: { type: Number },
+  zIndex: { type: Number }
 }
 
 export function createDialog(features: UiFeature[] = []) {

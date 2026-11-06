@@ -17,9 +17,9 @@ interface SwitchCase {
     | typeof Slider
     | typeof Drawer
     | typeof DatePicker
-  baseProps: Record<string, unknown>
-  offProps: Record<string, unknown>
-  onProps: Record<string, unknown>
+  baseProps: Record<string, any>
+  offProps: Record<string, any>
+  onProps: Record<string, any>
   className: string
   // teleport 型组件（Drawer 打开时整块传到 body）需要从 document 读根节点类名
   rootSelector?: string
@@ -95,7 +95,7 @@ const cases: SwitchCase[] = [
 
 const mounted: VueWrapper[] = []
 
-function classesOf(item: SwitchCase, extra: Record<string, unknown>) {
+function classesOf(item: SwitchCase, extra: Record<string, any>) {
   const wrapper = mount(item.component, { props: { ...item.baseProps, ...extra }, attachTo: document.body })
   mounted.push(wrapper)
   if (item.rootSelector) {
@@ -105,7 +105,7 @@ function classesOf(item: SwitchCase, extra: Record<string, unknown>) {
   return wrapper.classes()
 }
 
-function mountPicker(component: typeof DatePicker | typeof TimePicker, props: Record<string, unknown>) {
+function mountPicker(component: typeof DatePicker | typeof TimePicker, props: Record<string, any>) {
   const wrapper = mount(component, { props, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper

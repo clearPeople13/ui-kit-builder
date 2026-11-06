@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Button, ButtonGroup } from '@ui-kit-full'
 
 function mountButton(
-  props: Record<string, unknown> = {},
+  props: Record<string, any> = {},
   options: { text?: string; onClick?: (...args: any[]) => void } = {}
 ) {
   return mount(Button, {

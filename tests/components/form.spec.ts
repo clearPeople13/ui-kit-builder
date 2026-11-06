@@ -222,7 +222,7 @@ describe('Form 校验', () => {
   })
 
   it('rules 变化时重新校验', async () => {
-    const rules = reactive<{ name: Record<string, unknown>[] }>({ name: [{ required: false }] })
+    const rules = reactive<{ name: Record<string, any>[] }>({ name: [{ required: false }] })
     const wrapper = mount(
       {
         setup() {
@@ -241,7 +241,7 @@ describe('Form 校验', () => {
   })
 
   it('validateOnRuleChange=false 时规则变化不触发校验', async () => {
-    const rules = reactive<{ name: Record<string, unknown>[] }>({ name: [{ required: false }] })
+    const rules = reactive<{ name: Record<string, any>[] }>({ name: [{ required: false }] })
     const wrapper = mount(
       {
         setup() {
@@ -267,7 +267,7 @@ describe('Form 组合辅助', () => {
     const wrapper = mount(Form, {
       props: { model: { name: 'x' }, size: 'large', labelWidth: 100 },
       slots: {
-        default: (scope: Record<string, unknown>) => h('div', { class: 'slot-probe' }, JSON.stringify(scope.model))
+        default: (scope: Record<string, any>) => h('div', { class: 'slot-probe' }, JSON.stringify(scope.model))
       }
     })
     expect(wrapper.find('.slot-probe').text()).toContain('"name":"x"')

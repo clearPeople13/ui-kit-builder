@@ -17,7 +17,7 @@ const items: ItemSpec[] = [
 
 // CarouselItem 在自身 setup 里向 Carousel 注册，注册时机晚于 Carousel 首次渲染，
 // 因此指示器与条目状态要等多一次 tick 才完整
-async function mountCarousel(props: Record<string, unknown> = {}, list = items) {
+async function mountCarousel(props: Record<string, any> = {}, list = items) {
   const wrapper = mount(Carousel, {
     props,
     slots: {
@@ -30,16 +30,19 @@ async function mountCarousel(props: Record<string, unknown> = {}, list = items) 
   return wrapper
 }
 
-function slides(wrapper: ReturnType<typeof mountCarousel>) {
+// mountCarousel 是 async 的，ReturnType 拿到的是 Promise，直接用会让 wrapper.findAll 之类全部报不存在
+type CarouselWrapper = Awaited<ReturnType<typeof mountCarousel>>
+
+function slides(wrapper: CarouselWrapper) {
   return wrapper.findAll('.ui-carousel-item')
 }
 
-function indicators(wrapper: ReturnType<typeof mountCarousel>) {
+function indicators(wrapper: CarouselWrapper) {
   return wrapper.findAll('.ui-carousel__indicator')
 }
 
 // 只保留 is-* 状态类，便于比较条目与激活项的相对位置
-function stateClasses(wrapper: ReturnType<typeof mountCarousel>) {
+function stateClasses(wrapper: CarouselWrapper) {
   return slides(wrapper).map((slide) => slide.classes().filter((name) => name.startsWith('is-')))
 }
 

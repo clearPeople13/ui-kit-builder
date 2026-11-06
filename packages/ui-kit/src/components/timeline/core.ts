@@ -50,8 +50,7 @@ export function createTimelineItem(features: UiFeature[] = []) {
         props.hollow ? 'is-hollow' : '',
         props.timestampPosition === 'top' ? 'is-timestamp-top' : 'is-timestamp-bottom'
       ],
-      styles: (props) =>
-        props.color ? ({ '--ui-timeline-dot-color': props.color } as Record<string, string>) : {},
+      styles: (props) => (props.color ? ({ '--ui-timeline-dot-color': props.color } as Record<string, string>) : {}),
       content: ({ props, slots }) => {
         const timestamp =
           !props.hideTimestamp && props.timestamp

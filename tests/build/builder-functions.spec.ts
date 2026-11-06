@@ -165,7 +165,7 @@ describe('readIconRegistryNames', () => {
   })
 
   it('运行时 UI_ICONS 的键与名单一致（改图标表不会漏改类型）', async () => {
-    const module = (await import('../../dist/full/ui-kit.js')) as { UI_ICONS: Record<string, unknown> }
+    const module = (await import('../../dist/full/ui-kit.js')) as { UI_ICONS: Record<string, any> }
     expect(Object.keys(module.UI_ICONS)).toEqual(readIconRegistryNames())
   })
 })

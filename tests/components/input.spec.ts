@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { Input } from '@ui-kit-full'
 
-function mountInput(props: Record<string, unknown> = {}) {
+function mountInput(props: Record<string, any> = {}) {
   return mount(Input, { props })
 }
 
@@ -12,7 +12,7 @@ describe('Input', () => {
     expect(wrapper.classes()).toContain('ui-input')
     const inner = wrapper.find('input.ui-input__inner')
     expect(inner.exists()).toBe(true)
-    expect(inner.element.value).toBe('abc')
+    expect((inner.element as HTMLInputElement).value).toBe('abc')
   })
 
   it('未传 modelValue 时输入框为空串', () => {

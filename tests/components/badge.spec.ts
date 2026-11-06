@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { Badge } from '@ui-kit-full'
 
 // 统一构造 Badge，收敛公共 props
-function mountBadge(props: Record<string, unknown> = {}) {
+function mountBadge(props: Record<string, any> = {}) {
   return mount(Badge, { props: { value: 5, ...props } })
 }
 

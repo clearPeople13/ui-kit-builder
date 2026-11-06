@@ -122,7 +122,10 @@ export function createAnchor(features: UiFeature[] = []) {
           if (container === window) {
             window.scrollTo({ top: top + window.scrollY, behavior: 'smooth' })
           } else {
-            ;(container as HTMLElement).scrollTo({ top: (container as HTMLElement).scrollTop + top, behavior: 'smooth' })
+            ;(container as HTMLElement).scrollTo({
+              top: (container as HTMLElement).scrollTop + top,
+              behavior: 'smooth'
+            })
           }
           if (window.location.hash !== href) {
             window.history.replaceState(null, '', href)
@@ -154,14 +157,9 @@ export function createAnchor(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props) => [
-        props.type ? `ui-anchor--${props.type}` : '',
-        props.disabled ? 'is-disabled' : ''
-      ],
+      classes: (props) => [props.type ? `ui-anchor--${props.type}` : '', props.disabled ? 'is-disabled' : ''],
       content: ({ slots, state }) =>
-        h('div', { ref: state.listRef, class: 'ui-anchor__list', role: 'navigation' }, [
-          slots.default?.() ?? null
-        ])
+        h('div', { ref: state.listRef, class: 'ui-anchor__list', role: 'navigation' }, [slots.default?.() ?? null])
     },
     features
   )

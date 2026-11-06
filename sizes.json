@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T17:33:30.205Z",
+  "generatedAt": "2026-11-06T18:32:30.479Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -193,8 +193,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 560755,
-          "gzipBytes": 134028
+          "bytes": 562414,
+          "gzipBytes": 134608
         },
         {
           "file": "ui-kit.css",
@@ -202,10 +202,10 @@
           "gzipBytes": 31925
         }
       ],
-      "jsBytes": 560755,
+      "jsBytes": 562414,
       "cssBytes": 231162,
-      "totalBytes": 791917,
-      "gzipBytes": 166061
+      "totalBytes": 793576,
+      "gzipBytes": 166629
     },
     "full": {
       "name": "full",
@@ -819,8 +819,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 639620,
-          "gzipBytes": 151829
+          "bytes": 641279,
+          "gzipBytes": 152499
         },
         {
           "file": "ui-kit.css",
@@ -828,10 +828,10 @@
           "gzipBytes": 34524
         }
       ],
-      "jsBytes": 639620,
+      "jsBytes": 641279,
       "cssBytes": 250588,
-      "totalBytes": 890208,
-      "gzipBytes": 186173
+      "totalBytes": 891867,
+      "gzipBytes": 186820
     },
     "branded": {
       "name": "branded",
@@ -1445,8 +1445,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151942
+          "bytes": 643121,
+          "gzipBytes": 152616
         },
         {
           "file": "ui-kit.css",
@@ -1454,10 +1454,10 @@
           "gzipBytes": 35325
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 262792,
-      "totalBytes": 904254,
-      "gzipBytes": 187119
+      "totalBytes": 905913,
+      "gzipBytes": 187775
     },
     "chinese": {
       "name": "chinese",
@@ -2071,8 +2071,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 644225,
-          "gzipBytes": 152099
+          "bytes": 645884,
+          "gzipBytes": 152797
         },
         {
           "file": "ui-kit.css",
@@ -2080,10 +2080,10 @@
           "gzipBytes": 38960
         }
       ],
-      "jsBytes": 644225,
+      "jsBytes": 645884,
       "cssBytes": 298994,
-      "totalBytes": 943219,
-      "gzipBytes": 190966
+      "totalBytes": 944878,
+      "gzipBytes": 191665
     },
     "cute": {
       "name": "cute",
@@ -2697,8 +2697,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151946
+          "bytes": 643121,
+          "gzipBytes": 152618
         },
         {
           "file": "ui-kit.css",
@@ -2706,10 +2706,10 @@
           "gzipBytes": 38283
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 278243,
-      "totalBytes": 919705,
-      "gzipBytes": 190116
+      "totalBytes": 921364,
+      "gzipBytes": 190766
     },
     "antd": {
       "name": "antd",
@@ -3323,8 +3323,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151942
+          "bytes": 643121,
+          "gzipBytes": 152616
         },
         {
           "file": "ui-kit.css",
@@ -3332,10 +3332,10 @@
           "gzipBytes": 38444
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 283040,
-      "totalBytes": 924502,
-      "gzipBytes": 190265
+      "totalBytes": 926161,
+      "gzipBytes": 190920
     },
     "arco": {
       "name": "arco",
@@ -3949,8 +3949,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151941
+          "bytes": 643121,
+          "gzipBytes": 152615
         },
         {
           "file": "ui-kit.css",
@@ -3958,10 +3958,10 @@
           "gzipBytes": 35422
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 263164,
-      "totalBytes": 904626,
-      "gzipBytes": 187216
+      "totalBytes": 906285,
+      "gzipBytes": 187870
     },
     "tdesign": {
       "name": "tdesign",
@@ -4575,8 +4575,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 644225,
-          "gzipBytes": 152090
+          "bytes": 645884,
+          "gzipBytes": 152794
         },
         {
           "file": "ui-kit.css",
@@ -4584,10 +4584,10 @@
           "gzipBytes": 35799
         }
       ],
-      "jsBytes": 644225,
+      "jsBytes": 645884,
       "cssBytes": 279700,
-      "totalBytes": 923925,
-      "gzipBytes": 187766
+      "totalBytes": 925584,
+      "gzipBytes": 188450
     },
     "naive": {
       "name": "naive",
@@ -5201,8 +5201,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 642383,
-          "gzipBytes": 151981
+          "bytes": 644042,
+          "gzipBytes": 152675
         },
         {
           "file": "ui-kit.css",
@@ -5210,10 +5210,10 @@
           "gzipBytes": 35472
         }
       ],
-      "jsBytes": 642383,
+      "jsBytes": 644042,
       "cssBytes": 268551,
-      "totalBytes": 910934,
-      "gzipBytes": 187311
+      "totalBytes": 912593,
+      "gzipBytes": 187985
     },
     "viewui": {
       "name": "viewui",
@@ -5827,8 +5827,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643304,
-          "gzipBytes": 152033
+          "bytes": 644963,
+          "gzipBytes": 152728
         },
         {
           "file": "ui-kit.css",
@@ -5836,10 +5836,10 @@
           "gzipBytes": 35607
         }
       ],
-      "jsBytes": 643304,
+      "jsBytes": 644963,
       "cssBytes": 274124,
-      "totalBytes": 917428,
-      "gzipBytes": 187505
+      "totalBytes": 919087,
+      "gzipBytes": 188182
     },
     "vant": {
       "name": "vant",
@@ -6453,8 +6453,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151943
+          "bytes": 643121,
+          "gzipBytes": 152619
         },
         {
           "file": "ui-kit.css",
@@ -6462,10 +6462,10 @@
           "gzipBytes": 35431
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 263304,
-      "totalBytes": 904766,
-      "gzipBytes": 187231
+      "totalBytes": 906425,
+      "gzipBytes": 187884
     },
     "varlet": {
       "name": "varlet",
@@ -7079,8 +7079,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643304,
-          "gzipBytes": 152037
+          "bytes": 644963,
+          "gzipBytes": 152735
         },
         {
           "file": "ui-kit.css",
@@ -7088,10 +7088,10 @@
           "gzipBytes": 35621
         }
       ],
-      "jsBytes": 643304,
+      "jsBytes": 644963,
       "cssBytes": 274164,
-      "totalBytes": 917468,
-      "gzipBytes": 187527
+      "totalBytes": 919127,
+      "gzipBytes": 188203
     },
     "semi": {
       "name": "semi",
@@ -7705,8 +7705,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641462,
-          "gzipBytes": 151948
+          "bytes": 643121,
+          "gzipBytes": 152625
         },
         {
           "file": "ui-kit.css",
@@ -7714,10 +7714,10 @@
           "gzipBytes": 35315
         }
       ],
-      "jsBytes": 641462,
+      "jsBytes": 643121,
       "cssBytes": 262860,
-      "totalBytes": 904322,
-      "gzipBytes": 187111
+      "totalBytes": 905981,
+      "gzipBytes": 187770
     },
     "material3": {
       "name": "material3",
@@ -8331,8 +8331,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 646067,
-          "gzipBytes": 152255
+          "bytes": 647726,
+          "gzipBytes": 152931
         },
         {
           "file": "ui-kit.css",
@@ -8340,10 +8340,10 @@
           "gzipBytes": 36352
         }
       ],
-      "jsBytes": 646067,
+      "jsBytes": 647726,
       "cssBytes": 291769,
-      "totalBytes": 937836,
-      "gzipBytes": 188501
+      "totalBytes": 939495,
+      "gzipBytes": 189163
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -8957,8 +8957,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 646067,
-          "gzipBytes": 152256
+          "bytes": 647726,
+          "gzipBytes": 152932
         },
         {
           "file": "ui-kit.css",
@@ -8966,10 +8966,10 @@
           "gzipBytes": 36079
         }
       ],
-      "jsBytes": 646067,
+      "jsBytes": 647726,
       "cssBytes": 291109,
-      "totalBytes": 937176,
-      "gzipBytes": 188216
+      "totalBytes": 938835,
+      "gzipBytes": 188880
     },
     "shadcn": {
       "name": "shadcn",
@@ -9583,8 +9583,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643304,
-          "gzipBytes": 152039
+          "bytes": 644963,
+          "gzipBytes": 152739
         },
         {
           "file": "ui-kit.css",
@@ -9592,10 +9592,10 @@
           "gzipBytes": 35706
         }
       ],
-      "jsBytes": 643304,
+      "jsBytes": 644963,
       "cssBytes": 274529,
-      "totalBytes": 917833,
-      "gzipBytes": 187613
+      "totalBytes": 919492,
+      "gzipBytes": 188292
     },
     "fluent": {
       "name": "fluent",
@@ -10209,8 +10209,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643304,
-          "gzipBytes": 152032
+          "bytes": 644963,
+          "gzipBytes": 152730
         },
         {
           "file": "ui-kit.css",
@@ -10218,10 +10218,10 @@
           "gzipBytes": 35617
         }
       ],
-      "jsBytes": 643304,
+      "jsBytes": 644963,
       "cssBytes": 274080,
-      "totalBytes": 917384,
-      "gzipBytes": 187522
+      "totalBytes": 919043,
+      "gzipBytes": 188197
     },
     "carbon": {
       "name": "carbon",
@@ -10835,8 +10835,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 643304,
-          "gzipBytes": 152037
+          "bytes": 644963,
+          "gzipBytes": 152734
         },
         {
           "file": "ui-kit.css",
@@ -10844,10 +10844,10 @@
           "gzipBytes": 35642
         }
       ],
-      "jsBytes": 643304,
+      "jsBytes": 644963,
       "cssBytes": 274169,
-      "totalBytes": 917473,
-      "gzipBytes": 187546
+      "totalBytes": 919132,
+      "gzipBytes": 188221
     },
     "mantine": {
       "name": "mantine",
@@ -11461,8 +11461,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 644225,
-          "gzipBytes": 152099
+          "bytes": 645884,
+          "gzipBytes": 152798
         },
         {
           "file": "ui-kit.css",
@@ -11470,10 +11470,10 @@
           "gzipBytes": 35933
         }
       ],
-      "jsBytes": 644225,
+      "jsBytes": 645884,
       "cssBytes": 280139,
-      "totalBytes": 924364,
-      "gzipBytes": 187908
+      "totalBytes": 926023,
+      "gzipBytes": 188591
     },
     "ios": {
       "name": "ios",
@@ -12087,8 +12087,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640541,
-          "gzipBytes": 151889
+          "bytes": 642200,
+          "gzipBytes": 152540
         },
         {
           "file": "ui-kit.css",
@@ -12096,10 +12096,10 @@
           "gzipBytes": 35166
         }
       ],
-      "jsBytes": 640541,
+      "jsBytes": 642200,
       "cssBytes": 257322,
-      "totalBytes": 897863,
-      "gzipBytes": 186896
+      "totalBytes": 899522,
+      "gzipBytes": 187529
     }
   },
   "features": {}

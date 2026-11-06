@@ -21,14 +21,23 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 ```
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件；首批 12 个 + 第二批 15 个 + 特性开关专项 1 个，共 28 个文件 612 条）
+tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件；首批 12 个 + 第二批 15 个 + 特性开关/样式合并/键盘通路专项 3 个，共 30 个文件 629 条）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
+tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
+tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
 tests/build/_helpers.ts       构建器侧用例的公共读盘工具：profile 清单、产物文本缓存、特性标记求解、令牌表解析
 tests/build/*.spec.ts         构建器侧契约用例（6 个文件 68 条），断言对象是 dist/ 下的 20 份产物与 scripts/ 的纯函数
 tests/build/__snapshots__/    两份快照：tree-shaking 的"无可标记字面量特性"清单、theme-tokens 的 20 份令牌指纹
+vitest.browser.config.ts      environment: node + Playwright，include: tests/browser/**/*.spec.ts，串行（fileParallelism: false）
+tests/browser/_global-setup.ts 起一个 root 为仓库根的 Vite dev server，把地址写进 UIKIT_HARNESS_BASE
+tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__probe 回传运行期事实，window.__kit/__vue 供页面内直接挂载组件
+tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
+tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
+tests/browser/*.spec.ts       浏览器层用例（8 个文件 42 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线
+tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
 ```
 
-缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：两批共 25 条缺陷全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
+缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：四批共 33 条缺陷（F-1…F-33）全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
 
 约定：
 
@@ -103,16 +112,19 @@ npm test              # 先 build:full 再 vitest run（约 3s + 1.5s）
 npm run test:watch    # 增量
 npm run test:coverage # 覆盖率报告（未设阈值门禁）
 npm run test:build    # 先 build:all（20 份 profile）再跑 tests/build/**，约 15s + 5s
-npm run test:all      # 组件侧 + 构建器侧一次跑完
+npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 15s
+npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需执行）
+npm run test:all      # 组件侧 + 构建器侧 + 浏览器层一次跑完
+npm run quality       # 唯一门禁：格式 → 类型 → lint → 库级校验 → 三层用例 → 消费方校验
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 两批组件用例（首批 12 个 + 第二批 15 个组件，外加 `feature-class-switch.spec.ts` 专项）共 28 个文件、612 条，全绿；第三批构建器侧用例 6 个文件、68 条（见 §8）同样全绿，合计 680 条；剩余未接入的组件是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件
-- 第四批（真实浏览器层 + 统一质量门禁）是接下来的缺口：布局 / 定位 / 拖拽 / 虚拟滚动的真实尺寸断言、控制台与 Vue 告警归零、可访问性、`npm run quality` 一条命令收敛，见 `REQUIREMENTS.md` §6
-- 已知不可测维度：ColorPicker 的 SV 板 / 色相拖拽、Table 的 `resize` 拖拽列宽、各浮层的真实定位坐标，都依赖 `getBoundingClientRect()` 的实际尺寸，happy-dom 下只能断言静态结构——这三类要靠浏览器层补，不是单测的锅
-- 两批共 25 条缺陷（F-1…F-10、F-11…F-25）已全部修复，`tests/findings.spec.ts` 退役；再发现缺陷时重建该文件，并按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
-- `tsconfig.json` 的 `include` 只有 `packages/**/*.ts`，测试文件不参与 `npm run typecheck`；若要让用例也受类型约束，需要单独加 `tests` 目录配置
+- 四层用例合计 739 条全绿：组件侧 30 文件 629 条、构建器侧 6 文件 68 条、浏览器层 8 文件 42 条（其中 6 条是布局基线）；剩余未接入单元用例的组件是 Cascader、Mentions、Segmented、Watermark、Anchor、Backtop 等低频组件，它们的默认渲染由 `console-clean.spec.ts` 与 `attributes.spec.ts` 在全家桶层兜住
+- 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
+- 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、以及"裁剪后产物是否照常工作"（`dist/full` 之外的 19 份 profile 只验结构与体积，没验运行时）
+- 四批共 33 条缺陷（F-1…F-33）已全部修复，`tests/findings.spec.ts` 退役；再发现缺陷时重建该文件，并按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与三份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 - 组件的运行时行为只在 `dist/full` 上验证过；第三批补的是"产物存在性与结构"（20 份 profile 的裁剪、令牌、类型），不是"裁剪后组件还照常工作"。要补这一层，得按 profile 起 alias 再跑一遍关键用例，属于第四批质量门禁的范围
 - `npm run verify` 有 17 项预存在失败（在未改动的 `main` 工作树上也同样失败，与本次改动无关）：15 项是 `scripts/verify.mjs:408` 把 Scrollbar 特性数按 profile 名单写死成 0/1，与实际 20 个 profile 全部含 1 个特性不符；外加"组件数量应为 91，实际 90"和 cute / chinese 两个主题的 `--<x>-button-radius` 令牌断言过期。需要在质量门禁批次里一并修正
 
@@ -129,3 +141,23 @@ npm run test:all      # 组件侧 + 构建器侧一次跑完
 - **`spec.mjs` 是当前事实，不是生成物**：`scripts/generate-suite.mjs` 只在最初搭骨架时跑过一次，之后各组件的 `spec.mjs` 手工维护；改动类型字符串时两边都要改（F-28 就同时动了 `normalizePropType`、两份 `spec.mjs` 与 `generate-suite.mjs` 的 `tsType`），否则重新生成会把修正抹掉
 - **探针构建写 `.tmp/`，退出必须清理**：`tree-shaking`/`theme-tokens`/`types-contract` 各自 `buildProfile({ outDir: '.tmp/…-probe' })`，`afterAll` 里除了删 `.tmp/<probe>` 还要删 `.build/<probe>`（入口 TS 落在那里），漏删会污染 `dist` 目录清单断言
 - **快照只在改设计时期望变更**：`tests/build/__snapshots__/` 两份——"无可标记字面量的特性清单"（42 条，新增纯 hooks 复用型特性时会变长，属于要求当面确认的信号）与"20 份令牌指纹"（改任何皮肤令牌值都会变红，防止误提交主题调整）
+
+## 9. 浏览器层的坑（写 tests/browser/\*\* 前先读）
+
+- **别在 `page.evaluate` 里 `import()`**：Vitest 会把回调函数体 SSR 转译，动态 `import('...dist/full/ui-kit.js')` 变成 `__vite_ssr_dynamic_import__ is not defined`。要拿产物组件就用 harness 已经挂好的 `window.__kit`，要拿 `h/createApp` 就用 `window.__vue`
+- **面板全部 teleport 到 body**：`.ui-select__dropdown`、`.ui-tooltip__popper` 这类公共类名在同屏多个实例之间会选错对象。每个实例必须给独立的 `popperClass`（如 `panel-select-flow`），断言按它精确选中；`hasElement/popperClass` 是这一层的标准写法
+- **`page.hover()` 会先把元素滚进视口**：滚动跟随类断言被它带偏（`scrollY` 归零）。要按真实坐标移动鼠标就用 `moveToCenter()`（内部是 `page.mouse.move`），要滚页面用 `setScrollTop()`
+- **Popover 的默认插槽是触发器，内容走 `content` 插槽**；`style`/`className` 被文档约定路由到面板而不是触发器，`width` 属性默认 150 且优先于用户 `style` 里的宽度
+- **`resizable` / `minColumnWidth` 是 Table 级属性**，写在 `TableColumn` 上不报错也不生效；右冻结列的拖拽手柄落在左边缘，否则会被纵向滚动条盖住
+- **Vue 3.5 的 `Option` 才是导出名**：`import { Option as SelectOption }` 可以，但在解构模式里必须写 `Option: SelectOption`，`Option as SelectOption` 会让 harness 在 Vite 转换阶段 500
+- **`__probe.ready` 是唯一的"渲染完成"信号**：harness 在两帧之后才置真，`openScene` 会等它。用例里再等一次 `requestAnimationFrame` 或 `waitForTimeout(150~300)` 才能读到定位库算完的坐标
+- **静默门禁要先把噪声源关掉**：Vue 的 feature-flags 警告由构建期常量决定，所以 `_global-setup.ts` 的 dev server 里必须 `define` 三个 `__VUE_*__`；`expectSilent` 目前只放过 "Download the Vue Devtools" 一行，其余告警一律算失败
+- **失败信息要自带证据**：`rect()` 找不到元素直接抛错（不是返回 null），断言里带上选择器与实测值，浏览器层跑一次不容易，不能靠人再复现一遍
+
+## 10. 统一门禁与布局基线
+
+- `npm run quality` 是唯一入口：`format:check → typecheck（库 + 用例两份 tsconfig）→ lint → verify → test → test:build → test:browser → verify:consumer`。任何一层红都直接失败，不产出"警告式"结论
+- 布局基线在 `tests/browser/__snapshots__/geometry.json`，按 `process.platform` 分桶，键是场景名、值是"锚点选择器 → 文档坐标矩形数组 + `<document>` 总高"。容差 1px；锚点表在 `tests/browser/_geometry.ts` 的 `ANCHORS`，新增场景必须同时登记锚点，否则用例会以"没有登记布局锚点"失败
+- 改样式或布局导致基线变红时，先读差异（谁从哪儿挪到哪儿），确认是预期变化再 `npm run snap:layout` 重录；把重录当成默认动作等于关掉这道门
+- 基线在别的机器上缺失时该用例自动跳过（`it.skipIf`），不会凭空报错；但录入模式下锚点找不到元素会当场失败，这是防"锚点写错却全绿"的保险
+- `_scratch/`、`.tmp/`、`.trae-html-share-packages/` 是本地草稿目录，已同时进 `.gitignore` 与 `eslint.config.mjs` 的 ignores——临时探针脚本写完就扔，别让它混进 lint 与提交

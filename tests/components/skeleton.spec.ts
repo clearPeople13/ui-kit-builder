@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Skeleton, SkeletonItem } from '@ui-kit-full'
 
 // 统一构造 Skeleton，收敛公共 props
-function mountSkeleton(props: Record<string, unknown> = {}) {
+function mountSkeleton(props: Record<string, any> = {}) {
   return mount(Skeleton, { props })
 }
 

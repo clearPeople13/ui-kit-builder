@@ -7,7 +7,7 @@ import './core.css'
 
 const imageViewerBaseProps = {
   modelValue: { type: Boolean },
-  zIndex: { type: Number },
+  zIndex: { type: Number }
 }
 
 export function createImageViewer(features: UiFeature[] = []) {

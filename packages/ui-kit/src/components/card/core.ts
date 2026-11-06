@@ -24,7 +24,8 @@ export function createCard(features: UiFeature[] = []) {
       content: ({ props, slots }) => {
         const header = slots.header?.() ?? props.header
         const footer = slots.footer?.() ?? props.footer
-        const cover = slots.cover?.() ?? (props.cover ? h('img', { class: 'ui-card__cover', src: props.cover, alt: '' }) : null)
+        const cover =
+          slots.cover?.() ?? (props.cover ? h('img', { class: 'ui-card__cover', src: props.cover, alt: '' }) : null)
         return [
           cover ? h('div', { class: 'ui-card__cover-wrap' }, [cover]) : null,
           header ? h('div', { class: ['ui-card__header', props.headerClass] }, [header]) : null,

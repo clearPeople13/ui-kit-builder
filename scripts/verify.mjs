@@ -214,7 +214,14 @@ async function main() {
   const full = byName.full
   const branded = byName.branded
 
-  assert(registry.order.length === 91, `组件数量应为 91，实际 ${registry.order.length}`)
+  // 组件数量以磁盘上的组件目录为准，新增/删除组件不需要再回来改这里的魔数
+  const componentDirs = fs
+    .readdirSync(path.join(rootDir, 'packages/ui-kit/src/components'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory()).length
+  assert(
+    registry.order.length === componentDirs,
+    `组件数量应为目录数 ${componentDirs}，实际注册 ${registry.order.length}`
+  )
   assert(registry.order.includes('icon'), '应包含 Icon 组件')
   assert(registry.order.includes('scrollbar'), '应包含 Scrollbar 组件')
   const exportNames = Object.values(registry.components).flatMap((spec) => spec.exports.map((item) => item.name))
@@ -362,8 +369,13 @@ async function main() {
   assertIncludes(cuteJs, 'cute-button', 'cute JS 前缀')
   assertIncludes(cuteCss, '.cute-button', 'cute CSS 前缀')
   assertIncludes(cuteCss, '--cute-color-primary:#ff87b2', 'cute CSS 全局主题')
-  assertIncludes(cuteCss, '--cute-button-radius:999px}', 'cute CSS 组件主题')
-  assertIncludes(cuteCss, '--cute-step-process-icon-bg:linear-gradient(135deg, #ffa3c4, #ff87b2 55%, #ff7bab)', 'cute CSS 主题特调令牌')
+  assertIncludes(cuteCss, '--cute-button-radius: var(--cute-radius-small)', 'cute CSS 按钮圆角取自圆角标尺')
+  assertIncludes(cuteCss, '--cute-button-active-transform:translateY(0) scale(0.97)', 'cute CSS 按钮按下回弹')
+  assertIncludes(
+    cuteCss,
+    '--cute-step-process-icon-bg:linear-gradient(135deg, #ffa3c4, #ff87b2 55%, #ff7bab)',
+    'cute CSS 主题特调令牌'
+  )
   assertIncludes(cuteCss, '.cute-tag--primary.cute-tag--light', 'cute CSS 皮肤规则')
   assertIncludes(cuteCss, '--cute-menu-active-color: var(--cute-color-primary)', 'cute CSS 菜单激活色跟随主色')
   assertExcludes(cuteCss, '--ui-', 'cute CSS 前缀')
@@ -372,10 +384,14 @@ async function main() {
   assertIncludes(chineseJs, 'chinese-button', 'chinese JS 前缀')
   assertIncludes(chineseCss, '.chinese-button', 'chinese CSS 前缀')
   assertIncludes(chineseCss, '--chinese-color-primary:#b23a2f', 'chinese CSS 全局主题')
-  assertIncludes(chineseCss, '--chinese-button-radius:6px}', 'chinese CSS 组件主题')
+  assertIncludes(chineseCss, '--chinese-button-radius: var(--chinese-radius-small)', 'chinese CSS 按钮圆角取自圆角标尺')
   assertIncludes(chineseCss, '--chinese-card-header-accent:inset 4px 0 0 #b23a2f', 'chinese CSS 主题特调令牌')
   assertIncludes(chineseCss, '.chinese-tag--primary.chinese-tag--light', 'chinese CSS 皮肤规则')
-  assertIncludes(chineseCss, '.chinese-menu-item.is-active .chinese-menu-item__inner:before', 'chinese CSS 菜单激活标记特调')
+  assertIncludes(
+    chineseCss,
+    '.chinese-menu-item.is-active .chinese-menu-item__inner:before',
+    'chinese CSS 菜单激活标记特调'
+  )
   assertIncludes(chineseCss, '--chinese-menu-active-color:#b23a2f', 'chinese CSS 菜单激活色取自主题')
   assertIncludes(chineseCss, '@keyframes chinese-seal-pop', 'chinese CSS 印章动画随前缀改写')
   assertExcludes(chineseCss, '--ui-', 'chinese CSS 前缀')
@@ -405,11 +421,14 @@ async function main() {
       `${result.name} package.json 组件数与注册表不一致`
     )
     assert(pkg.uiKit.prefix === result.prefix, `${result.name} package.json 前缀应一致`)
-    const expectedScrollbarFeatures = ['full', 'branded', 'chinese', 'cute', 'antd'].includes(result.name) ? 1 : 0
-    assert(
-      pkg.uiKit.components.scrollbar.length === expectedScrollbarFeatures,
-      `${result.name} Scrollbar 特性数应为 ${expectedScrollbarFeatures}`
-    )
+    // 特性清单以该 profile 自己的选择为准，不再按 profile 名字写死数量：
+    // 写死会让"给全部主题打开某个特性"这类正常改动变成 15 项假失败
+    for (const [componentId, featureIds] of Object.entries(result.selection)) {
+      assert(
+        JSON.stringify(pkg.uiKit.components[componentId]) === JSON.stringify(featureIds),
+        `${result.name} package.json 的 ${componentId} 特性清单与 meta.selection 不一致`
+      )
+    }
   }
 
   const tsconfigPath = writeTypeTests(registry, results)

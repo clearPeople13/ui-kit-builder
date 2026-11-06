@@ -16,7 +16,7 @@ function items() {
   })
 }
 
-function mountDropdown(props: Record<string, unknown> = {}, slots: Record<string, () => unknown> = {}) {
+function mountDropdown(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   const wrapper = mount(Dropdown, {
     props: { trigger: 'click', ...props },
     slots: { default: () => h('button', { class: 'probe-trigger' }, '更多操作'), dropdown: items, ...slots },

@@ -11,7 +11,7 @@ describe('Switch', () => {
     expect(wrapper.find('.ui-switch__track').exists()).toBe(true)
     const inner = wrapper.find('input.ui-switch__inner')
     expect(inner.attributes('role')).toBe('switch')
-    expect(inner.element.checked).toBe(true)
+    expect((inner.element as HTMLInputElement).checked).toBe(true)
   })
 
   it('未选中时不带 is-checked', () => {

@@ -5,13 +5,13 @@ import { ColorPicker, ColorPickerPanel } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
 
-function mountPicker(props: Record<string, unknown> = {}) {
+function mountPicker(props: Record<string, any> = {}) {
   const wrapper = mount(ColorPicker, { props: { modelValue: '#ff0000', ...props }, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper
 }
 
-function mountPanel(props: Record<string, unknown> = {}) {
+function mountPanel(props: Record<string, any> = {}) {
   const wrapper = mount(ColorPickerPanel, { props: { modelValue: '#3366cc', ...props }, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper

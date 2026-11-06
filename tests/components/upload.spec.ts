@@ -19,7 +19,7 @@ function guessType(name: string): string {
   return 'text/plain'
 }
 
-function mountUpload(props: Record<string, unknown> = {}, slots: Record<string, () => unknown> = {}) {
+function mountUpload(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   const wrapper = mount(Upload, { props: { ...props }, slots, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper

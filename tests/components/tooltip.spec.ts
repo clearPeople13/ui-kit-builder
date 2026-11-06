@@ -5,7 +5,7 @@ import { Tooltip } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
 
-function mountTooltip(props: Record<string, unknown> = {}, slots: Record<string, () => unknown> = {}) {
+function mountTooltip(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   const wrapper = mount(Tooltip, {
     props: { content: '这是一条提示', ...props },
     slots: { default: () => h('span', { class: 'probe-trigger' }, '悬停我'), ...slots },

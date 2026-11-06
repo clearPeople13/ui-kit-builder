@@ -13,7 +13,7 @@ let wrappers: VueWrapper[] = []
 
 // 下拉面板 teleport 到 body 且常驻 DOM（收起时只是不带 is-open），
 // 因此挂载必须 attachTo body，展开状态一律用触发器上的 aria-expanded 判定
-function mountSelect(props: Record<string, unknown> = {}) {
+function mountSelect(props: Record<string, any> = {}) {
   const wrapper = mount(Select, { props, attachTo: document.body })
   wrappers.push(wrapper)
   return wrapper

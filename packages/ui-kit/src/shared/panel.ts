@@ -222,7 +222,9 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
     const padWidth = el?.clientWidth || width
     const naturalPadHeight = el?.clientHeight || panelHeight
     const padHeight =
-      maxHeight > 0 && maxHeight < height ? Math.max(0, Math.min(naturalPadHeight, maxHeight - borderHeight)) : naturalPadHeight
+      maxHeight > 0 && maxHeight < height
+        ? Math.max(0, Math.min(naturalPadHeight, maxHeight - borderHeight))
+        : naturalPadHeight
 
     let left = rect.left
     let top = rect.bottom + gap
@@ -281,7 +283,11 @@ export function useFloatingPanel(options: FloatingPanelOptions) {
     const arrowMargin = Number.isFinite(rawArrowOffset) ? Math.max(0, rawArrowOffset) : VIEWPORT_MARGIN
     const arrow: CSSProperties = {}
     if (side === 'top' || side === 'bottom') {
-      const offsetX = clamp(rect.left + rect.width / 2 - left, arrowMargin, Math.max(arrowMargin, padWidth - arrowMargin))
+      const offsetX = clamp(
+        rect.left + rect.width / 2 - left,
+        arrowMargin,
+        Math.max(arrowMargin, padWidth - arrowMargin)
+      )
       arrow.left = `${Math.round(offsetX)}px`
       arrow.top = `${Math.round(side === 'bottom' ? -4 : padHeight - 4)}px`
     } else {

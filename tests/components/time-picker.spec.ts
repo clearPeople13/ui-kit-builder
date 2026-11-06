@@ -15,13 +15,13 @@ function freezeNow() {
   freezeAt(9, 8, 7)
 }
 
-function mountPicker(props: Record<string, unknown> = {}) {
+function mountPicker(props: Record<string, any> = {}) {
   const wrapper = mount(TimePicker, { props: { modelValue: '09:24:36', ...props }, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper
 }
 
-function mountSelect(props: Record<string, unknown> = {}) {
+function mountSelect(props: Record<string, any> = {}) {
   const wrapper = mount(TimeSelect, { props: { modelValue: '10:00', ...props }, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper
@@ -421,7 +421,7 @@ describe('TimePicker 时间选择', () => {
     expect(custom.find('.ui-time-picker__separator').text()).toBe('到')
     expect(
       Array.from(custom.element.querySelectorAll('.ui-time-picker__placeholder')).map((node) =>
-        node.getAttribute('placeholder')
+        (node as HTMLElement).getAttribute('placeholder')
       )
     ).toEqual(['上班', '下班'])
   })

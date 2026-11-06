@@ -11,7 +11,7 @@ function freezeToday() {
   vi.setSystemTime(new Date(2026, 10, 6, 9, 8, 7))
 }
 
-function mountPicker(props: Record<string, unknown> = {}) {
+function mountPicker(props: Record<string, any> = {}) {
   const wrapper = mount(DatePicker, { props: { modelValue: '2026-11-06', ...props }, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper
@@ -307,7 +307,7 @@ describe('DatePicker 日期选择', () => {
     await open(wrapper)
     const titles = () => Array.from(panel()!.querySelectorAll('.ui-date-picker__title')) as HTMLElement[]
     await clickNative(titles()[1])
-    await clickNative(Array.from(panel()!.querySelectorAll('.ui-date-picker__month-cell'))[2])
+    await clickNative(Array.from(panel()!.querySelectorAll<HTMLElement>('.ui-date-picker__month-cell'))[2])
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     // 回到月历，标题已换成 3 月
     expect(titles().map((title) => title.textContent)).toEqual(['2026年', '3月'])

@@ -5,7 +5,7 @@ export const drawerPopperFeature = createClassFeature({
   id: 'drawer.popper',
   props: {
     appendTo: { type: [String, Object], default: 'body' },
-    appendToBody: { type: Boolean },
+    appendToBody: { type: Boolean }
   },
   className: () => 'ui-drawer--popper'
 })

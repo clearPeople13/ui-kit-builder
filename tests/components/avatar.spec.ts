@@ -4,12 +4,12 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Avatar, AvatarGroup } from '@ui-kit-full'
 
 // 统一构造 Avatar，收敛公共 props
-function mountAvatar(props: Record<string, unknown> = {}, slots?: Record<string, string>) {
+function mountAvatar(props: Record<string, any> = {}, slots?: Record<string, string>) {
   return mount(Avatar, { props, slots })
 }
 
 // AvatarGroup 依赖 teleport 到 body 的浮层，统一挂到 document.body
-function mountGroup(props: Record<string, unknown> = {}, count = 4) {
+function mountGroup(props: Record<string, any> = {}, count = 4) {
   const children = Array.from({ length: count }, (_item, index) => h(Avatar, { src: `${index}.png` }))
   return mount(AvatarGroup, { props, slots: { default: () => children }, attachTo: document.body })
 }

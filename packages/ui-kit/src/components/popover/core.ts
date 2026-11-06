@@ -2,6 +2,7 @@ import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { sizeValue, triggerConfig } from '../../shared/behavior'
+import { mergeStyles } from '../../shared/utils'
 import { popoverPopperFeature } from './features/popper/index'
 import './core.css'
 
@@ -33,10 +34,8 @@ function popoverTrigger(props: Record<string, any>): 'click' | 'hover' | 'contex
   return value === 'click' || value === 'contextmenu' ? value : 'hover'
 }
 
-function popoverPanelStyle(props: Record<string, any>): Record<string, any> {
-  const style = props.style
-  const base = style && typeof style === 'object' && !Array.isArray(style) ? style : {}
-  return { ...base, width: sizeValue(props.width) }
+function popoverPanelStyle(props: Record<string, any>): Record<string, string> {
+  return mergeStyles(props.style, { width: sizeValue(props.width) })
 }
 
 function popoverPanelClass(props: Record<string, any>): unknown {

@@ -5,7 +5,7 @@ import { Popover } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
 
-function mountPopover(props: Record<string, unknown> = {}, slots: Record<string, () => unknown> = {}) {
+function mountPopover(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   const wrapper = mount(Popover, {
     props: { trigger: 'click', content: '浮层内容', ...props },
     slots: { default: () => h('button', { class: 'probe-trigger' }, '点开看看'), ...slots },

@@ -3,7 +3,8 @@ import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TabPane, Tabs } from '@ui-kit-full'
 
-const panes = [
+// 用例里会往里混入 closable / lazy 这类条目级开关，类型放宽到通用记录
+const panes: Record<string, any>[] = [
   { label: '标签一', name: 'a', text: '内容一' },
   { label: '标签二', name: 'b', text: '内容二' },
   { label: '标签三', name: 'c', text: '内容三', disabled: true }
@@ -11,7 +12,7 @@ const panes = [
 
 // 面板由 TabPane 在自身 setup 里向 Tabs 注册，注册时机晚于 Tabs 首次渲染，
 // 因此导航项需要多等一次 tick 才会出现
-async function mountTabs(props: Record<string, unknown> = {}, list = panes) {
+async function mountTabs(props: Record<string, any> = {}, list = panes) {
   const wrapper = mount(Tabs, {
     props,
     slots: {

@@ -102,7 +102,7 @@ export function featureEntries(registry: Registry) {
   const entries: Array<{ componentId: string; id: string; spec: FeatureSpec }> = []
   for (const componentId of registry.order) {
     const spec = registry.components[componentId]
-    const features = Object.assign({}, ...spec.exports.map((item) => item.features ?? {}))
+    const features: Record<string, FeatureSpec> = Object.assign({}, ...spec.exports.map((item) => item.features ?? {}))
     for (const [id, feature] of Object.entries(features)) {
       entries.push({ componentId, id, spec: feature })
     }

@@ -3,6 +3,7 @@ import { defineComponent, h, inject, shallowRef } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { UI_CONFIG_KEY } from '../../shared/config'
+import { mergeStyles } from '../../shared/utils'
 import { BUTTON_GROUP_CONTEXT, type ButtonGroupContext } from './button-group/core'
 import {
   collectFeatureClasses,
@@ -158,7 +159,8 @@ export function createButton(features: UiFeature[] = []) {
       return function render() {
         const tag = (resolved.tag ?? 'button') as string | Component
         const size = resolved.size || groupContext?.size() || globalConfig?.value.size || 'default'
-        const type = resolved.type || groupContext?.type() || globalConfig?.value.type || 'default'
+        // 全局配置（ConfigProvider）目前只治理 size，类型默认值只走"属性 → 按钮组"两级
+        const type = resolved.type || groupContext?.type() || 'default'
         const prefix = collectFeatureFragments(states, 'prefix')
         const suffix = collectFeatureFragments(states, 'suffix')
         const content = transformFeatureContent(states, slots.default?.() ?? null)
@@ -183,7 +185,7 @@ export function createButton(features: UiFeature[] = []) {
               `ui-button--size-${size}`,
               ...collectFeatureClasses(states)
             ],
-            style: { ...(attrs.style as Record<string, any>), ...collectFeatureStyles(states) },
+            style: mergeStyles(attrs.style, collectFeatureStyles(states)),
             disabled: Boolean(resolved.disabled) || isFeatureDisabled(states) || undefined,
             autofocus: resolved.autofocus || undefined
           },

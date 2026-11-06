@@ -8,7 +8,7 @@ const spaceBaseProps = {
   direction: { type: String, default: 'horizontal' },
   alignment: { type: String, default: 'center' },
   wrap: { type: Boolean },
-  fill: { type: Boolean },
+  fill: { type: Boolean }
 }
 
 function gapValue(size: unknown): string | undefined {

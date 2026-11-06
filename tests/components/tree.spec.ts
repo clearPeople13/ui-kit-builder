@@ -3,12 +3,17 @@ import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Tree } from '@ui-kit-full'
 
+/** findAll('input') 拿到的是 VueNode<Element>，勾选与半选态要按 HTMLInputElement 读 */
+function inputOf(node: { element: Element }): HTMLInputElement {
+  return node.element as HTMLInputElement
+}
+
 const treeData = [
   { id: 1, label: '一级 1', children: [{ id: 2, label: '二级 1-1' }] },
   { id: 3, label: '一级 2', children: [{ id: 4, label: '二级 2-1', children: [{ id: 5, label: '三级 2-1-1' }] }] }
 ]
 
-function mountTree(props: Record<string, unknown> = {}, slots: Record<string, any> = {}) {
+function mountTree(props: Record<string, any> = {}, slots: Record<string, any> = {}) {
   return mount(Tree, { props: { data: treeData, ...props }, slots, attachTo: document.body })
 }
 
@@ -159,7 +164,7 @@ describe('Tree', () => {
     await nextTick()
     expect(wrapper.emitted('check-change')?.[0]).toEqual([treeData[0], true])
     expect(wrapper.emitted('update:checked-keys')?.[0]).toEqual([[1, 2]])
-    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => item.element.checked)).toEqual([
+    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => inputOf(item).checked)).toEqual([
       true,
       true,
       false,
@@ -187,13 +192,13 @@ describe('Tree', () => {
     await wrapper.findAll('.ui-tree__checkbox input')[1].setValue(true)
     await nextTick()
     const boxes = wrapper.findAll('.ui-tree__checkbox input')
-    expect(boxes[0].element.indeterminate).toBe(true)
-    expect(boxes[0].element.checked).toBe(false)
-    expect(boxes[1].element.checked).toBe(true)
+    expect(inputOf(boxes[0]).indeterminate).toBe(true)
+    expect(inputOf(boxes[0]).checked).toBe(false)
+    expect(inputOf(boxes[1]).checked).toBe(true)
     await wrapper.findAll('.ui-tree__checkbox input')[2].setValue(true)
     await nextTick()
-    expect(wrapper.findAll('.ui-tree__checkbox input')[0].element.indeterminate).toBe(false)
-    expect(wrapper.findAll('.ui-tree__checkbox input')[0].element.checked).toBe(true)
+    expect(inputOf(wrapper.findAll('.ui-tree__checkbox input')[0]).indeterminate).toBe(false)
+    expect(inputOf(wrapper.findAll('.ui-tree__checkbox input')[0]).checked).toBe(true)
   })
 
   it('checkStrictly 只影响自身', async () => {
@@ -202,7 +207,7 @@ describe('Tree', () => {
     await wrapper.findAll('.ui-tree__checkbox input')[0].setValue(true)
     await nextTick()
     expect(wrapper.emitted('update:checked-keys')?.[0]).toEqual([[1]])
-    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => item.element.checked)).toEqual([
+    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => inputOf(item).checked)).toEqual([
       true,
       false,
       false,
@@ -214,7 +219,7 @@ describe('Tree', () => {
   it('defaultCheckedKeys 初始化勾选', async () => {
     const wrapper = mountTree({ defaultExpandAll: true, showCheckbox: true, defaultCheckedKeys: [2] })
     await nextTick()
-    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => item.element.checked)).toEqual([
+    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => inputOf(item).checked)).toEqual([
       true,
       true,
       false,
@@ -228,7 +233,7 @@ describe('Tree', () => {
     await nextTick()
     await clickNode(wrapper, 0)
     expect(wrapper.emitted('check-change')?.[0]?.[1]).toBe(true)
-    expect(wrapper.findAll('.ui-tree__checkbox input')[0].element.checked).toBe(true)
+    expect(inputOf(wrapper.findAll('.ui-tree__checkbox input')[0]).checked).toBe(true)
   })
 
   it('filter 默认按标签匹配并保留命中节点的父级', async () => {
@@ -262,8 +267,10 @@ describe('Tree', () => {
     await nextTick()
     ;(wrapper.vm as any).setCheckedKeys([5])
     await nextTick()
-    expect([...(wrapper.emitted('update:checked-keys')?.slice(-1)?.[0]?.[0] ?? [])].sort()).toEqual([3, 4, 5])
-    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => item.element.checked)).toEqual([
+    expect([...((wrapper.emitted('update:checked-keys')?.slice(-1)?.[0]?.[0] ?? []) as any[])].sort()).toEqual([
+      3, 4, 5
+    ])
+    expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => inputOf(item).checked)).toEqual([
       false,
       false,
       true,

@@ -11,7 +11,7 @@ const badgeBaseProps = {
   isDot: { type: Boolean },
   hidden: { type: Boolean },
   showZero: { type: Boolean, default: true },
-  color: { type: String },
+  color: { type: String }
 }
 
 function displayValue(value: string | number, max: number): string {

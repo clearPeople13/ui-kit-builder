@@ -2157,6 +2157,36 @@ function resolveBoolean(
   return value === undefined ? fallback : Boolean(value)
 }
 
+// Escape 关闭浮层的登记栈：同屏多个浮层展开时（对话框里的下拉、嵌套 Popover），
+// 一次按键只关最上层那个，避免一层 Esc 把所有层全收起。
+const escapeHandlers: Array<() => void> = []
+
+function handleEscapeKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape') {
+    return
+  }
+  escapeHandlers[escapeHandlers.length - 1]?.()
+}
+
+function pushEscapeHandler(handler: () => void) {
+  if (typeof window === 'undefined') {
+    return () => undefined
+  }
+  if (escapeHandlers.length === 0) {
+    window.addEventListener('keydown', handleEscapeKeydown)
+  }
+  escapeHandlers.push(handler)
+  return () => {
+    const index = escapeHandlers.indexOf(handler)
+    if (index >= 0) {
+      escapeHandlers.splice(index, 1)
+    }
+    if (escapeHandlers.length === 0) {
+      window.removeEventListener('keydown', handleEscapeKeydown)
+    }
+  }
+}
+
 export function triggerConfig(options: {
   name: string
   baseClass: string
@@ -2348,6 +2378,26 @@ export function triggerConfig(options: {
         }
       )
 
+      // 展开期间接管 Escape：closeOnPressEscape 显式给 false 才关掉这条通路，
+      // 未声明该 prop 的浮层（trigger 型组件）默认都能用 Escape 收起
+      let detachEscape: (() => void) | null = null
+      watch(
+        () => open.value,
+        (value) => {
+          if (value && props.closeOnPressEscape !== false) {
+            if (!detachEscape) {
+              detachEscape = pushEscapeHandler(hideNow)
+            }
+            return
+          }
+          if (detachEscape) {
+            detachEscape()
+            detachEscape = null
+          }
+        },
+        { immediate: true }
+      )
+
       onMounted(() => {
         document.addEventListener('pointerdown', handleDocumentPointerDown, true)
       })
@@ -2356,6 +2406,10 @@ export function triggerConfig(options: {
         clearShowTimer()
         clearHideTimer()
         clearCloseTimer()
+        if (detachEscape) {
+          detachEscape()
+          detachEscape = null
+        }
         document.removeEventListener('pointerdown', handleDocumentPointerDown, true)
       })
 
@@ -2384,10 +2438,27 @@ export function triggerConfig(options: {
     },
     attrs: (props, state) => {
       const current = resolveTrigger(options.trigger, props)
+      // 触发器是带 tabindex 的 div：Tab 到位后必须还能用 Enter/Space 打开，
+      // 否则纯 div 触发器对键盘是死的。里层本来就有 button/a/input 时不接管，
+      // 那类节点的原生 click 已经会走到 onClick，重复一次会把状态顶回去。
+      const keyboard = {
+        onKeydown: (event: KeyboardEvent) => {
+          if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+            return
+          }
+          const target = event.target as HTMLElement | null
+          if (target?.closest?.('button, a, input, select, textarea, [role="button"]')) {
+            return
+          }
+          event.preventDefault()
+          state.toggle()
+        }
+      }
       if (current === 'hover') {
         return {
           onMouseenter: () => state.scheduleShow(),
-          onMouseleave: () => state.scheduleHide()
+          onMouseleave: () => state.scheduleHide(),
+          ...keyboard
         }
       }
       if (current === 'contextmenu') {
@@ -2395,11 +2466,13 @@ export function triggerConfig(options: {
           onContextmenu: (event: Event) => {
             event.preventDefault()
             state.toggle()
-          }
+          },
+          ...keyboard
         }
       }
       return {
-        onClick: () => state.toggle()
+        onClick: () => state.toggle(),
+        ...keyboard
       }
     },
     styles: () => ({ position: 'relative' }),

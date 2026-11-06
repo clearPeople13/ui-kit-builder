@@ -657,6 +657,8 @@ export function createSelect(features: UiFeature[] = []) {
           {
             ref: state.triggerRef,
             class: 'ui-select__trigger',
+            // id 声明成 prop 后不再走 attrs 透传；combobox 才是可被 label/aria 引用的节点
+            id: props.id || undefined,
             role: 'combobox',
             tabindex: props.filterable || props.disabled ? undefined : props.tabindex,
             'aria-expanded': state.open,

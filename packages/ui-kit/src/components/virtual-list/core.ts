@@ -2,6 +2,7 @@ import type { CSSProperties, VNodeChild } from 'vue'
 import { computed, defineComponent, h, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { mergeFeatureProps } from '../../shared/feature'
+import { mergeStyles } from '../../shared/utils'
 import './core.css'
 
 const virtualListBaseProps = {
@@ -87,13 +88,12 @@ export function createVirtualList(features: UiFeature[] = []) {
           {
             ...attrs,
             class: [attrs.class, 'ui-virtual-list'],
-            style: {
-              ...(attrs.style as CSSProperties),
+            style: mergeStyles(attrs.style, {
               height: `${props.height}px`,
               overflowY: 'auto',
               overflowX: 'hidden',
               position: 'relative'
-            },
+            }),
             onScroll: handleScroll
           },
           [

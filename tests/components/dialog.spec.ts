@@ -3,7 +3,7 @@ import { nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Dialog } from '@ui-kit-full'
 
-function mountDialog(props: Record<string, unknown> = {}, slots: Record<string, () => string> = {}) {
+function mountDialog(props: Record<string, any> = {}, slots: Record<string, () => string> = {}) {
   // 打开时整块 teleport 到 body，wrapper.html() 只剩传送门注释，断言需要直接查 body
   const wrapper = mount(Dialog, {
     props: { modelValue: true, title: '提示', ...props },
@@ -63,7 +63,7 @@ describe('Dialog', () => {
   })
 
   it('打开时渲染遮罩、面板、标题与内容', () => {
-    mountDialog({ slots: undefined } as Record<string, never>, { default: () => '正文内容' })
+    mountDialog({ slots: undefined } as Record<string, any>, { default: () => '正文内容' })
     expect(panel()?.getAttribute('role')).toBe('dialog')
     expect(document.querySelector('.ui-dialog__mask')).not.toBeNull()
     expect(document.querySelector('.ui-dialog__panel__title')?.textContent).toBe('提示')

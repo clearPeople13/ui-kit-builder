@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { Progress } from '@ui-kit-full'
 
 // 统一构造 Progress，收敛公共 props
-function mountProgress(props: Record<string, unknown> = {}) {
+function mountProgress(props: Record<string, any> = {}) {
   return mount(Progress, { props: { percentage: 40, ...props } })
 }
 

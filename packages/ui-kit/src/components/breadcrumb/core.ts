@@ -91,9 +91,7 @@ export function createBreadcrumbItem(features: UiFeature[] = []) {
       content: ({ slots, state }) => {
         const body = slots.default?.() ?? null
         return [
-          h('span', { class: 'ui-breadcrumb-item__separator', 'aria-hidden': 'true' }, [
-            state.separator
-          ]),
+          h('span', { class: 'ui-breadcrumb-item__separator', 'aria-hidden': 'true' }, [state.separator]),
           h('span', { class: 'ui-breadcrumb-item__inner' }, [body])
         ]
       }

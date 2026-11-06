@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["node", "vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@ui-kit-full": ["./dist/full/index.d.ts"]
+    },
+    "strict": false,
+    "noImplicitAny": false
+  },
+  "include": ["tests/**/*.ts", "vitest.config.ts", "vitest.build.config.ts", "vitest.browser.config.ts"],
+  "exclude": ["tests/browser/harness/**"]
+}

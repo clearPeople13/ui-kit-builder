@@ -66,7 +66,8 @@
 
 - 第二批已交付（分支 `feature/20261106-component-tests-batch2`，内容见 §7），其缺陷也已清除（分支 `fix/20261107-component-defects-batch2`，内容见 §7.1）
 - 第三批已交付（分支 `feature/20261107-tests-batch3`，内容见 §8）：构建器侧的裁剪契约、产物自证信息、体积阈值与主题令牌快照，附带清掉构建器缺陷 F-26、F-28，并记录 F-27
-- 第四批（质量门禁）：真实浏览器层的布局 / 定位 / 拖拽 / 滚动断言、控制台告警归零、可访问性，收敛成一条 `npm run quality`
+- 第四批已交付（分支 `feature/20261107-quality-gate`，内容见 §9）：真实浏览器层的布局 / 定位 / 拖拽 / 滚动 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，附带清掉浏览器层暴露的缺陷 F-29~F-33，全部收敛成一条 `npm run quality`
+- 第五批（建议）：把 `npm run quality` 接到 CI 与提交钩子（当前仍是本地一条命令），并把"裁剪后 19 份 profile 的运行时可用性"补成按 profile 起 alias 的关键用例
 - 缺陷修复已按"单独分支 + 单独 PR"完成（`fix/20261106-component-defects`），每条 `it.fails` 守卫都降级为组件文件里的常规用例；后续批次沿用同一约定
 - §5 的 F-1~F-10、§7.1 的 F-11~F-25 均已修复，守卫文件 `tests/findings.spec.ts` 按约定删除
 
@@ -133,3 +134,55 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | F-26 | `scripts/build-lib.mjs` | `meta.features` 报 179 条，入口 `entry.ts` 出现重复 import 语句                  | 同一个特性可以挂在同组件的多个导出上（`table.selection` 同时在 `Table` 与 `TableColumn`），`generateEntry` 按"导出 × 特性"逐条推送，没去重 | 入口生成按 `导出名 + 模块` 去重 import、按特性 id 去重 `activeFeatures`；类型生成侧同样按 id 去重                                                                                                  | `profile-contract.spec.ts`「features 是 registry 声明顺序下的特性 id，且不含重复项」+ `tree-shaking.spec.ts`「entry.ts 的特性 import 恰好等于被选中的特性模块，且没有重复行」 |
 | F-27 | `scripts/build-all.mjs` | `sizes.json.features` 恒为空对象，构建器界面拿不到"单个特性的体积成本"           | 增量靠"恰好等于 `requires` 与 `requires + [id]` 的两份 profile"配对求得；仓库里除 core（0 特性）外 19 份都是全特性集，任何配对都不成立     | 本批不改口径，先把事实钉住：`size-budget.spec.ts` 重算出"能被现有 profile 对测出增量"的集合恰好是空集，用例注释写明后果                                                                            | `size-budget.spec.ts`「features 段恰好等于"能用现有 profile 对测出增量"的特性集合」                                                                                           |
 | F-28 | `normalizePropType`     | `index.d.ts` 里出现 `((...args: any[]) => any \| any[])`，数组分支被吞进返回类型 | 括号深度表把 `=>` 的 `>` 当右括号，深度穿到负数，箭头函数之后的顶层 `\|` 不再拆分                                                          | 深度计算跳过 `=` 之后的 `>`；两份 `spec.mjs` 把有歧义的类型写成显式括号（`((...args: any[]) => any) \| any[]`、`(value: string) => (boolean \| string \| undefined)`），生成器 `tsType` 同步补括号 | `builder-functions.spec.ts`「F-28：=> 的右尖括号不计入括号深度」「d.ts 里每一行属性类型都已规范化且幂等」                                                                     |
+
+## 9. 第四批交付（质量门禁：真实浏览器层 + 统一入口，分支 `feature/20261107-quality-gate`）
+
+第三批之后仍有 612 条用例全绿，而浏览器里打开示例页会直接抛 `TypeError: Failed to set an indexed property [0] on 'CSSStyleDeclaration'`。两者的落差来自 happy-dom：它把所有元素的矩形算成 0，样式表与布局不参与判定，于是"定位、翻转、夹取、滚动跟随、拖拽、真实尺寸、控制台告警"这一整类事实在单元层不可证伪。第四批不再补用例，而是把这一类缺口整体接进来，并把所有检查收敛成一条命令。
+
+### 9.1 门禁清单（`npm run quality`）
+
+| 顺序 | 入口                      | 规模                         | 堵住的缺口                                                                    |
+| ---- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------- |
+| 1    | `npm run format:check`    | 全仓 ts / mjs                | 格式漂移导致评审 diff 失真                                                    |
+| 2    | `npm run typecheck`       | 库 + 用例两份工程            | 组件属性表与用例的拼写错误；新增 `tsconfig.tests.json` 把 `tests/**` 纳入检查 |
+| 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                               |
+| 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                      |
+| 5    | `npm test`                | 30 文件 629 条               | 组件行为、属性、事件、边界（happy-dom）                                       |
+| 6    | `npm run test:build`      | 6 文件 68 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
+| 7    | `npm run test:browser`    | 8 文件 42 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线       |
+| 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                            |
+
+### 9.2 浏览器层用例（`tests/browser/**`，Chromium + 固定 1280×720）
+
+| 文件                                                                       | 用例 | 盯住的缺口                                                                               |
+| -------------------------------------------------------------------------- | ---- | ---------------------------------------------------------------------------------------- |
+| [tests/browser/floating.spec.ts](tests/browser/floating.spec.ts)           | 8    | 贴边翻转、右沿夹取、Select 面板等宽、滚动时面板与触发器相对位移恒定                      |
+| [tests/browser/table.spec.ts](tests/browser/table.spec.ts)                 | 6    | body 独立滚动而表头 / 合计固定、横向 scrollLeft 同步、冻结列贴边、列宽拖拽落列、合计数值 |
+| [tests/browser/tree.spec.ts](tests/browser/tree.spec.ts)                   | 4    | 5000 子节点展开耗时（实测 96 ms，门禁 800 ms）、逐层展开的节点数与 `node-click`          |
+| [tests/browser/interaction.spec.ts](tests/browser/interaction.spec.ts)     | 5    | 取色器 SV 区 / 色相条的真实矩形命中、点选与按住拖动的连续更新、十六进制回显一致          |
+| [tests/browser/a11y.spec.ts](tests/browser/a11y.spec.ts)                   | 7    | Tab 序列命中触发器 / 标签页 / 开关、Enter 展开、Space 收起、Escape 关闭、焦点可见        |
+| [tests/browser/attributes.spec.ts](tests/browser/attributes.spec.ts)       | 3    | 以 `spec.mjs` 为清单的 `id` 落盘扫描、全导出字符串 `style` 扫描、Popover 样式路由        |
+| [tests/browser/console-clean.spec.ts](tests/browser/console-clean.spec.ts) | 3    | 全家桶默认属性渲染零告警 / 零异常、渲染数量与尺寸下限                                    |
+| [tests/browser/visual.spec.ts](tests/browser/visual.spec.ts)               | 6    | 六个场景的布局指纹与基线比对（容差 1px，按平台分桶，`npm run snap:layout` 重录）         |
+
+支撑件：`vitest.browser.config.ts`（串行、60 s 超时）、`tests/browser/_global-setup.ts`（仓库根起 Vite dev server，并 `define` 三个 Vue feature flags 常量）、`tests/browser/harness/`（`?scene=` 选场景，`window.__probe` 回传运行期事实，`window.__kit` / `__vue` 供页面内直接挂载）、`tests/browser/_session.ts`（会话与断言工具箱）、`tests/browser/_geometry.ts`（锚点表 + 指纹采集 + 差异报告）。
+
+单元层同步补两份锚点，避免"只有浏览器能发现"的缺陷在合入后才红：[tests/components/style-attrs.spec.ts](tests/components/style-attrs.spec.ts)（10 条，字符串 / 数组 / `false` 的 style 合并与属性优先契约）、[tests/components/floating-keyboard.spec.ts](tests/components/floating-keyboard.spec.ts)（7 条，Enter / Space / 分层 Escape）。
+
+### 9.3 第四批已知缺陷清单（已修复，与浏览器层同分支）
+
+| 编号 | 位置                                                                                  | 原现象                                                                                                                                          | 根因                                                                                                            | 修复                                                                                                                                                                              | 回归用例                                                                                                                                                   |
+| ---- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-29 | Button                                                                                | `type` 的默认值链里读 `globalConfig?.value.type`，而 `UiGlobalConfig` 与 ConfigProvider 只声明并 provide `size`，`spec.mjs` 也没有 `type`       | 全局配置的契约只有 size，按钮却预留了一条永远取到 `undefined` 的死分支，读代码会误判"全局可以治理按钮类型"      | `button/core.ts` 的类型链改成"属性 → 按钮组 → 缺省"，并就地注释                                                                                                                   | 无可观察行为差异，不新增用例；由 §9.2 的属性落盘扫描保证 ConfigProvider 不再被误当成 type 来源                                                             |
+| F-30 | `shared/component.ts` 及 button / scrollbar / table / virtual-list / popover / popper | 宿主写 `style="width: 220px"`，真浏览器一进页面就抛 `TypeError: Failed to set an indexed property [0] on 'CSSStyleDeclaration'`，整棵子树不渲染 | 合并样式用对象展开 `{...attrs.style}`，字符串被摊成 `{0:'w',1:'i',…}`；happy-dom 静默吞掉数字键，612 条用例全绿 | `shared/utils.ts` 新增 `mergeStyles()`（字符串按 `;` 拆声明、数组递归、对象跳过 `nil`/`false`），7 处调用点全部换成它                                                             | 浏览器层 attributes.spec（全导出扫字符串 style，任何组件抛错都点名）+ 单元层 style-attrs.spec（`width` 必须落到根节点，附带数组 / 对象混写与 `false`）     |
+| F-31 | Select、Message、Notification                                                         | `spec.mjs` 对外声明了 `id`，但页面上 `document.getElementById` 取不到节点                                                                       | `id` 被声明成 prop 之后不再走 attrs 透传，而这三处没有显式落盘；单测里只断言了类名与文本，取不到 id 无人察觉    | Select 触发区写 `id`（combobox 节点才是可被 label / aria 引用的目标），Message / Notification 在 `attrs` 钩子里补 `id`                                                            | attributes.spec「声明了 id 属性的组件，挂载后 document.getElementById 必须命中」：以 `spec.mjs` 为清单逐个挂载回查，声明与实现从此不能再脱钩               |
+| F-32 | `shared/behavior.ts` 的 `triggerConfig`                                               | Dropdown / Popover / Tooltip 的触发器是带 `tabindex` 的 `div`，Tab 到位后按 Enter 或 Space 没有任何反应                                         | 触发器只挂了 `click` / `mouseenter`，纯 `div` 对键盘是死的；`page.hover` 一类的鼠标用例永远覆盖不到这条路径     | `attrs` 补 `onKeydown`：Enter / Space 走 `state.toggle()` 并 `preventDefault`；焦点落在 `button / a / input / select / textarea / [role=button]` 内层时不接管，避免一次按键切两下 | a11y.spec「聚焦在下拉触发器上按 Enter 展开面板，aria-expanded 同步」「Space 关闭已展开的面板」+ 单元层 floating-keyboard.spec 的 span 触发器与原生按钮两条 |
+| F-33 | `shared/behavior.ts` 的 `triggerConfig`                                               | 面板用 Enter 打开后，按 Escape 不收回；对话框有这条通路，触发型浮层没有                                                                         | Escape 只在 `overlayConfig`（Dialog / Drawer / Image）里接，`triggerConfig` 完全没有键盘关闭                    | 引入模块级 Escape 登记栈：展开时入栈、收起或卸载时出栈，一次按键只交还栈顶那层，嵌套浮层不会被一键全关；`closeOnPressEscape === false` 时不登记                                   | floating-keyboard.spec「两层浮层同屏时一次 Escape 只收起最后打开的那层」「全部卸载后 Escape 不再触达组件」+ a11y.spec 的下拉与对话框两条                   |
+
+### 9.4 交付说明与已知限制
+
+行为变化只有两处，且都是"补齐键盘通路"：触发型浮层现在响应 Enter / Space 开合，以及 Escape 收起栈顶浮层；依赖"按 Enter 不展开"的宿主写法需要复查。`style` 的路由口径同步写进文档与用例：Aside 的宽度由 `width` 属性决定、Popover 的 `style` / `className` 落到面板，这两点在 attributes.spec 里以白名单形式钉住并写明理由，新增同类例外必须附理由才会被放行。
+
+配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；`sweep-shots.mjs` 顺带过了一遍 `eslint --fix`。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
+
+仍存在的缺口，按重要性排列：没有 CI 与提交钩子，`npm run quality` 目前靠本地自觉执行；布局基线只比几何矩形不比像素，且非本机平台自动跳过；浏览器层 8 个文件串行执行约 15 s，profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据；覆盖率未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入。

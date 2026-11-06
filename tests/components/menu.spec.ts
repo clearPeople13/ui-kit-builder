@@ -24,7 +24,7 @@ function defaultChildren() {
   ]
 }
 
-function mountMenu(props: Record<string, unknown> = {}, children: () => unknown[] = defaultChildren) {
+function mountMenu(props: Record<string, any> = {}, children: () => unknown[] = defaultChildren) {
   const wrapper = mount(Menu, {
     props: { defaultActive: '1', ...props },
     slots: { default: children },

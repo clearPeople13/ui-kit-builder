@@ -9,8 +9,18 @@ const rows = [
   { id: 3, name: 'C', age: 22 }
 ]
 
+/** findAll('input') 拿到的是 VueNode<Element>，勾选态要按 HTMLInputElement 读 */
+function inputOf(node: { element: Element }): HTMLInputElement {
+  return node.element as HTMLInputElement
+}
+
+/** emitted 的载荷是 unknown，排序事件按声明的形状收一次再断言字段 */
+function sortEvents(wrapper: { emitted: (name: string) => unknown[][] | undefined }) {
+  return (wrapper.emitted('sort-change') ?? []) as Array<[{ prop?: string; order?: string; sorts?: unknown[] }]>
+}
+
 function columns(
-  list = [
+  list: Record<string, any>[] = [
     { prop: 'id', label: 'ID', width: 60 },
     { prop: 'name', label: '名称', minWidth: 80, sortable: true },
     { prop: 'age', label: '年龄', align: 'right' }
@@ -19,7 +29,7 @@ function columns(
   return () => list.map((column) => h(TableColumn, column))
 }
 
-function mountTable(props: Record<string, unknown> = {}, slots: Record<string, any> = { default: columns() }) {
+function mountTable(props: Record<string, any> = {}, slots: Record<string, any> = { default: columns() }) {
   const wrapper = mount(Table, { props: { data: rows, ...props }, slots, attachTo: document.body })
   return wrapper
 }
@@ -28,7 +38,7 @@ function bodyTexts(wrapper: ReturnType<typeof mountTable>) {
   return wrapper.findAll('tbody tr').map((row) => row.text())
 }
 
-async function setup(props: Record<string, unknown> = {}, slots?: Record<string, any>) {
+async function setup(props: Record<string, any> = {}, slots?: Record<string, any>) {
   const wrapper = mountTable(props, slots)
   await nextTick()
   return wrapper
@@ -149,14 +159,14 @@ describe('Table', () => {
     expect(head.classes()).toContain('is-sortable')
     expect(head.find('.ui-table__sort-caret').exists()).toBe(true)
     await head.trigger('click')
-    expect(wrapper.emitted('sort-change')?.[0]?.[0]?.prop).toBe('name')
-    expect(wrapper.emitted('sort-change')?.[0]?.[0]?.order).toBe('ascending')
+    expect(sortEvents(wrapper)[0]?.[0]?.prop).toBe('name')
+    expect(sortEvents(wrapper)[0]?.[0]?.order).toBe('ascending')
     expect(bodyTexts(wrapper)).toEqual(['1A20', '2B21', '3C22'])
     await head.trigger('click')
-    expect(wrapper.emitted('sort-change')?.[1]?.[0]?.order).toBe('descending')
+    expect(sortEvents(wrapper)[1]?.[0]?.order).toBe('descending')
     expect(wrapper.find('.ui-table__sort-caret').classes()).toContain('is-descending')
     await head.trigger('click')
-    expect(wrapper.emitted('sort-change')?.[2]?.[0]?.order).toBe('')
+    expect(sortEvents(wrapper)[2]?.[0]?.order).toBe('')
     expect(bodyTexts(wrapper)).toEqual(['3C22', '2B21', '1A20'])
   })
 
@@ -167,9 +177,9 @@ describe('Table', () => {
     )
     const head = wrapper.find('th')
     await head.trigger('click')
-    expect(wrapper.emitted('sort-change')?.[0]?.[0]?.order).toBe('descending')
+    expect(sortEvents(wrapper)[0]?.[0]?.order).toBe('descending')
     await head.trigger('click')
-    expect(wrapper.emitted('sort-change')?.[1]?.[0]?.order).toBe('descending')
+    expect(sortEvents(wrapper)[1]?.[0]?.order).toBe('descending')
     expect(bodyTexts(wrapper)).toEqual(['22', '21', '20'])
   })
 
@@ -218,7 +228,7 @@ describe('Table', () => {
     const heads = wrapper.findAll('th')
     await heads[1].trigger('click')
     await heads[0].trigger('click')
-    const change = wrapper.emitted('sort-change')?.slice(-1)?.[0]?.[0]
+    const change = sortEvents(wrapper).slice(-1)[0]?.[0]
     expect(change?.sorts).toEqual([
       { prop: 'age', order: 'ascending' },
       { prop: 'name', order: 'ascending' }
@@ -252,10 +262,10 @@ describe('Table', () => {
     await wrapper.find('thead input').setValue(true)
     await nextTick()
     expect(wrapper.emitted('selection-change')?.slice(-1)?.[0]).toEqual([rows])
-    expect(wrapper.findAll('tbody input').map((item) => item.element.checked)).toEqual([true, true, true])
+    expect(wrapper.findAll('tbody input').map((item) => inputOf(item).checked)).toEqual([true, true, true])
     await wrapper.find('thead input').setValue(false)
     await nextTick()
-    expect(wrapper.findAll('tbody input').map((item) => item.element.checked)).toEqual([false, false, false])
+    expect(wrapper.findAll('tbody input').map((item) => inputOf(item).checked)).toEqual([false, false, false])
   })
 
   it('selectable=false 的行不可勾选', async () => {
@@ -286,7 +296,7 @@ describe('Table', () => {
     api.clearSelection()
     await nextTick()
     expect(wrapper.emitted('selection-change')?.slice(-1)?.[0]).toEqual([[]])
-    expect(wrapper.findAll('tbody input').map((item) => item.element.checked)).toEqual([false, false, false])
+    expect(wrapper.findAll('tbody input').map((item) => inputOf(item).checked)).toEqual([false, false, false])
   })
 
   // 原缺陷 F-8：toggleRowSelection 用 indexOf 定位行，调用方持有原始对象而渲染行是
@@ -306,7 +316,7 @@ describe('Table', () => {
     expect(api.getSelectionRows()).toHaveLength(1)
     expect(toRaw(api.getSelectionRows()[0])).toBe(rows[0])
     expect(wrapper.emitted('selection-change')).toHaveLength(1)
-    expect(wrapper.findAll('tbody input')[0].element.checked).toBe(true)
+    expect(inputOf(wrapper.findAll('tbody input')[0]).checked).toBe(true)
 
     // 代理引用命中同一行，不产生第二条选择
     api.toggleRowSelection(proxyRow, true)
