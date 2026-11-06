@@ -1,0 +1,19 @@
+# 统一换行符：仓库内一律 LF，签出也强制 LF。
+# Windows 上 core.autocrlf=true 会把签出的文本变成 CRLF，而 .prettierrc 的
+# endOfLine=lf 会把整仓判成格式不合规（一次 format:check 报 144 个文件），
+# 门禁就变成"只有本机首建的工作树能过"。写进 .gitattributes 后与本机 git 配置解耦。
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.pdf binary
+*.zip binary
+*.mp4 binary
