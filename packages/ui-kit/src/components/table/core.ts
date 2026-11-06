@@ -749,8 +749,14 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       // 变量行高实测：读取窗口内每行实际高度回填高度表，前缀和变了会顶起/压低后续行，
-      // 用窗口首行的偏移增量锚住 scrollTop，滚动位置不跳
+      // 用窗口首行的偏移增量锚住 scrollTop，滚动位置不跳。
+      // 滚动进行中暂停提交：拖滚动条时每次提交都会触发 O(N) 前缀和重算 + 全量重渲染 +
+      // scrollTop 回改，滚动事件被放大、主线程被喂满，表现为内容不跟随且拖动时大片空白；
+      // 停稳后再统一实测回填，拖动全程按现有估算渲染，滚动条总高稳定、拇指自然跟随
+      const SCROLL_SETTLE_MS = 120
       let rowMeasureFrame = 0
+      let scrollSettleTimer: ReturnType<typeof setTimeout> | undefined
+      let scrollActive = false
       function scheduleRowMeasure() {
         if (!resolved.virtual || typeof window === 'undefined' || rowMeasureFrame) {
           return
@@ -762,6 +768,9 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       function flushRowMeasure() {
+        if (scrollActive) {
+          return
+        }
         const list = pipelineRows.value
         const bodyEl = tableRef.value?.querySelector(':scope > tbody.ui-table__body')
         if (!bodyEl) {
@@ -809,6 +818,14 @@ export function createTable(features: UiFeature[] = []) {
           if (element) {
             bodyScrollTop.value = element.scrollTop
           }
+          scrollActive = true
+          if (scrollSettleTimer) {
+            clearTimeout(scrollSettleTimer)
+          }
+          scrollSettleTimer = setTimeout(() => {
+            scrollActive = false
+            scheduleRowMeasure()
+          }, SCROLL_SETTLE_MS)
         }
       }
 
@@ -846,6 +863,10 @@ export function createTable(features: UiFeature[] = []) {
           window.cancelAnimationFrame(rowMeasureFrame)
         }
         rowMeasureFrame = 0
+        if (scrollSettleTimer) {
+          clearTimeout(scrollSettleTimer)
+        }
+        scrollSettleTimer = undefined
       })
 
       interface CellOptions {
