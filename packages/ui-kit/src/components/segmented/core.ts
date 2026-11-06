@@ -6,7 +6,9 @@ import './core.css'
 const segmentedBaseProps = {
   disabled: { type: Boolean },
   options: { type: Array, default: () => [] },
-  modelValue: { type: [String, Number, Boolean] },
+  // Boolean 联合类型不写 default 会被 Vue 归一成 false，未受控时 value:false 的选项一上来就高亮；
+  // 与 F-2 / F-4 / F-13 / F-14 同一口径：显式 default: undefined 保住"没传就是没传"
+  modelValue: { type: [String, Number, Boolean], default: undefined },
   size: { type: String },
   label: { type: null },
   direction: { type: String, default: 'horizontal' },
