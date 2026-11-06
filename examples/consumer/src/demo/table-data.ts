@@ -145,6 +145,39 @@ export const TABLE_LONG_ROWS: TableDemoRow[] = Array.from({ length: 24 }, (_valu
   }
 })
 
+export interface TableHeavyRow extends TableDemoRow {
+  group: string
+}
+
+// 重数据示例用的确定性行生成器：字段全部由行号推导，同一条数永远生成同一行
+// 函数体保持自包含（不引用模块级常量），demo 代码展示用 toString 整体还原
+export function makeHeavyRows(count: number): TableHeavyRow[] {
+  const cities = ['上海', '杭州', '成都', '深圳', '北京', '武汉', '南京', '西安', '苏州', '广州']
+  const owners = ['黄博', '李雯', '周子墨', '陈可', '孙悦', '吴桐', '林静', '赵一鸣', '何嘉', '郑凯', '冯远', '许晴']
+  const modules = ['按钮', '输入框', '选择器', '表格', '表单', '日期', '弹窗', '导航', '树形', '上传', '图表', '布局']
+  const statuses = ['稳定', '内测', '规划']
+  return Array.from({ length: count }, (_value, index) => {
+    const serial = index + 1
+    const pseudo = (serial * 2654435761) % 100000
+    return {
+      id: serial,
+      name: `${modules[index % modules.length]}模块-${String(serial).padStart(5, '0')}`,
+      city: cities[index % cities.length],
+      owner: owners[index % owners.length],
+      status: statuses[index % statuses.length],
+      progress: pseudo % 101,
+      orders: (pseudo % 180) + 12,
+      amount: ((pseudo % 420) + 40) * 900,
+      date: `2026-${String((index % 4) + 9).padStart(2, '0')}-${String((index % 27) + 1).padStart(2, '0')}`,
+      remark: `第 ${Math.floor(index / 50) + 1} 批第 ${(index % 50) + 1} 项，确定性生成的压测数据。`,
+      group: `第 ${Math.floor(index / 50) + 1} 批`
+    }
+  })
+}
+
+// 复杂大表（编辑 + 冻结 + 合计 + 合并）每个合并块的行数
+export const HEAVY_GROUP_SIZE = 50
+
 export interface TableTreeRow {
   id: string
   name: string

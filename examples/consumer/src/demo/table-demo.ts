@@ -1,9 +1,11 @@
 import { defineComponent, h, ref, shallowRef, type Component, type PropType, type VNodeChild } from 'vue'
 import {
+  HEAVY_GROUP_SIZE,
   TABLE_DEMO_ROWS,
   TABLE_EDIT_ROWS,
   TABLE_SPAN_GROUPS,
   TABLE_SPAN_ROWS,
+  makeHeavyRows,
   type TableEditRow
 } from './table-data'
 
@@ -181,6 +183,25 @@ const COMPREHENSIVE_TAIL: TableColumnSpec[] = [
   COLUMN.remark
 ]
 
+const EDITABLE_BLUEPRINT: TableColumnSpec[] = [
+  fixedLeft(COLUMN.selection),
+  fixedLeft(COLUMN.index),
+  fixedLeft(COLUMN.editName),
+  ...EDIT_TAIL,
+  fixedRight(COLUMN.editActions)
+]
+
+const HEAVY_BLUEPRINT: TableColumnSpec[] = [
+  COLUMN.index,
+  COLUMN.name,
+  COLUMN.city,
+  COLUMN.owner,
+  COLUMN.status,
+  COLUMN.orders,
+  COLUMN.amount,
+  COLUMN.date
+]
+
 const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   'fixed-left': [fixedLeft(COLUMN.selection), fixedLeft(COLUMN.name), ...WIDE_TAIL, COLUMN.actions],
   'fixed-right': [COLUMN.index, COLUMN.name, ...WIDE_TAIL, fixedRight(COLUMN.actions)],
@@ -192,13 +213,10 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
     ...COMPREHENSIVE_TAIL,
     fixedRight(COLUMN.actions)
   ],
-  editable: [
-    fixedLeft(COLUMN.selection),
-    fixedLeft(COLUMN.index),
-    fixedLeft(COLUMN.editName),
-    ...EDIT_TAIL,
-    fixedRight(COLUMN.editActions)
-  ],
+  editable: EDITABLE_BLUEPRINT,
+  'editable-heavy': EDITABLE_BLUEPRINT,
+  'heavy-data': HEAVY_BLUEPRINT,
+  'heavy-data-20k': HEAVY_BLUEPRINT,
   sort: SORT_BLUEPRINT,
   'multi-sort': SORT_BLUEPRINT,
   selection: [COLUMN.selection, COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
@@ -484,6 +502,19 @@ function spanMethodOf(scope: { rowIndex: number; columnIndex: number }) {
   return [0, 0]
 }
 
+// 大表合并：editName 列（columnIndex 2）每 size 行合并为一个块
+function makeHeavySpanMethod(total: number, size: number) {
+  return function heavySpanMethod(scope: { rowIndex: number; columnIndex: number }) {
+    if (scope.columnIndex !== 2) {
+      return undefined
+    }
+    if (scope.rowIndex % size !== 0) {
+      return [0, 0]
+    }
+    return [Math.min(size, total - scope.rowIndex), 1]
+  }
+}
+
 function renderColumn(columnComponent: Component, column: DemoColumn) {
   const slots: Record<string, (scope: CellScope) => VNodeChild> = {}
   if (column.cell) {
@@ -515,8 +546,14 @@ const TableSceneDemo = defineComponent({
   setup(props) {
     const tableApi = shallowRef<any>(null)
     const selectedCount = ref(0)
+    const editableScene = props.sceneId === 'editable' || props.sceneId === 'editable-heavy'
+    const heavyCount = typeof props.values.heavyRows === 'number' ? props.values.heavyRows : 2000
     const editRows = ref<TableEditRow[]>(
-      props.sceneId === 'editable' ? TABLE_EDIT_ROWS.map((row) => ({ ...row })) : []
+      props.sceneId === 'editable'
+        ? TABLE_EDIT_ROWS.map((row) => ({ ...row }))
+        : props.sceneId === 'editable-heavy'
+          ? makeHeavyRows(heavyCount).map((row) => ({ ...row, dirty: false }))
+          : []
     )
     const editSnapshot = new Map<number, TableEditRow>()
     for (const row of editRows.value) {
@@ -564,14 +601,14 @@ const TableSceneDemo = defineComponent({
         attrs.rowClassName = rowClassOf
         attrs.rowStyle = rowStyleOf
       }
-      if (props.sceneId === 'editable') {
+      if (editableScene) {
         attrs.data = editRows.value
+        delete attrs.heavyRows
       }
-      const columns = buildTableSceneColumns(
-        props.kit,
-        props.sceneId,
-        props.sceneId === 'editable' ? editState : undefined
-      )
+      if (props.sceneId === 'editable-heavy') {
+        attrs.spanMethod = makeHeavySpanMethod(editRows.value.length, HEAVY_GROUP_SIZE)
+      }
+      const columns = buildTableSceneColumns(props.kit, props.sceneId, editableScene ? editState : undefined)
       const slots: Record<string, () => VNodeChild> = {
         default: () => columns.map((column) => renderColumn(props.column, column))
       }

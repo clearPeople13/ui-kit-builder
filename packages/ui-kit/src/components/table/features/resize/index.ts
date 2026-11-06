@@ -34,9 +34,14 @@ export const tableResizeFeature: UiFeature = {
       if (!session) {
         return
       }
+      const raw = session.edge === 'left' ? session.startX - event.clientX : event.clientX - session.startX
+      // 点按或 1px 内的微抖不落地覆盖：序号列宽 56 小于 minColumnWidth 60，
+      // 不拦截的话点按手柄就会被钳制逻辑顶宽
+      if (Math.abs(raw) < 2) {
+        return
+      }
       const minimum = Number(props.minColumnWidth) || 40
-      const delta = session.edge === 'left' ? session.startX - event.clientX : event.clientX - session.startX
-      const width = Math.max(minimum, Math.round(session.startWidth + delta))
+      const width = Math.max(minimum, Math.round(session.startWidth + raw))
       const next = new Map(overrides.value)
       next.set(session.key, width)
       overrides.value = next
@@ -87,6 +92,11 @@ export const tableResizeFeature: UiFeature = {
       return overrides.value.get(column.key)
     }
 
+    // 标记该列宽来自拖拽覆盖：布局分摊剩余空间时跳过，防止点按手柄列宽被二次撑大
+    function tableColumnUserWidth(column: Record<string, any>) {
+      return overrides.value.has(column.key) ? overrides.value.get(column.key) : undefined
+    }
+
     function tableHeaderExtra({ column }: { column: Record<string, any> }) {
       if (!props.resizable) {
         return null
@@ -105,7 +115,7 @@ export const tableResizeFeature: UiFeature = {
     onBeforeUnmount(stopSession)
 
     return {
-      hooks: { tableColumnWidth, tableHeaderExtra }
+      hooks: { tableColumnWidth, tableColumnUserWidth, tableHeaderExtra }
     }
   }
 }

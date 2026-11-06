@@ -10,7 +10,7 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
-import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS } from './table-data'
+import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, makeHeavyRows } from './table-data'
 
 export interface ScenePreset {
   id: string
@@ -1193,6 +1193,36 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
         showSummary: true,
         sumText: '合计',
         rowKey: 'id'
+      }
+    },
+    {
+      id: 'heavy-data',
+      label: '大数据：5 千行',
+      hint: '确定性生成的 5000 行压测数据，行字段全部由行号推导；全量渲染无虚拟滚动，首次渲染约 3 秒',
+      requires: 'table.resize',
+      values: { data: makeHeavyRows(5000), height: 420, stripe: true, resizable: true }
+    },
+    {
+      id: 'heavy-data-20k',
+      label: '大数据：2 万行',
+      hint: '20000 行同口径压测数据，无虚拟滚动的全量渲染上限档；首次渲染约 10 秒，期间页面无响应属预期',
+      requires: 'table.resize',
+      values: { data: makeHeavyRows(20000), height: 420, stripe: true, resizable: true }
+    },
+    {
+      id: 'editable-heavy',
+      label: '复杂：大表编辑 + 冻结 + 合计 + 合并',
+      hint: '2000 行确定性数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，模块列每 50 行合并，双向冻结 + 列宽拖拽 + 底部合计；首次渲染约 6 秒',
+      requires: ['table.selection', 'table.resize', 'table.summary', 'table.span'],
+      values: {
+        height: 440,
+        stripe: true,
+        border: true,
+        resizable: true,
+        showSummary: true,
+        sumText: '合计',
+        rowKey: 'id',
+        heavyRows: 2000
       }
     }
   ],

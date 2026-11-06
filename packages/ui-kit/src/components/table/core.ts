@@ -721,6 +721,7 @@ export function createTable(features: UiFeature[] = []) {
         const rows = visibleRowsOf(resolved.data)
 
         const widthHooks = flattenHooks(states, 'tableColumnWidth')
+        const userWidthHooks = flattenHooks(states, 'tableColumnUserWidth')
         const spanHooks = flattenHooks(states, 'tableSpan')
         const prependHooks = flattenHooks(states, 'tableCellPrepend')
         const headerExtraHooks = flattenHooks(states, 'tableHeaderExtra')
@@ -755,6 +756,17 @@ export function createTable(features: UiFeature[] = []) {
           return effective
         }
 
+        // 拖拽覆盖的列宽视为用户钉死，不再参与剩余空间分摊
+        function hasUserWidth(column: TableColumn): boolean {
+          for (const hook of userWidthHooks) {
+            const value = hook(column)
+            if (value !== undefined && value !== null && value !== '') {
+              return true
+            }
+          }
+          return false
+        }
+
         function layoutColumnWidths(columns: TableColumn[]): Array<number | string> {
           const widths = columns.map((column) => columnColWidth(column))
           const numeric = widths.map((width) => numericWidth(width))
@@ -775,7 +787,12 @@ export function createTable(features: UiFeature[] = []) {
             }
           })
           // 所有列都写死宽度时，剩余空间也要分摊，否则宽容器里右侧会留白
-          const targets = flexible.length ? flexible : columns.map((_column, index) => index)
+          const targets = (flexible.length ? flexible : columns.map((_column, index) => index)).filter(
+            (index) => !hasUserWidth(columns[index])
+          )
+          if (!targets.length) {
+            return numbers
+          }
           const extra = available - total
           const share = Math.floor(extra / targets.length)
           let remainder = extra - share * targets.length

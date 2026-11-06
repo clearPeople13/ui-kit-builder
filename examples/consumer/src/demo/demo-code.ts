@@ -1,6 +1,6 @@
 import type { PlaygroundControl, PlaygroundEntry } from './playground'
 import type { SceneView } from './scenes'
-import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS } from './table-data'
+import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS, makeHeavyRows } from './table-data'
 import { tableSceneBlueprint, type TableColumnSpec } from './table-demo'
 
 export function kebabCase(name: string): string {
@@ -282,14 +282,18 @@ function tableOpenTag(attrs: string[]): string[] {
 function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): string {
   const sceneId = scene?.id ?? 'base'
   const values: Record<string, unknown> = { ...(scene?.values ?? {}) }
-  const rows = values.data ?? (sceneId === 'editable' ? TABLE_EDIT_ROWS : TABLE_DEMO_ROWS)
+  const heavyRows =
+    sceneId === 'editable-heavy' ? (typeof values.heavyRows === 'number' ? values.heavyRows : 2000) : 0
+  const rows =
+    values.data ?? (sceneId === 'editable' ? TABLE_EDIT_ROWS : sceneId === 'editable-heavy' ? [] : TABLE_DEMO_ROWS)
   delete values.data
+  delete values.heavyRows
   const rowKey = typeof values.rowKey === 'string' ? values.rowKey : 'id'
   delete values.rowKey
 
   const parts = buildSourceParts(entry, values, new Set())
   const tableAttrs = [`:data="rows"`, `row-key="${rowKey}"`, ...parts.attrs]
-  if (sceneId === 'span') {
+  if (sceneId === 'span' || sceneId === 'editable-heavy') {
     tableAttrs.push(':span-method="spanMethod"')
   }
   if (sceneId === 'row-style') {
@@ -335,7 +339,13 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     imports.add('Button')
   }
 
-  const hoisted = [`const rows = ref(${toJsLiteral(rows)})`, ...parts.hoisted]
+  const heavyRowSource =
+    Array.isArray(rows) && rows.length > 500
+      ? `const rows = ref((${makeHeavyRows.toString()})(${rows.length}))`
+      : sceneId === 'editable-heavy'
+        ? `const rows = ref((${makeHeavyRows.toString()})(${heavyRows}).map((row) => ({ ...row, dirty: false })))`
+        : `const rows = ref(${toJsLiteral(rows)})`
+  const hoisted = [heavyRowSource, ...parts.hoisted]
   if (blueprint.some((spec) => spec.cell === 'tag')) {
     hoisted.push("const STATUS_TAG_TYPE = { 稳定: 'success', 内测: 'warning', 规划: 'info' }")
     hoisted.push('function statusTagType(status) {', "  return STATUS_TAG_TYPE[status] ?? 'info'", '}')
@@ -377,7 +387,21 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
       '}'
     )
   }
-  if (sceneId === 'editable') {
+  if (sceneId === 'editable-heavy') {
+    hoisted.push(
+      'const HEAVY_GROUP_SIZE = 50',
+      'function spanMethod({ rowIndex, columnIndex }) {',
+      '  if (columnIndex !== 2) {',
+      '    return',
+      '  }',
+      '  if (rowIndex % HEAVY_GROUP_SIZE !== 0) {',
+      '    return [0, 0]',
+      '  }',
+      '  return [Math.min(HEAVY_GROUP_SIZE, rows.value.length - rowIndex), 1]',
+      '}'
+    )
+  }
+  if (sceneId === 'editable' || sceneId === 'editable-heavy') {
     hoisted.push(
       "const CITY_OPTIONS = ['上海', '杭州', '成都', '深圳', '北京', '武汉', '南京', '西安', '苏州', '广州'].map((city) => ({ label: city, value: city }))",
       "const STATUS_OPTIONS = ['稳定', '内测', '规划'].map((status) => ({ label: status, value: status }))",
