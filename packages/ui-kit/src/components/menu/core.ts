@@ -164,7 +164,7 @@ export function createMenu(features: UiFeature[] = []) {
 
 const menuItemBaseProps = {
   index: { type: String },
-  disabled: { type: Boolean },
+  disabled: { type: Boolean }
 }
 
 export function createMenuItem(features: UiFeature[] = []) {
@@ -213,7 +213,8 @@ export function createMenuItemGroup(features: UiFeature[] = []) {
       baseClass: 'ui-menu-item-group',
       props: menuItemGroupBaseProps,
       content: ({ props, slots }) => [
-        h('div', { class: 'ui-menu-item-group__title' }, props.title || ''),
+        // 未传 title（或空串）时不渲染分组标题节点，避免空标题占据一行高度
+        props.title ? h('div', { class: 'ui-menu-item-group__title' }, props.title) : null,
         h('div', { class: 'ui-menu-item-group__list' }, [slots.default?.() ?? null])
       ]
     },
@@ -262,10 +263,13 @@ export function createSubMenu(features: UiFeature[] = []) {
             return
           }
           clearTimer()
-          timer = setTimeout(() => {
-            openedByHover = true
-            context?.setOpen(target, true)
-          }, toDelay(props.showTimeout, context?.showTimeout() ?? 300))
+          timer = setTimeout(
+            () => {
+              openedByHover = true
+              context?.setOpen(target, true)
+            },
+            toDelay(props.showTimeout, context?.showTimeout() ?? 300)
+          )
         }
 
         function handleLeave() {
@@ -274,10 +278,13 @@ export function createSubMenu(features: UiFeature[] = []) {
           if (!target || !openedByHover || !context?.isOpened(target)) {
             return
           }
-          timer = setTimeout(() => {
-            openedByHover = false
-            context?.setOpen(target, false)
-          }, toDelay(props.hideTimeout, context?.hideTimeout() ?? 300))
+          timer = setTimeout(
+            () => {
+              openedByHover = false
+              context?.setOpen(target, false)
+            },
+            toDelay(props.hideTimeout, context?.hideTimeout() ?? 300)
+          )
         }
 
         onBeforeUnmount(() => {

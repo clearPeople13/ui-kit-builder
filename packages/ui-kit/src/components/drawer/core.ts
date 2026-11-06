@@ -18,7 +18,7 @@ const drawerBaseProps = {
   top: { type: String },
   width: { type: [String, Number] },
   zIndex: { type: Number },
-  direction: { type: String, default: 'rtl' },
+  direction: { type: String, default: 'rtl' }
 }
 
 export function createDrawer(features: UiFeature[] = []) {

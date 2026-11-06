@@ -149,8 +149,8 @@ export function createSplitter(features: UiFeature[] = []) {
           const next = [...startSizes]
           next[index] = startSizes[index] + clamped
           next[index + 1] = startSizes[index + 1] - clamped
-          lastSizes.value[index] = next[index] > 0 ? next[index] : lastSizes.value[index] ?? 0
-          lastSizes.value[index + 1] = next[index + 1] > 0 ? next[index + 1] : lastSizes.value[index + 1] ?? 0
+          lastSizes.value[index] = next[index] > 0 ? next[index] : (lastSizes.value[index] ?? 0)
+          lastSizes.value[index + 1] = next[index + 1] > 0 ? next[index + 1] : (lastSizes.value[index + 1] ?? 0)
           sizes.value = next
         }
 
@@ -175,7 +175,7 @@ export function createSplitter(features: UiFeature[] = []) {
           )
           sizes.value = startSizes
           // 单次 move 就把面板拖到 0 时 onMove 记不到正值，先以起点宽度作基线
-          lastSizes.value = startSizes.map((size, i) => (size > 0 ? size : lastSizes.value[i] ?? 0))
+          lastSizes.value = startSizes.map((size, i) => (size > 0 ? size : (lastSizes.value[i] ?? 0)))
           const startPos = horizontal ? event.clientX : event.clientY
           const { minDelta, maxDelta } = limitPair(index, container, startSizes)
 
@@ -185,8 +185,8 @@ export function createSplitter(features: UiFeature[] = []) {
             const next = [...startSizes]
             next[index] = startSizes[index] + clamped
             next[index + 1] = startSizes[index + 1] - clamped
-            lastSizes.value[index] = next[index] > 0 ? next[index] : lastSizes.value[index] ?? 0
-            lastSizes.value[index + 1] = next[index + 1] > 0 ? next[index + 1] : lastSizes.value[index + 1] ?? 0
+            lastSizes.value[index] = next[index] > 0 ? next[index] : (lastSizes.value[index] ?? 0)
+            lastSizes.value[index + 1] = next[index + 1] > 0 ? next[index + 1] : (lastSizes.value[index + 1] ?? 0)
             if (props.lazy) {
               pending.value = next
             } else {
@@ -300,7 +300,7 @@ export function createSplitter(features: UiFeature[] = []) {
 const splitterPanelBaseProps = {
   size: { type: [String, Number] },
   min: { type: [String, Number] },
-  max: { type: [String, Number] },
+  max: { type: [String, Number] }
 }
 
 export function createSplitterPanel(features: UiFeature[] = []) {

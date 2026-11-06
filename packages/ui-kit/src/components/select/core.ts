@@ -19,7 +19,7 @@ import './core.css'
 const optionBaseProps = {
   value: { type: [String, Number, Boolean, Object] },
   label: { type: [String, Number], default: '' },
-  disabled: { type: Boolean },
+  disabled: { type: Boolean }
 }
 
 interface SelectOption {
@@ -42,7 +42,9 @@ const optionGroupBaseProps = {
 }
 
 const selectBaseProps = {
-  modelValue: { type: [Array, String, Number, Boolean, Object] },
+  // 类型联合含 Boolean 时，Vue 会把"键不存在"归一化为 false，
+  // 与"未选值"无法区分，导致占位文案被 false 顶掉，显式声明 default 保住 undefined 语义
+  modelValue: { type: [Array, String, Number, Boolean, Object], default: undefined },
   size: { type: String },
   disabled: { type: Boolean },
   options: { type: Array },
@@ -111,10 +113,22 @@ function collectSlotOptions(nodes: VNodeChild, result: SelectOption[]): void {
   }
 }
 
-function normalizeOptions(input: unknown): SelectOption[] {
+function optionFieldKeys(mapping?: Record<string, any>): Record<keyof typeof optionFields, string> {
+  const pick = (key: keyof typeof optionFields) =>
+    typeof mapping?.[key] === 'string' && mapping[key] ? String(mapping[key]) : optionFields[key]
+  return {
+    label: pick('label'),
+    value: pick('value'),
+    disabled: pick('disabled'),
+    options: pick('options')
+  }
+}
+
+function normalizeOptions(input: unknown, mapping?: Record<string, any>): SelectOption[] {
   if (!Array.isArray(input)) {
     return []
   }
+  const fields = optionFieldKeys(mapping)
   const result: SelectOption[] = []
   for (const item of input) {
     if (!item || typeof item !== 'object') {
@@ -122,7 +136,6 @@ function normalizeOptions(input: unknown): SelectOption[] {
       continue
     }
     const record = item as Record<string, any>
-    const fields = optionFields
     if (Array.isArray(record[fields.options])) {
       result.push({
         label: String(record[fields.label] ?? ''),
@@ -130,7 +143,7 @@ function normalizeOptions(input: unknown): SelectOption[] {
         disabled: true,
         group: true
       })
-      result.push(...normalizeOptions(record[fields.options]))
+      result.push(...normalizeOptions(record[fields.options], mapping))
       continue
     }
     result.push({
@@ -194,7 +207,7 @@ export function createSelect(features: UiFeature[] = []) {
         })
 
         const optionList = computed(() => {
-          const list = normalizeOptions(props.options)
+          const list = normalizeOptions(props.options, props.props)
           return list.length ? list : slotOptions.value
         })
 
@@ -644,6 +657,8 @@ export function createSelect(features: UiFeature[] = []) {
           {
             ref: state.triggerRef,
             class: 'ui-select__trigger',
+            // id 声明成 prop 后不再走 attrs 透传；combobox 才是可被 label/aria 引用的节点
+            id: props.id || undefined,
             role: 'combobox',
             tabindex: props.filterable || props.disabled ? undefined : props.tabindex,
             'aria-expanded': state.open,

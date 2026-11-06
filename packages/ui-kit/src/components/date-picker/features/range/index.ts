@@ -10,5 +10,6 @@ export const datePickerRangeFeature = createClassFeature({
     unlinkPanels: { type: Boolean },
     showWeekNumber: { type: Boolean }
   },
-  className: () => 'ui-date-picker--range'
+  className: (props) =>
+    Boolean(props.isRange) || String(props.type || 'date').endsWith('range') ? 'ui-date-picker--range' : undefined
 })

@@ -22,9 +22,7 @@ export function createTag(features: UiFeature[] = []) {
         defaultTag: 'span'
       }),
       styles: (props) =>
-        props.color
-          ? { backgroundColor: props.color, borderColor: props.color, color: '#ffffff' }
-          : {}
+        props.color ? { backgroundColor: props.color, borderColor: props.color, color: '#ffffff' } : {}
     },
     features
   )

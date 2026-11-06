@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T11:09:27.167Z",
+  "generatedAt": "2026-11-06T18:32:30.479Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -193,19 +193,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 552559,
-          "gzipBytes": 131794
+          "bytes": 562414,
+          "gzipBytes": 134608
         },
         {
           "file": "ui-kit.css",
-          "bytes": 230154,
-          "gzipBytes": 31729
+          "bytes": 231162,
+          "gzipBytes": 31925
         }
       ],
-      "jsBytes": 552559,
-      "cssBytes": 230154,
-      "totalBytes": 782713,
-      "gzipBytes": 163226
+      "jsBytes": 562414,
+      "cssBytes": 231162,
+      "totalBytes": 793576,
+      "gzipBytes": 166629
     },
     "full": {
       "name": "full",
@@ -774,7 +774,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -820,19 +819,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 630255,
-          "gzipBytes": 148961
+          "bytes": 641279,
+          "gzipBytes": 152499
         },
         {
           "file": "ui-kit.css",
-          "bytes": 249580,
-          "gzipBytes": 34350
+          "bytes": 250588,
+          "gzipBytes": 34524
         }
       ],
-      "jsBytes": 630255,
-      "cssBytes": 249580,
-      "totalBytes": 879835,
-      "gzipBytes": 183224
+      "jsBytes": 641279,
+      "cssBytes": 250588,
+      "totalBytes": 891867,
+      "gzipBytes": 186820
     },
     "branded": {
       "name": "branded",
@@ -1401,7 +1400,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -1447,19 +1445,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149043
+          "bytes": 643121,
+          "gzipBytes": 152616
         },
         {
           "file": "ui-kit.css",
-          "bytes": 261720,
-          "gzipBytes": 35170
+          "bytes": 262792,
+          "gzipBytes": 35325
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 261720,
-      "totalBytes": 893813,
-      "gzipBytes": 184162
+      "jsBytes": 643121,
+      "cssBytes": 262792,
+      "totalBytes": 905913,
+      "gzipBytes": 187775
     },
     "chinese": {
       "name": "chinese",
@@ -2028,7 +2026,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -2074,19 +2071,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 634850,
-          "gzipBytes": 149174
+          "bytes": 645884,
+          "gzipBytes": 152797
         },
         {
           "file": "ui-kit.css",
-          "bytes": 297826,
-          "gzipBytes": 38800
+          "bytes": 298994,
+          "gzipBytes": 38960
         }
       ],
-      "jsBytes": 634850,
-      "cssBytes": 297826,
-      "totalBytes": 932676,
-      "gzipBytes": 187973
+      "jsBytes": 645884,
+      "cssBytes": 298994,
+      "totalBytes": 944878,
+      "gzipBytes": 191665
     },
     "cute": {
       "name": "cute",
@@ -2655,7 +2652,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -2701,19 +2697,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149046
+          "bytes": 643121,
+          "gzipBytes": 152618
         },
         {
           "file": "ui-kit.css",
-          "bytes": 277171,
-          "gzipBytes": 38127
+          "bytes": 278243,
+          "gzipBytes": 38283
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 277171,
-      "totalBytes": 909264,
-      "gzipBytes": 187151
+      "jsBytes": 643121,
+      "cssBytes": 278243,
+      "totalBytes": 921364,
+      "gzipBytes": 190766
     },
     "antd": {
       "name": "antd",
@@ -3282,7 +3278,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -3328,19 +3323,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149043
+          "bytes": 643121,
+          "gzipBytes": 152616
         },
         {
           "file": "ui-kit.css",
-          "bytes": 281968,
-          "gzipBytes": 38289
+          "bytes": 283040,
+          "gzipBytes": 38444
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 281968,
-      "totalBytes": 914061,
-      "gzipBytes": 187304
+      "jsBytes": 643121,
+      "cssBytes": 283040,
+      "totalBytes": 926161,
+      "gzipBytes": 190920
     },
     "arco": {
       "name": "arco",
@@ -3909,7 +3904,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -3955,19 +3949,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149041
+          "bytes": 643121,
+          "gzipBytes": 152615
         },
         {
           "file": "ui-kit.css",
-          "bytes": 262092,
-          "gzipBytes": 35267
+          "bytes": 263164,
+          "gzipBytes": 35422
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 262092,
-      "totalBytes": 894185,
-      "gzipBytes": 184260
+      "jsBytes": 643121,
+      "cssBytes": 263164,
+      "totalBytes": 906285,
+      "gzipBytes": 187870
     },
     "tdesign": {
       "name": "tdesign",
@@ -4536,7 +4530,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -4582,19 +4575,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 634850,
-          "gzipBytes": 149169
+          "bytes": 645884,
+          "gzipBytes": 152794
         },
         {
           "file": "ui-kit.css",
-          "bytes": 278532,
-          "gzipBytes": 35639
+          "bytes": 279700,
+          "gzipBytes": 35799
         }
       ],
-      "jsBytes": 634850,
-      "cssBytes": 278532,
-      "totalBytes": 913382,
-      "gzipBytes": 184777
+      "jsBytes": 645884,
+      "cssBytes": 279700,
+      "totalBytes": 925584,
+      "gzipBytes": 188450
     },
     "naive": {
       "name": "naive",
@@ -5163,7 +5156,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -5209,19 +5201,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633012,
-          "gzipBytes": 149087
+          "bytes": 644042,
+          "gzipBytes": 152675
         },
         {
           "file": "ui-kit.css",
-          "bytes": 267447,
-          "gzipBytes": 35318
+          "bytes": 268551,
+          "gzipBytes": 35472
         }
       ],
-      "jsBytes": 633012,
-      "cssBytes": 267447,
-      "totalBytes": 900459,
-      "gzipBytes": 184358
+      "jsBytes": 644042,
+      "cssBytes": 268551,
+      "totalBytes": 912593,
+      "gzipBytes": 187985
     },
     "viewui": {
       "name": "viewui",
@@ -5790,7 +5782,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -5836,19 +5827,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633931,
-          "gzipBytes": 149120
+          "bytes": 644963,
+          "gzipBytes": 152728
         },
         {
           "file": "ui-kit.css",
-          "bytes": 272988,
-          "gzipBytes": 35437
+          "bytes": 274124,
+          "gzipBytes": 35607
         }
       ],
-      "jsBytes": 633931,
-      "cssBytes": 272988,
-      "totalBytes": 906919,
-      "gzipBytes": 184524
+      "jsBytes": 644963,
+      "cssBytes": 274124,
+      "totalBytes": 919087,
+      "gzipBytes": 188182
     },
     "vant": {
       "name": "vant",
@@ -6417,7 +6408,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -6463,19 +6453,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149043
+          "bytes": 643121,
+          "gzipBytes": 152619
         },
         {
           "file": "ui-kit.css",
-          "bytes": 262232,
-          "gzipBytes": 35275
+          "bytes": 263304,
+          "gzipBytes": 35431
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 262232,
-      "totalBytes": 894325,
-      "gzipBytes": 184274
+      "jsBytes": 643121,
+      "cssBytes": 263304,
+      "totalBytes": 906425,
+      "gzipBytes": 187884
     },
     "varlet": {
       "name": "varlet",
@@ -7044,7 +7034,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -7090,19 +7079,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633931,
-          "gzipBytes": 149127
+          "bytes": 644963,
+          "gzipBytes": 152735
         },
         {
           "file": "ui-kit.css",
-          "bytes": 273028,
-          "gzipBytes": 35452
+          "bytes": 274164,
+          "gzipBytes": 35621
         }
       ],
-      "jsBytes": 633931,
-      "cssBytes": 273028,
-      "totalBytes": 906959,
-      "gzipBytes": 184545
+      "jsBytes": 644963,
+      "cssBytes": 274164,
+      "totalBytes": 919127,
+      "gzipBytes": 188203
     },
     "semi": {
       "name": "semi",
@@ -7671,7 +7660,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -7717,19 +7705,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 632093,
-          "gzipBytes": 149047
+          "bytes": 643121,
+          "gzipBytes": 152625
         },
         {
           "file": "ui-kit.css",
-          "bytes": 261788,
-          "gzipBytes": 35159
+          "bytes": 262860,
+          "gzipBytes": 35315
         }
       ],
-      "jsBytes": 632093,
-      "cssBytes": 261788,
-      "totalBytes": 893881,
-      "gzipBytes": 184156
+      "jsBytes": 643121,
+      "cssBytes": 262860,
+      "totalBytes": 905981,
+      "gzipBytes": 187770
     },
     "material3": {
       "name": "material3",
@@ -8298,7 +8286,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -8344,19 +8331,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 636688,
-          "gzipBytes": 149267
+          "bytes": 647726,
+          "gzipBytes": 152931
         },
         {
           "file": "ui-kit.css",
-          "bytes": 290537,
-          "gzipBytes": 36206
+          "bytes": 291769,
+          "gzipBytes": 36352
         }
       ],
-      "jsBytes": 636688,
-      "cssBytes": 290537,
-      "totalBytes": 927225,
-      "gzipBytes": 185461
+      "jsBytes": 647726,
+      "cssBytes": 291769,
+      "totalBytes": 939495,
+      "gzipBytes": 189163
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -8925,7 +8912,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -8971,19 +8957,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 636688,
-          "gzipBytes": 149269
+          "bytes": 647726,
+          "gzipBytes": 152932
         },
         {
           "file": "ui-kit.css",
-          "bytes": 289877,
-          "gzipBytes": 35933
+          "bytes": 291109,
+          "gzipBytes": 36079
         }
       ],
-      "jsBytes": 636688,
-      "cssBytes": 289877,
-      "totalBytes": 926565,
-      "gzipBytes": 185176
+      "jsBytes": 647726,
+      "cssBytes": 291109,
+      "totalBytes": 938835,
+      "gzipBytes": 188880
     },
     "shadcn": {
       "name": "shadcn",
@@ -9552,7 +9538,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -9598,19 +9583,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633931,
-          "gzipBytes": 149129
+          "bytes": 644963,
+          "gzipBytes": 152739
         },
         {
           "file": "ui-kit.css",
-          "bytes": 273393,
-          "gzipBytes": 35534
+          "bytes": 274529,
+          "gzipBytes": 35706
         }
       ],
-      "jsBytes": 633931,
-      "cssBytes": 273393,
-      "totalBytes": 907324,
-      "gzipBytes": 184628
+      "jsBytes": 644963,
+      "cssBytes": 274529,
+      "totalBytes": 919492,
+      "gzipBytes": 188292
     },
     "fluent": {
       "name": "fluent",
@@ -10179,7 +10164,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -10225,19 +10209,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633931,
-          "gzipBytes": 149124
+          "bytes": 644963,
+          "gzipBytes": 152730
         },
         {
           "file": "ui-kit.css",
-          "bytes": 272944,
-          "gzipBytes": 35449
+          "bytes": 274080,
+          "gzipBytes": 35617
         }
       ],
-      "jsBytes": 633931,
-      "cssBytes": 272944,
-      "totalBytes": 906875,
-      "gzipBytes": 184540
+      "jsBytes": 644963,
+      "cssBytes": 274080,
+      "totalBytes": 919043,
+      "gzipBytes": 188197
     },
     "carbon": {
       "name": "carbon",
@@ -10806,7 +10790,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -10852,19 +10835,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 633931,
-          "gzipBytes": 149128
+          "bytes": 644963,
+          "gzipBytes": 152734
         },
         {
           "file": "ui-kit.css",
-          "bytes": 273033,
-          "gzipBytes": 35472
+          "bytes": 274169,
+          "gzipBytes": 35642
         }
       ],
-      "jsBytes": 633931,
-      "cssBytes": 273033,
-      "totalBytes": 906964,
-      "gzipBytes": 184565
+      "jsBytes": 644963,
+      "cssBytes": 274169,
+      "totalBytes": 919132,
+      "gzipBytes": 188221
     },
     "mantine": {
       "name": "mantine",
@@ -11433,7 +11416,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -11479,19 +11461,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 634850,
-          "gzipBytes": 149174
+          "bytes": 645884,
+          "gzipBytes": 152798
         },
         {
           "file": "ui-kit.css",
-          "bytes": 278971,
-          "gzipBytes": 35770
+          "bytes": 280139,
+          "gzipBytes": 35933
         }
       ],
-      "jsBytes": 634850,
-      "cssBytes": 278971,
-      "totalBytes": 913821,
-      "gzipBytes": 184918
+      "jsBytes": 645884,
+      "cssBytes": 280139,
+      "totalBytes": 926023,
+      "gzipBytes": 188591
     },
     "ios": {
       "name": "ios",
@@ -12060,7 +12042,6 @@
         "table.summary",
         "table.selection",
         "table.methods",
-        "table.selection",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -12106,19 +12087,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 631174,
-          "gzipBytes": 148994
+          "bytes": 642200,
+          "gzipBytes": 152540
         },
         {
           "file": "ui-kit.css",
-          "bytes": 256282,
-          "gzipBytes": 34962
+          "bytes": 257322,
+          "gzipBytes": 35166
         }
       ],
-      "jsBytes": 631174,
-      "cssBytes": 256282,
-      "totalBytes": 887456,
-      "gzipBytes": 183891
+      "jsBytes": 642200,
+      "cssBytes": 257322,
+      "totalBytes": 899522,
+      "gzipBytes": 187529
     }
   },
   "features": {}

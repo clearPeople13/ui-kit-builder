@@ -263,7 +263,14 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
           if (!outside && sameDay(date, startOfDay(new Date()))) {
             classes.push('is-today')
           }
-          if (!outside && props.isRange && start && end && date.getTime() > start.getTime() && date.getTime() < end.getTime()) {
+          if (
+            !outside &&
+            props.isRange &&
+            start &&
+            end &&
+            date.getTime() > start.getTime() &&
+            date.getTime() < end.getTime()
+          ) {
             classes.push('is-in-range')
           }
           if (!outside && sameDay(date, start)) {

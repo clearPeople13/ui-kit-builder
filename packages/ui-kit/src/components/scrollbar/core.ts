@@ -3,7 +3,7 @@ import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref
 import type { UiFeature } from '../../shared/feature'
 import { collectFeatureExposed } from '../../shared/feature'
 import { sizeValue } from '../../shared/behavior'
-import { clamp } from '../../shared/utils'
+import { clamp, mergeStyles } from '../../shared/utils'
 import './core.css'
 
 interface BarState {
@@ -242,7 +242,7 @@ export function createScrollbar(features: UiFeature[] = []) {
             'aria-label': props.ariaLabel,
             'aria-orientation': props.ariaOrientation,
             class: [attrs.class, 'ui-scrollbar', { 'ui-scrollbar--native': props.native }],
-            style: { ...(attrs.style as CSSProperties), ...rootStyle }
+            style: mergeStyles(attrs.style, rootStyle)
           },
           [
             h(

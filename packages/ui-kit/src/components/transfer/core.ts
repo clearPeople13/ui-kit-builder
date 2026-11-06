@@ -24,7 +24,7 @@ const transferBaseProps = {
   filterPlaceholder: { type: String },
   leftDefaultChecked: { type: Array, default: () => [] },
   rightDefaultChecked: { type: Array, default: () => [] },
-  props: { type: Object, default: () => ({}) },
+  props: { type: Object, default: () => ({}) }
 }
 
 function normalizeItems(data: unknown, fields: Record<string, any>): TransferItem[] {
@@ -52,12 +52,21 @@ export function createTransfer(features: UiFeature[] = []) {
       baseClass: 'ui-transfer',
       props: transferBaseProps,
       setup(props, { emit }) {
-        const leftChecked = ref<Set<string | number>>(new Set(props.leftDefaultChecked as Array<string | number>))
-        const rightChecked = ref<Set<string | number>>(new Set(props.rightDefaultChecked as Array<string | number>))
+        const items = () => normalizeItems(props.data, props.props ?? {})
+        // 预设勾次要过滤 disabled 条目，否则右移按钮会被点亮并把禁用项搬走
+        const pickEnabled = (keys: unknown) => {
+          const disabledKeys = new Set(
+            items()
+              .filter((item) => item.disabled)
+              .map((item) => item.key)
+          )
+          return new Set((Array.isArray(keys) ? keys : []).filter((key) => !disabledKeys.has(key)))
+        }
+        const leftChecked = ref<Set<string | number>>(pickEnabled(props.leftDefaultChecked))
+        const rightChecked = ref<Set<string | number>>(pickEnabled(props.rightDefaultChecked))
         const leftQuery = ref('')
         const rightQuery = ref('')
 
-        const items = () => normalizeItems(props.data, props.props ?? {})
         const targetKeys = () => (Array.isArray(props.modelValue) ? props.modelValue : [])
         const leftItems = () =>
           items().filter((item) => !targetKeys().includes(item.key) && item.label.includes(leftQuery.value))
@@ -75,9 +84,9 @@ export function createTransfer(features: UiFeature[] = []) {
           target.value = next
         }
 
-        function emitKeys(next: Array<string | number>) {
+        function emitKeys(next: Array<string | number>, direction: 'left' | 'right') {
           emit('update:modelValue', next)
-          emit('change', next, 'right')
+          emit('change', next, direction)
         }
 
         function moveToRight() {
@@ -88,13 +97,13 @@ export function createTransfer(features: UiFeature[] = []) {
             }
           }
           leftChecked.value = new Set()
-          emitKeys(next)
+          emitKeys(next, 'right')
         }
 
         function moveToLeft() {
           const next = targetKeys().filter((key) => !rightChecked.value.has(key))
           rightChecked.value = new Set()
-          emitKeys(next)
+          emitKeys(next, 'left')
         }
 
         return {

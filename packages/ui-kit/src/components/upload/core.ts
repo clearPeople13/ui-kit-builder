@@ -15,7 +15,7 @@ const uploadBaseProps = {
   beforeUpload: { type: Function },
   onRemove: { type: Function },
   onExceed: { type: Function },
-  beforeRemove: { type: Function },
+  beforeRemove: { type: Function }
 }
 
 export function createUpload(features: UiFeature[] = []) {

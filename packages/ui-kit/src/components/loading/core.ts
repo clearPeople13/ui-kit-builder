@@ -14,7 +14,7 @@ const loadingBaseProps = {
   fullscreen: Boolean,
   lock: Boolean,
   customClass: { type: String, default: '' },
-  target: { type: String, default: '' },
+  target: { type: String, default: '' }
 }
 
 function sizeStyle(value: string | number): string | undefined {

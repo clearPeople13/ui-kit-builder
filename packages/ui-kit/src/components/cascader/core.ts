@@ -156,12 +156,7 @@ export function createCascader(features: UiFeature[] = []) {
           return lazyChildren.value[pathKey(path)] ?? node.children
         }
 
-        function collectNodePaths(
-          list: CascaderNode[],
-          values: any[],
-          labels: string[],
-          result: LeafPath[]
-        ): void {
+        function collectNodePaths(list: CascaderNode[], values: any[], labels: string[], result: LeafPath[]): void {
           for (const node of list) {
             const nextValues = [...values, node.value]
             const nextLabels = [...labels, node.label]
@@ -472,10 +467,7 @@ export function createCascader(features: UiFeature[] = []) {
           const allSelected = leaves.every((item) => isPathSelected(item.values))
           const next = allSelected
             ? modelPaths.value.filter((item) => !leaves.some((leaf) => pathEquals(leaf.values, item)))
-            : [
-                ...modelPaths.value,
-                ...leaves.filter((item) => !isPathSelected(item.values)).map((item) => item.values)
-              ]
+            : [...modelPaths.value, ...leaves.filter((item) => !isPathSelected(item.values)).map((item) => item.values)]
           emitValue(toEmit(next))
           nextTick(refresh)
         }
@@ -536,9 +528,7 @@ export function createCascader(features: UiFeature[] = []) {
         // 全选栏（cascader.select-all feature 通过 panelHeader hook 注入）。
         // 可选集：leaf 模式为全部叶子路径；checkStrictly 为全部已加载节点（含中间节点），
         // lazy 未加载子树不强制加载，选不到即选不到
-        const selectablePaths = computed<LeafPath[]>(() =>
-          props.checkStrictly ? nodePaths.value : leafPaths.value
-        )
+        const selectablePaths = computed<LeafPath[]>(() => (props.checkStrictly ? nodePaths.value : leafPaths.value))
 
         function renderSelectAllBar(): VNodeChild {
           if (!props.multiple || !props.selectAll) {

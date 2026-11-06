@@ -1,5 +1,5 @@
 import type { CSSProperties, VNodeChild } from 'vue'
-import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ChevronDown, Clock, X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -20,8 +20,8 @@ const timePickerBaseProps = {
   disabled: { type: Boolean },
   modelValue: { type: [Array, String] },
   defaultValue: { type: [Array, Date, String] },
-  id: { type: Array },
-  name: { type: Array },
+  id: { type: [Array, String] },
+  name: { type: [Array, String] },
   format: { type: String },
   timeFormat: { type: String },
   readonly: { type: Boolean },
@@ -53,11 +53,14 @@ export function createTimePicker(features: UiFeature[] = []) {
         const hours = ref(0)
         const minutes = ref(0)
         const seconds = ref(0)
+        // 触发区可输入控件的草稿文本：随 modelValue/format 同步，编辑后未提交不抛值
+        const drafts = [ref(''), ref('')]
 
         const range = computed(() => Boolean(props.isRange) || String(props.type || '') === 'time-range')
         const displayFormat = computed(() => String(props.format || props.timeFormat || 'HH:mm:ss'))
         const outputFormat = computed(() => String(props.valueFormat || displayFormat.value))
         const showSeconds = computed(() => displayFormat.value.includes('s'))
+        const canEdit = computed(() => props.editable !== false && !props.readonly && !props.disabled)
         const hasValue = computed(() => {
           const value = props.modelValue
           if (range.value) {
@@ -463,6 +466,65 @@ export function createTimePicker(features: UiFeature[] = []) {
           return h(Teleport, { to: 'body' }, panel)
         }
 
+        function syncDrafts() {
+          drafts[0].value = displayAt(0)
+          drafts[1].value = displayAt(1)
+        }
+
+        function commitDraft(index: number) {
+          if (!canEdit.value) {
+            drafts[index].value = displayAt(index)
+            return
+          }
+          if (drafts[index].value === displayAt(index)) {
+            // 文本未变化：不产生多余的写回事件
+            return
+          }
+          const parsed = parseTimeValue(drafts[index].value)
+          if (!parsed) {
+            // 解析失败：不提交，回退到原显示
+            drafts[index].value = displayAt(index)
+            return
+          }
+          const value = formatDateValue(
+            new Date(2000, 0, 1, parsed.hours, parsed.minutes, parsed.seconds),
+            outputFormat.value
+          )
+          if (!range.value) {
+            emitValue(value)
+            return
+          }
+          const current = Array.isArray(props.modelValue) ? [...props.modelValue] : ['', '']
+          current[index] = value
+          emitValue(current)
+        }
+
+        function handleDraftInput(index: number, event: Event) {
+          drafts[index].value = (event.target as HTMLInputElement).value
+        }
+
+        function handleDraftKeydown(index: number, event: KeyboardEvent) {
+          if (event.key === 'Enter') {
+            event.preventDefault()
+            commitDraft(index)
+          }
+        }
+
+        function handleDraftBlur(index: number) {
+          commitDraft(index)
+        }
+
+        function idAt(index: number) {
+          return Array.isArray(props.id) ? props.id[index] : index === 0 ? props.id : undefined
+        }
+
+        function nameAt(index: number) {
+          return Array.isArray(props.name) ? props.name[index] : index === 0 ? props.name : undefined
+        }
+
+        syncDrafts()
+        watch(() => [props.modelValue, props.format, props.timeFormat, range.value], syncDrafts)
+
         return {
           get open() {
             return open.value
@@ -476,12 +538,21 @@ export function createTimePicker(features: UiFeature[] = []) {
           get hasValue() {
             return hasValue.value
           },
+          get canEdit() {
+            return canEdit.value
+          },
           fieldRefs,
           toggleSide,
           closePanel,
           clearValue,
           renderPanel,
-          displayAt
+          displayAt,
+          draftAt: (index: number) => drafts[index].value,
+          handleDraftInput,
+          handleDraftKeydown,
+          handleDraftBlur,
+          idAt,
+          nameAt
         }
       },
       classes: (props, state) => [
@@ -532,16 +603,22 @@ export function createTimePicker(features: UiFeature[] = []) {
             },
             [
               renderIcon(props.prefixIcon || Clock, { class: 'ui-time-picker__icon' }),
-              h(
-                'span',
-                {
-                  class: state.displayAt(index) ? 'ui-time-picker__value' : 'ui-time-picker__placeholder'
-                },
-                state.displayAt(index) ||
-                  (state.range
-                    ? [props.startPlaceholder, props.endPlaceholder][index] || ['开始时间', '结束时间'][index]
-                    : props.placeholder || '选择时间')
-              ),
+              h('input', {
+                class: state.draftAt(index) ? 'ui-time-picker__value' : 'ui-time-picker__placeholder',
+                type: 'text',
+                autocomplete: 'off',
+                value: state.draftAt(index),
+                placeholder: state.range
+                  ? [props.startPlaceholder, props.endPlaceholder][index] || ['开始时间', '结束时间'][index]
+                  : props.placeholder || '选择时间',
+                readonly: !state.canEdit,
+                disabled: Boolean(props.disabled),
+                id: state.idAt(index),
+                name: state.nameAt(index),
+                onInput: (event: Event) => state.handleDraftInput(index, event),
+                onKeydown: (event: KeyboardEvent) => state.handleDraftKeydown(index, event),
+                onBlur: () => state.handleDraftBlur(index)
+              }),
               ...(state.range ? [] : [renderActions()])
             ]
           )

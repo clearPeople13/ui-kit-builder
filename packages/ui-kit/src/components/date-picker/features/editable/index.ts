@@ -6,5 +6,5 @@ export const datePickerEditableFeature = createClassFeature({
   props: {
     editable: { type: Boolean, default: true }
   },
-  className: () => 'ui-date-picker--editable'
+  className: (props) => (props.editable ? 'ui-date-picker--editable' : undefined)
 })

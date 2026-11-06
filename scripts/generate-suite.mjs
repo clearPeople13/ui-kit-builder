@@ -535,7 +535,14 @@ function tsType(meta) {
     .map((part) => part.trim())
     .map((part) => map[part] ?? 'any')
   const unique = [...new Set(parts)]
-  return unique.length ? unique.join(' | ') : 'any'
+  const list = unique.length ? unique : ['any']
+  // 联合里的箭头函数成员必须自带括号：TS 会把 `A => B | C` 读成"返回 B | C 的函数"，
+  // 少一层括号就等于把后面的成员吞进返回类型（见 REQUIREMENTS.md F-28）
+  return list
+    .map((part) =>
+      list.length > 1 && part.includes('=>') && !(part.startsWith('(') && part.endsWith(')')) ? `(${part})` : part
+    )
+    .join(' | ')
 }
 
 function propMeta(name, meta) {

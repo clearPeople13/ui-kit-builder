@@ -9,5 +9,5 @@ export const drawerModalFeature = createClassFeature({
     closeOnClickModal: { type: Boolean, default: true },
     closeOnPressEscape: { type: Boolean, default: true }
   },
-  className: () => 'ui-drawer--modal'
+  className: (props) => (props.modal ? 'ui-drawer--modal' : undefined)
 })

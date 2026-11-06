@@ -2,6 +2,7 @@ import type { Component, CSSProperties, VNodeChild } from 'vue'
 import { Teleport, defineComponent, h, inject, provide, shallowRef } from 'vue'
 import type { UiFeature, UiFeatureState } from './feature'
 import { UI_CONFIG_KEY } from './config'
+import { mergeStyles } from './utils'
 import './theme.css'
 import './icons.css'
 import './scrollbar.css'
@@ -123,11 +124,11 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
               ...(config.classes?.(renderProps, state) ?? []),
               ...collectFeatureClasses(states)
             ],
-            style: {
-              ...(attrs.style as Record<string, any>),
-              ...(config.styles?.(renderProps, state) ?? {}),
-              ...collectFeatureStyles(states)
-            },
+            style: mergeStyles(
+              attrs.style,
+              config.styles?.(renderProps, state),
+              collectFeatureStyles(states)
+            ) as CSSProperties,
             disabled: disabled || undefined
           },
           [

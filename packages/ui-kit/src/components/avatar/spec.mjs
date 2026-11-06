@@ -74,6 +74,12 @@ export default {
           "description": "shape"
         },
         {
+          "name": "gap",
+          "type": "number | string",
+          "default": null,
+          "description": "相邻头像的重叠间距（数字按 px 处理），写成根节点内联 CSS 变量 --ui-avatar-group-gap 驱动，缺省 8px"
+        },
+        {
           "name": "collapseAvatars",
           "type": "boolean",
           "description": "collapseAvatars"

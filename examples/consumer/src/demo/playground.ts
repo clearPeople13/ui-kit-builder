@@ -491,25 +491,22 @@ const PREVIEW_NOTES: Record<string, string> = {
   Dialog: '以浮层渲染在预览区中央，modelValue 开关即时控制显隐。',
   Drawer: '以抽屉浮层渲染，可实时观察方向、尺寸与遮罩。',
   MessageBox: '以 MessageBox 浮层渲染，modelValue 开关即时控制显隐。',
-  Menu:
-    '示例是三组、三层菜单（分组 → 子菜单 → 子菜单 → 菜单项）：点击子菜单标题展开，指针悬停满 showTimeout（默认 300ms）也会自动展开，悬停展开的移出 hideTimeout 后收起，点击展开的保持展开。defaultOpeneds 逐级填入可一次展开到第三级，uniqueOpened 让同层子菜单互斥，collapse 只保留顶级条目且不再响应展开，horizontal 下分组标题隐藏、子菜单浮出为面板，textColor 与 backgroundColor 会一并作用于菜单项与浮出面板。',
+  Menu: '示例是三组、三层菜单（分组 → 子菜单 → 子菜单 → 菜单项）：点击子菜单标题展开，指针悬停满 showTimeout（默认 300ms）也会自动展开，悬停展开的移出 hideTimeout 后收起，点击展开的保持展开。defaultOpeneds 逐级填入可一次展开到第三级，uniqueOpened 让同层子菜单互斥，collapse 只保留顶级条目且不再响应展开，horizontal 下分组标题隐藏、子菜单浮出为面板，textColor 与 backgroundColor 会一并作用于菜单项与浮出面板。',
   PageHeader:
     '标题与说明分别走 title / content，正文区域走 default 插槽，右侧操作区走 extra 插槽；返回按钮属于「图标」特性：包里开启该特性时默认渲染 arrowLeft 箭头，icon 可换成其他图标名或自定义渲染函数，传空字符串则隐藏，包里未开启该特性时始终没有返回按钮；点击按钮只触发 back 事件，跳转由使用方决定。',
   Container:
     'direction 留空时按直接子项自动判断：默认插槽里有 Aside 就横向排布，没有就纵向，显式传 horizontal / vertical 可覆盖。嵌套的子容器各自判断，所以经典三段是外层纵向、中间那层含 Aside 自动变横向。tag 只换根元素标签，不影响布局。',
-  Row:
-    '一行按 24 栅格等分，列宽取 span/24。gutter 是「行左右各外扩一半 + 列左右各内填一半」这对组合，所以色块之间的空隙正好等于 gutter，而行的外沿仍与容器对齐；数组形式的第二项写成 row-gap，只有换行才看得见。justify 只在列没占满 24 时才有可见差异，align 只在列高不同时才有差异——不设置时列沿交叉轴被拉伸成等高。嵌套行的 span 以所在列为基准，与外层互不影响；tag 只换根元素标签。',
-  Col:
-    '预览会自动把剩余栅格补成左右参考列，位移才有参照：span 按 24 等分（span=24 时没有剩余空间，参考列为 0）。push / pull 是列自身的相对位移（position: relative），不改变其他列的位置，所以会压在同排相邻列上；offset 用 margin-left 真实空出整格，占位会挤开后续列，合计超过 24 就换行，属于「栅格偏移」特性。',
+  Row: '一行按 24 栅格等分，列宽取 span/24。gutter 是「行左右各外扩一半 + 列左右各内填一半」这对组合，所以色块之间的空隙正好等于 gutter，而行的外沿仍与容器对齐；数组形式的第二项写成 row-gap，只有换行才看得见。justify 只在列没占满 24 时才有可见差异，align 只在列高不同时才有差异——不设置时列沿交叉轴被拉伸成等高。嵌套行的 span 以所在列为基准，与外层互不影响；tag 只换根元素标签。',
+  Col: '预览会自动把剩余栅格补成左右参考列，位移才有参照：span 按 24 等分（span=24 时没有剩余空间，参考列为 0）。push / pull 是列自身的相对位移（position: relative），不改变其他列的位置，所以会压在同排相邻列上；offset 用 margin-left 真实空出整格，占位会挤开后续列，合计超过 24 就换行，属于「栅格偏移」特性。',
   Aside:
     '预览把 Aside 放回「侧栏 + 主体」的横向容器里，才能看出宽度是否生效：数字与纯数字字符串按 px 处理，其他字符串原样输出，28% 这类相对值会跟随容器宽度变化；侧栏不参与伸缩，剩余空间交给 Main。',
   Header:
     '预览把 Header 放在纵向容器的首行，上下各留固定高度，剩余空间由中间的容器占据：数字与纯数字字符串按 px 处理，其他字符串原样输出。',
   Footer:
     '预览把 Footer 放在纵向容器的末行，与 Header 对称：数字与纯数字字符串按 px 处理，其他字符串原样输出，底栏不参与伸缩。',
-  Main:
-    '预览把 Main 与固定宽度的 Aside 放在同一横向容器里：Main 始终占满剩余空间，padding 留空时不写内联样式，数字按 px、字符串可用「12px 24px」这类简写。',
-  Backtop: '预览下方的演示面板即滚动容器：向下滚动超过 visibilityHeight 后，按钮贴在面板右下角内侧并跟随面板位置；right / bottom 以该容器边缘为基准，target 留空时改为监听 window 并按视口定位。',
+  Main: '预览把 Main 与固定宽度的 Aside 放在同一横向容器里：Main 始终占满剩余空间，padding 留空时不写内联样式，数字按 px、字符串可用「12px 24px」这类简写。',
+  Backtop:
+    '预览下方的演示面板即滚动容器：向下滚动超过 visibilityHeight 后，按钮贴在面板右下角内侧并跟随面板位置；right / bottom 以该容器边缘为基准，target 留空时改为监听 window 并按视口定位。',
   Affix: '滚动页面超过固钉位置后，内容会吸附到视口顶部或底部；target 指向滚动容器时按其可视区域计算。',
   Anchor:
     '预览右侧面板即滚动容器：点击链接平滑定位，滚动时按 bound 阈值高亮当前区块，子级链接激活时父级链路一起点亮；type 切换 default / 线条 / 圆点形态，offset 需勾选“滚动偏移”特性。',

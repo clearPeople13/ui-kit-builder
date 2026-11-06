@@ -37,12 +37,12 @@ export default {
         },
         {
           "name": "id",
-          "type": "any[]",
+          "type": "any[] | string",
           "description": "id"
         },
         {
           "name": "name",
-          "type": "any[]",
+          "type": "any[] | string",
           "description": "name"
         },
         {

@@ -8,7 +8,11 @@ function tagsOf(props: Record<string, any>): unknown[] {
   return Array.isArray(props.modelValue) ? props.modelValue : []
 }
 
-function clearTags(props: Record<string, any>, emit: (event: string, ...args: any[]) => void, root: { value?: any } | undefined): void {
+function clearTags(
+  props: Record<string, any>,
+  emit: (event: string, ...args: any[]) => void,
+  root: { value?: any } | undefined
+): void {
   if (props.disabled || props.readonly || !tagsOf(props).length) {
     return
   }

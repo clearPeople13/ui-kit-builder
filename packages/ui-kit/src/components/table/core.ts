@@ -21,6 +21,7 @@ import {
   resolveFeatureStates
 } from '../../shared/feature'
 import { sizeValue } from '../../shared/behavior'
+import { mergeStyles } from '../../shared/utils'
 import { createCheckbox } from '../checkbox/core'
 import './core.css'
 
@@ -270,14 +271,7 @@ export function createTable(features: UiFeature[] = []) {
     name: 'UiTable',
     inheritAttrs: false,
     props: { ...tableBaseProps, ...mergeFeatureProps(features) },
-    emits: [
-      'row-click',
-      'selection-change',
-      'current-change',
-      'sort-change',
-      'resize-change',
-      'tree-expand'
-    ],
+    emits: ['row-click', 'selection-change', 'current-change', 'sort-change', 'resize-change', 'tree-expand'],
     setup(props, { attrs, slots, emit, expose }) {
       const resolved = props as Record<string, any>
       const root = shallowRef<HTMLElement | null>(null)
@@ -377,8 +371,8 @@ export function createTable(features: UiFeature[] = []) {
 
       // 0 未选 / 1 部分选（半选）/ 2 全选，只统计可选且勾选框可见的后代
       function descendantCheckState(row: any, column: TableColumn | undefined): 0 | 1 | 2 {
-        const descendants = descendantsOf(row).filter((child) =>
-          selectableOf(column ? [column] : [], child, -1) && checkboxVisibleOf(column, child, -1)
+        const descendants = descendantsOf(row).filter(
+          (child) => selectableOf(column ? [column] : [], child, -1) && checkboxVisibleOf(column, child, -1)
         )
         if (!descendants.length) {
           return 0
@@ -907,14 +901,12 @@ export function createTable(features: UiFeature[] = []) {
           const maxTop = element.scrollHeight - element.clientHeight
           if (element.scrollTop >= maxTop - 1) {
             stickToBottom.value = true
-          }
-          else if (stickToBottom.value) {
+          } else if (stickToBottom.value) {
             // 用户上滚：scrollTop 退了一个视口以上且总高没变才解锁；
             // 总高变高是实测提交扩的，把滚动位置钉回新底部，锁不丢
             if (maxTop - element.scrollTop > element.clientHeight && maxTop <= lastMaxScrollTop + 0.5) {
               stickToBottom.value = false
-            }
-            else if (maxTop > lastMaxScrollTop + 0.5 && element.scrollTop < maxTop - 1) {
+            } else if (maxTop > lastMaxScrollTop + 0.5 && element.scrollTop < maxTop - 1) {
               element.scrollTop = maxTop
             }
           }
@@ -1256,10 +1248,7 @@ export function createTable(features: UiFeature[] = []) {
         const selectionColumn = columns.find((column) => column.type === 'selection')
         if (selectionColumn) {
           rows.forEach((row, index) => {
-            if (
-              selectableOf(columns, row, index) &&
-              checkboxVisibleOf(selectionColumn, row, index)
-            ) {
+            if (selectableOf(columns, row, index) && checkboxVisibleOf(selectionColumn, row, index)) {
               selectableKeys.push(rowKeyOf(row, index))
             }
           })
@@ -1282,10 +1271,7 @@ export function createTable(features: UiFeature[] = []) {
           hasFixedRight && scrollState.value.right ? 'is-scrolled-right' : '',
           ...featureClasses
         ]
-        const rootStyle: CSSProperties = {
-          ...(attrs.style as Record<string, any>),
-          ...collectFeatureStyles(states)
-        }
+        const rootStyle = mergeStyles(attrs.style, collectFeatureStyles(states)) as CSSProperties
         const rootHeight = sizeValue(resolved.height)
         if (rootHeight) {
           rootStyle.height = rootHeight
@@ -1385,10 +1371,7 @@ export function createTable(features: UiFeature[] = []) {
           // 压到 3 行让拇指跟随不掉帧；停稳后测量提交会带完整 overscan 重新渲染
           const overscan = scrollActive ? 3 : VIRTUAL_OVERSCAN
           windowStart = Math.max(0, findRowAtOffset(rowOffsets, top) - overscan)
-          windowEnd = Math.min(
-            rows.length,
-            findRowAtOffset(rowOffsets, top + viewHeight) + 1 + overscan
-          )
+          windowEnd = Math.min(rows.length, findRowAtOffset(rowOffsets, top + viewHeight) + 1 + overscan)
           // 贴底钳制：总滚动高是实测+均值估算，直接映射可能到不了最后一行
           // （尾部未测行的估算高度变成永远够不着的空白占位），滚动贴底时
           // 把窗口尾部钳到真实末行、底部占位清零，保证最后几行可见可测
@@ -1414,11 +1397,9 @@ export function createTable(features: UiFeature[] = []) {
         }
         const spacerRow = (height: number): VNode | null =>
           height > 0
-            ? h(
-                'tr',
-                { class: 'ui-table__spacer', 'aria-hidden': 'true' },
-                [h('td', { colspan: Math.max(1, columns.length), style: { height: `${height}px` } })]
-              )
+            ? h('tr', { class: 'ui-table__spacer', 'aria-hidden': 'true' }, [
+                h('td', { colspan: Math.max(1, columns.length), style: { height: `${height}px` } })
+              ])
             : null
         const topSpacer = virtualActive && rowOffsets ? spacerRow(rowOffsets[windowStart]) : null
         if (topSpacer) {
@@ -1431,9 +1412,7 @@ export function createTable(features: UiFeature[] = []) {
               ? resolved.rowClassName({ row, rowIndex })
               : resolved.rowClassName
           const rowStyle =
-            typeof resolved.rowStyle === 'function'
-              ? resolved.rowStyle({ row, rowIndex })
-              : resolved.rowStyle
+            typeof resolved.rowStyle === 'function' ? resolved.rowStyle({ row, rowIndex }) : resolved.rowStyle
           const key = rowKeyOf(row, rowIndex)
           const isExpanded = expandedKeys.value.has(key)
           const meta = mergeHookResults(rowMetaHooks, [row, rowIndex, columns])
@@ -1525,7 +1504,8 @@ export function createTable(features: UiFeature[] = []) {
             )
           }
         }
-        const bottomSpacer = virtualActive && rowOffsets ? spacerRow(rowOffsets[rows.length] - rowOffsets[windowEnd]) : null
+        const bottomSpacer =
+          virtualActive && rowOffsets ? spacerRow(rowOffsets[rows.length] - rowOffsets[windowEnd]) : null
         if (bottomSpacer) {
           bodyRows.push(bottomSpacer)
         }
@@ -1533,9 +1513,7 @@ export function createTable(features: UiFeature[] = []) {
         if (!rows.length) {
           bodyRows.push(
             h('tr', { class: 'ui-table__empty-row' }, [
-              h('td', { colspan: Math.max(1, columns.length) }, [
-                slots.empty ? slots.empty() : resolved.emptyText
-              ])
+              h('td', { colspan: Math.max(1, columns.length) }, [slots.empty ? slots.empty() : resolved.emptyText])
             ])
           )
         }

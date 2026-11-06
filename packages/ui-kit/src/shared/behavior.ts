@@ -179,6 +179,7 @@ export function inputConfig(options: { name: string; baseClass: string; props: A
       const type = props.type === 'textarea' ? 'textarea' : props.type || 'text'
       const shared: Record<string, any> = {
         class: `${options.baseClass}__inner`,
+        id: props.id,
         value: props.modelValue ?? '',
         disabled: Boolean(props.disabled),
         readonly: Boolean(props.readonly),
@@ -387,8 +388,8 @@ function resolveCheckedValue(props: AnyProps): boolean {
   if (Array.isArray(model)) {
     return model.includes(value)
   }
-  // 联合类型里含 Boolean 时，缺失的 modelValue 会被 Vue 归一化为 false，
-  // 与显式 false 无法区分；model 为 false 时回退到 checked，保住 checked: true 的初始态。
+  // 显式布尔值按开关语义处理：true 即选中；false 不足以判定未选中，
+  // 因为 Checkbox 也支持只写 checked 的初始态写法，回退到 checked 保住该语义。
   if (typeof model === 'boolean') {
     if (model) {
       return true
@@ -474,7 +475,7 @@ function checkboxChoiceState(
     }
     const trueValue = props.trueValue ?? props.trueLabel
     const falseValue = props.falseValue ?? props.falseLabel
-    const next = checked ? trueValue ?? true : falseValue ?? false
+    const next = checked ? (trueValue ?? true) : (falseValue ?? false)
     emit('update:modelValue', next)
     emit('update:checked', checked)
     emit('change', next)
@@ -1068,8 +1069,7 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
           step: props.step ?? 1,
           value: rangeLow,
           disabled: Boolean(props.disabled),
-          onChange: (event: Event) =>
-            commitRange(Number((event.target as HTMLInputElement).value), rangeHigh, 'input')
+          onChange: (event: Event) => commitRange(Number((event.target as HTMLInputElement).value), rangeHigh, 'input')
         })
         const highInput = h('input', {
           class: `${baseClass}__number`,
@@ -1079,8 +1079,7 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
           step: props.step ?? 1,
           value: rangeHigh,
           disabled: Boolean(props.disabled),
-          onChange: (event: Event) =>
-            commitRange(rangeLow, Number((event.target as HTMLInputElement).value), 'input')
+          onChange: (event: Event) => commitRange(rangeLow, Number((event.target as HTMLInputElement).value), 'input')
         })
         return [
           rangeInner,
@@ -1530,6 +1529,21 @@ export function overlayConfig(options: {
         { immediate: true }
       )
       useScrollLock(() => resolveVisible(props, visibleKey, options.defaultVisible) && props.lockScroll === true)
+      function close(): void {
+        emit(`update:${visibleKey}`, false)
+        emit('close')
+      }
+
+      // beforeClose 声明后由它接管关闭：done() 交给调用方在异步确认后触发。
+      // 未声明时保持同步关闭，ESC / 遮罩 / 关闭按钮的既有时序不变。
+      function requestClose(): void {
+        if (typeof props.beforeClose === 'function') {
+          props.beforeClose(close)
+          return
+        }
+        close()
+      }
+
       function handleKeydown(event: KeyboardEvent) {
         if (event.key !== 'Escape' || props.closeOnPressEscape !== true) {
           return
@@ -1537,12 +1551,12 @@ export function overlayConfig(options: {
         if (!resolveVisible(props, visibleKey, options.defaultVisible)) {
           return
         }
-        emit(`update:${visibleKey}`, false)
-        emit('close')
+        requestClose()
       }
       onMounted(() => window.addEventListener('keydown', handleKeydown))
       onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
       return {
+        requestClose,
         get zIndex() {
           return zIndex.value
         }
@@ -1581,14 +1595,11 @@ export function overlayConfig(options: {
       }
       return typeof target === 'object' && 'value' in target ? target.value : target
     },
-    content: ({ props, emit, slots, states }) => {
+    content: ({ props, slots, states, state }) => {
       if (!resolveVisible(props, visibleKey, options.defaultVisible)) {
         return null
       }
-      const close = () => {
-        emit(`update:${visibleKey}`, false)
-        emit('close')
-      }
+      const close = () => (state.requestClose as () => void)()
       const closeEnabled =
         props[closeKey] !== undefined
           ? props[closeKey] !== false
@@ -1700,14 +1711,7 @@ export function paginationConfig(options: { name: string; baseClass: string; pro
     name: options.name,
     baseClass: options.baseClass,
     props: options.props,
-    emits: [
-      'update:currentPage',
-      'current-change',
-      'update:pageSize',
-      'size-change',
-      'prev-click',
-      'next-click'
-    ],
+    emits: ['update:currentPage', 'current-change', 'update:pageSize', 'size-change', 'prev-click', 'next-click'],
     classes: (props) => [
       ...stateClasses(options.baseClass, props),
       props.background ? `${options.baseClass}--background` : ''
@@ -1864,8 +1868,7 @@ export function paginationConfig(options: { name: string; baseClass: string; pro
         '页'
       ])
 
-      const layout =
-        typeof props.layout === 'string' && props.layout.trim() ? props.layout : 'prev, pager, next'
+      const layout = typeof props.layout === 'string' && props.layout.trim() ? props.layout : 'prev, pager, next'
       const fragment = (part: string): VNodeChild => {
         switch (part) {
           case 'total':
@@ -2154,6 +2157,36 @@ function resolveBoolean(
   return value === undefined ? fallback : Boolean(value)
 }
 
+// Escape 关闭浮层的登记栈：同屏多个浮层展开时（对话框里的下拉、嵌套 Popover），
+// 一次按键只关最上层那个，避免一层 Esc 把所有层全收起。
+const escapeHandlers: Array<() => void> = []
+
+function handleEscapeKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Escape') {
+    return
+  }
+  escapeHandlers[escapeHandlers.length - 1]?.()
+}
+
+function pushEscapeHandler(handler: () => void) {
+  if (typeof window === 'undefined') {
+    return () => undefined
+  }
+  if (escapeHandlers.length === 0) {
+    window.addEventListener('keydown', handleEscapeKeydown)
+  }
+  escapeHandlers.push(handler)
+  return () => {
+    const index = escapeHandlers.indexOf(handler)
+    if (index >= 0) {
+      escapeHandlers.splice(index, 1)
+    }
+    if (escapeHandlers.length === 0) {
+      window.removeEventListener('keydown', handleEscapeKeydown)
+    }
+  }
+}
+
 export function triggerConfig(options: {
   name: string
   baseClass: string
@@ -2174,7 +2207,8 @@ export function triggerConfig(options: {
     props: options.props,
     classes: (props) => stateClasses(options.baseClass, props),
     setup(props, { emit }) {
-      const open = ref(Boolean(options.defaultOpen) || Boolean(props.visible))
+      // visible 声明（非 undefined）时视为受控：展开态由 visible 决定，未声明时回到内部状态
+      const open = ref(props.visible !== undefined ? Boolean(props.visible) : Boolean(options.defaultOpen))
       const triggerRef = shallowRef<HTMLElement>()
       const panelRef = shallowRef<HTMLElement>()
       let showTimer: ReturnType<typeof setTimeout> | null = null
@@ -2220,7 +2254,7 @@ export function triggerConfig(options: {
         closeTimer = setTimeout(hideNow, delay)
       }
 
-      function showNow() {
+      function applyShow() {
         clearShowTimer()
         clearHideTimer()
         if (open.value) {
@@ -2231,7 +2265,7 @@ export function triggerConfig(options: {
         scheduleAutoClose()
       }
 
-      function hideNow() {
+      function applyHide() {
         clearShowTimer()
         clearHideTimer()
         clearCloseTimer()
@@ -2240,6 +2274,26 @@ export function triggerConfig(options: {
         }
         open.value = false
         emit('hide')
+      }
+
+      // 受控态下交互（点击 / 悬停 / 外点 / 面板点击 / 计时器）都不允许改写展开态，
+      // 收起与展开只由 visible 的取值决定
+      function isControlledVisible() {
+        return props.visible !== undefined
+      }
+
+      function showNow() {
+        if (isControlledVisible()) {
+          return
+        }
+        applyShow()
+      }
+
+      function hideNow() {
+        if (isControlledVisible()) {
+          return
+        }
+        applyHide()
       }
 
       function scheduleShow() {
@@ -2317,11 +2371,31 @@ export function triggerConfig(options: {
             return
           }
           if (value) {
-            showNow()
+            applyShow()
           } else {
-            hideNow()
+            applyHide()
           }
         }
+      )
+
+      // 展开期间接管 Escape：closeOnPressEscape 显式给 false 才关掉这条通路，
+      // 未声明该 prop 的浮层（trigger 型组件）默认都能用 Escape 收起
+      let detachEscape: (() => void) | null = null
+      watch(
+        () => open.value,
+        (value) => {
+          if (value && props.closeOnPressEscape !== false) {
+            if (!detachEscape) {
+              detachEscape = pushEscapeHandler(hideNow)
+            }
+            return
+          }
+          if (detachEscape) {
+            detachEscape()
+            detachEscape = null
+          }
+        },
+        { immediate: true }
       )
 
       onMounted(() => {
@@ -2332,6 +2406,10 @@ export function triggerConfig(options: {
         clearShowTimer()
         clearHideTimer()
         clearCloseTimer()
+        if (detachEscape) {
+          detachEscape()
+          detachEscape = null
+        }
         document.removeEventListener('pointerdown', handleDocumentPointerDown, true)
       })
 
@@ -2360,10 +2438,27 @@ export function triggerConfig(options: {
     },
     attrs: (props, state) => {
       const current = resolveTrigger(options.trigger, props)
+      // 触发器是带 tabindex 的 div：Tab 到位后必须还能用 Enter/Space 打开，
+      // 否则纯 div 触发器对键盘是死的。里层本来就有 button/a/input 时不接管，
+      // 那类节点的原生 click 已经会走到 onClick，重复一次会把状态顶回去。
+      const keyboard = {
+        onKeydown: (event: KeyboardEvent) => {
+          if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+            return
+          }
+          const target = event.target as HTMLElement | null
+          if (target?.closest?.('button, a, input, select, textarea, [role="button"]')) {
+            return
+          }
+          event.preventDefault()
+          state.toggle()
+        }
+      }
       if (current === 'hover') {
         return {
           onMouseenter: () => state.scheduleShow(),
-          onMouseleave: () => state.scheduleHide()
+          onMouseleave: () => state.scheduleHide(),
+          ...keyboard
         }
       }
       if (current === 'contextmenu') {
@@ -2371,11 +2466,13 @@ export function triggerConfig(options: {
           onContextmenu: (event: Event) => {
             event.preventDefault()
             state.toggle()
-          }
+          },
+          ...keyboard
         }
       }
       return {
-        onClick: () => state.toggle()
+        onClick: () => state.toggle(),
+        ...keyboard
       }
     },
     styles: () => ({ position: 'relative' }),

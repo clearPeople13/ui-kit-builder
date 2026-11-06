@@ -339,10 +339,14 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           const start = virtual
             ? Math.min(Math.max(0, column.length - 1), Math.max(0, Math.floor(scrollTop / itemHeight) - 4))
             : 0
-          const end = virtual ? Math.min(column.length, Math.ceil((scrollTop + height) / itemHeight) + 4) : column.length
+          const end = virtual
+            ? Math.min(column.length, Math.ceil((scrollTop + height) / itemHeight) + 4)
+            : column.length
           let children: VNodeChild[] = []
           if (!column.length) {
-            children = [h('div', { class: 'ui-cascader-panel__empty' }, level === 0 && rootLoading.value ? '加载中…' : '无数据')]
+            children = [
+              h('div', { class: 'ui-cascader-panel__empty' }, level === 0 && rootLoading.value ? '加载中…' : '无数据')
+            ]
           } else if (!virtual) {
             children = column.map((node) => renderNode(node, level))
           } else {
@@ -361,7 +365,11 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               )
             }
             children = [
-              h('div', { class: 'ui-cascader-panel__window', style: { height: `${column.length * itemHeight}px` } }, rows)
+              h(
+                'div',
+                { class: 'ui-cascader-panel__window', style: { height: `${column.length * itemHeight}px` } },
+                rows
+              )
             ]
           }
           return h(

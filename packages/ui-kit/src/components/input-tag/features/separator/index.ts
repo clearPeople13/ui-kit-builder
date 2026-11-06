@@ -67,7 +67,10 @@ export const inputTagSeparatorFeature: UiFeature = {
         return
       }
       const parts = value.split(separator)
-      const complete = parts.slice(0, -1).map((part) => part.trim()).filter(Boolean)
+      const complete = parts
+        .slice(0, -1)
+        .map((part) => part.trim())
+        .filter(Boolean)
       if (complete.length) {
         addTags(complete)
       }

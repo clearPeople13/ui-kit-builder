@@ -18,7 +18,9 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } })
 let consoleErrors = []
 let pageErrors = []
 page.on('console', (msg) => {
-  if (msg.type() === 'error') consoleErrors.push(msg.text().slice(0, 200))
+  if (msg.type() === 'error') {
+    consoleErrors.push(msg.text().slice(0, 200))
+  }
 })
 page.on('pageerror', (err) => pageErrors.push(String(err).slice(0, 200)))
 
@@ -28,16 +30,15 @@ function safe(name) {
 
 async function switchPkg(label) {
   await page.evaluate((n) => {
-    const btn = [...document.querySelectorAll('button')]
-      .find((e) => e.textContent.trim().startsWith(n) && e.offsetParent)
+    const btn = [...document.querySelectorAll('button')].find(
+      (e) => e.textContent.trim().startsWith(n) && e.offsetParent
+    )
     btn?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
   }, label)
   // 等 eyebrow 反映目标包
-  await page.waitForFunction(
-    (n) => document.querySelector('.cp-eyebrow')?.textContent.includes(n),
-    label,
-    { timeout: 8000 }
-  ).catch(() => {})
+  await page
+    .waitForFunction((n) => document.querySelector('.cp-eyebrow')?.textContent.includes(n), label, { timeout: 8000 })
+    .catch(() => {})
   await page.waitForTimeout(900)
 }
 
@@ -86,7 +87,8 @@ for (const id of components) {
     for (const exp of exports) {
       if (exp) {
         await page.evaluate((n) => {
-          [...document.querySelectorAll('.cp-tabs button')].find((b) => b.textContent.trim() === n)
+          ;[...document.querySelectorAll('.cp-tabs button')]
+            .find((b) => b.textContent.trim() === n)
             ?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
         }, exp)
         await page.waitForTimeout(600)
@@ -96,9 +98,13 @@ for (const id of components) {
       )
       for (const scene of sceneBtns) {
         const key = `${id}|${pkgKey}|${exp}|${scene.label}`
-        if (doneSet.has(key)) continue
+        if (doneSet.has(key)) {
+          continue
+        }
         const btn = (await page.$$('.cp-scenes button:not([disabled])'))[scene.i]
-        if (!btn) continue
+        if (!btn) {
+          continue
+        }
         const file = path.join(compDir, `${pkgKey}__${safe(exp)}__${safe(scene.label)}.png`)
         const state = await clickAndShoot(btn, file).catch((e) => ({ error: String(e).slice(0, 120) }))
         log.push({ component: id, pkg: pkgKey, export: exp, scene: scene.label, file, ...state })

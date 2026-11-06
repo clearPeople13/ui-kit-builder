@@ -131,7 +131,7 @@ export default {
         },
         {
           "name": "fetchSuggestions",
-          "type": "(...args: any[]) => any | any[]",
+          "type": "((...args: any[]) => any) | any[]",
           "description": "fetchSuggestions"
         },
         {

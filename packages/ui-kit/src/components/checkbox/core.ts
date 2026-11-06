@@ -6,11 +6,13 @@ import { checkboxAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const checkboxBaseProps = {
-  value: { type: [String, Boolean, Number, Object] },
+  // value / label / modelValue 的类型联合含 Boolean：Vue 会把缺省的键归一化为 false，
+  // 既挡住了 resolveCheckedValue 的 value ?? label 回退，也让"未选中"与"选中 false"无法区分
+  value: { type: [String, Boolean, Number, Object], default: undefined },
   disabled: { type: Boolean },
-  modelValue: { type: [Number, String, Boolean] },
+  modelValue: { type: [Number, String, Boolean, Array], default: undefined },
   size: { type: String },
-  label: { type: [String, Boolean, Number, Object] },
+  label: { type: [String, Boolean, Number, Object], default: undefined },
   indeterminate: { type: Boolean },
   checked: { type: Boolean },
   name: { type: String },
@@ -36,11 +38,11 @@ export function createCheckbox(features: UiFeature[] = []) {
 }
 
 const checkboxButtonBaseProps = {
-  value: { type: [String, Boolean, Number, Object] },
+  value: { type: [String, Boolean, Number, Object], default: undefined },
   disabled: { type: Boolean },
-  modelValue: { type: [Number, String, Boolean] },
+  modelValue: { type: [Number, String, Boolean, Array], default: undefined },
   size: { type: String },
-  label: { type: [String, Boolean, Number, Object] },
+  label: { type: [String, Boolean, Number, Object], default: undefined },
   checked: { type: Boolean },
   name: { type: String },
   trueValue: { type: [String, Number] },

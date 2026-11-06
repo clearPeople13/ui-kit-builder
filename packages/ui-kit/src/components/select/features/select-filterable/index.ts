@@ -10,7 +10,7 @@ export const selectFilterableFeature = createClassFeature({
     remoteMethod: { type: Function },
     debounce: { type: Number, default: 300 },
     noMatchText: { type: String },
-    noDataText: { type: String },
+    noDataText: { type: String }
   },
-  className: () => 'ui-select--filterable'
+  className: (props) => (props.filterable ? 'ui-select--filterable' : undefined)
 })

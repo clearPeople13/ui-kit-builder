@@ -164,10 +164,7 @@ export function createAffix(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props, state) => [
-        state.fixed ? 'is-fixed' : '',
-        `is-${props.position || 'top'}`
-      ],
+      classes: (props, state) => [state.fixed ? 'is-fixed' : '', `is-${props.position || 'top'}`],
       styles: (_props, state) => state.rootStyle,
       attrs: (props) => baseAttrs(props),
       content: ({ slots, state }) => [

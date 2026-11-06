@@ -6,5 +6,5 @@ export const splitterLazyFeature = createClassFeature({
   props: {
     lazy: { type: Boolean }
   },
-  className: () => 'ui-splitter--lazy'
+  className: (props) => (props.lazy ? 'ui-splitter--lazy' : undefined)
 })

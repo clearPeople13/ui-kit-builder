@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`令牌指纹 > 20 份 profile 的生效令牌表指纹（core 与 full 同指纹） 1`] = `
+{
+  "antd": "bb4d681f798d ×513",
+  "arco": "4b74e38c29f6 ×513",
+  "bootstrap": "6719a59131e6 ×513",
+  "branded": "b8872f061f63 ×513",
+  "carbon": "979d257c72ab ×513",
+  "chinese": "f8aeb11b8886 ×513",
+  "core": "1b4f9c536e69 ×513",
+  "cute": "413ef96555c8 ×513",
+  "fluent": "7ba6e543ef05 ×513",
+  "full": "1b4f9c536e69 ×513",
+  "ios": "60c5548522b3 ×513",
+  "mantine": "8463825f2909 ×513",
+  "material3": "83fe556c8974 ×513",
+  "naive": "76315c1c9a44 ×513",
+  "semi": "733f28eadb3f ×513",
+  "shadcn": "7f154471afd2 ×513",
+  "tdesign": "a91854ad0399 ×513",
+  "vant": "18cd0927764b ×513",
+  "varlet": "26fc6c45e6dc ×513",
+  "viewui": "29e8cdd0cde7 ×513",
+}
+`;

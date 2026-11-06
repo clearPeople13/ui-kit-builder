@@ -7,5 +7,5 @@ export const cascaderLazyFeature = createClassFeature({
     lazy: { type: Boolean },
     lazyLoad: { type: Function }
   },
-  className: () => 'ui-cascader--lazy'
+  className: (props) => (props.lazy ? 'ui-cascader--lazy' : undefined)
 })

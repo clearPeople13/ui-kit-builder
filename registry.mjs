@@ -106,9 +106,7 @@ export function fullSelection(registry) {
   return Object.fromEntries(
     Object.keys(registry.components).map((id) => [
       id,
-      registry.components[id].exports.flatMap((item) =>
-        Object.keys(item.features ?? {})
-      )
+      registry.components[id].exports.flatMap((item) => Object.keys(item.features ?? {}))
     ])
   )
 }

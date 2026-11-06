@@ -8,6 +8,9 @@ export default tseslint.config(
       'node_modules/**',
       'examples/consumer/node_modules/**',
       'examples/consumer/dist/**',
+      // 本地临时探针与草稿：不进仓库，也不参与质量门禁
+      '_scratch/**',
+      '.trae-html-share-packages/**',
       '**/*.d.ts',
     ],
   },

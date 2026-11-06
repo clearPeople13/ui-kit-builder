@@ -13,7 +13,7 @@ export default {
           "name": "modelValue",
           "type": "string",
           "default": null,
-          "description": "modelValue"
+          "description": "绑定色值；空值时底部色值文本留空，不再回吐内部兜底色"
         },
         {
           "name": "disabled",

@@ -118,9 +118,7 @@ function runEgo(scriptFile, timeout) {
 }
 
 function extractResult(stdout) {
-  const line = stdout
-    .split('\n')
-    .find((entry) => entry.trim().startsWith('SWEEP_RESULT:'))
+  const line = stdout.split('\n').find((entry) => entry.trim().startsWith('SWEEP_RESULT:'))
   if (!line) {
     return null
   }

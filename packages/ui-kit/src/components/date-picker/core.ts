@@ -65,6 +65,8 @@ export function createDatePicker(features: UiFeature[] = []) {
         const view = ref<'date' | 'month' | 'year'>('date')
         const panelDate = ref<Date>(startOfMonth(new Date()))
         const selectedDate = ref<Date | null>(null)
+        // type=dates 多选：面板内维护一组勾选日期（归一到当地零点），每次切换以字符串数组抛值
+        const selectedDates = ref<Date[]>([])
         const rangeStart = ref<Date | null>(null)
         const rangeEnd = ref<Date | null>(null)
         const rightPanelDate = ref<Date>(startOfMonth(new Date()))
@@ -77,6 +79,7 @@ export function createDatePicker(features: UiFeature[] = []) {
 
         const range = computed(() => Boolean(props.isRange) || String(props.type || 'date').endsWith('range'))
         const type = computed(() => String(props.type || 'date'))
+        const isDates = computed(() => type.value === 'dates')
         const isDatetime = computed(() => type.value.includes('datetime') || type.value.includes('time'))
         const baseView = computed<'date' | 'month' | 'year'>(() => {
           if (type.value.startsWith('month')) {
@@ -279,6 +282,13 @@ export function createDatePicker(features: UiFeature[] = []) {
         }
 
         function syncFromValue() {
+          if (isDates.value) {
+            const list = Array.isArray(props.modelValue) ? props.modelValue : []
+            selectedDates.value = list
+              .map((item) => parseDateValue(item))
+              .filter((date): date is Date => Boolean(date))
+              .map((date) => new Date(date.getFullYear(), date.getMonth(), date.getDate()))
+          }
           const start = parsedStart.value ?? defaultDateAt(0)
           const end = parsedEnd.value ?? (range.value ? defaultDateAt(1) : null)
           selectedDate.value = start ? new Date(start.getTime()) : null
@@ -476,8 +486,29 @@ export function createDatePicker(features: UiFeature[] = []) {
           shiftPanelAt(panelDate, direction)
         }
 
+        function datesValue(): string[] {
+          return [...selectedDates.value]
+            .sort((left, right) => compareDate(left, right))
+            .map((date) => formatDateValue(date, outputFormat.value))
+        }
+
+        function toggleDate(date: Date) {
+          const day = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+          const existing = selectedDates.value.findIndex((item) => isSameDay(item, day))
+          selectedDates.value =
+            existing >= 0
+              ? selectedDates.value.filter((_item, index) => index !== existing)
+              : [...selectedDates.value, day]
+          emitValue(datesValue())
+        }
+
         function handleDayClick(date: Date) {
           if (isDisabled(date)) {
+            return
+          }
+          if (isDates.value) {
+            // 多选：切换该日勾选状态、按日期升序抛字符串数组，面板保持展开不收起
+            toggleDate(date)
             return
           }
           commitValue(date, !isDatetime.value)
@@ -517,6 +548,14 @@ export function createDatePicker(features: UiFeature[] = []) {
 
         function setNow() {
           const now = new Date()
+          if (isDates.value) {
+            // 多选下「今天」把今天并入勾选项，保持面板展开
+            panelDate.value = startOfMonth(now)
+            if (!selectedDates.value.some((item) => isSameDay(item, now))) {
+              toggleDate(now)
+            }
+            return
+          }
           hours.value = now.getHours()
           minutes.value = now.getMinutes()
           seconds.value = now.getSeconds()
@@ -568,6 +607,12 @@ export function createDatePicker(features: UiFeature[] = []) {
         }
 
         function confirmPanel() {
+          if (isDates.value) {
+            // 多选下「确定」提交当前勾选项并收起面板
+            emitValue(datesValue())
+            closePanel()
+            return
+          }
           if (range.value) {
             commitRange()
             closePanel()
@@ -634,9 +679,11 @@ export function createDatePicker(features: UiFeature[] = []) {
           // 上下月补位格不参与选中/区间高亮，避免同一日期在相邻月份重复高亮
           const selected =
             inMonth &&
-            (range.value
-              ? isSameDay(date, rangeStart.value) || isSameDay(date, rangeEnd.value)
-              : isSameDay(date, selectedDate.value))
+            (isDates.value
+              ? selectedDates.value.some((item) => isSameDay(item, date))
+              : range.value
+                ? isSameDay(date, rangeStart.value) || isSameDay(date, rangeEnd.value)
+                : isSameDay(date, selectedDate.value))
           const inRange = Boolean(
             inMonth &&
               range.value &&

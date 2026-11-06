@@ -98,7 +98,8 @@ function pickProp(prop) {
   if (prop.offValue !== undefined) {
     picked.offValue = prop.offValue
   }
-  const description = prop.description && prop.description !== prop.name ? prop.description : PROP_DESCRIPTIONS[prop.name]
+  const description =
+    prop.description && prop.description !== prop.name ? prop.description : PROP_DESCRIPTIONS[prop.name]
   if (description) {
     picked.description = description
   }

@@ -24,7 +24,7 @@ const rateBaseProps = {
   textColor: { type: String, default: '' },
   texts: { type: Array, default: () => [] },
   scoreTemplate: { type: String, default: '{value}' },
-  ariaLabel: { type: String },
+  ariaLabel: { type: String }
 }
 
 export function createRate(features: UiFeature[] = []) {

@@ -1,16 +1,5 @@
 import type { CSSProperties, VNodeChild } from 'vue'
-import {
-  computed,
-  h,
-  inject,
-  nextTick,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  ref,
-  shallowRef,
-  watch
-} from 'vue'
+import { computed, h, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, shallowRef, watch } from 'vue'
 import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -160,7 +149,9 @@ export function createTour(features: UiFeature[] = []) {
           const options = step.props.scrollIntoViewOptions ?? props.scrollIntoViewOptions
           if (withScroll && step.props.target && options !== false && options !== undefined) {
             element.scrollIntoView(
-              typeof options === 'object' ? { block: 'center', inline: 'nearest', ...options } : { block: 'center', inline: 'nearest' }
+              typeof options === 'object'
+                ? { block: 'center', inline: 'nearest', ...options }
+                : { block: 'center', inline: 'nearest' }
             )
           }
           const box = element.getBoundingClientRect()
@@ -274,13 +265,9 @@ export function createTour(features: UiFeature[] = []) {
           goTo(currentIndex.value - 1)
         }
 
-        const placement = computed(() =>
-          String(activeStep.value?.props.placement || props.placement || 'bottom')
-        )
+        const placement = computed(() => String(activeStep.value?.props.placement || props.placement || 'bottom'))
 
-        const variant = computed(() =>
-          String(activeStep.value?.props.type || props.type || 'default')
-        )
+        const variant = computed(() => String(activeStep.value?.props.type || props.type || 'default'))
 
         const panelStyle = computed<CSSProperties>(() => {
           const style: Record<string, any> = {
@@ -360,8 +347,7 @@ export function createTour(features: UiFeature[] = []) {
           const title = step?.props.title
           const stepClose = step?.props.showClose
           const mergedClose = stepClose !== undefined ? stepClose : props.showClose
-          const showClose =
-            mergedClose !== false && (mergedClose !== undefined || props.closeIcon !== undefined)
+          const showClose = mergedClose !== false && (mergedClose !== undefined || props.closeIcon !== undefined)
           if (!title && !slots.header && !showClose) {
             return null
           }
@@ -460,10 +446,7 @@ export function createTour(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props, state) => [
-        props.type ? `ui-tour--${props.type}` : '',
-        state.visible ? '' : 'is-hidden'
-      ],
+      classes: (props, state) => [props.type ? `ui-tour--${props.type}` : '', state.visible ? '' : 'is-hidden'],
       styles: (props) => (props.zIndex ? { zIndex: Number(props.zIndex) } : {}),
       teleport: (props) => {
         if (props.modelValue !== true || !props.appendTo) {

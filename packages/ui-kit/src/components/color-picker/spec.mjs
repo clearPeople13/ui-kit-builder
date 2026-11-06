@@ -13,7 +13,7 @@ export default {
           "name": "modelValue",
           "type": "string",
           "default": null,
-          "description": "modelValue"
+          "description": "绑定色值；空值或无法解析的文本视作未选中（显示占位文案），清空后未回写则继续显示原值"
         },
         {
           "name": "disabled",

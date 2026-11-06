@@ -208,7 +208,12 @@ export function createRovingFocusItem(features: UiFeature[] = []) {
       // 用旧属性判断「本轮之前是否可聚焦」，避免只因为焦点落在子节点里就被反复抢走
       onBeforeUpdate(() => {
         const element = elementRef.value
-        if (!context || props.focusable || !element?.hasAttribute('tabindex') || !element.contains(document.activeElement)) {
+        if (
+          !context ||
+          props.focusable ||
+          !element?.hasAttribute('tabindex') ||
+          !element.contains(document.activeElement)
+        ) {
           return
         }
         context.releaseTabStop(itemId)
@@ -216,7 +221,11 @@ export function createRovingFocusItem(features: UiFeature[] = []) {
 
       // DOM 的 tabindex 在本次更新 patch 完才变，等渲染结束再兜底，否则读到的还是旧属性
       if (context) {
-        watch(() => props.focusable, () => context.ensureTabStop(), { flush: 'post' })
+        watch(
+          () => props.focusable,
+          () => context.ensureTabStop(),
+          { flush: 'post' }
+        )
       }
 
       function handleFocus(event: FocusEvent) {

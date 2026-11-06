@@ -297,10 +297,14 @@ function renderLayoutHost(
   slots: SampleSlots
 ): VNode {
   const suffix = exportName.toLowerCase()
-  const region = h(kit(exportName), {
-    ...attrs,
-    class: `pg-container-cell pg-container-cell--${suffix}`
-  }, slots)
+  const region = h(
+    kit(exportName),
+    {
+      ...attrs,
+      class: `pg-container-cell pg-container-cell--${suffix}`
+    },
+    slots
+  )
   const fillMain = h(kit('Main'), { class: 'pg-container-cell pg-container-cell--main' }, () => 'Main 主体')
   const sideAside = h(kit('Aside'), { class: 'pg-container-cell pg-container-cell--aside' }, () => 'Aside 侧栏')
   const innerRow = h(kit('Container'), { class: 'pg-container-inner' }, () => [sideAside, fillMain])
@@ -373,14 +377,11 @@ const RowDemo = defineComponent({
   setup(props) {
     // 色块放在列内部的单元里：列自身带 gutter 内填，若把背景打在列上，间距会被背景填平而看不出来
     function cell(span: number, lines: string[] = [], extra = ''): VNode {
-      return h(
-        props.col,
-        { span },
-        () =>
-          h('div', { class: ['pg-row-cell', extra] }, [
-            h('div', null, `span ${span}`),
-            ...lines.map((line) => h('div', { class: 'pg-row-cell__line' }, line))
-          ])
+      return h(props.col, { span }, () =>
+        h('div', { class: ['pg-row-cell', extra] }, [
+          h('div', null, `span ${span}`),
+          ...lines.map((line) => h('div', { class: 'pg-row-cell__line' }, line))
+        ])
       )
     }
 
@@ -391,7 +392,10 @@ const RowDemo = defineComponent({
       if (props.sceneId === 'nested') {
         return [
           h(props.col, { span: 12 }, () => [
-            h(props.row, { gutter: 12 }, () => [cell(12, [], 'pg-row-cell--inner'), cell(12, [], 'pg-row-cell--inner')]),
+            h(props.row, { gutter: 12 }, () => [
+              cell(12, [], 'pg-row-cell--inner'),
+              cell(12, [], 'pg-row-cell--inner')
+            ]),
             h('div', { class: 'pg-row-cell__line' }, '外层 span 12 内再嵌一行两列')
           ]),
           cell(12)
@@ -614,21 +618,18 @@ const CollectionDemo = defineComponent({
         ]),
         // Collection 自身不产生元素，栅格/滚动容器由宿主提供，子项的 display:contents 才能直接排进这个容器
         h('div', { class: listClass(), ref: listRef }, [
-          h(
-            props.collection,
-            { ref: registryRef },
-            () =>
-              entries().map((entry) =>
-                h(props.item, { key: entry.id, item: entry.key as Record<string, any> }, () =>
-                  h('div', { class: ['pg-collection__row', entry.id === locatedId.value ? 'is-located' : ''] }, [
-                    h('div', null, [
-                      h('div', { class: 'pg-collection__label' }, entry.label),
-                      h('div', { class: 'pg-collection__desc' }, entry.desc)
-                    ]),
-                    h('button', { class: 'pg-collection__tool', type: 'button', onClick: () => locate(entry) }, '定位')
-                  ])
-                )
+          h(props.collection, { ref: registryRef }, () =>
+            entries().map((entry) =>
+              h(props.item, { key: entry.id, item: entry.key as Record<string, any> }, () =>
+                h('div', { class: ['pg-collection__row', entry.id === locatedId.value ? 'is-located' : ''] }, [
+                  h('div', null, [
+                    h('div', { class: 'pg-collection__label' }, entry.label),
+                    h('div', { class: 'pg-collection__desc' }, entry.desc)
+                  ]),
+                  h('button', { class: 'pg-collection__tool', type: 'button', onClick: () => locate(entry) }, '定位')
+                ])
               )
+            )
           )
         ]),
         h('div', { class: 'pg-collection__log' }, readout.value),
@@ -885,7 +886,13 @@ const FocusTrapDemo = defineComponent({
         // 陷阱自己挪焦点时后台标签页不派发 focus 事件，先回读一次再算落点，读数与日志才不会各说各话
         syncFocus()
         const to = labelOf(document.activeElement as HTMLElement | null)
-        const clause = trapTabClause({ trapped: trapped.value, loop: looping.value, moved: to !== from, onContainer, atEdge })
+        const clause = trapTabClause({
+          trapped: trapped.value,
+          loop: looping.value,
+          moved: to !== from,
+          onContainer,
+          atEdge
+        })
         log.value = `${shiftKey ? 'Shift+Tab' : 'Tab'}：${from} → ${to}${clause}`
       })
     }
@@ -945,49 +952,77 @@ const FocusTrapDemo = defineComponent({
       h('div', { class: ['pg-trap', trapped.value ? 'is-on' : ''], ref: rootRef }, [
         h('div', { class: 'pg-trap__bar' }, [
           h('span', { class: 'pg-trap__stat' }, propsLine()),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: sendFocusIn
-          }, '焦点送首位'),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: sendFocusLast
-          }, '焦点送末位'),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: sendFocusExtra
-          }, '焦点送面板内陷阱外'),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: sendFocusOutside
-          }, '焦点送陷阱外'),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: () => pressTab(false)
-          }, '模拟 Tab'),
-          h('button', {
-            class: 'pg-trap__tool',
-            type: 'button',
-            onMousedown: keepFocus,
-            onClick: () => pressTab(true)
-          }, '模拟 Shift+Tab')
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: sendFocusIn
+            },
+            '焦点送首位'
+          ),
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: sendFocusLast
+            },
+            '焦点送末位'
+          ),
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: sendFocusExtra
+            },
+            '焦点送面板内陷阱外'
+          ),
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: sendFocusOutside
+            },
+            '焦点送陷阱外'
+          ),
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: () => pressTab(false)
+            },
+            '模拟 Tab'
+          ),
+          h(
+            'button',
+            {
+              class: 'pg-trap__tool',
+              type: 'button',
+              onMousedown: keepFocus,
+              onClick: () => pressTab(true)
+            },
+            '模拟 Shift+Tab'
+          )
         ]),
         h('div', { class: 'pg-trap__lane' }, [
           h('span', { class: 'pg-trap__lane-text' }, '面板之前 · 恒在边界外'),
           h('button', { class: 'pg-trap__edge', type: 'button', ref: beforeRef }, '前置按钮')
         ]),
         h('div', { class: 'pg-trap__panel', ref: panelRef }, [
-          h('button', { class: 'pg-trap__edge pg-trap__edge--extra', type: 'button', ref: extraRef }, '面板内 · 陷阱元素外'),
+          h(
+            'button',
+            { class: 'pg-trap__edge pg-trap__edge--extra', type: 'button', ref: extraRef },
+            '面板内 · 陷阱元素外'
+          ),
           h(props.trap, trapProps(), () => [
             h('div', { class: 'pg-trap__stops' }, TRAP_STOPS.map(stopNode)),
             h('div', { class: 'pg-trap__lane-text' }, '以上四个控件在陷阱元素内部；这行说明不可聚焦，不参与循环')
@@ -1109,7 +1144,8 @@ const OverlayDemo = defineComponent({
       const covers = rect.width >= page.clientWidth - 2 && rect.height >= page.clientHeight - 2
       scopeText.value = `${Math.round(rect.width)}×${Math.round(rect.height)}（${covers ? '盖住整个视口' : '只盖住舞台'}）`
       const point = centerOf(targetRef.value)
-      hitText.value = point && inViewport(point) ? hitLabel(document.elementFromPoint(point.x, point.y)) : OVERLAY_OUT_OF_VIEW
+      hitText.value =
+        point && inViewport(point) ? hitLabel(document.elementFromPoint(point.x, point.y)) : OVERLAY_OUT_OF_VIEW
     }
 
     // 真实鼠标只会点中命中测试最靠上的那个元素，这里按同一结果派发事件，等价于在那个坐标点一下
@@ -1236,7 +1272,8 @@ const OverlayDemo = defineComponent({
           h('div', { class: 'pg-ovl__card' }, [
             h('div', { class: 'pg-ovl__card-title' }, '遮罩上的内容'),
             h(
-              'div', { class: 'pg-ovl__card-body' },
+              'div',
+              { class: 'pg-ovl__card-body' },
               closable.value
                 ? 'Overlay 用 flex 把默认插槽居中；点卡片不会关，点卡片外的空白处才关。'
                 : '这层点空白不关闭，要退出只能按下面这个关闭按钮 —— 和真实业务里必须点「取消」的弹窗是同一套做法。'
@@ -1286,10 +1323,15 @@ const OverlayDemo = defineComponent({
         ]),
         h('div', { class: 'pg-ovl__stage' }, [
           h('div', { class: 'pg-ovl__text' }, '这块舞台是被遮的对象：底下这个按钮能不能点着，取决于遮罩有没有盖住它。'),
-          h('button', { class: 'pg-ovl__target', type: 'button', ref: targetRef, onClick: handleTargetClick }, '舞台按钮'),
+          h(
+            'button',
+            { class: 'pg-ovl__target', type: 'button', ref: targetRef, onClick: handleTargetClick },
+            '舞台按钮'
+          ),
           withRival.value
             ? h(
-                'div', {
+                'div',
+                {
                   class: 'pg-ovl__rival',
                   style: { zIndex: OVERLAY_RIVAL_ZINDEX },
                   ref: rivalRef,
@@ -1349,7 +1391,9 @@ const RovingFocusDemo = defineComponent({
     const blurCount = shallowRef(0)
     const lastEvent = shallowRef('—')
     const read = shallowRef<Record<string, string>>({})
-    const log = shallowRef('先点「聚焦 tab stop」，再按方向键：整组只有一项 tabindex=0，方向键把 tab stop 和焦点一起挪到邻项')
+    const log = shallowRef(
+      '先点「聚焦 tab stop」，再按方向键：整组只有一项 tabindex=0，方向键把 tab stop 和焦点一起挪到邻项'
+    )
     let previousFocus = ''
 
     // 场景 / 调试台的值优先于工具条，读数里回显的是最终生效值
@@ -1437,7 +1481,7 @@ const RovingFocusDemo = defineComponent({
       const next: Record<string, string> = {}
       next.tabstop = stops.length ? stops.map((item) => idOf(item)).join('、') : '无：整组进不了 Tab 序'
       next.order = items.map((item) => `${idOf(item)}:${item.getAttribute('tabindex') ?? '—'}`).join(' ')
-      next.focus = inside ? (idOf(active) || '组容器') : '不在组内'
+      next.focus = inside ? idOf(active) || '组容器' : '不在组内'
       next.key = keyLine.value
       next.events = `itemFocus ${focusCount.value} · itemBlur ${blurCount.value} · 最近 ${lastEvent.value}`
       next.arrow = `前 ${forwardKey()} · 后 ${backwardKey()}`
@@ -1473,9 +1517,11 @@ const RovingFocusDemo = defineComponent({
 
     function stopEl(): HTMLElement | null {
       const items = itemEls()
-      return items.find((item) => item.getAttribute('tabindex') === '0')
-        ?? items.find((item) => item.hasAttribute('tabindex'))
-        ?? null
+      return (
+        items.find((item) => item.getAttribute('tabindex') === '0') ??
+        items.find((item) => item.hasAttribute('tabindex')) ??
+        null
+      )
     }
 
     function focusStop() {
@@ -1570,12 +1616,9 @@ const RovingFocusDemo = defineComponent({
       host?.removeEventListener('keydown', handleKeydown)
     })
 
-    watch(
-      [() => props.values, orientation, dir, loop, thirdUnfocusable, secondActive],
-      () => {
-        nextTick(measure)
-      }
-    )
+    watch([() => props.values, orientation, dir, loop, thirdUnfocusable, secondActive], () => {
+      nextTick(measure)
+    })
 
     function tool(name: string, action: () => void, active = false): VNode {
       return h('button', { class: ['pg-rvg__tool', active ? 'is-on' : ''], type: 'button', onClick: action }, name)
@@ -1597,7 +1640,11 @@ const RovingFocusDemo = defineComponent({
       h('div', { class: 'pg-rvg' }, [
         h('div', { class: 'pg-rvg__bar' }, [
           h('span', { class: 'pg-rvg__stat' }, statLine()),
-          tool(orientation.value === 'vertical' ? '改横向' : '改纵向', toggleOrientation, orientation.value === 'vertical'),
+          tool(
+            orientation.value === 'vertical' ? '改横向' : '改纵向',
+            toggleOrientation,
+            orientation.value === 'vertical'
+          ),
           tool(dir.value === 'rtl' ? '改 LTR' : '改 RTL', toggleDir, dir.value === 'rtl'),
           tool(loop.value ? 'loop 开' : 'loop 关', toggleLoop, loop.value),
           tool('第 3 项不可聚焦', toggleThird, thirdUnfocusable.value),
@@ -1646,7 +1693,11 @@ const RovingFocusDemo = defineComponent({
             'div',
             { class: 'pg-rvg__plain' },
             ROVING_ITEMS.map((label, index) =>
-              h('button', { class: 'pg-rvg__plain-btn', type: 'button', key: `plain-${label}` }, `${ROVING_BASE_IDS[index]} ${label}`)
+              h(
+                'button',
+                { class: 'pg-rvg__plain-btn', type: 'button', key: `plain-${label}` },
+                `${ROVING_BASE_IDS[index]} ${label}`
+              )
             )
           )
         ]),
@@ -1683,7 +1734,14 @@ interface PopperBox {
 }
 
 function popperBox(rect: DOMRect): PopperBox {
-  return { left: rect.left, top: rect.top, width: rect.width, height: rect.height, bottom: rect.bottom, right: rect.right }
+  return {
+    left: rect.left,
+    top: rect.top,
+    width: rect.width,
+    height: rect.height,
+    bottom: rect.bottom,
+    right: rect.right
+  }
 }
 
 function roundCoord(value: number): number {
@@ -1795,7 +1853,10 @@ const PopperDemo = defineComponent({
       // absolute 的包含块是舞台的内边距盒，量的是 border box：不扣掉边框宽度，间距会稳定偏出 1px
       anchorPoint.value =
         basis.value === 'host'
-          ? { left: roundCoord(rect.left - hostRect.left - host.clientLeft), top: roundCoord(rect.top - hostRect.top - host.clientTop) }
+          ? {
+              left: roundCoord(rect.left - hostRect.left - host.clientLeft),
+              top: roundCoord(rect.top - hostRect.top - host.clientTop)
+            }
           : { left: roundCoord(rect.left), top: roundCoord(rect.top) }
       panelPoint.value = offsetOf()
     }
@@ -1865,11 +1926,12 @@ const PopperDemo = defineComponent({
       const center = { x: Math.round(box.left + box.width / 2), y: Math.round(box.top + box.height / 2) }
       const rival = rivalEl()
       const hit = rival && inViewport(center) ? document.elementFromPoint(center.x, center.y) : null
-      next.rival = !rival || !hit
-        ? '遮挡条不在视口内，滚到舞台再测'
-        : hit === rival || rival.contains(hit)
-          ? `遮挡条（z-index=${POPPER_RIVAL_ZINDEX}）压住面板中心：面板 zIndex 抬到它以上才翻得过来`
-          : `面板压住遮挡条（命中 ${firstClassName(hit)}）`
+      next.rival =
+        !rival || !hit
+          ? '遮挡条不在视口内，滚到舞台再测'
+          : hit === rival || rival.contains(hit)
+            ? `遮挡条（z-index=${POPPER_RIVAL_ZINDEX}）压住面板中心：面板 zIndex 抬到它以上才翻得过来`
+            : `面板压住遮挡条（命中 ${firstClassName(hit)}）`
       read.value = next
       if (Math.abs(box.width - panelSize.value.width) > 0.5 || Math.abs(box.height - panelSize.value.height) > 0.5) {
         panelSize.value = { width: box.width, height: box.height }
@@ -1997,7 +2059,11 @@ const PopperDemo = defineComponent({
           tool('回到顶部', () => scrollPage(0))
         ]),
         h('div', { class: 'pg-ppr__host', ref: hostRef }, [
-          h('div', { class: 'pg-ppr__hint' }, '浮层贴的是下面这个按钮的真实矩形：改方位、换坐标基、滚页面，读数会立刻重测。'),
+          h(
+            'div',
+            { class: 'pg-ppr__hint' },
+            '浮层贴的是下面这个按钮的真实矩形：改方位、换坐标基、滚页面，读数会立刻重测。'
+          ),
           h(
             props.parts.PopperTrigger,
             { ...attrsOf('PopperTrigger'), open: triggerOpen(), ref: triggerApi, onClick: handleTriggerClick },
@@ -2006,11 +2072,20 @@ const PopperDemo = defineComponent({
           shown.value
             ? h(
                 props.parts.Popper,
-                { ...attrsOf('Popper'), ref: popperApi, style: { left: `${anchorPoint.value.left}px`, top: `${anchorPoint.value.top}px` } },
+                {
+                  ...attrsOf('Popper'),
+                  ref: popperApi,
+                  style: { left: `${anchorPoint.value.left}px`, top: `${anchorPoint.value.top}px` }
+                },
                 () => [
                   h(
                     props.parts.PopperContent,
-                    { ...attrsOf('PopperContent'), ref: contentApi, class: 'pg-ppr__panel', style: { left: `${panelPoint.value.left}px`, top: `${panelPoint.value.top}px` } },
+                    {
+                      ...attrsOf('PopperContent'),
+                      ref: contentApi,
+                      class: 'pg-ppr__panel',
+                      style: { left: `${panelPoint.value.left}px`, top: `${panelPoint.value.top}px` }
+                    },
                     () => [
                       h('span', { class: 'pg-ppr__bubble' }, '浮层内容：坐标全部由宿主测出来，不写死'),
                       h(props.parts.PopperArrow, { ...attrsOf('PopperArrow'), ref: arrowApi })
@@ -2087,7 +2162,9 @@ const CarouselImagesDemo = defineComponent({
     return () =>
       h(props.carousel, props.values, () =>
         SAMPLE_PHOTOS.map((photo) =>
-          h(props.item, { key: photo.title }, () => h('img', { class: 'pg-slide-img', src: photo.src, alt: photo.title }))
+          h(props.item, { key: photo.title }, () =>
+            h('img', { class: 'pg-slide-img', src: photo.src, alt: photo.title })
+          )
         )
       )
   }
@@ -2122,10 +2199,8 @@ const TimelinePhotosDemo = defineComponent({
     return () =>
       h(props.timeline, props.values, () =>
         SAMPLE_PHOTOS.map((photo, index) =>
-          h(
-            props.item,
-            { key: photo.title, timestamp: TIMELINE_PHOTO_DATES[index] },
-            () => h('figure', { class: 'pg-timeline-photo' }, [
+          h(props.item, { key: photo.title, timestamp: TIMELINE_PHOTO_DATES[index] }, () =>
+            h('figure', { class: 'pg-timeline-photo' }, [
               h('img', { class: 'pg-timeline-photo__img', src: photo.thumbnail, alt: photo.title }),
               h('figcaption', { class: 'pg-timeline-photo__title' }, photo.title)
             ])
@@ -2664,9 +2739,13 @@ const MENU_HOST_EXPORTS = new Set(['MenuItem', 'MenuItemGroup', 'SubMenu'])
 function renderMenuNode(kit: MenuKit, node: MenuDemoNode): VNode {
   const children = node.children
   if (children && node.title) {
-    return h(kit('MenuItemGroup'), { title: node.title }, {
-      default: () => children.map((child) => renderMenuNode(kit, child))
-    })
+    return h(
+      kit('MenuItemGroup'),
+      { title: node.title },
+      {
+        default: () => children.map((child) => renderMenuNode(kit, child))
+      }
+    )
   }
   if (children) {
     return h(
@@ -2702,12 +2781,7 @@ function menuDemoKey(attrs: Record<string, unknown>): string {
   return typeof value === 'string' ? value : ''
 }
 
-function renderMenuHost(
-  kit: MenuKit,
-  exportName: string,
-  attrs: Record<string, unknown>,
-  slots: SampleSlots
-): VNode {
+function renderMenuHost(kit: MenuKit, exportName: string, attrs: Record<string, unknown>, slots: SampleSlots): VNode {
   const key = menuDemoKey(attrs)
   const disabled = attrs.disabled === true
   const openeds = exportName === 'SubMenu' && !disabled ? [key, ...MENU_DEMO_OPENED] : MENU_DEMO_OPENED
@@ -2824,8 +2898,10 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
           h(kit('Rate'), { modelValue: 4, disabled: true, showScore: true, scoreTemplate: '{value} 级' })
         ),
         h(kit('DescriptionsItem'), { label: '联系电话' }, () => '138 0000 8888'),
-        h(kit('DescriptionsItem'), { label: '收货地址', span: 3 }, () =>
-          '上海市浦东新区世纪大道 1000 号环球金融中心 21 层 2108 室（工作日 9:00 - 18:00 可签收，周末暂不派送）'
+        h(
+          kit('DescriptionsItem'),
+          { label: '收货地址', span: 3 },
+          () => '上海市浦东新区世纪大道 1000 号环球金融中心 21 层 2108 室（工作日 9:00 - 18:00 可签收，周末暂不派送）'
         ),
         h(kit('DescriptionsItem'), { label: '商品总额' }, () => '¥1,299.00'),
         h(kit('DescriptionsItem'), { label: '运费' }, () => '¥12.00'),
@@ -2837,11 +2913,17 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
         h(kit('DescriptionsItem'), { label: '配送进度', span: 3 }, () =>
           h(kit('Progress'), { percentage: 70, strokeWidth: 8 })
         ),
-        h(kit('DescriptionsItem'), { label: '商品清单', span: 3 }, () =>
-          '无线机械键盘 × 1（深空灰 / 红轴）¥399.00；4K 便携显示器 × 1（15.6 英寸 / 带皮套）¥860.00；Type-C 十一合一扩展坞 × 1 ¥40.00。'
+        h(
+          kit('DescriptionsItem'),
+          { label: '商品清单', span: 3 },
+          () =>
+            '无线机械键盘 × 1（深空灰 / 红轴）¥399.00；4K 便携显示器 × 1（15.6 英寸 / 带皮套）¥860.00；Type-C 十一合一扩展坞 × 1 ¥40.00。'
         ),
-        h(kit('DescriptionsItem'), { label: '客户备注', span: 3 }, () =>
-          '请放前台代收，外包装请加气泡膜；如外箱破损请拍照拒收并电话联系。本订单为赠品活动单，发票随箱寄出，请勿拆分包裹。'
+        h(
+          kit('DescriptionsItem'),
+          { label: '客户备注', span: 3 },
+          () =>
+            '请放前台代收，外包装请加气泡膜；如外箱破损请拍照拒收并电话联系。本订单为赠品活动单，发票随箱寄出，请勿拆分包裹。'
         ),
         h(kit('DescriptionsItem'), { label: '售后工单' }, () =>
           h(kit('Badge'), { value: 3, type: 'danger' }, () => h(kit('Button'), { size: 'small' }, () => '售后中心'))
@@ -3246,10 +3328,8 @@ export default defineComponent({
       if (props.exportName === 'TourStep') {
         // TourStep 需在 Tour 上下文中才渲染引导面板，单独渲染只剩一行文本
         const stepSlots = slotsFor(props.packageId)[props.exportName] ?? {}
-        return h(
-          kitOf(props.packageId)('Tour'),
-          { key: String(attrs.key), modelValue: true },
-          () => h(target, attrs, stepSlots)
+        return h(kitOf(props.packageId)('Tour'), { key: String(attrs.key), modelValue: true }, () =>
+          h(target, attrs, stepSlots)
         )
       }
       if (props.exportName === 'AnchorLink') {
@@ -3277,7 +3357,7 @@ export default defineComponent({
           item: single ? target : (module.CollectionItem ?? collectionKit('CollectionItem')),
           sceneId: props.sceneId,
           single,
-          itemValue: single ? (attrs.item as Record<string, unknown> | null) ?? null : null
+          itemValue: single ? ((attrs.item as Record<string, unknown> | null) ?? null) : null
         })
       }
       if (props.exportName === 'FocusTrap') {

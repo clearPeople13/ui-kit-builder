@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UI Kit 浏览器层探针</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        padding: 16px;
+      }
+
+      .edge-bottom {
+        position: fixed;
+        left: 40px;
+        bottom: 12px;
+      }
+
+      .edge-right {
+        position: fixed;
+        right: 8px;
+        top: 120px;
+      }
+
+      .edge-right-2 {
+        position: fixed;
+        right: 8px;
+        top: 260px;
+      }
+
+      .edge-right-3 {
+        position: fixed;
+        right: 8px;
+        top: 400px;
+      }
+
+      .in-flow {
+        margin: 8px 0 24px 0;
+      }
+
+      .inline-block {
+        display: inline-block;
+        margin: 0 12px 12px 0;
+      }
+
+      .tall-page {
+        height: 2400px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

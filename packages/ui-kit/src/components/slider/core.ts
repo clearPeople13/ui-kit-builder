@@ -23,7 +23,7 @@ const sliderBaseProps = {
   height: { type: String },
   tooltipClass: { type: [String, Array, Object, Boolean] },
   marks: { type: Object },
-  ariaLabel: { type: String },
+  ariaLabel: { type: String }
 }
 
 export function createSlider(features: UiFeature[] = []) {

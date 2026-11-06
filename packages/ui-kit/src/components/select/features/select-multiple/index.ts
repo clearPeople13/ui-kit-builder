@@ -11,5 +11,5 @@ export const selectMultipleFeature = createClassFeature({
     tagType: { type: String, default: 'info' },
     tagEffect: { type: String, default: 'light' }
   },
-  className: () => 'ui-select--multiple'
+  className: (props) => (props.multiple ? 'ui-select--multiple' : undefined)
 })

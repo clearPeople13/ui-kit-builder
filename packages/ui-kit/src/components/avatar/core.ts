@@ -61,7 +61,7 @@ export function createAvatar(features: UiFeature[] = []) {
           })
         }
         return h('span', { class: 'ui-avatar__text' }, [
-          props.icon ? renderIcon(props.icon, { class: 'ui-avatar__icon' }) : slots.default?.() ?? null
+          props.icon ? renderIcon(props.icon, { class: 'ui-avatar__icon' }) : (slots.default?.() ?? null)
         ])
       }
     },
@@ -72,6 +72,7 @@ export function createAvatar(features: UiFeature[] = []) {
 const avatarGroupBaseProps = {
   size: { type: [Number, String], validator: (value: any) => ['', 'default', 'small', 'large'].includes(value) },
   shape: { type: String, validator: (value: any) => ['circle', 'square'].includes(value) },
+  gap: { type: [Number, String] },
   collapseAvatars: { type: Boolean },
   collapseAvatarsTooltip: { type: Boolean, default: true },
   maxCollapseAvatars: { type: Number, default: 1 },
@@ -91,6 +92,11 @@ export function createAvatarGroup(features: UiFeature[] = []) {
         props.shape ? `is-${props.shape}` : '',
         props.size && props.size !== 'default' ? `is-size-${props.size}` : ''
       ],
+      // gap 是受控 prop，写成 CSS 变量交给 core.css 的负边距消费，避免透传成 DOM 属性
+      styles: (props) => {
+        const gap = sizeValue(props.gap)
+        return gap ? { '--ui-avatar-group-gap': gap } : {}
+      },
       setup(props) {
         const collapseRef = shallowRef<HTMLElement>()
         const panelRef = shallowRef<HTMLElement>()

@@ -35,6 +35,8 @@ export function createMessage(features: UiFeature[] = []) {
       name: 'UiMessage',
       baseClass: 'ui-message',
       props: messageBaseProps,
+      // id 在 props 里声明过就不会再走 attrs 透传，必须显式落盘，否则宿主传 id 会静默丢失
+      attrs: (props) => ({ id: props.id || undefined }),
       classes: (props) => [`ui-message--${props.type || 'info'}`, props.center ? 'is-center' : '', props.customClass],
       styles: (props, state) => {
         const style: Record<string, any> = { zIndex: resolveZIndex(props.zIndex, state.zIndex) }

@@ -62,6 +62,12 @@ export default {
           "type": "boolean",
           "default": true,
           "description": "pauseOnHover"
+        },
+        {
+          "name": "modelValue",
+          "type": "string | number",
+          "default": null,
+          "description": "当前条目，支持 v-model：取条目的 name、label 或序号；内部切换（箭头、指示器、autoplay、实例方法）会抛 update:modelValue 与 change（新值，旧值）"
         }
       ],
       "features": {
@@ -101,7 +107,7 @@ export default {
           "name": "name",
           "type": "string",
           "default": "",
-          "description": "name"
+          "description": "条目标识，可作为 Carousel 的 modelValue；未传时内部自动生成随机名，不用于读屏文案"
         },
         {
           "name": "label",

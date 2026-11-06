@@ -11,7 +11,7 @@ const progressBaseProps = {
   strokeWidth: { type: Number, default: 6 },
   width: { type: Number, default: 126 },
   showText: { type: Boolean, default: true },
-  color: { type: [String, Array, Function], default: '' },
+  color: { type: [String, Array, Function], default: '' }
 }
 
 export function createProgress(features: UiFeature[] = []) {
