@@ -199,6 +199,8 @@ export function createColorPickerPanel(features: UiFeature[] = []) {
       classes: (props) => [props.disabled ? 'is-disabled' : ''],
       content: ({ props, emit }) => {
         const color = parseColor(props.modelValue)
+        // 空值不参与反解析，否则会把内部兜底色当成用户当前值吐回去
+        const hasModel = typeof props.modelValue === 'string' && Boolean(props.modelValue.trim())
         const hsv = rgbToHsv(color)
         const withAlpha = Boolean(props.showAlpha)
         const format = String(props.colorFormat ?? 'hex')
@@ -342,7 +344,7 @@ export function createColorPickerPanel(features: UiFeature[] = []) {
             h(
               'span',
               { class: 'ui-color-picker-panel__value' },
-              formatColor({ ...baseRgb, a: color.a }, format, withAlpha)
+              hasModel ? formatColor({ ...baseRgb, a: color.a }, format, withAlpha) : ''
             )
           ])
         ]

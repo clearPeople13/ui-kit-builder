@@ -17,7 +17,9 @@ const popconfirmBaseProps = {
   iconColor: { type: String, default: '#f90' },
   hideIcon: { type: Boolean },
   hideAfter: { type: Number, default: 200 },
-  visible: { type: Boolean },
+  // Boolean prop 必须显式 default: undefined，否则不传时 Vue 归一化成 false，
+  // triggerConfig 会把"未受控"误判成"受控且强制收起"
+  visible: { type: Boolean, default: undefined },
   effect: { type: String, default: 'light' },
   width: { type: [String, Number], default: 150 }
 }

@@ -6,5 +6,5 @@ export const sliderRangeFeature = createClassFeature({
   props: {
     range: { type: Boolean }
   },
-  className: () => 'ui-slider--range'
+  className: (props) => (props.range ? 'ui-slider--range' : undefined)
 })

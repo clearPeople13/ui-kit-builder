@@ -7,7 +7,9 @@ import './core.css'
 
 const popoverBaseProps = {
   disabled: { type: Boolean },
-  visible: { type: Boolean },
+  // Boolean prop 必须显式 default: undefined，否则不传时 Vue 归一化成 false，
+  // triggerConfig 会把"未受控"误判成"受控且强制收起"
+  visible: { type: Boolean, default: undefined },
   showAfter: { type: Number, default: 0 },
   hideAfter: { type: Number, default: 200 },
   autoClose: { type: Number, default: 0 },

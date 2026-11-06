@@ -6,7 +6,8 @@ export const timePickerRangeFeature = createClassFeature({
   props: {
     rangeSeparator: { type: String, default: '-' },
     startPlaceholder: { type: String },
-    endPlaceholder: { type: String },
+    endPlaceholder: { type: String }
   },
-  className: () => 'ui-time-picker--range'
+  className: (props) =>
+    Boolean(props.isRange) || String(props.type || '') === 'time-range' ? 'ui-time-picker--range' : undefined
 })

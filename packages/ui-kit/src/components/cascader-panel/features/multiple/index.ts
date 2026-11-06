@@ -6,5 +6,5 @@ export const cascaderPanelMultipleFeature = createClassFeature({
   props: {
     multiple: { type: null }
   },
-  className: () => 'ui-cascader-panel--multiple'
+  className: (props) => (props.multiple ? 'ui-cascader-panel--multiple' : undefined)
 })

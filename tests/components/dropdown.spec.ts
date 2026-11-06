@@ -231,6 +231,18 @@ describe('Dropdown 下拉菜单', () => {
     expect(isOpen()).toBe(true)
   })
 
+  it('visible=false 强制收起，交互不能把它重新打开', async () => {
+    // F-13 回归：受控为假时点击 / 悬停 / 计时器都不改写展开态
+    const wrapper = mountDropdown({ visible: false })
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    await wrapper.find('.ui-dropdown__trigger').trigger('click')
+    await wrapper.find('.ui-dropdown__trigger').trigger('mouseenter')
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    expect(wrapper.emitted('show')).toBeUndefined()
+  })
+
   it('size / effect 映射到面板类名', async () => {
     mountDropdown({ size: 'large', effect: 'dark' })
     await nextTick()

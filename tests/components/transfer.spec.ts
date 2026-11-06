@@ -117,14 +117,14 @@ describe('Transfer', () => {
     wrapper.unmount()
   })
 
-  it('移回左侧时从 modelValue 中移除对应键并清空勾选', async () => {
+  it('移回左侧时从 modelValue 中移除对应键、清空勾选并报 left 方向', async () => {
     const wrapper = mountTransfer({ modelValue: [1, 2] })
     await inputsOf(wrapper, 'right')[0].setValue(true)
     await nextTick()
     await buttons(wrapper)[1].trigger('click')
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([[2]])
-    // change 的方向参数被固定为 'right'（缺陷已上报），只校验数值载荷
-    expect(changeEvents(wrapper)[0]?.[0]).toEqual([2])
+    // F-21 回归：change 的第二参随实际移动方向变化
+    expect(changeEvents(wrapper)[0]).toEqual([[2], 'left'])
     await nextTick()
     expect(inputsOf(wrapper, 'right').map((input) => (input.element as HTMLInputElement).checked)).toEqual([
       false,
@@ -152,6 +152,19 @@ describe('Transfer', () => {
     expect((inputsOf(wrapper, 'left')[0].element as HTMLInputElement).checked).toBe(true)
     expect((inputsOf(wrapper, 'right')[0].element as HTMLInputElement).checked).toBe(true)
     expect(buttons(wrapper)[1].attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('预设勾选跳过 disabled 条目', async () => {
+    // F-22 回归：leftDefaultChecked 不能再把禁用项搬走
+    const wrapper = mountTransfer({ modelValue: [], leftDefaultChecked: [3] })
+    await nextTick()
+    const leftInputs = inputsOf(wrapper, 'left')
+    expect(leftInputs.map((input) => (input.element as HTMLInputElement).checked)).toEqual([false, false, false])
+    expect(countOf(wrapper, 'left')).toBe('0/3')
+    expect(buttons(wrapper)[0].attributes('disabled')).toBeDefined()
+    await buttons(wrapper)[0].trigger('click')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     wrapper.unmount()
   })
 

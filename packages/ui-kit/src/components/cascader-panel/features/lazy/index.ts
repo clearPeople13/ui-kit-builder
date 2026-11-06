@@ -4,7 +4,7 @@ import './style.css'
 export const cascaderPanelLazyFeature = createClassFeature({
   id: 'cascader-panel.lazy',
   props: {
-    lazy: { type: null },
+    lazy: { type: null }
   },
-  className: () => 'ui-cascader-panel--lazy'
+  className: (props) => (props.lazy ? 'ui-cascader-panel--lazy' : undefined)
 })

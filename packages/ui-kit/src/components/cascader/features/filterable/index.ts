@@ -9,5 +9,5 @@ export const cascaderFilterableFeature = createClassFeature({
     debounce: { type: Number, default: 300 },
     fitInputWidth: { type: [Boolean, Number], default: false }
   },
-  className: () => 'ui-cascader--filterable'
+  className: (props) => (props.filterable ? 'ui-cascader--filterable' : undefined)
 })

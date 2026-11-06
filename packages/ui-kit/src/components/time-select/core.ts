@@ -5,6 +5,7 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
+import { formatDateValue, parseTimeValue } from '../../shared/date'
 import { timeSelectClearableFeature } from './features/clearable/index'
 import { timeSelectIconsFeature } from './features/icons/index'
 import { timeSelectPopperFeature } from './features/popper/index'
@@ -25,7 +26,7 @@ const timeSelectBaseProps = {
   minTime: { type: String },
   maxTime: { type: String },
   includeEndTime: { type: Boolean },
-  name: { type: String },
+  name: { type: String }
 }
 
 function toMinutes(value: string): number {
@@ -39,15 +40,12 @@ function toLabel(totalMinutes: number): string {
   return `${hours}:${minutes}`
 }
 
+// 复用共享的 formatDateValue，把 'HH:mm'/'HH:mm:ss' 等模式（含中文小时/分钟/秒后缀）完整展开，
+// 修正 ss 段被当字面量输出的缺陷
 function formatTime(value: string, format: string): string {
-  const [hours, minutes] = String(value).split(':').map(Number)
-  const hh = String(hours || 0).padStart(2, '0')
-  const mm = String(minutes || 0).padStart(2, '0')
-  return String(format || 'HH:mm')
-    .replace(/HH/g, hh)
-    .replace(/H/g, String(hours || 0))
-    .replace(/mm/g, mm)
-    .replace(/m/g, String(minutes || 0))
+  const parts = parseTimeValue(value)
+  const date = new Date(2000, 0, 1, parts?.hours ?? 0, parts?.minutes ?? 0, parts?.seconds ?? 0)
+  return formatDateValue(date, String(format || 'HH:mm'))
 }
 
 function buildOptions(props: Record<string, any>): string[] {
@@ -233,7 +231,8 @@ export function createTimeSelect(features: UiFeature[] = []) {
               [renderIcon(props.clearIcon || X)]
             )
           )
-        }        actions.push(
+        }
+        actions.push(
           renderIcon(ChevronDown, { class: state.open ? 'ui-time-select__arrow is-open' : 'ui-time-select__arrow' })
         )
         return [
@@ -257,14 +256,16 @@ export function createTimeSelect(features: UiFeature[] = []) {
               h(
                 'span',
                 { class: state.hasValue ? 'ui-time-select__value' : 'ui-time-select__placeholder' },
-                state.hasValue
-                  ? formatTime(props.modelValue, props.format)
-                  : props.placeholder || '选择时间'
+                state.hasValue ? formatTime(props.modelValue, props.format) : props.placeholder || '选择时间'
               ),
               h('span', { class: 'ui-time-select__actions' }, actions)
             ]
           ),
-          h('input', { type: 'hidden', name: props.name, value: props.modelValue ?? '' }),
+          h('input', {
+            type: 'hidden',
+            name: props.name,
+            value: state.hasValue ? formatTime(props.modelValue, props.format) : ''
+          }),
           state.renderPanel()
         ]
       }

@@ -6,5 +6,5 @@ export const imageLazyFeature = createClassFeature({
   props: {
     lazy: { type: Boolean }
   },
-  className: () => 'ui-image--lazy'
+  className: (props) => (props.lazy ? 'ui-image--lazy' : undefined)
 })

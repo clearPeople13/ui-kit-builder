@@ -96,11 +96,10 @@ describe('Carousel', () => {
     expect(indicators(wrapper).map((item) => item.attributes('aria-label'))).toEqual(['第一张', 'b', '3'])
   })
 
-  it('未传 name 与 label 时指示器以自动生成的条目名作为 aria-label', async () => {
+  it('未传 name 与 label 时指示器给出可读的序号 aria-label', async () => {
+    // F-24 回归：不再把自动生成的随机条目名（item-xxxx）交给读屏
     const wrapper = await mountCarousel({}, [{ text: 'A' }, { text: 'B' }])
-    const labels = indicators(wrapper).map((item) => item.attributes('aria-label') ?? '')
-    expect(labels).toHaveLength(2)
-    expect(labels.every((label) => /^item-[a-z0-9]+$/.test(label))).toBe(true)
+    expect(indicators(wrapper).map((item) => item.attributes('aria-label'))).toEqual(['第 1 张', '第 2 张'])
   })
 
   it('激活指示器标记 is-active 与 aria-current', async () => {
@@ -282,13 +281,27 @@ describe('Carousel', () => {
     }
   })
 
-  it('内部切换不对外抛出 modelValue/change 事件（不支持 v-model）', async () => {
+  it('内部切换抛出 modelValue/change，支持 v-model', async () => {
+    // F-23 回归：条目值按 name → label → 序号推导，label 沿用组件既有的字符串口径
     const wrapper = await mountCarousel({ autoplay: false })
     await wrapper.find('.ui-carousel__arrow.is-right').trigger('click')
     await indicators(wrapper)[2].trigger('click')
     await nextTick()
-    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-    expect(wrapper.emitted('change')).toBeUndefined()
+    expect(wrapper.emitted('update:modelValue')).toEqual([['b'], ['3']])
+    expect(wrapper.emitted('change')?.map((args) => args[0])).toEqual(['b', '3'])
+    expect(stateClasses(wrapper)[2]).toContain('is-active')
+  })
+
+  it('外部改写 modelValue 会驱动切换', async () => {
+    const wrapper = await mountCarousel({ autoplay: false, modelValue: 'a' })
+    expect(stateClasses(wrapper)[0]).toContain('is-active')
+    await wrapper.setProps({ modelValue: 3 })
+    await nextTick()
+    expect(stateClasses(wrapper)[2]).toContain('is-active')
+    // 非法值不改变当前条目
+    await wrapper.setProps({ modelValue: 'not-exists' })
+    await nextTick()
+    expect(stateClasses(wrapper)[2]).toContain('is-active')
   })
 
   it('空走马灯只渲染空轨道与箭头，不渲染指示器', async () => {

@@ -135,12 +135,14 @@ describe('ColorPicker 颜色选择', () => {
     expect(swatchStyle(wrapper)).toContain('transparent')
   })
 
-  it('无法解析的文本被吞成兜底色，仍算有值', async () => {
+  it('无法解析的色值视作空值，显示占位而不是兜底色', async () => {
+    // F-19 回归：解析失败不再回退成 #409eff 并按有值渲染
     const wrapper = mountPicker({ modelValue: 'not-a-color' })
     await flush()
-    expect(wrapper.classes()).toContain('has-value')
-    expect(triggerText(wrapper)).toMatch(/^#[0-9a-f]{6}$/)
-    expect(triggerText(wrapper)).not.toBe('not-a-color')
+    expect(wrapper.classes()).not.toContain('has-value')
+    expect(wrapper.element.querySelector('.ui-color-picker__value')).toBeNull()
+    expect(wrapper.find('.ui-color-picker__placeholder').text()).toBe('选择颜色')
+    expect(swatchStyle(wrapper)).toContain('transparent')
   })
 
   it('showAlpha 让色值补上 alpha 通道', async () => {
@@ -273,11 +275,14 @@ describe('ColorPicker 颜色选择', () => {
     expect(visible()).toBe(false)
   })
 
-  it('清空后受控值未回写时显示兜底色', async () => {
+  it('清空后未回写 modelValue 时继续显示原值', async () => {
+    // F-18 回归：clear 只写回事件载荷，展示值仍跟随 props，不再落到内部兜底色
     const wrapper = mountPicker()
     await wrapper.find('.ui-color-picker__clear').trigger('click')
     await flush()
-    expect(triggerText(wrapper)).toBe('#409eff')
+    expect(wrapper.emitted('clear')).toEqual([[]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([['']])
+    expect(triggerText(wrapper)).toBe('#ff0000')
     expect(wrapper.classes()).toContain('has-value')
     await wrapper.setProps({ modelValue: '' })
     expect(wrapper.classes()).not.toContain('has-value')
@@ -405,13 +410,13 @@ describe('ColorPickerPanel 颜色面板', () => {
     expect(withBorder.classes()).toEqual(without.classes())
   })
 
-  it('空值面板回吐近似兜底色，滑条停在 210 度色相', async () => {
+  it('空值面板不回吐兜底色，文本位保持为空', async () => {
+    // F-20 回归：modelValue 为空时 __value 是空串，而不是 #40a0ff
     const wrapper = mountPanel({ modelValue: '' })
     await flush()
     expect(wrapper.find('.ui-color-picker-panel__saturation').exists()).toBe(true)
-    // 空值不显示占位，而是把内部兜底色反解析成文本（注意并非声明的 #409eff）
-    expect(wrapper.find('.ui-color-picker-panel__value').text()).toBe('#40a0ff')
-    // 210 度色相 = 210/360，兜底色并不是零位
+    expect(wrapper.find('.ui-color-picker-panel__value').text()).toBe('')
+    // 色相条仍停在缺省色的 210 度（210/360）
     expect(cursorPercent('.ui-color-picker-panel__bar-cursor', 'left', wrapper.element)).toBe('58.333')
   })
 })

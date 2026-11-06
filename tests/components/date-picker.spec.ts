@@ -63,13 +63,13 @@ describe('DatePicker 日期选择', () => {
     expect(trigger.attributes('role')).toBe('combobox')
     expect(trigger.attributes('tabindex')).toBe('0')
     expect(trigger.attributes('aria-expanded')).toBe('false')
+    // 特性开关类名跟随 props：非区间模式不再挂 --range（F-11 回归）
     expect(wrapper.classes()).toEqual([
       'ui-date-picker',
       'ui-date-picker--clearable',
       'ui-date-picker--popper',
       'ui-date-picker--editable',
-      'ui-date-picker--format',
-      'ui-date-picker--range'
+      'ui-date-picker--format'
     ])
     const input = wrapper.find('input')
     expect(input.attributes('placeholder')).toBe('选择日期')
@@ -428,6 +428,29 @@ describe('DatePicker 日期选择', () => {
     await nextTick()
     expect(wrapper.find('.ui-date-picker__separator').text()).toBe('到')
     expect(wrapper.findAll('input').map((input) => input.attributes('placeholder'))).toEqual(['入住', '退房'])
+  })
+
+  it('type=dates 支持多选，每次点击抛出升序日期数组', async () => {
+    // F-15 回归：dates 粒度过去被当单日处理，只抛一个字符串
+    const wrapper = mountPicker({ type: 'dates', modelValue: [] })
+    await open(wrapper)
+    await clickNative(cellByText('2'))
+    expect(wrapper.emitted('update:modelValue')?.[0]?.[0]).toEqual(['2026-11-02'])
+    await clickNative(cellByText('1'))
+    expect(wrapper.emitted('update:modelValue')?.[1]?.[0]).toEqual(['2026-11-01', '2026-11-02'])
+    expect(
+      cells()
+        .filter((cell) => cell.className.includes('is-selected'))
+        .map((cell) => cell.textContent)
+    ).toEqual(['1', '2'])
+    expect(panel()).not.toBeNull()
+
+    // 再点一次取消该日，其余保持选中
+    await clickNative(cellByText('1'))
+    expect(wrapper.emitted('update:modelValue')?.[2]?.[0]).toEqual(['2026-11-02'])
+    const actions = Array.from(panel()!.querySelectorAll('.ui-date-picker__action')) as HTMLElement[]
+    await clickNative(actions.find((action) => action.textContent === '确定'))
+    expect(panel()).toBeNull()
   })
 
   it('空值时输入框为空且没有选中单元格', async () => {

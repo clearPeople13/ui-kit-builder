@@ -151,6 +151,17 @@ describe('Menu 菜单', () => {
     expect(group.find('.ui-menu-item-group__list').text()).toBe('退款申请')
   })
 
+  it('分组未传 title 时不渲染标题节点', async () => {
+    // F-12 回归：空标题不再占一行高度
+    const wrapper = mountMenu({ defaultOpeneds: ['s1'] }, () => [
+      h(MenuItemGroup, null, { default: () => h(MenuItem, { index: '3' }, () => '退款申请') })
+    ])
+    await nextTick()
+    expect(wrapper.find('.ui-menu-item-group').exists()).toBe(true)
+    expect(wrapper.find('.ui-menu-item-group__title').exists()).toBe(false)
+    expect(wrapper.find('.ui-menu-item-group__list').text()).toBe('退款申请')
+  })
+
   it('uniqueOpened 展开新的同级子菜单时收起旧的并抛 close', async () => {
     const wrapper = mountMenu({ uniqueOpened: true }, () => [
       h(SubMenu, { index: 'a' }, { title: () => '甲组', default: () => h(MenuItem, { index: 'a1' }, () => '甲项') }),

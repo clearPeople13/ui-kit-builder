@@ -6,5 +6,5 @@ export const uploadMultipleFeature = createClassFeature({
   props: {
     multiple: { type: Boolean }
   },
-  className: () => 'ui-upload--multiple'
+  className: (props) => (props.multiple ? 'ui-upload--multiple' : undefined)
 })

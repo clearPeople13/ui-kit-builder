@@ -57,7 +57,8 @@
 }
 
 .ui-avatar-group .ui-avatar {
-  margin-left: -8px;
+  /* 重叠间距由 gap prop 通过 CSS 变量控制，缺省保持 8px */
+  margin-left: calc(-1 * var(--ui-avatar-group-gap, 8px));
   border: 2px solid var(--ui-border-color-inverse);
   background: var(--ui-color-primary-lighter);
 }

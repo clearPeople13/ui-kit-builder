@@ -2177,7 +2177,8 @@ export function triggerConfig(options: {
     props: options.props,
     classes: (props) => stateClasses(options.baseClass, props),
     setup(props, { emit }) {
-      const open = ref(Boolean(options.defaultOpen) || Boolean(props.visible))
+      // visible 声明（非 undefined）时视为受控：展开态由 visible 决定，未声明时回到内部状态
+      const open = ref(props.visible !== undefined ? Boolean(props.visible) : Boolean(options.defaultOpen))
       const triggerRef = shallowRef<HTMLElement>()
       const panelRef = shallowRef<HTMLElement>()
       let showTimer: ReturnType<typeof setTimeout> | null = null
@@ -2223,7 +2224,7 @@ export function triggerConfig(options: {
         closeTimer = setTimeout(hideNow, delay)
       }
 
-      function showNow() {
+      function applyShow() {
         clearShowTimer()
         clearHideTimer()
         if (open.value) {
@@ -2234,7 +2235,7 @@ export function triggerConfig(options: {
         scheduleAutoClose()
       }
 
-      function hideNow() {
+      function applyHide() {
         clearShowTimer()
         clearHideTimer()
         clearCloseTimer()
@@ -2243,6 +2244,26 @@ export function triggerConfig(options: {
         }
         open.value = false
         emit('hide')
+      }
+
+      // 受控态下交互（点击 / 悬停 / 外点 / 面板点击 / 计时器）都不允许改写展开态，
+      // 收起与展开只由 visible 的取值决定
+      function isControlledVisible() {
+        return props.visible !== undefined
+      }
+
+      function showNow() {
+        if (isControlledVisible()) {
+          return
+        }
+        applyShow()
+      }
+
+      function hideNow() {
+        if (isControlledVisible()) {
+          return
+        }
+        applyHide()
       }
 
       function scheduleShow() {
@@ -2320,9 +2341,9 @@ export function triggerConfig(options: {
             return
           }
           if (value) {
-            showNow()
+            applyShow()
           } else {
-            hideNow()
+            applyHide()
           }
         }
       )

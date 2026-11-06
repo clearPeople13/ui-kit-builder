@@ -63,8 +63,8 @@ npm run verify:consumer  # 消费方校验（类型、负向用例、运行时�
 ```
 
 组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`；
-当前覆盖 27 个组件、600 条用例（`tests/components/` 27 个文件 + `tests/findings.spec.ts` 的 15 条缺陷守卫）。
-用例暴露的缺陷先以 `tests/findings.spec.ts` 里的 `it.fails` 守卫记录，修复后降级为组件文件里的常规回归用例。
+当前覆盖 27 个组件、612 条用例（28 个文件，含 `feature-class-switch.spec.ts` 的特性开关类名专项）。
+用例暴露的缺陷先以 `tests/findings.spec.ts` 里的 `it.fails` 守卫记录，修复后降级为组件文件里的常规回归用例、守卫文件退役；两批共 25 条缺陷已全部走完这个流程。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## License

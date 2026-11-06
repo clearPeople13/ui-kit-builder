@@ -6,5 +6,5 @@ export const calendarRangeFeature = createClassFeature({
   props: {
     range: { type: Array }
   },
-  className: () => 'ui-calendar--range'
+  className: (props) => (Array.isArray(props.range) && props.range.length > 0 ? 'ui-calendar--range' : undefined)
 })

@@ -188,6 +188,18 @@ describe('Popover 浮层气泡', () => {
     expect(controlled.emitted('hide')).toEqual([[]])
   })
 
+  it('visible=false 强制收起，交互不能把它重新打开', async () => {
+    // F-14 回归：与 Dropdown 同一套 triggerConfig，受控为假时点击 / 悬停都不改写展开态
+    const wrapper = mountPopover({ visible: false })
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    await wrapper.find('.ui-popover__trigger').trigger('click')
+    await wrapper.find('.ui-popover__trigger').trigger('mouseenter')
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    expect(wrapper.emitted('show')).toBeUndefined()
+  })
+
   it('className 与 popperClass 一起附加到面板', async () => {
     const wrapper = mountPopover({ className: 'extra', popperClass: ['mine'] })
     await nextTick()

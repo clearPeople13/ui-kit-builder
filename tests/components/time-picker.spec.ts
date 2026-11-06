@@ -67,11 +67,19 @@ function options() {
   return Array.from(document.querySelectorAll('.ui-time-select__option')) as HTMLElement[]
 }
 
+// 触发区显示值：真实输入框读 value，兼容纯文本节点读 textContent
 function triggerText(wrapper: ReturnType<typeof mountPicker>) {
   const value = wrapper.element.querySelector(
     '.ui-time-picker__value, .ui-time-picker__placeholder'
-  ) as HTMLElement | null
-  return value?.textContent ?? null
+  ) as HTMLInputElement | null
+  if (!value) {
+    return null
+  }
+  return value.tagName === 'INPUT' ? (value as HTMLInputElement).value : (value.textContent ?? null)
+}
+
+function triggerInputs(wrapper: ReturnType<typeof mountPicker>) {
+  return Array.from(wrapper.element.querySelectorAll('input')) as HTMLInputElement[]
 }
 
 function fieldNodes(wrapper: ReturnType<typeof mountPicker>) {
@@ -116,16 +124,16 @@ afterEach(() => {
 })
 
 describe('TimePicker 时间选择', () => {
-  it('触发区是纯文本按钮，不渲染任何输入框', async () => {
+  it('触发区由图标、真实输入框与动作区组成', async () => {
     const wrapper = mountPicker()
     await flush()
+    // 特性开关类跟随 props：未开区间时不挂 --range（F-11 回归）
     expect(wrapper.classes()).toEqual([
       'ui-time-picker',
       'ui-time-picker--clearable',
       'ui-time-picker--popper',
       'ui-time-picker--editable',
-      'ui-time-picker--format',
-      'ui-time-picker--range'
+      'ui-time-picker--format'
     ])
     const trigger = wrapper.find('.ui-time-picker__trigger')
     expect(trigger.attributes('role')).toBe('combobox')
@@ -136,21 +144,64 @@ describe('TimePicker 时间选择', () => {
     expect(
       Array.from(wrapper.find('.ui-time-picker__actions').element.children).map((child) => child.className)
     ).toEqual(['ui-time-picker__clear', 'ui-icon ui-time-picker__arrow'])
-    // editable / readonly / id / name 一类输入型参数没有承载元素
-    expect(document.querySelectorAll('input')).toHaveLength(0)
+    const input = triggerInputs(wrapper)[0]
+    expect(input.tagName).toBe('INPUT')
+    expect(input.getAttribute('autocomplete')).toBe('off')
+    expect(input.readOnly).toBe(false)
+  })
+
+  it('editable 与 readonly 决定输入框可否键入，id / name 落到输入框', async () => {
+    const readonlyWrapper = mountPicker({ editable: false, id: 'tp-readonly', name: 'tp-readonly' })
+    await flush()
+    expect(readonlyWrapper.classes()).not.toContain('ui-time-picker--editable')
+    expect(readonlyWrapper.find('input').attributes('readonly')).toBeDefined()
+    expect(readonlyWrapper.find('input').attributes('id')).toBe('tp-readonly')
+    expect(readonlyWrapper.find('input').attributes('name')).toBe('tp-readonly')
+    readonlyWrapper.unmount()
+    document.body.innerHTML = ''
+
+    const explicit = mountPicker({ readonly: true })
+    await flush()
+    expect(explicit.find('input').attributes('readonly')).toBeDefined()
+    explicit.unmount()
+    document.body.innerHTML = ''
+
+    const editable = mountPicker({ id: 'tp-editable' })
+    await flush()
+    const input = editable.find('input')
+    expect(input.attributes('readonly')).toBeUndefined()
+    expect(input.attributes('id')).toBe('tp-editable')
+    expect(input.attributes('name')).toBeUndefined()
+  })
+
+  it('键入时间文本后回车提交，解析失败不提交且回退原值', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const input = wrapper.find('input')
+    await input.setValue('11:22:33')
+    await input.trigger('keydown', { key: 'Enter' })
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toEqual([['11:22:33']])
+
+    await input.setValue('乱码时间')
+    await input.trigger('keydown', { key: 'Enter' })
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
+    expect(triggerText(wrapper)).toBe('09:24:36')
   })
 
   it('空值显示占位文案，placeholder 可配置', async () => {
     const empty = mountPicker({ modelValue: '' })
     await flush()
     expect(empty.element.querySelector('.ui-time-picker__value')).toBeNull()
-    expect(empty.find('.ui-time-picker__placeholder').text()).toBe('选择时间')
+    expect(empty.find('.ui-time-picker__placeholder').attributes('placeholder')).toBe('选择时间')
+    expect(triggerText(empty)).toBe('')
     empty.unmount()
     document.body.innerHTML = ''
 
     const custom = mountPicker({ modelValue: '', placeholder: '挑个时间点' })
     await flush()
-    expect(custom.find('.ui-time-picker__placeholder').text()).toBe('挑个时间点')
+    expect(custom.find('.ui-time-picker__placeholder').attributes('placeholder')).toBe('挑个时间点')
   })
 
   it('format 与 timeFormat 决定展示文本', async () => {
@@ -344,10 +395,19 @@ describe('TimePicker 时间选择', () => {
       fieldNodes(wrapper).map((field) => `${field.getAttribute('role')}/${field.getAttribute('aria-expanded')}`)
     ).toEqual(['combobox/false', 'combobox/false'])
     expect(
-      Array.from(wrapper.element.querySelectorAll('.ui-time-picker__value')).map((value) => value.textContent)
+      Array.from(wrapper.element.querySelectorAll('.ui-time-picker__value')).map(
+        (value) => (value as HTMLInputElement).value
+      )
     ).toEqual(['09:24:00', '18:30:00'])
     expect(wrapper.find('.ui-time-picker__separator').text()).toBe('-')
     wrapper.unmount()
+    document.body.innerHTML = ''
+
+    // id / name 支持数组，区间两个字段各自映射
+    const named = mountPicker({ isRange: true, modelValue: ['09:24', '18:30'], id: ['s', 'e'], name: ['from', 'to'] })
+    await flush()
+    expect(triggerInputs(named).map((input) => `${input.id}/${input.name}`)).toEqual(['s/from', 'e/to'])
+    named.unmount()
     document.body.innerHTML = ''
 
     const custom = mountPicker({
@@ -360,7 +420,9 @@ describe('TimePicker 时间选择', () => {
     await flush()
     expect(custom.find('.ui-time-picker__separator').text()).toBe('到')
     expect(
-      Array.from(custom.element.querySelectorAll('.ui-time-picker__placeholder')).map((node) => node.textContent)
+      Array.from(custom.element.querySelectorAll('.ui-time-picker__placeholder')).map((node) =>
+        node.getAttribute('placeholder')
+      )
     ).toEqual(['上班', '下班'])
   })
 
@@ -514,12 +576,13 @@ describe('TimeSelect 时刻选择', () => {
     expect(options().some((option) => option.className.includes('is-disabled'))).toBe(false)
   })
 
-  it('format 只替换分钟段，秒位残留成字面量', async () => {
+  it('format 的时分秒三段都参与格式化', async () => {
     const wrapper = mountSelect({ format: 'HH:mm:ss' })
     await wrapper.find('.ui-time-select__trigger').trigger('click')
     await flush()
-    expect(optionTexts().slice(0, 3)).toEqual(['09:00:ss', '09:30:ss', '10:00:ss'])
-    expect(wrapper.find('.ui-time-select__value').text()).toBe('10:00:ss')
+    expect(optionTexts().slice(0, 3)).toEqual(['09:00:00', '09:30:00', '10:00:00'])
+    expect(wrapper.find('.ui-time-select__value').text()).toBe('10:00:00')
+    expect((wrapper.find('input').element as HTMLInputElement).value).toBe('10:00:00')
   })
 
   it('effect 决定浮层皮肤', async () => {

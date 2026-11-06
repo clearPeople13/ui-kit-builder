@@ -16,7 +16,9 @@ const dropdownBaseProps = {
   hideOnClick: { type: Boolean, default: true },
   showTimeout: { type: Number, default: 150 },
   hideTimeout: { type: Number, default: 150 },
-  visible: { type: Boolean },
+  // Boolean prop 必须显式 default: undefined，否则不传时 Vue 归一化成 false，
+  // triggerConfig 会把"未受控"误判成"受控且强制收起"
+  visible: { type: Boolean, default: undefined },
   tabindex: { type: [Number, String], default: 0 },
   maxHeight: { type: [Number, String], default: '' },
   role: { type: String, default: 'menu' }
@@ -55,7 +57,7 @@ export function createDropdown(features: UiFeature[] = []) {
 
 const dropdownItemBaseProps = {
   disabled: { type: Boolean },
-  divided: { type: Boolean },
+  divided: { type: Boolean }
 }
 
 export function createDropdownItem(features: UiFeature[] = []) {
@@ -78,8 +80,7 @@ export function createDropdownItem(features: UiFeature[] = []) {
   )
 }
 
-const dropdownMenuBaseProps = {
-}
+const dropdownMenuBaseProps = {}
 
 export function createDropdownMenu(features: UiFeature[] = []) {
   return createUiComponent(

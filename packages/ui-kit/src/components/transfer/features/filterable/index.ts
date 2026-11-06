@@ -4,7 +4,7 @@ import './style.css'
 export const transferFilterableFeature = createClassFeature({
   id: 'transfer.filterable',
   props: {
-    filterable: { type: Boolean },
+    filterable: { type: Boolean }
   },
-  className: () => 'ui-transfer--filterable'
+  className: (props) => (props.filterable ? 'ui-transfer--filterable' : undefined)
 })

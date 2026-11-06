@@ -50,13 +50,25 @@ export function createColorPicker(features: UiFeature[] = []) {
         const alphaRef = ref<HTMLElement>()
         let dragging: 'sv' | 'hue' | 'alpha' | null = null
 
-        const hasValue = computed(() => Boolean(props.modelValue))
+        // 展示值来源：用户改过且使用方未回写时取内部草稿，否则一律跟随外部 modelValue
+        const draftDirty = ref(false)
+        // 空值与解析失败的色值都视作"没有值"，避免把兜底色当成用户的选择渲染出去
+        const modelColor = computed(() => {
+          const source = props.modelValue
+          if (!source || !chroma.valid(String(source))) {
+            return null
+          }
+          return chroma(String(source))
+        })
         const draftColor = computed(() => {
           const state = hsv.value
           return chroma.hsv(state.h, state.s, state.v).alpha(state.a)
         })
+        const displayColor = computed(() => (draftDirty.value ? draftColor.value : modelColor.value))
+        const hasValue = computed(() => Boolean(displayColor.value))
         const solidColor = computed(() => draftColor.value.alpha(1).hex())
         const draftText = computed(() => formatColor(draftColor.value))
+        const displayText = computed(() => (displayColor.value ? formatColor(displayColor.value) : ''))
 
         const { position, refresh } = useFloatingPanel({
           props,
@@ -98,12 +110,15 @@ export function createColorPicker(features: UiFeature[] = []) {
         }
 
         function commitColor() {
+          draftDirty.value = true
           emitValue(draftText.value)
         }
 
         function syncFromModel() {
           const source = props.modelValue
-          if (!source || !chroma.valid(source)) {
+          // 外部值一旦同步，展示值重新交还给 props
+          draftDirty.value = false
+          if (!source || !chroma.valid(String(source))) {
             return
           }
           hsv.value = readHsv(source)
@@ -145,6 +160,8 @@ export function createColorPicker(features: UiFeature[] = []) {
                 : ''
           emit('clear')
           emitValue(next)
+          // 清空只决定写回什么值，展示值继续由外部 modelValue 决定：未回写就保持原值，不回吐兜底色
+          draftDirty.value = false
           hsv.value = readHsv(FALLBACK_COLOR)
         }
 
@@ -436,11 +453,14 @@ export function createColorPicker(features: UiFeature[] = []) {
           get draftText() {
             return draftText.value
           },
+          get displayText() {
+            return displayText.value
+          },
           togglePanel,
           closePanel,
           clearValue,
           renderPanel,
-          swatchStyle: () => ({ background: hasValue.value ? draftText.value : 'transparent' })
+          swatchStyle: () => ({ background: hasValue.value ? displayText.value : 'transparent' })
         }
       },
       classes: (props, state) => [
@@ -495,7 +515,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                 {
                   class: state.hasValue ? 'ui-color-picker__value' : 'ui-color-picker__placeholder'
                 },
-                state.hasValue ? state.draftText : '选择颜色'
+                state.hasValue ? state.displayText : '选择颜色'
               ),
               h('span', { class: 'ui-color-picker__actions' }, actions)
             ]

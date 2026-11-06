@@ -158,6 +158,17 @@ describe('AvatarGroup 头像组', () => {
     expect(plain.classes().filter((c) => c.startsWith('is-size'))).toEqual([])
   })
 
+  it('gap 是受控 prop，写成 CSS 变量而不是 DOM 属性', () => {
+    // F-25 回归：此前 gap 未声明，透传成 <div gap="4">，间距只能由 CSS 写死
+    const wrapper = mountGroup({ gap: 4 })
+    expect(wrapper.attributes('gap')).toBeUndefined()
+    expect(wrapper.attributes('style')).toContain('--ui-avatar-group-gap: 4px')
+    const textGap = mountGroup({ gap: '1rem' })
+    expect(textGap.attributes('style')).toContain('--ui-avatar-group-gap: 1rem')
+    const plain = mountGroup()
+    expect(plain.attributes('style') ?? '').not.toContain('--ui-avatar-group-gap')
+  })
+
   it('collapseClass / collapseStyle 作用于折叠项', () => {
     const wrapper = mountGroup({
       collapseAvatars: true,

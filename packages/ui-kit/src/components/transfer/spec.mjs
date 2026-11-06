@@ -17,7 +17,7 @@ export default {
         {
           "name": "modelValue",
           "type": "any[]",
-          "description": "modelValue"
+          "description": "右侧条目 key 数组；移动时抛 update:modelValue 与 change（新数组，方向 right/left）"
         },
         {
           "name": "titles",
@@ -37,12 +37,12 @@ export default {
         {
           "name": "leftDefaultChecked",
           "type": "any[]",
-          "description": "leftDefaultChecked"
+          "description": "左侧默认勾选的项，disabled 条目会被忽略"
         },
         {
           "name": "rightDefaultChecked",
           "type": "any[]",
-          "description": "rightDefaultChecked"
+          "description": "右侧默认勾选的项，disabled 条目会被忽略"
         },
         {
           "name": "props",

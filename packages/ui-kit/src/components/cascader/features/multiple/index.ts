@@ -10,5 +10,5 @@ export const cascaderMultipleFeature = createClassFeature({
     tagType: { type: String, default: 'info' },
     tagEffect: { type: String, default: 'light' }
   },
-  className: () => 'ui-cascader--multiple'
+  className: (props) => (props.multiple ? 'ui-cascader--multiple' : undefined)
 })
