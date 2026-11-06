@@ -424,6 +424,7 @@ export const PROP_DESCRIPTIONS = {
   rowClassName: '行类名（函数或字符串）',
   rowStyle: '行内联样式（函数或对象）',
   tableLayout: '表格布局（fixed/auto）',
+  virtual: '虚拟滚动：只渲染可视窗口内的行，适合大数据量',
   defaultSort: '默认排序（prop + order）',
   showSummary: '是否显示合计行',
   sumText: '合计行首列文本',

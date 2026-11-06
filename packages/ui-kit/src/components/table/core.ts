@@ -1,6 +1,7 @@
 import type { CSSProperties, VNode, VNodeChild } from 'vue'
 import {
   Fragment,
+  computed,
   defineComponent,
   h,
   isVNode,
@@ -27,6 +28,10 @@ export const tableColumnMarker = Symbol.for('ui-table-column')
 
 const TableCheckbox = createCheckbox([])
 
+// 虚拟滚动：首帧行高未测量完时的回退值（默认主题实际行高约 40px，挂载后会被实测值替换）
+const VIRTUAL_FALLBACK_ROW_HEIGHT = 40
+const VIRTUAL_OVERSCAN = 8
+
 const tableBaseProps = {
   data: { type: Array, default: () => [] },
   height: { type: [String, Number] },
@@ -42,7 +47,8 @@ const tableBaseProps = {
   rowStyle: { type: [Object, Function] },
   emptyText: { type: String, default: '暂无数据' },
   tableLayout: { type: String, default: 'fixed' },
-  showOverflowTooltip: { type: Boolean }
+  showOverflowTooltip: { type: Boolean },
+  virtual: { type: Boolean }
 }
 
 const tableColumnBaseProps = {
@@ -288,6 +294,8 @@ export function createTable(features: UiFeature[] = []) {
       const scrollState = ref({ left: false, right: false })
       const availableWidth = ref(0)
       const scrollbarGutter = ref(0)
+      const bodyScrollTop = ref(0)
+      const measuredRowHeight = ref(0)
       let latestColumns: TableColumn[] = []
       let measureFrame = 0
       let resizeObserver: ResizeObserver | null = null
@@ -517,6 +525,13 @@ export function createTable(features: UiFeature[] = []) {
       }
       Object.assign(state, { visibleRowsOf })
 
+      // 渲染用行结果 memo：管线 O(N)（tree 建 metaMap、排序等）只随数据/排序/列槽位变化重跑，
+      // 虚拟滚动下每个滚动帧都触发渲染，不 memo 会把成本摊到滚动帧上
+      const pipelineRows = computed(() => {
+        void slots.default
+        return visibleRowsOf(resolved.data)
+      })
+
       function measureAvailableWidth() {
         const element = wrapper.value
         if (!element) {
@@ -607,14 +622,31 @@ export function createTable(features: UiFeature[] = []) {
         }
       }
 
+      function measureRowHeight() {
+        if (!resolved.virtual || typeof window === 'undefined') {
+          return
+        }
+        const row = wrapper.value?.querySelector('.ui-table__body tr:not(.ui-table__spacer)')
+        if (row instanceof HTMLElement && row.offsetHeight > 0) {
+          measuredRowHeight.value = row.offsetHeight
+        }
+      }
+
       function handleScroll() {
         updateScrollState()
         syncFixedSections()
+        if (resolved.virtual) {
+          const element = wrapper.value
+          if (element) {
+            bodyScrollTop.value = element.scrollTop
+          }
+        }
       }
 
       onMounted(() => {
         wrapper.value?.addEventListener('scroll', handleScroll, { passive: true })
         measureColumns()
+        measureRowHeight()
         updateScrollState()
         syncFixedSections()
         scheduleMeasure()
@@ -626,6 +658,7 @@ export function createTable(features: UiFeature[] = []) {
 
       onUpdated(() => {
         measureAvailableWidth()
+        measureRowHeight()
         scheduleMeasure()
         updateScrollState()
         syncFixedSections()
@@ -718,7 +751,7 @@ export function createTable(features: UiFeature[] = []) {
       return function render() {
         const columns = readColumns(slots)
         latestColumns = columns
-        const rows = visibleRowsOf(resolved.data)
+        const rows = pipelineRows.value
 
         const widthHooks = flattenHooks(states, 'tableColumnWidth')
         const userWidthHooks = flattenHooks(states, 'tableColumnUserWidth')
@@ -1002,7 +1035,39 @@ export function createTable(features: UiFeature[] = []) {
 
         const bodyRows: VNode[] = []
         const occupied = new Map<number, Set<number>>()
-        rows.forEach((row, rowIndex) => {
+        // 虚拟滚动：按滚动位置只渲染可视窗口 + 上下 overscan 行，首尾占位行撑开总高；
+        // auto 布局行高不可预知，且传入 spanMethod 时合并块跨窗口会断开，这两种情况不启用
+        const virtualActive =
+          resolved.virtual &&
+          resolved.tableLayout !== 'auto' &&
+          typeof resolved.spanMethod !== 'function' &&
+          rows.length > 0 &&
+          Boolean(resolved.height || resolved.maxHeight)
+        const rowHeight = measuredRowHeight.value || VIRTUAL_FALLBACK_ROW_HEIGHT
+        let windowStart = 0
+        let windowEnd = rows.length
+        if (virtualActive) {
+          const viewHeight = wrapper.value?.clientHeight || 320
+          windowStart = Math.max(0, Math.floor(bodyScrollTop.value / rowHeight) - VIRTUAL_OVERSCAN)
+          windowEnd = Math.min(
+            rows.length,
+            Math.ceil((bodyScrollTop.value + viewHeight) / rowHeight) + VIRTUAL_OVERSCAN
+          )
+        }
+        const spacerRow = (height: number): VNode | null =>
+          height > 0
+            ? h(
+                'tr',
+                { class: 'ui-table__spacer', 'aria-hidden': 'true' },
+                [h('td', { colspan: Math.max(1, columns.length), style: { height: `${height}px` } })]
+              )
+            : null
+        const topSpacer = virtualActive ? spacerRow(windowStart * rowHeight) : null
+        if (topSpacer) {
+          bodyRows.push(topSpacer)
+        }
+        for (let rowIndex = windowStart; rowIndex < windowEnd; rowIndex += 1) {
+          const row = rows[rowIndex]
           const rowClass =
             typeof resolved.rowClassName === 'function'
               ? resolved.rowClassName({ row, rowIndex })
@@ -1092,7 +1157,11 @@ export function createTable(features: UiFeature[] = []) {
               ])
             )
           }
-        })
+        }
+        const bottomSpacer = virtualActive ? spacerRow((rows.length - windowEnd) * rowHeight) : null
+        if (bottomSpacer) {
+          bodyRows.push(bottomSpacer)
+        }
 
         if (!rows.length) {
           bodyRows.push(

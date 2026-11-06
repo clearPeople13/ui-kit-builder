@@ -93,6 +93,17 @@
   border-bottom: none;
 }
 
+/* 虚拟滚动占位行：只撑高度，不参与内容样式 */
+.ui-table__body tr.ui-table__spacer td {
+  padding: 0;
+  border-bottom: none;
+  background: transparent;
+}
+
+.ui-table__body tr.ui-table__spacer:hover td {
+  background: transparent;
+}
+
 .ui-table__body tr:hover td {
   background: var(--ui-table-row-hover-bg);
 }

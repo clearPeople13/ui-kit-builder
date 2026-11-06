@@ -93,6 +93,12 @@ export default {
           "type": "boolean",
           "default": false,
           "description": "单元格内容溢出时以省略号显示并带 title 提示"
+        },
+        {
+          "name": "virtual",
+          "type": "boolean",
+          "default": false,
+          "description": "虚拟滚动：只渲染可视窗口内的行，首尾占位行撑开滚动高度，适合大数据量；合并单元格与 auto 布局下自动失效"
         }
       ],
       "features": {

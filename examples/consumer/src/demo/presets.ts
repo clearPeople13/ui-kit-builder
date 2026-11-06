@@ -1198,16 +1198,23 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     {
       id: 'heavy-data',
       label: '大数据：5 千行',
-      hint: '确定性生成的 5000 行压测数据，行字段全部由行号推导；全量渲染无虚拟滚动，首次渲染约 3 秒',
+      hint: '确定性生成的 5000 行压测数据，行字段全部由行号推导；开启 virtual 只渲染可视窗口行',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(5000), height: 420, stripe: true, resizable: true }
+      values: { data: makeHeavyRows(5000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'heavy-data-20k',
       label: '大数据：2 万行',
-      hint: '20000 行同口径压测数据，无虚拟滚动的全量渲染上限档；首次渲染约 10 秒，期间页面无响应属预期',
+      hint: '20000 行同口径压测数据，virtual 窗口化渲染，滚动只重绘可视区',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(20000), height: 420, stripe: true, resizable: true }
+      values: { data: makeHeavyRows(20000), height: 420, stripe: true, resizable: true, virtual: true }
+    },
+    {
+      id: 'heavy-data-100k',
+      label: '大数据：10 万行',
+      hint: '100000 行同口径压测数据，virtual 窗口化渲染的极限档位，进场景与滚动都保持流畅',
+      requires: 'table.resize',
+      values: { data: makeHeavyRows(100000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'editable-heavy',

@@ -122,6 +122,10 @@ export const tableTreeFeature: UiFeature = {
     }
 
     function tableRows(rows: any[]) {
+      // 普通 flat 数据短路：避免每次渲染都为全量行重建 metaMap（10 万行虚拟滚动时每次滚动帧都跑）
+      if (!rows.some((row) => hasChildrenOf(row))) {
+        return rows
+      }
       const output: any[] = []
       function walk(list: any[], level: number) {
         for (const row of list) {
