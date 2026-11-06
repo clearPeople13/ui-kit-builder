@@ -253,14 +253,7 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   tree: [COLUMN.treeName, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount, COLUMN.date],
   'tree-expanded': [COLUMN.treeName, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount, COLUMN.date],
   'tree-select': [COLUMN.treeName, COLUMN.selection, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
-  'tree-select-strict': [
-    COLUMN.treeName,
-    COLUMN.selection,
-    COLUMN.city,
-    COLUMN.owner,
-    COLUMN.status,
-    COLUMN.amount
-  ],
+  'tree-select-strict': [COLUMN.treeName, COLUMN.selection, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
   'checkbox-hidden': [
     { ...COLUMN.selection, showCheckbox: 'hide-planning' },
     COLUMN.index,
@@ -434,10 +427,8 @@ function cellOf(
   }
   if (kind === 'tag') {
     return (scope) =>
-      h(
-        kit('Tag'),
-        { type: STATUS_TAG_TYPE[String(scope.row.status)] ?? 'info', size: 'small', effect: 'light' },
-        () => String(scope.row.status ?? '')
+      h(kit('Tag'), { type: STATUS_TAG_TYPE[String(scope.row.status)] ?? 'info', size: 'small', effect: 'light' }, () =>
+        String(scope.row.status ?? '')
       )
   }
   if (kind === 'progress') {
@@ -482,7 +473,10 @@ function cellOf(
     ])
 }
 
-function headerOf(kind: NonNullable<TableColumnSpec['headerExtra']>, kit: KitResolver): (scope: CellScope) => VNodeChild {
+function headerOf(
+  kind: NonNullable<TableColumnSpec['headerExtra']>,
+  kit: KitResolver
+): (scope: CellScope) => VNodeChild {
   return (scope) =>
     h('span', { class: 'pg-table-header' }, [
       String(scope.column.label ?? (kind === 'core' ? '组件' : '')),
@@ -638,11 +632,7 @@ const TableSceneDemo = defineComponent({
             h(props.kit('Button'), { size: 'small', onClick: clearSelectedRows }, () => '清空选择'),
             h('span', { class: 'pg-table-methods__count' }, `已选 ${selectedCount.value} 行`)
           ]),
-          h(
-            props.table,
-            { ...attrs, ref: tableApi, onSelectionChange: handleSelectionChange },
-            slots
-          )
+          h(props.table, { ...attrs, ref: tableApi, onSelectionChange: handleSelectionChange }, slots)
         ])
       }
       return h(props.table, attrs, slots)
@@ -662,9 +652,13 @@ const TableColumnDemo = defineComponent({
       const reference = h(props.column, { key: 'reference', prop: 'name', label: '组件', width: 160 })
       const target = h(props.column, { key: 'target', ...props.values })
       const tail = h(props.column, { key: 'tail', prop: 'city', label: '城市', width: 100 })
-      return h(props.table, { data: TABLE_DEMO_ROWS, rowKey: 'id', height: 280 }, {
-        default: () => [reference, target, tail]
-      })
+      return h(
+        props.table,
+        { data: TABLE_DEMO_ROWS, rowKey: 'id', height: 280 },
+        {
+          default: () => [reference, target, tail]
+        }
+      )
     }
   }
 })

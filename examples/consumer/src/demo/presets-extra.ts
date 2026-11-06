@@ -178,7 +178,12 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
       hint: '4 张在线实景图铺满轮播区（object-fit: cover），自动播放、箭头与指示器沿用基础交互',
       values: {}
     },
-    { id: 'card', label: '卡片模式', hint: '当前卡居中、左右各露出相邻卡的一角并压暗，其余卡片隐藏', values: { type: 'card' } },
+    {
+      id: 'card',
+      label: '卡片模式',
+      hint: '当前卡居中、左右各露出相邻卡的一角并压暗，其余卡片隐藏',
+      values: { type: 'card' }
+    },
     {
       id: 'vertical',
       label: '纵向切换',
@@ -1359,7 +1364,12 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       hint: 'index 落在已展开的三级子菜单内，激活底色出现在缩进层',
       values: { index: 'button' }
     },
-    { id: 'disabled', label: '禁用', hint: '禁用项点击不改变激活态，也不触发 select', values: { index: 'logs', disabled: true } },
+    {
+      id: 'disabled',
+      label: '禁用',
+      hint: '禁用项点击不改变激活态，也不触发 select',
+      values: { index: 'logs', disabled: true }
+    },
     { id: 'group-item', label: '分组子项', hint: '与 MenuItemGroup 搭配时的索引写法', values: { index: 'group-item' } }
   ],
   MenuItemGroup: [
@@ -1367,7 +1377,12 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'second', label: '分组二', values: { title: '运维' } },
     { id: 'long', label: '长分组标题', values: { title: '按构建产物划分的菜单分组' } },
     { id: 'empty-title', label: '空标题', hint: 'title 留空时只保留一条空行高，不渲染文案', values: { title: '' } },
-    { id: 'blank-title', label: '仅空格标题', hint: '空格字符串按“有标题”处理，可用于对比占位差异', values: { title: '   ' } }
+    {
+      id: 'blank-title',
+      label: '仅空格标题',
+      hint: '空格字符串按“有标题”处理，可用于对比占位差异',
+      values: { title: '   ' }
+    }
   ],
   SubMenu: [
     {
@@ -1596,7 +1611,12 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
   PopperArrow: [
     { id: 'base', label: '基础', hint: '默认 5px：读数「实测」应当与设的值一致', values: {} },
     { id: 'offset-0', label: '偏移 0', hint: '箭头落在面板水平中心', values: { arrowOffset: 0 } },
-    { id: 'offset-16', label: '偏移 16', hint: 'CSS 用 left: calc(50% + 变量) 位移，箭头整体右移', values: { arrowOffset: 16 } },
+    {
+      id: 'offset-16',
+      label: '偏移 16',
+      hint: 'CSS 用 left: calc(50% + 变量) 位移，箭头整体右移',
+      values: { arrowOffset: 16 }
+    },
     { id: 'offset-neg', label: '反向偏移 -12', hint: '负值把箭头推到中心左侧', values: { arrowOffset: -12 } }
   ],
   PopperContent: [
@@ -1607,7 +1627,12 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       values: {}
     },
     { id: 'light', label: '浅色主题', hint: 'effect 换成 is-light，带边框与投影', values: { effect: 'light' } },
-    { id: 'hidden', label: '隐藏面板', hint: 'visible=false 出 is-hidden（display:none）：读数会标出「没有布局盒」，间距与遮挡测试都不再硬算', values: { visible: false } },
+    {
+      id: 'hidden',
+      label: '隐藏面板',
+      hint: 'visible=false 出 is-hidden（display:none）：读数会标出「没有布局盒」，间距与遮挡测试都不再硬算',
+      values: { visible: false }
+    },
     {
       id: 'z-index',
       label: '层级 3000',
@@ -1620,28 +1645,93 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       hint: 'strategy=fixed 换基准；注意祖先带 transform 时 fixed 仍改认祖先 —— 读数的「坐标按」会说出来',
       values: { strategy: 'fixed' }
     },
-    { id: 'no-gpu', label: '关闭 GPU 加速', hint: '面板不再挂 translateZ(0)，transform 读数为 none', values: { gpuAcceleration: false } },
-    { id: 'aria', label: '无障碍标注', hint: 'id 与 aria-label 直接落到面板 DOM 上', values: { id: 'pg-ppr-panel', ariaLabel: '浮层面板' } }
+    {
+      id: 'no-gpu',
+      label: '关闭 GPU 加速',
+      hint: '面板不再挂 translateZ(0)，transform 读数为 none',
+      values: { gpuAcceleration: false }
+    },
+    {
+      id: 'aria',
+      label: '无障碍标注',
+      hint: 'id 与 aria-label 直接落到面板 DOM 上',
+      values: { id: 'pg-ppr-panel', ariaLabel: '浮层面板' }
+    }
   ],
   PopperTrigger: [
-    { id: 'base', label: '基础', hint: 'role=button；aria-expanded 跟着浮层的实际开合走，点触发器看计数与状态一起动', values: {} },
-    { id: 'open', label: '打开状态', hint: 'open=true 让 aria-expanded 与高亮框亮起来，与浮层实际是否渲染无关', values: { open: true } },
-    { id: 'id', label: '自定义 id', hint: 'id 落进 DOM，读数的「触发器 DOM · id」跟着变', values: { id: 'popper-trigger' } },
-    { id: 'virtual', label: '虚拟触发', hint: 'virtualTriggering=true：触发器不存在，aria-hidden 变 true 并降透明度', values: { virtualTriggering: true } }
+    {
+      id: 'base',
+      label: '基础',
+      hint: 'role=button；aria-expanded 跟着浮层的实际开合走，点触发器看计数与状态一起动',
+      values: {}
+    },
+    {
+      id: 'open',
+      label: '打开状态',
+      hint: 'open=true 让 aria-expanded 与高亮框亮起来，与浮层实际是否渲染无关',
+      values: { open: true }
+    },
+    {
+      id: 'id',
+      label: '自定义 id',
+      hint: 'id 落进 DOM，读数的「触发器 DOM · id」跟着变',
+      values: { id: 'popper-trigger' }
+    },
+    {
+      id: 'virtual',
+      label: '虚拟触发',
+      hint: 'virtualTriggering=true：触发器不存在，aria-hidden 变 true 并降透明度',
+      values: { virtualTriggering: true }
+    }
   ],
   RovingFocusGroup: [
     { id: 'base', label: '基础', hint: '横向：整组只有一项 tabindex=0，方向键在组内挪这个 0', values: {} },
-    { id: 'vertical', label: '垂直方向', hint: 'orientation=vertical：前后键从左右换成上下，左右键不再响应', values: { orientation: 'vertical' } },
+    {
+      id: 'vertical',
+      label: '垂直方向',
+      hint: 'orientation=vertical：前后键从左右换成上下，左右键不再响应',
+      values: { orientation: 'vertical' }
+    },
     { id: 'rtl', label: '从右向左', hint: 'dir=rtl：视觉顺序翻转，←/→ 的作用也对调', values: { dir: 'rtl' } },
-    { id: 'initial-c', label: '初始停在第 3 项', hint: 'currentTabStopId=c：首帧起 tabindex=0 就落在 c 上', values: { currentTabStopId: 'c' } },
+    {
+      id: 'initial-c',
+      label: '初始停在第 3 项',
+      hint: 'currentTabStopId=c：首帧起 tabindex=0 就落在 c 上',
+      values: { currentTabStopId: 'c' }
+    },
     { id: 'no-loop', label: '到头不回绕', hint: 'loop=false：末项再按前键，焦点停在原地', values: { loop: false } }
   ],
   RovingFocusItem: [
-    { id: 'base', label: '基础', hint: '第一项 tabStopId=a，读数里的 tabindex 序列首位就是它', values: { tabStopId: 'a' } },
-    { id: 'id-b', label: '改 id 为 b', hint: 'tabStopId=b：第一项注册键变成 b，顺序表里换到 b 的位置', values: { tabStopId: 'b' } },
-    { id: 'not-focusable', label: '不可聚焦', hint: 'focusable=false：该项不写 tabindex，方向键漫游直接跳过它', values: { tabStopId: 'a', focusable: false } },
-    { id: 'active', label: '常驻停靠点', hint: 'active=true：该项无条件占着 tabindex=0，于是同时出现两个 0', values: { tabStopId: 'a', active: true } },
-    { id: 'custom-id', label: '自定义 id', hint: 'tabStopId=z：注册键是自定义字符串，顺序表里显示 z', values: { tabStopId: 'z' } }
+    {
+      id: 'base',
+      label: '基础',
+      hint: '第一项 tabStopId=a，读数里的 tabindex 序列首位就是它',
+      values: { tabStopId: 'a' }
+    },
+    {
+      id: 'id-b',
+      label: '改 id 为 b',
+      hint: 'tabStopId=b：第一项注册键变成 b，顺序表里换到 b 的位置',
+      values: { tabStopId: 'b' }
+    },
+    {
+      id: 'not-focusable',
+      label: '不可聚焦',
+      hint: 'focusable=false：该项不写 tabindex，方向键漫游直接跳过它',
+      values: { tabStopId: 'a', focusable: false }
+    },
+    {
+      id: 'active',
+      label: '常驻停靠点',
+      hint: 'active=true：该项无条件占着 tabindex=0，于是同时出现两个 0',
+      values: { tabStopId: 'a', active: true }
+    },
+    {
+      id: 'custom-id',
+      label: '自定义 id',
+      hint: 'tabStopId=z：注册键是自定义字符串，顺序表里显示 z',
+      values: { tabStopId: 'z' }
+    }
   ],
   Collection: [
     {

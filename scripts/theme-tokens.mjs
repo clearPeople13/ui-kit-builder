@@ -75,8 +75,7 @@ function fallbackUsages(css) {
     while (cursor < css.length && depth > 0) {
       if (css[cursor] === '(') {
         depth += 1
-      }
-      else if (css[cursor] === ')') {
+      } else if (css[cursor] === ')') {
         depth -= 1
       }
       cursor += 1
@@ -265,7 +264,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   let total = 0
   for (const [scope, list] of Object.entries(tokens.components)) {
     total += list.length
-    console.log(`${scope}: ${list.length} → ${list.map((item) => `${item.token}${item.source === 'fallback' ? '*' : ''}`).join(', ')}`)
+    console.log(
+      `${scope}: ${list.length} → ${list.map((item) => `${item.token}${item.source === 'fallback' ? '*' : ''}`).join(', ')}`
+    )
   }
   console.log(`component total: ${total}`)
 }

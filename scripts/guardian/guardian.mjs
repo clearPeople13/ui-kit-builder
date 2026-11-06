@@ -1,15 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto'
 import { spawn, spawnSync } from 'node:child_process'
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-  statSync
-} from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, statSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { loadDetectors } from './detectors.mjs'
 
@@ -150,14 +142,7 @@ function git(options, args) {
 
 async function worktreeHash(options) {
   const head = await git(options, ['rev-parse', 'HEAD'])
-  const status = await git(options, [
-    'status',
-    '--porcelain',
-    '--',
-    '.',
-    ':(exclude).guardian',
-    ':(exclude).opencode'
-  ])
+  const status = await git(options, ['status', '--porcelain', '--', '.', ':(exclude).guardian', ':(exclude).opencode'])
   return createHash('sha1')
     .update(head.stdout.trim() + status.stdout)
     .digest('hex')
@@ -165,14 +150,7 @@ async function worktreeHash(options) {
 }
 
 async function worktreeDirty(options) {
-  const status = await git(options, [
-    'status',
-    '--porcelain',
-    '--',
-    '.',
-    ':(exclude).guardian',
-    ':(exclude).opencode'
-  ])
+  const status = await git(options, ['status', '--porcelain', '--', '.', ':(exclude).guardian', ':(exclude).opencode'])
   return status.stdout.trim().length > 0
 }
 
@@ -341,8 +319,7 @@ async function handleFailure(options, issues, detector, failure) {
   issue.lastSeen = now
   issue.count += 1
   issue.lastOutput = failure.output.slice(-8000)
-  const cooldownActive =
-    issue.lastAttempt && Date.now() - Date.parse(issue.lastAttempt) < options.cooldown * 1000
+  const cooldownActive = issue.lastAttempt && Date.now() - Date.parse(issue.lastAttempt) < options.cooldown * 1000
   if (issue.attempts >= issue.maxAttempts || cooldownActive) {
     saveIssue(options, issue)
     log(`已知问题 ${issue.id}（${detector.id}，尝试 ${issue.attempts}/${issue.maxAttempts}），跳过`)

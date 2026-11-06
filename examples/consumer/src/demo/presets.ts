@@ -93,7 +93,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       label: '渐变',
       requires: 'button.gradient',
       values: { type: 'primary', gradient: true, gradientAngle: 45 }
-    },
+    }
   ],
   Form: [
     {

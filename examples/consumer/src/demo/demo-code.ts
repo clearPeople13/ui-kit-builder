@@ -71,11 +71,7 @@ interface SourceParts {
   attrs: string[]
 }
 
-function buildSourceParts(
-  entry: PlaygroundEntry,
-  values: Record<string, unknown>,
-  skip: Set<string>
-): SourceParts {
+function buildSourceParts(entry: PlaygroundEntry, values: Record<string, unknown>, skip: Set<string>): SourceParts {
   const controlByName = new Map(entry.controls.map((control) => [control.name, control]))
   const hoisted: string[] = []
   const attrs: string[] = []
@@ -285,8 +281,7 @@ function tableOpenTag(attrs: string[]): string[] {
 function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): string {
   const sceneId = scene?.id ?? 'base'
   const values: Record<string, unknown> = { ...(scene?.values ?? {}) }
-  const heavyRows =
-    sceneId === 'editable-heavy' ? (typeof values.heavyRows === 'number' ? values.heavyRows : 2000) : 0
+  const heavyRows = sceneId === 'editable-heavy' ? (typeof values.heavyRows === 'number' ? values.heavyRows : 2000) : 0
   const rows =
     values.data ?? (sceneId === 'editable' ? TABLE_EDIT_ROWS : sceneId === 'editable-heavy' ? [] : TABLE_DEMO_ROWS)
   delete values.data
@@ -368,7 +363,7 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     hoisted.push('function checkboxRow(row) {', "  return row.status !== '规划'", '}')
   }
   if (sceneId === 'span') {
-    hoisted.push("const SPAN_GROUPS = { 华东: 3, 华南: 2, 华北: 3 }")
+    hoisted.push('const SPAN_GROUPS = { 华东: 3, 华南: 2, 华北: 3 }')
     hoisted.push(
       'function spanMethod({ rowIndex, columnIndex }) {',
       '  if (columnIndex !== 0) {',
