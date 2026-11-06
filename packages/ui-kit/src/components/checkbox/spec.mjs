@@ -23,7 +23,7 @@ export default {
         },
         {
           "name": "modelValue",
-          "type": "number | string | boolean",
+          "type": "number | string | boolean | any[]",
           "default": null,
           "description": "modelValue"
         },
@@ -138,7 +138,7 @@ export default {
         },
         {
           "name": "modelValue",
-          "type": "number | string | boolean",
+          "type": "number | string | boolean | any[]",
           "description": "modelValue"
         },
         {

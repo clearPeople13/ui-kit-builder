@@ -214,3 +214,48 @@
   font-size: 14px;
   line-height: 1.7;
 }
+
+/* type="card"：导航项成盒，激活项与内容区同色相连，取消下划线墨条 */
+.ui-tabs--card .ui-tabs__nav {
+  gap: 4px;
+  border-bottom: 1px solid var(--ui-border-color-light);
+}
+
+.ui-tabs--card .ui-tabs__nav-item {
+  height: 32px;
+  border: 1px solid var(--ui-border-color);
+  border-radius: var(--ui-tabs-nav-item-radius) var(--ui-tabs-nav-item-radius) 0 0;
+  background: var(--ui-bg-color-dark);
+  color: var(--ui-text-color-muted);
+}
+
+.ui-tabs--card .ui-tabs__nav-item.is-active {
+  background: var(--ui-bg-color);
+  color: var(--ui-color-primary);
+  box-shadow: none;
+}
+
+.ui-tabs--card .ui-tabs__nav-item.is-active::after,
+.ui-tabs--border-card .ui-tabs__nav-item.is-active::after {
+  display: none;
+}
+
+/* type="border-card"：整块带边框与底色，导航条与内容区用边框分隔 */
+.ui-tabs--border-card {
+  border: 1px solid var(--ui-border-color-light);
+  background: var(--ui-bg-color);
+}
+
+.ui-tabs--border-card .ui-tabs__nav {
+  border-bottom: 1px solid var(--ui-border-color-light);
+  background: var(--ui-bg-color-dark);
+}
+
+.ui-tabs--border-card .ui-tabs__nav-item.is-active {
+  background: var(--ui-bg-color);
+  box-shadow: none;
+}
+
+.ui-tabs--border-card .ui-tabs__content {
+  padding: 12px var(--ui-tabs-nav-item-padding-x);
+}

@@ -179,6 +179,7 @@ export function inputConfig(options: { name: string; baseClass: string; props: A
       const type = props.type === 'textarea' ? 'textarea' : props.type || 'text'
       const shared: Record<string, any> = {
         class: `${options.baseClass}__inner`,
+        id: props.id,
         value: props.modelValue ?? '',
         disabled: Boolean(props.disabled),
         readonly: Boolean(props.readonly),
@@ -387,8 +388,8 @@ function resolveCheckedValue(props: AnyProps): boolean {
   if (Array.isArray(model)) {
     return model.includes(value)
   }
-  // 联合类型里含 Boolean 时，缺失的 modelValue 会被 Vue 归一化为 false，
-  // 与显式 false 无法区分；model 为 false 时回退到 checked，保住 checked: true 的初始态。
+  // 显式布尔值按开关语义处理：true 即选中；false 不足以判定未选中，
+  // 因为 Checkbox 也支持只写 checked 的初始态写法，回退到 checked 保住该语义。
   if (typeof model === 'boolean') {
     if (model) {
       return true
@@ -474,7 +475,7 @@ function checkboxChoiceState(
     }
     const trueValue = props.trueValue ?? props.trueLabel
     const falseValue = props.falseValue ?? props.falseLabel
-    const next = checked ? trueValue ?? true : falseValue ?? false
+    const next = checked ? (trueValue ?? true) : (falseValue ?? false)
     emit('update:modelValue', next)
     emit('update:checked', checked)
     emit('change', next)
@@ -1068,8 +1069,7 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
           step: props.step ?? 1,
           value: rangeLow,
           disabled: Boolean(props.disabled),
-          onChange: (event: Event) =>
-            commitRange(Number((event.target as HTMLInputElement).value), rangeHigh, 'input')
+          onChange: (event: Event) => commitRange(Number((event.target as HTMLInputElement).value), rangeHigh, 'input')
         })
         const highInput = h('input', {
           class: `${baseClass}__number`,
@@ -1079,8 +1079,7 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
           step: props.step ?? 1,
           value: rangeHigh,
           disabled: Boolean(props.disabled),
-          onChange: (event: Event) =>
-            commitRange(rangeLow, Number((event.target as HTMLInputElement).value), 'input')
+          onChange: (event: Event) => commitRange(rangeLow, Number((event.target as HTMLInputElement).value), 'input')
         })
         return [
           rangeInner,
@@ -1530,6 +1529,21 @@ export function overlayConfig(options: {
         { immediate: true }
       )
       useScrollLock(() => resolveVisible(props, visibleKey, options.defaultVisible) && props.lockScroll === true)
+      function close(): void {
+        emit(`update:${visibleKey}`, false)
+        emit('close')
+      }
+
+      // beforeClose 声明后由它接管关闭：done() 交给调用方在异步确认后触发。
+      // 未声明时保持同步关闭，ESC / 遮罩 / 关闭按钮的既有时序不变。
+      function requestClose(): void {
+        if (typeof props.beforeClose === 'function') {
+          props.beforeClose(close)
+          return
+        }
+        close()
+      }
+
       function handleKeydown(event: KeyboardEvent) {
         if (event.key !== 'Escape' || props.closeOnPressEscape !== true) {
           return
@@ -1537,12 +1551,12 @@ export function overlayConfig(options: {
         if (!resolveVisible(props, visibleKey, options.defaultVisible)) {
           return
         }
-        emit(`update:${visibleKey}`, false)
-        emit('close')
+        requestClose()
       }
       onMounted(() => window.addEventListener('keydown', handleKeydown))
       onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
       return {
+        requestClose,
         get zIndex() {
           return zIndex.value
         }
@@ -1581,14 +1595,11 @@ export function overlayConfig(options: {
       }
       return typeof target === 'object' && 'value' in target ? target.value : target
     },
-    content: ({ props, emit, slots, states }) => {
+    content: ({ props, slots, states, state }) => {
       if (!resolveVisible(props, visibleKey, options.defaultVisible)) {
         return null
       }
-      const close = () => {
-        emit(`update:${visibleKey}`, false)
-        emit('close')
-      }
+      const close = () => (state.requestClose as () => void)()
       const closeEnabled =
         props[closeKey] !== undefined
           ? props[closeKey] !== false
@@ -1700,14 +1711,7 @@ export function paginationConfig(options: { name: string; baseClass: string; pro
     name: options.name,
     baseClass: options.baseClass,
     props: options.props,
-    emits: [
-      'update:currentPage',
-      'current-change',
-      'update:pageSize',
-      'size-change',
-      'prev-click',
-      'next-click'
-    ],
+    emits: ['update:currentPage', 'current-change', 'update:pageSize', 'size-change', 'prev-click', 'next-click'],
     classes: (props) => [
       ...stateClasses(options.baseClass, props),
       props.background ? `${options.baseClass}--background` : ''
@@ -1864,8 +1868,7 @@ export function paginationConfig(options: { name: string; baseClass: string; pro
         '页'
       ])
 
-      const layout =
-        typeof props.layout === 'string' && props.layout.trim() ? props.layout : 'prev, pager, next'
+      const layout = typeof props.layout === 'string' && props.layout.trim() ? props.layout : 'prev, pager, next'
       const fragment = (part: string): VNodeChild => {
         switch (part) {
           case 'total':

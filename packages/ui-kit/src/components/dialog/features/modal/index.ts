@@ -9,5 +9,7 @@ export const dialogModalFeature = createClassFeature({
     closeOnClickModal: { type: Boolean, default: true },
     closeOnPressEscape: { type: Boolean, default: true }
   },
-  className: () => 'ui-dialog--modal'
+  // 类名要跟 modal 取值联动：遮罩节点在 core 里已按 modal 关闭，
+  // 类名恒定会让挂在该类名上的主题样式在无遮罩时误命中
+  className: (props) => (props.modal === false ? undefined : 'ui-dialog--modal')
 })

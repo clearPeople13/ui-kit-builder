@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Dialog } from '@ui-kit-full'
 
 function mountDialog(props: Record<string, unknown> = {}, slots: Record<string, () => string> = {}) {
@@ -119,15 +119,52 @@ describe('Dialog', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
   })
 
+  // 原缺陷 F-7：beforeClose 只参与 ui-dialog--closable 类名推导，
+  // 关闭路径没走它，异步确认无处生效；现在关闭按钮 / 遮罩 / Escape 都交给 beforeClose(done)
+  it('beforeClose 不调用 done 时保持打开', async () => {
+    const beforeClose = vi.fn((_done: () => void) => undefined)
+    const wrapper = mountDialog({ beforeClose })
+    await click('.ui-dialog__panel__close')
+    expect(beforeClose).toHaveBeenCalledTimes(1)
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(panel()).not.toBeNull()
+  })
+
+  it('beforeClose 的 done 触发关闭并抛 close', async () => {
+    const beforeClose = vi.fn((done: () => void) => done())
+    const wrapper = mountDialog({ beforeClose })
+    await click('.ui-dialog__panel__close')
+    expect(beforeClose).toHaveBeenCalledTimes(1)
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+    expect(wrapper.emitted('close')).toHaveLength(1)
+  })
+
+  it('beforeClose 同样拦截遮罩点击与 Escape', async () => {
+    const wrapper = mountDialog({ beforeClose: () => undefined })
+    await click('.ui-dialog__mask')
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.emitted('close')).toBeUndefined()
+  })
+
   it('showClose=false 隐藏关闭按钮但保留标题', () => {
     mountDialog({ showClose: false })
     expect(document.querySelector('.ui-dialog__panel__close')).toBeNull()
     expect(document.querySelector('.ui-dialog__panel__title')?.textContent).toBe('提示')
   })
 
-  it('modal=false 不渲染遮罩', () => {
+  // 原缺陷 F-9：features/modal 的 className 是无条件常量，
+  // 遮罩能按 modal 去掉，但类名恒定，挂在该类名上的主题样式会误命中
+  it('modal=false 不渲染遮罩也不带 ui-dialog--modal 类名', () => {
     mountDialog({ modal: false })
     expect(document.querySelector('.ui-dialog__mask')).toBeNull()
+    expect(containerClasses()).not.toContain('ui-dialog--modal')
+  })
+
+  it('默认带遮罩时输出 ui-dialog--modal 类名', () => {
+    mountDialog()
+    expect(containerClasses()).toContain('ui-dialog--modal')
   })
 
   it('width / top 写入面板样式', () => {

@@ -56,6 +56,31 @@ describe('Select', () => {
     expect(mountSelect({ modelValue: undefined }).find('.ui-select__placeholder').text()).toBe('请选择')
   })
 
+  // 原缺陷 F-2：modelValue 的类型联合含 Boolean，缺省的键被归一化成 false，
+  // 占位文案被 "false" 顶掉；props 声明 default: undefined 后恢复正常
+  it('完全不传 modelValue 时仍显示占位文案', () => {
+    const wrapper = mountSelect({ options })
+    expect(wrapper.find('.ui-select__placeholder').exists()).toBe(true)
+    expect(wrapper.find('.ui-select__selected').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('false')
+  })
+
+  // 原缺陷 F-1：normalizeOptions 漏传 props 映射，自定义字段名的选项文案渲染为空
+  it('props 字段映射决定选项文案与取值', async () => {
+    const wrapper = mountSelect({
+      options: [
+        { id: 'a', text: '甲' },
+        { id: 'b', text: '乙', off: true }
+      ],
+      props: { label: 'text', value: 'id', disabled: 'off' }
+    })
+    await wrapper.find('.ui-select__trigger').trigger('click')
+    expect(optionItems().map((item) => item.textContent)).toEqual(['甲', '乙'])
+    expect(optionItems()[1].className).toContain('is-disabled')
+    await clickOption(optionItems()[0])
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['a'])
+  })
+
   it('modelValue 命中选项时回显 label', () => {
     expect(mountSelect({ options, modelValue: 1 }).find('.ui-select__selected').text()).toBe('选项一')
   })

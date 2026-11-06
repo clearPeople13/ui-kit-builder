@@ -55,7 +55,13 @@ export function createTabPane(features: UiFeature[] = []) {
         context?.register(meta)
         watch(
           () => [props.label, props.disabled, props.closable],
-          () => context?.register({ ...meta, label: props.label || String(name), disabled: Boolean(props.disabled), closable: Boolean(props.closable) })
+          () =>
+            context?.register({
+              ...meta,
+              label: props.label || String(name),
+              disabled: Boolean(props.disabled),
+              closable: Boolean(props.closable)
+            })
         )
         onBeforeUnmount(() => context?.unregister(name))
         const everActive = ref(false)
@@ -129,14 +135,38 @@ export function createTabs(features: UiFeature[] = []) {
           }
         )
 
-        function setActive(name: string | number) {
-          if (String(active.value) === String(name)) {
-            return
-          }
+        function commit(name: string | number) {
           active.value = name
           emit('update:modelValue', name)
           emit('tab-change', name)
           emit('tab-click', name)
+        }
+
+        function setActive(name: string | number) {
+          if (String(active.value) === String(name)) {
+            return
+          }
+          // beforeLeave 支持 Promise 与 false 两种拦截写法；未声明时走同步提交，
+          // 保持"点击即抛事件"的时序不被多一次微任务推迟
+          if (typeof props.beforeLeave === 'function') {
+            let result: unknown
+            try {
+              result = props.beforeLeave(active.value, name)
+            } catch {
+              return
+            }
+            if (result === false) {
+              return
+            }
+            if (result && typeof (result as Promise<unknown>).then === 'function') {
+              ;(result as Promise<unknown>).then(
+                () => commit(name),
+                () => undefined
+              )
+              return
+            }
+          }
+          commit(name)
         }
 
         function register(pane: TabPaneMeta) {
@@ -213,7 +243,11 @@ export function createTabs(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props) => [props.tabPosition ? `is-${props.tabPosition}` : '', props.stretch ? 'is-stretch' : ''],
+      classes: (props) => [
+        props.type ? `ui-tabs--${props.type}` : '',
+        props.tabPosition ? `is-${props.tabPosition}` : '',
+        props.stretch ? 'is-stretch' : ''
+      ],
       content: ({ props, slots, state }) => {
         const tabsClosable = Boolean(props.closable || props.editable || props.addable)
         const nav = h(

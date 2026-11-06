@@ -62,6 +62,12 @@ describe('Input', () => {
     expect(inner.attributes('tabindex')).toBe('3')
   })
 
+  // 原缺陷 F-3：inputConfig 组装控件属性时没带 id，FormItem 的 for 指向不到真实控件
+  it('id 落到内部控件上，textarea 同样生效', () => {
+    expect(mountInput({ id: 'kw' }).find('input').attributes('id')).toBe('kw')
+    expect(mountInput({ id: 'desc', type: 'textarea' }).find('textarea').attributes('id')).toBe('desc')
+  })
+
   it('inputStyle 写到容器行内样式', () => {
     const wrapper = mountInput({ inputStyle: { width: '240px' } })
     expect(wrapper.attributes('style')).toContain('width: 240px')

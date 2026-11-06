@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TabPane, Tabs } from '@ui-kit-full'
 
 const panes = [
@@ -96,6 +96,45 @@ describe('Tabs', () => {
     const wrapper = await mountTabs({ modelValue: 'a', tabPosition: 'left', stretch: true })
     expect(wrapper.classes()).toContain('is-left')
     expect(wrapper.classes()).toContain('is-stretch')
+  })
+
+  // 原缺陷 F-5：type 只是声明，classes() 不输出 ui-tabs--<type>，card / border-card 无样式钩子
+  it('type 落到 ui-tabs--<type> 类名，缺省不附加', async () => {
+    expect((await mountTabs({ modelValue: 'a', type: 'border-card' })).classes()).toContain('ui-tabs--border-card')
+    expect((await mountTabs({ modelValue: 'a', type: 'card' })).classes()).toContain('ui-tabs--card')
+    const plain = await mountTabs({ modelValue: 'a' })
+    expect(plain.classes().filter((name: string) => name.startsWith('ui-tabs--'))).toEqual([])
+  })
+
+  // 原缺陷 F-6：beforeLeave 只参与 ui-tabs--editable 类名推导，切换标签时从未被调用
+  it('beforeLeave 返回 reject 时阻止切换', async () => {
+    const beforeLeave = vi.fn(() => Promise.reject(new Error('阻止切换')))
+    const wrapper = await mountTabs({ modelValue: 'a', beforeLeave })
+    await navItems(wrapper)[1].trigger('click')
+    expect(beforeLeave).toHaveBeenCalledWith('a', 'b')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(wrapper.emitted('tab-change')).toBeUndefined()
+    expect(navItems(wrapper)[0].classes()).toContain('is-active')
+  })
+
+  it('beforeLeave 放行后按顺序提交切换', async () => {
+    const beforeLeave = vi.fn(() => Promise.resolve(true))
+    const wrapper = await mountTabs({ modelValue: 'a', beforeLeave })
+    await navItems(wrapper)[1].trigger('click')
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['b'])
+    expect(wrapper.emitted('tab-change')?.[0]).toEqual(['b'])
+    expect(navItems(wrapper)[1].classes()).toContain('is-active')
+  })
+
+  it('beforeLeave 返回 false 同步拦截，返回真值同步放行', async () => {
+    const blocked = await mountTabs({ modelValue: 'a', beforeLeave: () => false })
+    await navItems(blocked)[1].trigger('click')
+    expect(blocked.emitted('tab-change')).toBeUndefined()
+
+    const passed = await mountTabs({ modelValue: 'a', beforeLeave: () => true })
+    await navItems(passed)[1].trigger('click')
+    expect(passed.emitted('tab-change')?.[0]).toEqual(['b'])
   })
 
   it('closable 渲染关闭按钮并移除面板', async () => {

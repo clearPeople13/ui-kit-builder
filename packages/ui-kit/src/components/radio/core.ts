@@ -5,11 +5,13 @@ import { radioAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const radioBaseProps = {
-  value: { type: [String, Number, Boolean] },
+  // value / label / modelValue 的类型联合含 Boolean：Vue 会把缺省的键归一化为 false，
+  // 既挡住了 ownValue() 的 value ?? label 回退，也让"未选中"与"选中 false"无法区分
+  value: { type: [String, Number, Boolean], default: undefined },
   disabled: { type: Boolean },
-  modelValue: { type: [String, Number, Boolean] },
+  modelValue: { type: [String, Number, Boolean], default: undefined },
   size: { type: String },
-  label: { type: [String, Number, Boolean] },
+  label: { type: [String, Number, Boolean], default: undefined },
   name: { type: String }
 }
 
@@ -25,11 +27,11 @@ export function createRadio(features: UiFeature[] = []) {
 }
 
 const radioButtonBaseProps = {
-  modelValue: { type: [String, Number, Boolean] },
+  modelValue: { type: [String, Number, Boolean], default: undefined },
   size: { type: String },
   disabled: { type: Boolean },
-  value: { type: [String, Number, Boolean] },
-  label: { type: [String, Number, Boolean] },
+  value: { type: [String, Number, Boolean], default: undefined },
+  label: { type: [String, Number, Boolean], default: undefined },
   name: { type: String }
 }
 
@@ -47,7 +49,7 @@ export function createRadioButton(features: UiFeature[] = []) {
 const radioGroupBaseProps = {
   size: { type: String },
   disabled: { type: Boolean },
-  modelValue: { type: [String, Number, Boolean] },
+  modelValue: { type: [String, Number, Boolean], default: undefined },
   options: { type: Array },
   type: { type: String, default: 'radio' },
   id: { type: String },

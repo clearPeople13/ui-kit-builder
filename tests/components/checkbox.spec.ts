@@ -55,6 +55,22 @@ describe('Checkbox', () => {
     expect(other.find('input').element.checked).toBe(false)
   })
 
+  // 原缺陷 F-4：value 的类型联合含 Boolean，缺省的键被归一化为 false，
+  // 挡住了 resolveCheckedValue 的 value ?? label 回退，只写 label 时数组匹配不上
+  it('只写 label 时 label 即选项值', async () => {
+    const wrapper = mount(Checkbox, { props: { modelValue: ['甲'], label: '甲' } })
+    expect(wrapper.find('input').element.checked).toBe(true)
+    expect(mount(Checkbox, { props: { modelValue: ['乙'], label: '甲' } }).find('input').element.checked).toBe(false)
+
+    const group = mount(CheckboxGroup, {
+      props: { modelValue: ['甲'] },
+      slots: { default: () => [h(Checkbox, { label: '甲' }), h(Checkbox, { label: '乙' })] }
+    })
+    expect(group.findAll('.ui-checkbox')[0].find('input').element.checked).toBe(true)
+    await group.findAll('input')[1].setValue(true)
+    expect(group.emitted('update:modelValue')?.[0]).toEqual([['甲', '乙']])
+  })
+
   it('indeterminate 写到 DOM 属性上', () => {
     const input = mount(Checkbox, { props: { modelValue: false, indeterminate: true } }).find('input')
       .element as HTMLInputElement

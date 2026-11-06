@@ -30,6 +30,22 @@ describe('Radio', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([1])
   })
 
+  // 原缺陷 F-4：value 的类型联合含 Boolean，缺省的键被归一化为 false，
+  // 挡住了 ownValue() 的 value ?? label 回退，只写 label 的单选框永远选不中
+  it('只写 label 时 label 即选项值', async () => {
+    const wrapper = mount(Radio, { props: { modelValue: 'a', label: 'a' } })
+    expect(wrapper.find('input').element.checked).toBe(true)
+    expect(wrapper.find('.ui-radio__label').text()).toBe('a')
+    const other = mount(Radio, { props: { modelValue: 'b', label: 'a' } })
+    expect(other.find('input').element.checked).toBe(false)
+    await other.find('input').setValue(true)
+    expect(other.emitted('update:modelValue')?.[0]).toEqual(['a'])
+  })
+
+  it('value 与 label 都不传时不会误判为选中', () => {
+    expect(mount(Radio, { props: { modelValue: false } }).find('input').element.checked).toBe(false)
+  })
+
   it('disabled 阻断交互', async () => {
     const wrapper = mount(Radio, { props: { modelValue: 'b', label: 'a', disabled: true } })
     expect(wrapper.find('input').attributes('disabled')).toBeDefined()

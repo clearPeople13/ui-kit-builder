@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
+import { h, nextTick, toRaw } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Table, TableColumn } from '@ui-kit-full'
 
@@ -287,6 +287,59 @@ describe('Table', () => {
     await nextTick()
     expect(wrapper.emitted('selection-change')?.slice(-1)?.[0]).toEqual([[]])
     expect(wrapper.findAll('tbody input').map((item) => item.element.checked)).toEqual([false, false, false])
+  })
+
+  // 原缺陷 F-8：toggleRowSelection 用 indexOf 定位行，调用方持有原始对象而渲染行是
+  // reactive 代理（数据源本身是 reactive 时必然如此）时 index < 0，既不勾选也不抛事件；
+  // 现在先按 toRaw 身份匹配，再按 rowKey 兜底，并统一用列表内的那一份继续走勾选
+  it('toggleRowSelection 同时接受原始对象与渲染代理', async () => {
+    const wrapper = await setup(
+      { rowKey: 'id' },
+      { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
+    )
+    const api = wrapper.vm as any
+    const proxyRow = (wrapper.vm.$props as any).data[0]
+    expect(proxyRow).not.toBe(rows[0])
+
+    api.toggleRowSelection(rows[0], true)
+    await nextTick()
+    expect(api.getSelectionRows()).toHaveLength(1)
+    expect(toRaw(api.getSelectionRows()[0])).toBe(rows[0])
+    expect(wrapper.emitted('selection-change')).toHaveLength(1)
+    expect(wrapper.findAll('tbody input')[0].element.checked).toBe(true)
+
+    // 代理引用命中同一行，不产生第二条选择
+    api.toggleRowSelection(proxyRow, true)
+    await nextTick()
+    expect(api.getSelectionRows()).toHaveLength(1)
+
+    api.toggleRowSelection(rows[0], false)
+    await nextTick()
+    expect(api.getSelectionRows()).toHaveLength(0)
+  })
+
+  it('toggleRowSelection 按 rowKey 兜底匹配同键的拷贝对象', async () => {
+    const wrapper = await setup(
+      { rowKey: 'id' },
+      { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
+    )
+    const api = wrapper.vm as any
+    api.toggleRowSelection({ id: 3, name: 'C', age: 22 }, true)
+    await nextTick()
+    expect(api.getSelectionRows()).toHaveLength(1)
+    expect(toRaw(api.getSelectionRows()[0])).toBe(rows[2])
+  })
+
+  it('toggleRowSelection 对无法定位的行保持不勾选且不抛事件', async () => {
+    const wrapper = await setup(
+      { rowKey: 'id' },
+      { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
+    )
+    const api = wrapper.vm as any
+    api.toggleRowSelection({ id: 99 }, true)
+    await nextTick()
+    expect(api.getSelectionRows()).toHaveLength(0)
+    expect(wrapper.emitted('selection-change')).toBeUndefined()
   })
 
   it('树形数据可展开并抛出 tree-expand', async () => {
