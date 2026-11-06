@@ -147,6 +147,7 @@ export const TABLE_LONG_ROWS: TableDemoRow[] = Array.from({ length: 24 }, (_valu
 
 export interface TableHeavyRow extends TableDemoRow {
   group: string
+  desc: string
 }
 
 // 重数据示例用的确定性行生成器：字段全部由行号推导，同一条数永远生成同一行
@@ -156,6 +157,12 @@ export function makeHeavyRows(count: number): TableHeavyRow[] {
   const owners = ['黄博', '李雯', '周子墨', '陈可', '孙悦', '吴桐', '林静', '赵一鸣', '何嘉', '郑凯', '冯远', '许晴']
   const modules = ['按钮', '输入框', '选择器', '表格', '表单', '日期', '弹窗', '导航', '树形', '上传', '图表', '布局']
   const statuses = ['稳定', '内测', '规划']
+  const descLines = [
+    '基础链路验证通过，无阻塞问题。',
+    '覆盖核心场景与边界输入，指标均在预期区间。',
+    '关联需求已评审，遗留两项低风险项，跟进人明确。',
+    '压测期间高峰 QPS 稳定，慢查询已建索引优化，后续观察一周即可归档。'
+  ]
   return Array.from({ length: count }, (_value, index) => {
     const serial = index + 1
     const pseudo = (serial * 2654435761) % 100000
@@ -170,6 +177,7 @@ export function makeHeavyRows(count: number): TableHeavyRow[] {
       amount: ((pseudo % 420) + 40) * 900,
       date: `2026-${String((index % 4) + 9).padStart(2, '0')}-${String((index % 27) + 1).padStart(2, '0')}`,
       remark: `第 ${Math.floor(index / 50) + 1} 批第 ${(index % 50) + 1} 项，确定性生成的压测数据。`,
+      desc: descLines.slice(0, (index % 4) + 1).join('\n'),
       group: `第 ${Math.floor(index / 50) + 1} 批`
     }
   })

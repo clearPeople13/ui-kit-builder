@@ -98,7 +98,7 @@ export default {
           "name": "virtual",
           "type": "boolean",
           "default": false,
-          "description": "虚拟滚动：只渲染可视窗口内的行，首尾占位行撑开滚动高度，适合大数据量；合并单元格与 auto 布局下自动失效"
+          "description": "虚拟滚动：只渲染可视窗口内的行，首尾占位行撑开滚动高度，适合大数据量；行高按实测自适应（内容多少行高不一也正确），合并单元格整块纳入窗口，auto 布局下自动失效"
         }
       ],
       "features": {

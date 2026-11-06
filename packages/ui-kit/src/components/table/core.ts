@@ -532,6 +532,105 @@ export function createTable(features: UiFeature[] = []) {
         return visibleRowsOf(resolved.data)
       })
 
+      // 行高实测值（按 rowKey），虚拟滚动撑占位高度用；未测到的行用回退行高
+      const measuredRowHeights = shallowRef<Map<any, number>>(new Map())
+
+      // 每行顶部偏移前缀和：高度表变化时重算一次 O(N)，滚动帧只读不算
+      const rowMetrics = computed(() => {
+        const list = pipelineRows.value
+        const heights = measuredRowHeights.value
+        const fallback = measuredRowHeight.value || VIRTUAL_FALLBACK_ROW_HEIGHT
+        const offsets = new Float64Array(list.length + 1)
+        let total = 0
+        for (let index = 0; index < list.length; index += 1) {
+          offsets[index] = total
+          total += heights.get(rowKeyOf(list[index], index)) ?? fallback
+        }
+        offsets[list.length] = total
+        return { offsets, total }
+      })
+
+      interface SpanAnchor {
+        row: number
+        rowspan: number
+      }
+
+      interface SpanPlan {
+        spans: Map<number, Map<number, { rowspan: number; colspan: number }>>
+        covered: Map<number, Set<number>>
+        anchors: SpanAnchor[]
+      }
+
+      // 合并单元格计划：virtual 把窗口扩到整块边界，rowspan 的所有行都在 DOM 里才能正确渲染；
+      // 有 spanMethod 时替代渲染期的逐格 hook 调用，结果随数据/列变化一次算清
+      const spanPlan = computed<SpanPlan | null>(() => {
+        if (typeof resolved.spanMethod !== 'function') {
+          return null
+        }
+        const list = pipelineRows.value
+        const columns = latestColumns
+        const spanHooks = flattenHooks(states, 'tableSpan')
+        const spans: SpanPlan['spans'] = new Map()
+        const covered: SpanPlan['covered'] = new Map()
+        const anchors: SpanAnchor[] = []
+        for (let rowIndex = 0; rowIndex < list.length; rowIndex += 1) {
+          const row = list[rowIndex]
+          for (let columnIndex = 0; columnIndex < columns.length; columnIndex += 1) {
+            if (covered.get(rowIndex)?.has(columnIndex)) {
+              continue
+            }
+            let span: { rowspan?: number; colspan?: number } | null = null
+            for (const hook of spanHooks) {
+              const result = hook({ row, column: columns[columnIndex], rowIndex, columnIndex, columns })
+              if (Array.isArray(result)) {
+                span = { rowspan: result[0], colspan: result[1] }
+              } else if (result) {
+                span = result
+              }
+            }
+            const rowspan = Math.max(1, Math.min(Number(span?.rowspan) || 1, list.length - rowIndex))
+            const colspan = Math.max(1, Math.min(Number(span?.colspan) || 1, columns.length - columnIndex))
+            if (rowspan <= 1 && colspan <= 1) {
+              continue
+            }
+            if (!spans.has(rowIndex)) {
+              spans.set(rowIndex, new Map())
+            }
+            spans.get(rowIndex)!.set(columnIndex, { rowspan, colspan })
+            for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
+              for (let spanColumn = columnIndex; spanColumn < columnIndex + colspan; spanColumn += 1) {
+                if (spanRow === rowIndex && spanColumn === columnIndex) {
+                  continue
+                }
+                if (!covered.has(spanRow)) {
+                  covered.set(spanRow, new Set())
+                }
+                covered.get(spanRow)!.add(spanColumn)
+              }
+            }
+            if (rowspan > 1) {
+              anchors.push({ row: rowIndex, rowspan })
+            }
+          }
+        }
+        return { spans, covered, anchors }
+      })
+
+      // 最后一个偏移 <= y 的行下标，二分 O(logN)
+      function findRowAtOffset(offsets: Float64Array, y: number): number {
+        let low = 0
+        let high = offsets.length - 1
+        while (low < high) {
+          const mid = (low + high + 1) >> 1
+          if (offsets[mid] <= y) {
+            low = mid
+          } else {
+            high = mid - 1
+          }
+        }
+        return low
+      }
+
       function measureAvailableWidth() {
         const element = wrapper.value
         if (!element) {
@@ -623,12 +722,67 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       function measureRowHeight() {
-        if (!resolved.virtual || typeof window === 'undefined') {
+        // 只采样一次作为未测行的回退高：变量行高场景下首行高会随窗口变化，
+        // 每次更新都重采样会让回退高跟着跳、总滚动高不断膨胀
+        if (!resolved.virtual || typeof window === 'undefined' || measuredRowHeight.value) {
           return
         }
         const row = wrapper.value?.querySelector('.ui-table__body tr:not(.ui-table__spacer)')
         if (row instanceof HTMLElement && row.offsetHeight > 0) {
           measuredRowHeight.value = row.offsetHeight
+        }
+      }
+
+      // 变量行高实测：读取窗口内每行实际高度回填高度表，前缀和变了会顶起/压低后续行，
+      // 用窗口首行的偏移增量锚住 scrollTop，滚动位置不跳
+      let rowMeasureFrame = 0
+      function scheduleRowMeasure() {
+        if (!resolved.virtual || typeof window === 'undefined' || rowMeasureFrame) {
+          return
+        }
+        rowMeasureFrame = window.requestAnimationFrame(() => {
+          rowMeasureFrame = 0
+          flushRowMeasure()
+        })
+      }
+
+      function flushRowMeasure() {
+        const list = pipelineRows.value
+        const bodyEl = tableRef.value?.querySelector(':scope > tbody.ui-table__body')
+        if (!bodyEl) {
+          return
+        }
+        const next = new Map(measuredRowHeights.value)
+        const trs = bodyEl.querySelectorAll(':scope > tr[data-row-index]')
+        const measured: number[] = []
+        let changed = false
+        for (const tr of Array.from(trs)) {
+          const index = Number(tr.getAttribute('data-row-index'))
+          if (!Number.isInteger(index) || index < 0 || index >= list.length) {
+            continue
+          }
+          measured.push(index)
+          const key = rowKeyOf(list[index], index)
+          const height = (tr as HTMLElement).getBoundingClientRect().height
+          if (Math.abs((next.get(key) ?? 0) - height) > 0.5) {
+            next.set(key, height)
+            changed = true
+          }
+        }
+        if (!changed || !measured.length) {
+          return
+        }
+        const firstRow = Math.min(...measured)
+        const before = rowMetrics.value.offsets[firstRow] ?? 0
+        measuredRowHeights.value = next
+        const wrapperEl = wrapper.value
+        if (!wrapperEl) {
+          return
+        }
+        const after = rowMetrics.value.offsets[firstRow] ?? 0
+        const delta = after - before
+        if (Math.abs(delta) > 0.5) {
+          wrapperEl.scrollTop += delta
         }
       }
 
@@ -650,6 +804,7 @@ export function createTable(features: UiFeature[] = []) {
         updateScrollState()
         syncFixedSections()
         scheduleMeasure()
+        scheduleRowMeasure()
         if (typeof ResizeObserver !== 'undefined' && wrapper.value) {
           resizeObserver = new ResizeObserver(() => scheduleMeasure())
           resizeObserver.observe(wrapper.value)
@@ -660,6 +815,7 @@ export function createTable(features: UiFeature[] = []) {
         measureAvailableWidth()
         measureRowHeight()
         scheduleMeasure()
+        scheduleRowMeasure()
         updateScrollState()
         syncFixedSections()
       })
@@ -671,6 +827,10 @@ export function createTable(features: UiFeature[] = []) {
           window.cancelAnimationFrame(measureFrame)
         }
         measureFrame = 0
+        if (rowMeasureFrame && typeof window !== 'undefined') {
+          window.cancelAnimationFrame(rowMeasureFrame)
+        }
+        rowMeasureFrame = 0
       })
 
       interface CellOptions {
@@ -1036,23 +1196,40 @@ export function createTable(features: UiFeature[] = []) {
         const bodyRows: VNode[] = []
         const occupied = new Map<number, Set<number>>()
         // 虚拟滚动：按滚动位置只渲染可视窗口 + 上下 overscan 行，首尾占位行撑开总高；
-        // auto 布局行高不可预知，且传入 spanMethod 时合并块跨窗口会断开，这两种情况不启用
+        // 行高用实测值的前缀和定位，未测行回退默认行高；auto 布局行高不可预知不启用；
+        // 合并块整体纳入窗口（扩到锚点行边界），rowspan 的所有行都在 DOM 里才能正确渲染
         const virtualActive =
           resolved.virtual &&
           resolved.tableLayout !== 'auto' &&
-          typeof resolved.spanMethod !== 'function' &&
           rows.length > 0 &&
           Boolean(resolved.height || resolved.maxHeight)
-        const rowHeight = measuredRowHeight.value || VIRTUAL_FALLBACK_ROW_HEIGHT
+        const plan = virtualActive ? spanPlan.value : null
         let windowStart = 0
         let windowEnd = rows.length
+        let rowOffsets: Float64Array | null = null
         if (virtualActive) {
+          rowOffsets = rowMetrics.value.offsets
           const viewHeight = wrapper.value?.clientHeight || 320
-          windowStart = Math.max(0, Math.floor(bodyScrollTop.value / rowHeight) - VIRTUAL_OVERSCAN)
+          const top = bodyScrollTop.value
+          windowStart = Math.max(0, findRowAtOffset(rowOffsets, top) - VIRTUAL_OVERSCAN)
           windowEnd = Math.min(
             rows.length,
-            Math.ceil((bodyScrollTop.value + viewHeight) / rowHeight) + VIRTUAL_OVERSCAN
+            findRowAtOffset(rowOffsets, top + viewHeight) + 1 + VIRTUAL_OVERSCAN
           )
+          if (plan) {
+            // 合并块 [row, row+rowspan) 与渲染窗口 [start, end) 相交才扩窗（end 为开区间）；
+            // overscan 先算好再扩，保证块内不会有"锚点出窗"的覆盖空洞
+            for (const anchor of plan.anchors) {
+              if (anchor.row + anchor.rowspan <= windowStart) {
+                continue
+              }
+              if (anchor.row >= windowEnd) {
+                break
+              }
+              windowStart = Math.min(windowStart, anchor.row)
+              windowEnd = Math.max(windowEnd, anchor.row + anchor.rowspan)
+            }
+          }
         }
         const spacerRow = (height: number): VNode | null =>
           height > 0
@@ -1062,7 +1239,7 @@ export function createTable(features: UiFeature[] = []) {
                 [h('td', { colspan: Math.max(1, columns.length), style: { height: `${height}px` } })]
               )
             : null
-        const topSpacer = virtualActive ? spacerRow(windowStart * rowHeight) : null
+        const topSpacer = virtualActive && rowOffsets ? spacerRow(rowOffsets[windowStart]) : null
         if (topSpacer) {
           bodyRows.push(topSpacer)
         }
@@ -1081,30 +1258,38 @@ export function createTable(features: UiFeature[] = []) {
           const meta = mergeHookResults(rowMetaHooks, [row, rowIndex, columns])
           const cells: VNode[] = []
           for (let columnIndex = 0; columnIndex < columns.length; columnIndex += 1) {
-            if (occupied.get(rowIndex)?.has(columnIndex)) {
+            if (plan ? plan.covered.get(rowIndex)?.has(columnIndex) : occupied.get(rowIndex)?.has(columnIndex)) {
               continue
             }
             const column = columns[columnIndex]
-            let span: { rowspan?: number; colspan?: number } | null = null
-            for (const hook of spanHooks) {
-              const result = hook({ row, column, rowIndex, columnIndex, columns })
-              if (Array.isArray(result)) {
-                span = { rowspan: result[0], colspan: result[1] }
-              } else if (result) {
-                span = result
+            let rowspan = 1
+            let colspan = 1
+            const planned = plan?.spans.get(rowIndex)?.get(columnIndex)
+            if (planned) {
+              rowspan = planned.rowspan
+              colspan = planned.colspan
+            } else if (!plan) {
+              let span: { rowspan?: number; colspan?: number } | null = null
+              for (const hook of spanHooks) {
+                const result = hook({ row, column, rowIndex, columnIndex, columns })
+                if (Array.isArray(result)) {
+                  span = { rowspan: result[0], colspan: result[1] }
+                } else if (result) {
+                  span = result
+                }
               }
-            }
-            const rowspan = Math.max(1, Math.min(Number(span?.rowspan) || 1, rows.length - rowIndex))
-            const colspan = Math.max(1, Math.min(Number(span?.colspan) || 1, columns.length - columnIndex))
-            for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
-              for (let spanColumn = columnIndex; spanColumn < columnIndex + colspan; spanColumn += 1) {
-                if (spanRow === rowIndex && spanColumn === columnIndex) {
-                  continue
+              rowspan = Math.max(1, Math.min(Number(span?.rowspan) || 1, rows.length - rowIndex))
+              colspan = Math.max(1, Math.min(Number(span?.colspan) || 1, columns.length - columnIndex))
+              for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
+                for (let spanColumn = columnIndex; spanColumn < columnIndex + colspan; spanColumn += 1) {
+                  if (spanRow === rowIndex && spanColumn === columnIndex) {
+                    continue
+                  }
+                  if (!occupied.has(spanRow)) {
+                    occupied.set(spanRow, new Set())
+                  }
+                  occupied.get(spanRow)!.add(spanColumn)
                 }
-                if (!occupied.has(spanRow)) {
-                  occupied.set(spanRow, new Set())
-                }
-                occupied.get(spanRow)!.add(spanColumn)
               }
             }
             cells.push(
@@ -1141,6 +1326,7 @@ export function createTable(features: UiFeature[] = []) {
                   resolved.highlightCurrentRow && currentKey.value === key ? 'current-row' : ''
                 ],
                 style: rowStyle,
+                'data-row-index': virtualActive ? rowIndex : undefined,
                 onClick: () => handleRowClick(row, rowIndex)
               },
               cells
@@ -1158,7 +1344,7 @@ export function createTable(features: UiFeature[] = []) {
             )
           }
         }
-        const bottomSpacer = virtualActive ? spacerRow((rows.length - windowEnd) * rowHeight) : null
+        const bottomSpacer = virtualActive && rowOffsets ? spacerRow(rowOffsets[rows.length] - rowOffsets[windowEnd]) : null
         if (bottomSpacer) {
           bodyRows.push(bottomSpacer)
         }

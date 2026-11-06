@@ -1219,7 +1219,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     {
       id: 'editable-heavy',
       label: '复杂：大表编辑 + 冻结 + 合计 + 合并',
-      hint: '2000 行确定性数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，模块列每 50 行合并，双向冻结 + 列宽拖拽 + 底部合计；首次渲染约 6 秒',
+      hint: '2000 行确定性数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，模块列每 50 行合并，双向冻结 + 列宽拖拽 + 底部合计，virtual 窗口化渲染、合并块整体入窗',
       requires: ['table.selection', 'table.resize', 'table.summary', 'table.span'],
       values: {
         height: 440,
@@ -1229,8 +1229,16 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
         showSummary: true,
         sumText: '合计',
         rowKey: 'id',
+        virtual: true,
         heavyRows: 2000
       }
+    },
+    {
+      id: 'heavy-variable',
+      label: '大数据：5 万行 · 行高不一',
+      hint: '50000 行压测数据，说明列 1-4 行不等导致行高不一致，virtual 按实测行高定位，滚动不跳行',
+      requires: 'table.resize',
+      values: { data: makeHeavyRows(50000), height: 420, stripe: true, resizable: true, virtual: true }
     }
   ],
   Tabs: [

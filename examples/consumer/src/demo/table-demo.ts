@@ -31,6 +31,7 @@ interface TableColumnSpec {
     | 'amount'
     | 'actions'
     | 'expand'
+    | 'desc'
     | 'edit-input'
     | 'edit-select'
     | 'edit-number'
@@ -86,6 +87,7 @@ const COLUMN: Record<string, TableColumnSpec> = {
   amount: { prop: 'amount', label: '预算', width: 120, align: 'right', cell: 'amount' },
   date: { prop: 'date', label: '更新日期', width: 120 },
   remark: { prop: 'remark', label: '说明', width: 320, showOverflowTooltip: true },
+  desc: { prop: 'desc', label: '详细说明', minWidth: 260, cell: 'desc' },
   actions: { label: '操作', width: 168, align: 'center', cell: 'actions' },
   expand: { type: 'expand', width: 52, align: 'center', cell: 'expand' },
   editName: { prop: 'name', label: '模块', width: 180, cell: 'edit-input' },
@@ -202,6 +204,15 @@ const HEAVY_BLUEPRINT: TableColumnSpec[] = [
   COLUMN.date
 ]
 
+const HEAVY_VARIABLE_BLUEPRINT: TableColumnSpec[] = [
+  COLUMN.index,
+  COLUMN.name,
+  COLUMN.city,
+  COLUMN.owner,
+  COLUMN.status,
+  COLUMN.desc
+]
+
 const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   'fixed-left': [fixedLeft(COLUMN.selection), fixedLeft(COLUMN.name), ...WIDE_TAIL, COLUMN.actions],
   'fixed-right': [COLUMN.index, COLUMN.name, ...WIDE_TAIL, fixedRight(COLUMN.actions)],
@@ -217,6 +228,7 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   'editable-heavy': EDITABLE_BLUEPRINT,
   'heavy-data': HEAVY_BLUEPRINT,
   'heavy-data-20k': HEAVY_BLUEPRINT,
+  'heavy-variable': HEAVY_VARIABLE_BLUEPRINT,
   sort: SORT_BLUEPRINT,
   'multi-sort': SORT_BLUEPRINT,
   selection: [COLUMN.selection, COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
@@ -444,6 +456,9 @@ function cellOf(
         h(kit('Button'), { link: true, type: 'primary', size: 'small' }, () => '查看'),
         h(kit('Button'), { link: true, size: 'small' }, () => '编辑')
       ])
+  }
+  if (kind === 'desc') {
+    return (scope) => h('div', { class: 'pg-table-desc' }, String(scope.row.desc ?? ''))
   }
   return (scope) =>
     h('div', { class: 'pg-table-expand' }, [

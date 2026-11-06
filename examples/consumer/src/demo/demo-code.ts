@@ -174,6 +174,9 @@ function columnCellSource(kind: NonNullable<TableColumnSpec['cell']>, prop?: str
       '</template>'
     ].join('\n')
   }
+  if (kind === 'desc') {
+    return '<template #default="{ row }"><div class="table-desc">{{ row.desc }}</div></template>'
+  }
   if (kind === 'edit-input') {
     return [
       '<template #default="{ row }">',
