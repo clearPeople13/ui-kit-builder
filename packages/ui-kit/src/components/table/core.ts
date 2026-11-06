@@ -757,6 +757,10 @@ export function createTable(features: UiFeature[] = []) {
       let rowMeasureFrame = 0
       let scrollSettleTimer: ReturnType<typeof setTimeout> | undefined
       let scrollActive = false
+      // 贴底锁：滚到最底部后锁定尾部窗口。实测提交会让总高收缩，锚定回写把 scrollTop
+      // 顶离底部、尾部钳制随之失效（最后几行闪现后消失）；锁定后用户向上滚动超过一个
+      // 视口才解锁，提交引起的微小位移不解锁
+      let stickToBottom = false
       function scheduleRowMeasure() {
         if (!resolved.virtual || typeof window === 'undefined' || rowMeasureFrame) {
           return
@@ -805,19 +809,38 @@ export function createTable(features: UiFeature[] = []) {
         }
         const after = rowMetrics.value.offsets[firstRow] ?? 0
         const delta = after - before
-        if (Math.abs(delta) > 0.5) {
+        if (!stickToBottom && Math.abs(delta) > 0.5) {
           wrapperEl.scrollTop += delta
         }
       }
 
-      function handleScroll() {
+      // 滚动事件在拖动原生滚动条时频率高于屏幕刷新率（实测 >100Hz），
+      // 每个事件都同步读布局 + 触发窗口重渲染会让每帧跑两轮以上渲染管线，
+      // 主线程吃紧时浏览器合并丢弃鼠标位移，拇指表现为不跟手；
+      // 全部合并进 rAF，每帧最多一轮：状态同步 + 固定区对齐 + 窗口推进一次完成
+      let scrollFrame = 0
+      function flushScrollState() {
+        scrollFrame = 0
         updateScrollState()
         syncFixedSections()
+        const element = wrapper.value
+        if (!element) {
+          return
+        }
         if (resolved.virtual) {
-          const element = wrapper.value
-          if (element) {
-            bodyScrollTop.value = element.scrollTop
+          const maxTop = element.scrollHeight - element.clientHeight
+          if (element.scrollTop >= maxTop - 1) {
+            stickToBottom = true
           }
+          else if (stickToBottom && maxTop - element.scrollTop > element.clientHeight) {
+            stickToBottom = false
+          }
+          bodyScrollTop.value = element.scrollTop
+        }
+      }
+
+      function handleScroll() {
+        if (resolved.virtual) {
           scrollActive = true
           if (scrollSettleTimer) {
             clearTimeout(scrollSettleTimer)
@@ -827,6 +850,13 @@ export function createTable(features: UiFeature[] = []) {
             scheduleRowMeasure()
           }, SCROLL_SETTLE_MS)
         }
+        if (scrollFrame || typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
+          if (!scrollFrame) {
+            flushScrollState()
+          }
+          return
+        }
+        scrollFrame = window.requestAnimationFrame(flushScrollState)
       }
 
       onMounted(() => {
@@ -863,6 +893,10 @@ export function createTable(features: UiFeature[] = []) {
           window.cancelAnimationFrame(rowMeasureFrame)
         }
         rowMeasureFrame = 0
+        if (scrollFrame && typeof window !== 'undefined') {
+          window.cancelAnimationFrame(scrollFrame)
+        }
+        scrollFrame = 0
         if (scrollSettleTimer) {
           clearTimeout(scrollSettleTimer)
         }
@@ -1247,11 +1281,23 @@ export function createTable(features: UiFeature[] = []) {
           rowOffsets = rowMetrics.value.offsets
           const viewHeight = wrapper.value?.clientHeight || 320
           const top = bodyScrollTop.value
-          windowStart = Math.max(0, findRowAtOffset(rowOffsets, top) - VIRTUAL_OVERSCAN)
+          // 滚动进行中用更小 overscan：拖动时每帧窗口都从最新 scrollTop 重新推导，
+          // overscan 的防空白价值很小，而重组件单元格下 16 行 overscan 占窗口八成渲染量，
+          // 压到 3 行让拇指跟随不掉帧；停稳后测量提交会带完整 overscan 重新渲染
+          const overscan = scrollActive ? 3 : VIRTUAL_OVERSCAN
+          windowStart = Math.max(0, findRowAtOffset(rowOffsets, top) - overscan)
           windowEnd = Math.min(
             rows.length,
-            findRowAtOffset(rowOffsets, top + viewHeight) + 1 + VIRTUAL_OVERSCAN
+            findRowAtOffset(rowOffsets, top + viewHeight) + 1 + overscan
           )
+          // 贴底钳制：总滚动高是实测+均值估算，直接映射可能到不了最后一行
+          // （尾部未测行的估算高度变成永远够不着的空白占位），滚动贴底时
+          // 把窗口尾部钳到真实末行、底部占位清零，保证最后几行可见可测
+          if (stickToBottom || top + viewHeight >= rowOffsets[rows.length] - 1) {
+            windowEnd = rows.length
+            const tailCount = Math.ceil(viewHeight / fallbackRowHeight.value) + overscan
+            windowStart = Math.max(0, rows.length - tailCount)
+          }
           if (plan) {
             // 合并块 [row, row+rowspan) 与渲染窗口 [start, end) 相交才扩窗（end 为开区间）；
             // overscan 先算好再扩，保证块内不会有"锚点出窗"的覆盖空洞
