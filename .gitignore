@@ -10,3 +10,6 @@ configurator-test.png
 consumer-preview.png
 *.log
 .guardian/
+
+# 门禁机读报告（本地/CI 每次生成，不进仓库）
+ci-report.json

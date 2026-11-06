@@ -1,0 +1,5 @@
+#!/bin/sh
+# 推送前的完整门禁：八段检查，含真实浏览器层与 20 份 profile 运行时。
+# 需要跳过时用：SKIP_HOOKS=1 git push ...
+[ -n "$SKIP_HOOKS" ] && exit 0
+exec node scripts/ci.mjs
