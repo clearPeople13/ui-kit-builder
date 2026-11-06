@@ -1717,7 +1717,7 @@
                 {
                   "name": "checkStrictly",
                   "type": "any",
-                  "description": "是否严格勾选（任意层级都可单独选中）"
+                  "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
                 },
                 {
                   "name": "checkOnClickLeaf",
@@ -8469,6 +8469,19 @@
               ]
             },
             {
+              "id": "table.selection",
+              "title": "多选联动",
+              "description": "树形数据多选时父子是否联动勾选：默认联动（带半选），开启严格模式后各级独立勾选。",
+              "props": [
+                {
+                  "name": "checkStrictly",
+                  "type": "Boolean",
+                  "default": false,
+                  "description": "树形多选是否严格（父子不联动），默认父子联动勾选并显示半选"
+                }
+              ]
+            },
+            {
               "id": "table.methods",
               "title": "实例方法",
               "description": "通过 ref 操作选择：clearSelection、getSelectionRows、toggleRowSelection、toggleAllSelection。",
@@ -8595,12 +8608,18 @@
             {
               "id": "table.selection",
               "title": "选择列配置",
-              "description": "为 selection 列配置 selectable 判断哪些行可勾选。",
+              "description": "为 selection 列配置 selectable 判断哪些行可勾选、showCheckbox 控制勾选框显隐，树形数据下用 checkStrictly 控制父子是否联动勾选。",
               "props": [
                 {
                   "name": "selectable",
                   "type": "Function",
                   "description": "行是否可选"
+                },
+                {
+                  "name": "showCheckbox",
+                  "type": "Boolean | Function",
+                  "default": true,
+                  "description": "勾选框是否显示，传函数可按行控制显隐，隐藏行的行不入选"
                 }
               ]
             }
@@ -9879,7 +9898,7 @@
             {
               "name": "showCheckbox",
               "type": "boolean",
-              "description": "是否显示复选框"
+              "description": "勾选框显隐（布尔值整体控制，函数可按行控制，隐藏行不入选）"
             },
             {
               "name": "props",
@@ -9951,7 +9970,7 @@
                 {
                   "name": "checkStrictly",
                   "type": "boolean",
-                  "description": "是否严格勾选（任意层级都可单独选中）"
+                  "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
                 },
                 {
                   "name": "checkOnClickLeaf",
@@ -10210,7 +10229,7 @@
                 {
                   "name": "showCheckbox",
                   "type": "boolean",
-                  "description": "是否显示复选框"
+                  "description": "勾选框显隐（布尔值整体控制，函数可按行控制，隐藏行不入选）"
                 },
                 {
                   "name": "defaultCheckedKeys",
@@ -10220,7 +10239,7 @@
                 {
                   "name": "checkStrictly",
                   "type": "boolean",
-                  "description": "是否严格勾选（任意层级都可单独选中）"
+                  "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
                 },
                 {
                   "name": "checkOnClickNode",
@@ -10747,8 +10766,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 541986,
-          "gzipBytes": 128880
+          "bytes": 544642,
+          "gzipBytes": 129488
         },
         {
           "file": "ui-kit.css",
@@ -10757,10 +10776,10 @@
         }
       ],
       "sizes": {
-        "js": 541986,
+        "js": 544642,
         "css": 229995,
-        "total": 771981,
-        "gzip": 160382
+        "total": 774637,
+        "gzip": 160967
       }
     },
     {
@@ -10904,9 +10923,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -11209,9 +11229,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -11634,9 +11654,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -11709,8 +11729,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 618768,
-          "gzipBytes": 145924
+          "bytes": 622098,
+          "gzipBytes": 146635
         },
         {
           "file": "ui-kit.css",
@@ -11719,10 +11739,10 @@
         }
       ],
       "sizes": {
-        "js": 618768,
+        "js": 622098,
         "css": 249421,
-        "total": 868189,
-        "gzip": 180245
+        "total": 871519,
+        "gzip": 180955
       }
     },
     {
@@ -11866,9 +11886,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -12171,9 +12192,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -12596,9 +12617,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -12671,8 +12692,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146708
         },
         {
           "file": "ui-kit.css",
@@ -12681,10 +12702,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 261553,
-        "total": 882151,
-        "gzip": 181137
+        "total": 885481,
+        "gzip": 181846
       }
     },
     {
@@ -12828,9 +12849,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -13133,9 +13155,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -13558,9 +13580,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -13633,8 +13655,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145996
+          "bytes": 623928,
+          "gzipBytes": 146711
         },
         {
           "file": "ui-kit.css",
@@ -13643,10 +13665,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 277004,
-        "total": 897602,
-        "gzip": 184121
+        "total": 900932,
+        "gzip": 184828
       }
     },
     {
@@ -13790,9 +13812,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -14095,9 +14118,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -14520,9 +14543,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -14595,8 +14618,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146707
         },
         {
           "file": "ui-kit.css",
@@ -14605,10 +14628,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 281801,
-        "total": 902399,
-        "gzip": 184272
+        "total": 905729,
+        "gzip": 184979
       }
     },
     {
@@ -14752,9 +14775,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -15057,9 +15081,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -15482,9 +15506,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -15557,8 +15581,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145992
+          "bytes": 623928,
+          "gzipBytes": 146708
         },
         {
           "file": "ui-kit.css",
@@ -15567,10 +15591,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 261925,
-        "total": 882523,
-        "gzip": 181236
+        "total": 885853,
+        "gzip": 181946
       }
     },
     {
@@ -15714,9 +15738,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -16019,9 +16044,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -16444,9 +16469,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -16519,8 +16544,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 623343,
-          "gzipBytes": 146128
+          "bytes": 626673,
+          "gzipBytes": 146836
         },
         {
           "file": "ui-kit.css",
@@ -16529,10 +16554,10 @@
         }
       ],
       "sizes": {
-        "js": 623343,
+        "js": 626673,
         "css": 278353,
-        "total": 901696,
-        "gzip": 181812
+        "total": 905026,
+        "gzip": 182502
       }
     },
     {
@@ -16676,9 +16701,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -16981,9 +17007,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -17406,9 +17432,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -17481,8 +17507,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 621513,
-          "gzipBytes": 146048
+          "bytes": 624843,
+          "gzipBytes": 146756
         },
         {
           "file": "ui-kit.css",
@@ -17491,10 +17517,10 @@
         }
       ],
       "sizes": {
-        "js": 621513,
+        "js": 624843,
         "css": 267276,
-        "total": 888789,
-        "gzip": 181389
+        "total": 892119,
+        "gzip": 182090
       }
     },
     {
@@ -17638,9 +17664,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -17943,9 +17970,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -18368,9 +18395,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -18443,8 +18470,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146077
+          "bytes": 625758,
+          "gzipBytes": 146790
         },
         {
           "file": "ui-kit.css",
@@ -18453,10 +18480,10 @@
         }
       ],
       "sizes": {
-        "js": 622428,
+        "js": 625758,
         "css": 272813,
-        "total": 895241,
-        "gzip": 181555
+        "total": 898571,
+        "gzip": 182256
       }
     },
     {
@@ -18600,9 +18627,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -18905,9 +18933,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -19330,9 +19358,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -19405,8 +19433,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146709
         },
         {
           "file": "ui-kit.css",
@@ -19415,10 +19443,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 262065,
-        "total": 882663,
-        "gzip": 181247
+        "total": 885993,
+        "gzip": 181956
       }
     },
     {
@@ -19562,9 +19590,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -19867,9 +19896,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -20292,9 +20321,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -20367,8 +20396,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146086
+          "bytes": 625758,
+          "gzipBytes": 146795
         },
         {
           "file": "ui-kit.css",
@@ -20377,10 +20406,10 @@
         }
       ],
       "sizes": {
-        "js": 622428,
+        "js": 625758,
         "css": 272853,
-        "total": 895281,
-        "gzip": 181576
+        "total": 898611,
+        "gzip": 182273
       }
     },
     {
@@ -20524,9 +20553,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -20829,9 +20859,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -21254,9 +21284,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -21329,8 +21359,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145995
+          "bytes": 623928,
+          "gzipBytes": 146711
         },
         {
           "file": "ui-kit.css",
@@ -21339,10 +21369,10 @@
         }
       ],
       "sizes": {
-        "js": 620598,
+        "js": 623928,
         "css": 261621,
-        "total": 882219,
-        "gzip": 181126
+        "total": 885549,
+        "gzip": 181835
       }
     },
     {
@@ -21486,9 +21516,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -21791,9 +21822,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -22216,9 +22247,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -22291,8 +22322,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 625173,
-          "gzipBytes": 146222
+          "bytes": 628503,
+          "gzipBytes": 146939
         },
         {
           "file": "ui-kit.css",
@@ -22301,10 +22332,10 @@
         }
       ],
       "sizes": {
-        "js": 625173,
+        "js": 628503,
         "css": 290350,
-        "total": 915523,
-        "gzip": 182492
+        "total": 918853,
+        "gzip": 183193
       }
     },
     {
@@ -22448,9 +22479,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -22753,9 +22785,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -23178,9 +23210,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -23253,8 +23285,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 625173,
-          "gzipBytes": 146225
+          "bytes": 628503,
+          "gzipBytes": 146940
         },
         {
           "file": "ui-kit.css",
@@ -23263,10 +23295,10 @@
         }
       ],
       "sizes": {
-        "js": 625173,
+        "js": 628503,
         "css": 289690,
-        "total": 914863,
-        "gzip": 182213
+        "total": 918193,
+        "gzip": 182910
       }
     },
     {
@@ -23410,9 +23442,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -23715,9 +23748,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -24140,9 +24173,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -24215,8 +24248,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146087
+          "bytes": 625758,
+          "gzipBytes": 146795
         },
         {
           "file": "ui-kit.css",
@@ -24225,10 +24258,10 @@
         }
       ],
       "sizes": {
-        "js": 622428,
+        "js": 625758,
         "css": 273218,
-        "total": 895646,
-        "gzip": 181661
+        "total": 898976,
+        "gzip": 182355
       }
     },
     {
@@ -24372,9 +24405,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -24677,9 +24711,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -25102,9 +25136,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -25177,8 +25211,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146081
+          "bytes": 625758,
+          "gzipBytes": 146792
         },
         {
           "file": "ui-kit.css",
@@ -25187,10 +25221,10 @@
         }
       ],
       "sizes": {
-        "js": 622428,
+        "js": 625758,
         "css": 272769,
-        "total": 895197,
-        "gzip": 181570
+        "total": 898527,
+        "gzip": 182269
       }
     },
     {
@@ -25334,9 +25368,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -25639,9 +25674,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -26064,9 +26099,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -26139,8 +26174,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146086
+          "bytes": 625758,
+          "gzipBytes": 146796
         },
         {
           "file": "ui-kit.css",
@@ -26149,10 +26184,10 @@
         }
       ],
       "sizes": {
-        "js": 622428,
+        "js": 625758,
         "css": 272858,
-        "total": 895286,
-        "gzip": 181596
+        "total": 898616,
+        "gzip": 182293
       }
     },
     {
@@ -26296,9 +26331,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -26601,9 +26637,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -27026,9 +27062,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -27101,8 +27137,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 623343,
-          "gzipBytes": 146135
+          "bytes": 626673,
+          "gzipBytes": 146843
         },
         {
           "file": "ui-kit.css",
@@ -27111,10 +27147,10 @@
         }
       ],
       "sizes": {
-        "js": 623343,
+        "js": 626673,
         "css": 278792,
-        "total": 902135,
-        "gzip": 181953
+        "total": 905465,
+        "gzip": 182645
       }
     },
     {
@@ -27258,9 +27294,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -27563,9 +27600,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -27988,9 +28025,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -28063,8 +28100,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 619683,
-          "gzipBytes": 145955
+          "bytes": 623013,
+          "gzipBytes": 146667
         },
         {
           "file": "ui-kit.css",
@@ -28073,10 +28110,10 @@
         }
       ],
       "sizes": {
-        "js": 619683,
+        "js": 623013,
         "css": 256119,
-        "total": 875802,
-        "gzip": 180911
+        "total": 879132,
+        "gzip": 181625
       }
     }
   ]

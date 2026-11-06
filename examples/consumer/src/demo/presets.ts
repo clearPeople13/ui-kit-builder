@@ -1110,6 +1110,27 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       values: { data: TABLE_TREE_ROWS, defaultExpandAll: true }
     },
     {
+      id: 'tree-select',
+      label: '树形多选（联动）',
+      hint: '默认父子联动：勾选父级带上全部子孙，子级部分选中时父级显示半选',
+      requires: ['table.tree', 'table.selection'],
+      values: { data: TABLE_TREE_ROWS, rowKey: 'id', defaultExpandAll: true }
+    },
+    {
+      id: 'tree-select-strict',
+      label: '树形多选（严格）',
+      hint: 'checkStrictly：父子互不联动，父级不会带选子孙，也没有半选',
+      requires: ['table.tree', 'table.selection'],
+      values: { data: TABLE_TREE_ROWS, rowKey: 'id', defaultExpandAll: true, checkStrictly: true }
+    },
+    {
+      id: 'checkbox-hidden',
+      label: '勾选框显隐',
+      hint: 'showCheckbox 传函数按行隐藏勾选框，被隐藏的行不入选也不参与全选',
+      requires: 'table.selection',
+      values: {}
+    },
+    {
       id: 'resize',
       label: '拖拽列宽',
       hint: '拖表头右缘改列宽，双击手柄恢复默认；resize-change 输出 key 与宽度',

@@ -433,6 +433,8 @@ export const PROP_DESCRIPTIONS = {
   sortMethod: '自定义排序方法',
   sortOrders: '排序循环顺序数组',
   selectable: '行是否可选判断函数',
+  showCheckbox: '勾选框显隐（布尔值整体控制，函数可按行控制，隐藏行不入选）',
+  checkStrictly: '树形多选是否严格（true 父子不联动，false 父子联动并显示半选）',
   columns: '列配置数组',
   headerHeight: '表头高度（虚拟表格用）',
   rowClass: '行类名',

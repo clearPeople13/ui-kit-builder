@@ -139,6 +139,9 @@ function columnSourceAttrs(spec: TableColumnSpec): string[] {
   if (spec.selectable) {
     attrs.push(':selectable="selectableRow"')
   }
+  if (spec.showCheckbox) {
+    attrs.push(':show-checkbox="checkboxRow"')
+  }
   return attrs
 }
 
@@ -347,6 +350,9 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
   }
   if (blueprint.some((spec) => spec.selectable)) {
     hoisted.push('function selectableRow(row) {', "  return row.status !== '规划'", '}')
+  }
+  if (blueprint.some((spec) => spec.showCheckbox)) {
+    hoisted.push('function checkboxRow(row) {', "  return row.status !== '规划'", '}')
   }
   if (sceneId === 'span') {
     hoisted.push("const SPAN_GROUPS = { 华东: 3, 华南: 2, 华北: 3 }")

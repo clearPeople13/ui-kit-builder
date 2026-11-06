@@ -308,10 +308,109 @@ export function createTable(features: UiFeature[] = []) {
         return column?.selectable ? Boolean(column.selectable(row, index)) : true
       }
 
+      function checkboxVisibleOf(column: TableColumn | undefined, row: any, index: number) {
+        if (!column) {
+          return false
+        }
+        const show = column.showCheckbox
+        if (typeof show === 'function') {
+          return Boolean(show(row, index))
+        }
+        return show !== false
+      }
+
+      function treeChildrenKey() {
+        const treeProps = resolved.treeProps
+        if (treeProps && typeof treeProps === 'object') {
+          const children = (treeProps as Record<string, unknown>).children
+          if (typeof children === 'string' && children) {
+            return children
+          }
+        }
+        return 'children'
+      }
+
+      function descendantsOf(row: any): any[] {
+        const childrenKey = treeChildrenKey()
+        const output: any[] = []
+        const walk = (item: any) => {
+          const children = item?.[childrenKey]
+          if (!Array.isArray(children)) {
+            return
+          }
+          for (const child of children) {
+            output.push(child)
+            walk(child)
+          }
+        }
+        walk(row)
+        return output
+      }
+
+      function ancestorRowsOf(row: any): any[] {
+        const childrenKey = treeChildrenKey()
+        const trail: any[] = []
+        const walk = (list: any[], parents: any[]): boolean => {
+          for (const item of list) {
+            if (item === row) {
+              trail.push(...parents)
+              return true
+            }
+            const children = item?.[childrenKey]
+            if (Array.isArray(children) && children.length && walk(children, [...parents, item])) {
+              return true
+            }
+          }
+          return false
+        }
+        walk(Array.isArray(resolved.data) ? resolved.data : [], [])
+        return trail
+      }
+
+      // 0 未选 / 1 部分选（半选）/ 2 全选，只统计可选且勾选框可见的后代
+      function descendantCheckState(row: any, column: TableColumn | undefined): 0 | 1 | 2 {
+        const descendants = descendantsOf(row).filter((child) =>
+          selectableOf(column ? [column] : [], child, -1) && checkboxVisibleOf(column, child, -1)
+        )
+        if (!descendants.length) {
+          return 0
+        }
+        let checked = 0
+        for (const child of descendants) {
+          if (selectedKeys.value.has(rowKeyOf(child, -1))) {
+            checked += 1
+          }
+        }
+        if (checked === 0) {
+          return 0
+        }
+        return checked === descendants.length ? 2 : 1
+      }
+
+      function emitSelection(next: Set<any>) {
+        const data = Array.isArray(resolved.data) ? resolved.data : []
+        const flat: any[] = []
+        const collect = (list: any[]) => {
+          for (const item of list) {
+            flat.push(item)
+            const children = item?.[treeChildrenKey()]
+            if (Array.isArray(children) && children.length) {
+              collect(children)
+            }
+          }
+        }
+        collect(data)
+        emit(
+          'selection-change',
+          flat.filter((item, itemIndex) => next.has(rowKeyOf(item, itemIndex)))
+        )
+      }
+
       function toggleRow(row: any, index: number, checked: boolean, columns: TableColumn[]) {
         if (!selectableOf(columns, row, index)) {
           return
         }
+        const column = columns.find((item) => item.type === 'selection')
         const key = rowKeyOf(row, index)
         const next = new Set(selectedKeys.value)
         if (checked) {
@@ -319,31 +418,53 @@ export function createTable(features: UiFeature[] = []) {
         } else {
           next.delete(key)
         }
+        if (!resolved.checkStrictly) {
+          // 树形联动：勾选向下传播给可选且可见的后代，向上传播保持祖先全选/半选状态
+          for (const child of descendantsOf(row)) {
+            if (!selectableOf(columns, child, -1) || !checkboxVisibleOf(column, child, -1)) {
+              continue
+            }
+            const childKey = rowKeyOf(child, -1)
+            if (checked) {
+              next.add(childKey)
+            } else {
+              next.delete(childKey)
+            }
+          }
+          for (const ancestor of ancestorRowsOf(row)) {
+            const ancestorKey = rowKeyOf(ancestor, -1)
+            if (descendantCheckState(ancestor, column) === 2) {
+              next.add(ancestorKey)
+            } else {
+              next.delete(ancestorKey)
+            }
+          }
+        }
         selectedKeys.value = next
-        emit(
-          'selection-change',
-          (resolved.data ?? []).filter((item: any, itemIndex: number) => {
-            return next.has(rowKeyOf(item, itemIndex))
-          })
-        )
+        emitSelection(next)
       }
 
-      function toggleAll(checked: boolean, columns: TableColumn[]) {
+      function toggleAll(checked: boolean, columns: TableColumn[], rows: any[]) {
+        const column = columns.find((item) => item.type === 'selection')
         const next = new Set<any>()
         if (checked) {
-          ;(resolved.data ?? []).forEach((row: any, index: number) => {
-            if (selectableOf(columns, row, index)) {
-              next.add(rowKeyOf(row, index))
+          // 展开后的行 + 联动时的后代：隐藏行与不可选行始终不进集合
+          rows.forEach((row, index) => {
+            if (!selectableOf(columns, row, index) || !checkboxVisibleOf(column, row, index)) {
+              return
+            }
+            next.add(rowKeyOf(row, index))
+            if (!resolved.checkStrictly) {
+              for (const child of descendantsOf(row)) {
+                if (selectableOf(columns, child, -1) && checkboxVisibleOf(column, child, -1)) {
+                  next.add(rowKeyOf(child, -1))
+                }
+              }
             }
           })
         }
         selectedKeys.value = next
-        emit(
-          'selection-change',
-          (resolved.data ?? []).filter((item: any, itemIndex: number) => {
-            return next.has(rowKeyOf(item, itemIndex))
-          })
-        )
+        emitSelection(next)
       }
 
       function toggleExpand(row: any, index: number) {
@@ -385,6 +506,16 @@ export function createTable(features: UiFeature[] = []) {
       if (Object.keys(exposed).length) {
         expose(exposed)
       }
+
+      // 树形展开后的可见行（含被 hook 过滤/排序后的结果），methods 特性全选也基于它
+      function visibleRowsOf(data: any[]): any[] {
+        let rows = Array.isArray(data) ? [...data] : []
+        for (const hook of flattenHooks(states, 'tableRows')) {
+          rows = hook(rows, latestColumns, resolved)
+        }
+        return rows
+      }
+      Object.assign(state, { visibleRowsOf })
 
       function measureAvailableWidth() {
         const element = wrapper.value
@@ -521,10 +652,15 @@ export function createTable(features: UiFeature[] = []) {
       function renderCell(options: CellOptions): VNodeChild {
         const { column, row, rowIndex, meta, prependHooks } = options
         if (column.type === 'selection') {
+          if (!checkboxVisibleOf(column, row, rowIndex)) {
+            return null
+          }
           const key = rowKeyOf(row, rowIndex)
+          const childState = resolved.checkStrictly ? 0 : descendantCheckState(row, column)
           return h(TableCheckbox, {
             class: 'ui-table__checkbox',
-            modelValue: selectedKeys.value.has(key),
+            modelValue: selectedKeys.value.has(key) || childState === 2,
+            indeterminate: childState === 1,
             disabled: !selectableOf([column], row, rowIndex),
             onClick: (event: Event) => event.stopPropagation(),
             'onUpdate:modelValue': (checked: boolean) => toggleRow(row, rowIndex, checked, [column])
@@ -582,10 +718,7 @@ export function createTable(features: UiFeature[] = []) {
       return function render() {
         const columns = readColumns(slots)
         latestColumns = columns
-        let rows: any[] = Array.isArray(resolved.data) ? [...resolved.data] : []
-        for (const hook of flattenHooks(states, 'tableRows')) {
-          rows = hook(rows, columns, resolved)
-        }
+        const rows = visibleRowsOf(resolved.data)
 
         const widthHooks = flattenHooks(states, 'tableColumnWidth')
         const spanHooks = flattenHooks(states, 'tableSpan')
@@ -741,9 +874,13 @@ export function createTable(features: UiFeature[] = []) {
         }
 
         const selectableKeys: any[] = []
-        if (columns.some((column) => column.type === 'selection')) {
+        const selectionColumn = columns.find((column) => column.type === 'selection')
+        if (selectionColumn) {
           rows.forEach((row, index) => {
-            if (selectableOf(columns, row, index)) {
+            if (
+              selectableOf(columns, row, index) &&
+              checkboxVisibleOf(selectionColumn, row, index)
+            ) {
               selectableKeys.push(rowKeyOf(row, index))
             }
           })
@@ -836,7 +973,7 @@ export function createTable(features: UiFeature[] = []) {
                               modelValue: allSelected,
                               indeterminate: selectedCount > 0 && !allSelected,
                               disabled: !selectableKeys.length,
-                              'onUpdate:modelValue': (checked: boolean) => toggleAll(checked, columns)
+                              'onUpdate:modelValue': (checked: boolean) => toggleAll(checked, columns, rows)
                             }),
                             ...extras
                           ]

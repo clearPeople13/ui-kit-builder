@@ -240,6 +240,21 @@ export default {
             }
           ]
         },
+        "table.selection": {
+          "title": "多选联动",
+          "description": "树形数据多选时父子是否联动勾选：默认联动（带半选），开启严格模式后各级独立勾选。",
+          "module": "packages/ui-kit/src/components/table/features/selection/index.ts",
+          "exportName": "tableSelectionFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "checkStrictly",
+              "type": "Boolean",
+              "default": false,
+              "description": "树形多选是否严格（父子不联动），默认父子联动勾选并显示半选"
+            }
+          ]
+        },
         "table.methods": {
           "title": "实例方法",
           "description": "通过 ref 操作选择：clearSelection、getSelectionRows、toggleRowSelection、toggleAllSelection。",
@@ -388,7 +403,7 @@ export default {
         },
         "table.selection": {
           "title": "选择列配置",
-          "description": "为 selection 列配置 selectable 判断哪些行可勾选。",
+          "description": "为 selection 列配置 selectable 判断哪些行可勾选、showCheckbox 控制勾选框显隐，树形数据下用 checkStrictly 控制父子是否联动勾选。",
           "module": "packages/ui-kit/src/components/table/features/selection/index.ts",
           "exportName": "tableSelectionFeature",
           "requires": [],
@@ -397,6 +412,12 @@ export default {
               "name": "selectable",
               "type": "Function",
               "description": "行是否可选"
+            },
+            {
+              "name": "showCheckbox",
+              "type": "Boolean | Function",
+              "default": true,
+              "description": "勾选框是否显示，传函数可按行控制显隐，隐藏行的行不入选"
             }
           ]
         }

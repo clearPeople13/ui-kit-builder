@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-06T01:39:55.391Z",
+  "generatedAt": "2026-11-06T02:33:38.810Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -193,8 +193,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 541986,
-          "gzipBytes": 128880
+          "bytes": 544642,
+          "gzipBytes": 129488
         },
         {
           "file": "ui-kit.css",
@@ -202,10 +202,10 @@
           "gzipBytes": 31715
         }
       ],
-      "jsBytes": 541986,
+      "jsBytes": 544642,
       "cssBytes": 229995,
-      "totalBytes": 771981,
-      "gzipBytes": 160382
+      "totalBytes": 774637,
+      "gzipBytes": 160967
     },
     "full": {
       "name": "full",
@@ -564,9 +564,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -772,9 +772,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -819,8 +820,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 618768,
-          "gzipBytes": 145924
+          "bytes": 622098,
+          "gzipBytes": 146635
         },
         {
           "file": "ui-kit.css",
@@ -828,10 +829,10 @@
           "gzipBytes": 34336
         }
       ],
-      "jsBytes": 618768,
+      "jsBytes": 622098,
       "cssBytes": 249421,
-      "totalBytes": 868189,
-      "gzipBytes": 180245
+      "totalBytes": 871519,
+      "gzipBytes": 180955
     },
     "branded": {
       "name": "branded",
@@ -1190,9 +1191,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -1398,9 +1399,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -1445,8 +1447,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146708
         },
         {
           "file": "ui-kit.css",
@@ -1454,10 +1456,10 @@
           "gzipBytes": 35110
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 261553,
-      "totalBytes": 882151,
-      "gzipBytes": 181137
+      "totalBytes": 885481,
+      "gzipBytes": 181846
     },
     "chinese": {
       "name": "chinese",
@@ -1816,9 +1818,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -2024,9 +2026,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -2071,8 +2074,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 623343,
-          "gzipBytes": 146135
+          "bytes": 626673,
+          "gzipBytes": 146844
         },
         {
           "file": "ui-kit.css",
@@ -2080,10 +2083,10 @@
           "gzipBytes": 38781
         }
       ],
-      "jsBytes": 623343,
+      "jsBytes": 626673,
       "cssBytes": 297647,
-      "totalBytes": 920990,
-      "gzipBytes": 184996
+      "totalBytes": 924320,
+      "gzipBytes": 185691
     },
     "cute": {
       "name": "cute",
@@ -2442,9 +2445,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -2650,9 +2653,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -2697,8 +2701,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145996
+          "bytes": 623928,
+          "gzipBytes": 146711
         },
         {
           "file": "ui-kit.css",
@@ -2706,10 +2710,10 @@
           "gzipBytes": 38065
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 277004,
-      "totalBytes": 897602,
-      "gzipBytes": 184121
+      "totalBytes": 900932,
+      "gzipBytes": 184828
     },
     "antd": {
       "name": "antd",
@@ -3068,9 +3072,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -3276,9 +3280,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -3323,8 +3328,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146707
         },
         {
           "file": "ui-kit.css",
@@ -3332,10 +3337,10 @@
           "gzipBytes": 38227
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 281801,
-      "totalBytes": 902399,
-      "gzipBytes": 184272
+      "totalBytes": 905729,
+      "gzipBytes": 184979
     },
     "arco": {
       "name": "arco",
@@ -3694,9 +3699,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -3902,9 +3907,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -3949,8 +3955,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145992
+          "bytes": 623928,
+          "gzipBytes": 146708
         },
         {
           "file": "ui-kit.css",
@@ -3958,10 +3964,10 @@
           "gzipBytes": 35206
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 261925,
-      "totalBytes": 882523,
-      "gzipBytes": 181236
+      "totalBytes": 885853,
+      "gzipBytes": 181946
     },
     "tdesign": {
       "name": "tdesign",
@@ -4320,9 +4326,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -4528,9 +4534,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -4575,8 +4582,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 623343,
-          "gzipBytes": 146128
+          "bytes": 626673,
+          "gzipBytes": 146836
         },
         {
           "file": "ui-kit.css",
@@ -4584,10 +4591,10 @@
           "gzipBytes": 35620
         }
       ],
-      "jsBytes": 623343,
+      "jsBytes": 626673,
       "cssBytes": 278353,
-      "totalBytes": 901696,
-      "gzipBytes": 181812
+      "totalBytes": 905026,
+      "gzipBytes": 182502
     },
     "naive": {
       "name": "naive",
@@ -4946,9 +4953,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -5154,9 +5161,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -5201,8 +5209,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 621513,
-          "gzipBytes": 146048
+          "bytes": 624843,
+          "gzipBytes": 146756
         },
         {
           "file": "ui-kit.css",
@@ -5210,10 +5218,10 @@
           "gzipBytes": 35300
         }
       ],
-      "jsBytes": 621513,
+      "jsBytes": 624843,
       "cssBytes": 267276,
-      "totalBytes": 888789,
-      "gzipBytes": 181389
+      "totalBytes": 892119,
+      "gzipBytes": 182090
     },
     "viewui": {
       "name": "viewui",
@@ -5572,9 +5580,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -5780,9 +5788,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -5827,8 +5836,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146077
+          "bytes": 625758,
+          "gzipBytes": 146790
         },
         {
           "file": "ui-kit.css",
@@ -5836,10 +5845,10 @@
           "gzipBytes": 35421
         }
       ],
-      "jsBytes": 622428,
+      "jsBytes": 625758,
       "cssBytes": 272813,
-      "totalBytes": 895241,
-      "gzipBytes": 181555
+      "totalBytes": 898571,
+      "gzipBytes": 182256
     },
     "vant": {
       "name": "vant",
@@ -6198,9 +6207,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -6406,9 +6415,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -6453,8 +6463,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145993
+          "bytes": 623928,
+          "gzipBytes": 146709
         },
         {
           "file": "ui-kit.css",
@@ -6462,10 +6472,10 @@
           "gzipBytes": 35213
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 262065,
-      "totalBytes": 882663,
-      "gzipBytes": 181247
+      "totalBytes": 885993,
+      "gzipBytes": 181956
     },
     "varlet": {
       "name": "varlet",
@@ -6824,9 +6834,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -7032,9 +7042,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -7079,8 +7090,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146086
+          "bytes": 625758,
+          "gzipBytes": 146795
         },
         {
           "file": "ui-kit.css",
@@ -7088,10 +7099,10 @@
           "gzipBytes": 35437
         }
       ],
-      "jsBytes": 622428,
+      "jsBytes": 625758,
       "cssBytes": 272853,
-      "totalBytes": 895281,
-      "gzipBytes": 181576
+      "totalBytes": 898611,
+      "gzipBytes": 182273
     },
     "semi": {
       "name": "semi",
@@ -7450,9 +7461,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -7658,9 +7669,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -7705,8 +7717,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 620598,
-          "gzipBytes": 145995
+          "bytes": 623928,
+          "gzipBytes": 146711
         },
         {
           "file": "ui-kit.css",
@@ -7714,10 +7726,10 @@
           "gzipBytes": 35098
         }
       ],
-      "jsBytes": 620598,
+      "jsBytes": 623928,
       "cssBytes": 261621,
-      "totalBytes": 882219,
-      "gzipBytes": 181126
+      "totalBytes": 885549,
+      "gzipBytes": 181835
     },
     "material3": {
       "name": "material3",
@@ -8076,9 +8088,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -8284,9 +8296,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -8331,8 +8344,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 625173,
-          "gzipBytes": 146222
+          "bytes": 628503,
+          "gzipBytes": 146939
         },
         {
           "file": "ui-kit.css",
@@ -8340,10 +8353,10 @@
           "gzipBytes": 36191
         }
       ],
-      "jsBytes": 625173,
+      "jsBytes": 628503,
       "cssBytes": 290350,
-      "totalBytes": 915523,
-      "gzipBytes": 182492
+      "totalBytes": 918853,
+      "gzipBytes": 183193
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -8702,9 +8715,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -8910,9 +8923,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -8957,8 +8971,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 625173,
-          "gzipBytes": 146225
+          "bytes": 628503,
+          "gzipBytes": 146940
         },
         {
           "file": "ui-kit.css",
@@ -8966,10 +8980,10 @@
           "gzipBytes": 35917
         }
       ],
-      "jsBytes": 625173,
+      "jsBytes": 628503,
       "cssBytes": 289690,
-      "totalBytes": 914863,
-      "gzipBytes": 182213
+      "totalBytes": 918193,
+      "gzipBytes": 182910
     },
     "shadcn": {
       "name": "shadcn",
@@ -9328,9 +9342,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -9536,9 +9550,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -9583,8 +9598,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146087
+          "bytes": 625758,
+          "gzipBytes": 146795
         },
         {
           "file": "ui-kit.css",
@@ -9592,10 +9607,10 @@
           "gzipBytes": 35518
         }
       ],
-      "jsBytes": 622428,
+      "jsBytes": 625758,
       "cssBytes": 273218,
-      "totalBytes": 895646,
-      "gzipBytes": 181661
+      "totalBytes": 898976,
+      "gzipBytes": 182355
     },
     "fluent": {
       "name": "fluent",
@@ -9954,9 +9969,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -10162,9 +10177,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -10209,8 +10225,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146081
+          "bytes": 625758,
+          "gzipBytes": 146792
         },
         {
           "file": "ui-kit.css",
@@ -10218,10 +10234,10 @@
           "gzipBytes": 35433
         }
       ],
-      "jsBytes": 622428,
+      "jsBytes": 625758,
       "cssBytes": 272769,
-      "totalBytes": 895197,
-      "gzipBytes": 181570
+      "totalBytes": 898527,
+      "gzipBytes": 182269
     },
     "carbon": {
       "name": "carbon",
@@ -10580,9 +10596,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -10788,9 +10804,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -10835,8 +10852,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 622428,
-          "gzipBytes": 146086
+          "bytes": 625758,
+          "gzipBytes": 146796
         },
         {
           "file": "ui-kit.css",
@@ -10844,10 +10861,10 @@
           "gzipBytes": 35456
         }
       ],
-      "jsBytes": 622428,
+      "jsBytes": 625758,
       "cssBytes": 272858,
-      "totalBytes": 895286,
-      "gzipBytes": 181596
+      "totalBytes": 898616,
+      "gzipBytes": 182293
     },
     "mantine": {
       "name": "mantine",
@@ -11206,9 +11223,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -11414,9 +11431,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -11461,8 +11479,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 623343,
-          "gzipBytes": 146135
+          "bytes": 626673,
+          "gzipBytes": 146843
         },
         {
           "file": "ui-kit.css",
@@ -11470,10 +11488,10 @@
           "gzipBytes": 35751
         }
       ],
-      "jsBytes": 623343,
+      "jsBytes": 626673,
       "cssBytes": 278792,
-      "totalBytes": 902135,
-      "gzipBytes": 181953
+      "totalBytes": 905465,
+      "gzipBytes": 182645
     },
     "ios": {
       "name": "ios",
@@ -11832,9 +11850,9 @@
           "table.span",
           "table.loading",
           "table.summary",
+          "table.selection",
           "table.methods",
-          "table.column-sort",
-          "table.selection"
+          "table.column-sort"
         ],
         "tabs": [
           "tabs.closable",
@@ -12040,9 +12058,10 @@
         "table.span",
         "table.loading",
         "table.summary",
-        "table.methods",
-        "table.column-sort",
         "table.selection",
+        "table.methods",
+        "table.selection",
+        "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
         "tabs.editable",
@@ -12087,8 +12106,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 619683,
-          "gzipBytes": 145955
+          "bytes": 623013,
+          "gzipBytes": 146667
         },
         {
           "file": "ui-kit.css",
@@ -12096,10 +12115,10 @@
           "gzipBytes": 34944
         }
       ],
-      "jsBytes": 619683,
+      "jsBytes": 623013,
       "cssBytes": 256119,
-      "totalBytes": 875802,
-      "gzipBytes": 180911
+      "totalBytes": 879132,
+      "gzipBytes": 181625
     }
   },
   "features": {}

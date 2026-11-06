@@ -22,6 +22,7 @@ interface TableColumnSpec {
   sortable?: boolean
   showOverflowTooltip?: boolean
   selectable?: 'active-only'
+  showCheckbox?: 'hide-planning'
   cell?:
     | 'tag'
     | 'progress'
@@ -103,6 +104,10 @@ function formatAmount(value: unknown): string {
 }
 
 function selectActiveOnly(row: TableDemoRowLike): boolean {
+  return row.status !== '规划'
+}
+
+function hidePlanningCheckbox(row: TableDemoRowLike): boolean {
   return row.status !== '规划'
 }
 
@@ -216,6 +221,24 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   ],
   tree: [COLUMN.treeName, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount, COLUMN.date],
   'tree-expanded': [COLUMN.treeName, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount, COLUMN.date],
+  'tree-select': [COLUMN.treeName, COLUMN.selection, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
+  'tree-select-strict': [
+    COLUMN.treeName,
+    COLUMN.selection,
+    COLUMN.city,
+    COLUMN.owner,
+    COLUMN.status,
+    COLUMN.amount
+  ],
+  'checkbox-hidden': [
+    { ...COLUMN.selection, showCheckbox: 'hide-planning' },
+    COLUMN.index,
+    COLUMN.name,
+    COLUMN.city,
+    COLUMN.owner,
+    COLUMN.status,
+    COLUMN.amount
+  ],
   fit: [
     COLUMN.index,
     { prop: 'name', label: '组件', minWidth: 220, showOverflowTooltip: true },
@@ -277,6 +300,9 @@ function specProps(spec: TableColumnSpec): Record<string, any> {
   }
   if (spec.selectable === 'active-only') {
     props.selectable = selectActiveOnly
+  }
+  if (spec.showCheckbox === 'hide-planning') {
+    props.showCheckbox = hidePlanningCheckbox
   }
   return props
 }
