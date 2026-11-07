@@ -122,12 +122,4 @@ describe('Backtop 回到顶部', () => {
     const wrapper = mountBacktop()
     expect(wrapper.classes().filter((name) => name.startsWith('ui-backtop--'))).toEqual([])
   })
-
-  it.skip('【浏览器层覆盖】设定 target 后按钮用 calc 贴住容器可视区右下角', () => {
-    // shift 由 getBoundingClientRect 与 clientWidth/Height 差值推导，happy-dom 下恒为 0，归 tests/browser/**
-  })
-
-  it.skip('【浏览器层覆盖】真实平滑滚回顶部后按钮随滚动收起', () => {
-    // 依赖真实滚动动画与 scroll 事件序列，归 tests/browser/**
-  })
 })

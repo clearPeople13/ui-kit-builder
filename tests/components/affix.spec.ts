@@ -75,12 +75,4 @@ describe('Affix 固钉', () => {
     // 核心类名之外不应混入 ui-affix--* 特性类
     expect(wrapper.classes().filter((name) => name.startsWith('ui-affix--'))).toEqual([])
   })
-
-  it.skip('【浏览器层覆盖】滚动越过 offset 后追加 is-fixed 并按吸附前尺寸占位', () => {
-    // 依赖 getBoundingClientRect 与真实滚动位置，happy-dom 恒为 0，归 tests/browser/**
-  })
-
-  it.skip('【浏览器层覆盖】zIndex / offset 落到固钉后的内联定位样式', () => {
-    // position/top/bottom/left/z-index 内联值仅在 is-fixed 状态下产生，属几何路径，归 tests/browser/**
-  })
 })

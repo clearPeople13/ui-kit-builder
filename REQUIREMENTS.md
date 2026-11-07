@@ -147,9 +147,9 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | 2    | `npm run typecheck`       | 库 + 用例两份工程            | 组件属性表与用例的拼写错误；新增 `tsconfig.tests.json` 把 `tests/**` 纳入检查 |
 | 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                               |
 | 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                      |
-| 5    | `npm test`                | 94 文件 1576 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖）                     |
+| 5    | `npm test`                | 94 文件 1570 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖，无占位跳过）         |
 | 6    | `npm run test:build`      | 7 文件 89 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
-| 7    | `npm run test:browser`    | 8 文件 42 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线       |
+| 7    | `npm run test:browser`    | 9 文件 51 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线 / 固钉回顶引导 |
 | 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                            |
 
 ### 9.2 浏览器层用例（`tests/browser/**`，Chromium + 固定 1280×720）
@@ -164,6 +164,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | [tests/browser/attributes.spec.ts](tests/browser/attributes.spec.ts)       | 3    | 以 `spec.mjs` 为清单的 `id` 落盘扫描、全导出字符串 `style` 扫描、Popover 样式路由        |
 | [tests/browser/console-clean.spec.ts](tests/browser/console-clean.spec.ts) | 3    | 全家桶默认属性渲染零告警 / 零异常、渲染数量与尺寸下限                                    |
 | [tests/browser/visual.spec.ts](tests/browser/visual.spec.ts)               | 6    | 六个场景的布局指纹与基线比对（容差 1px，按平台分桶，`npm run snap:layout` 重录）         |
+| [tests/browser/sticky.spec.ts](tests/browser/sticky.spec.ts)               | 9    | 固钉吸附阈值与占位尺寸、容器内回顶 calc 贴边、平滑滚回顶部并收起、引导面板 placement / offset 贴靠与高亮包裹 |
 
 支撑件：`vitest.browser.config.ts`（串行、60 s 超时）、`tests/browser/_global-setup.ts`（仓库根起 Vite dev server，并 `define` 三个 Vue feature flags 常量）、`tests/browser/harness/`（`?scene=` 选场景，`window.__probe` 回传运行期事实，`window.__kit` / `__vue` 供页面内直接挂载）、`tests/browser/_session.ts`（会话与断言工具箱）、`tests/browser/_geometry.ts`（锚点表 + 指纹采集 + 差异报告）。
 
@@ -278,7 +279,7 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 - 探针清零：本批遗留的 12 个 `_probe_*.spec.ts` 全部删除，`tests/components/` 只保留正式用例。
 - 产物变化来自 F-39…F-50 的源码修复，`npm run build:all` 重新生成 20 份产物与 `sizes.json`；`examples/consumer/src/demo/meta.json` 随 `meta:demo` 同步。
-- 门禁：组件层 94 文件 1570 通过 + 6 条浏览器层占位跳过；构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项全部通过。
+- 门禁：组件层 94 文件 1570 条全部通过（无占位跳过）；构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 9 文件 51 条、`verify` 2239 项全部通过。
 - 用例工程 `tsconfig.tests.json` 的 15 条类型基线（affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space）已全部清零，`npm run typecheck` 两份工程均无输出。
 
 ### 11.5 六批次与缺陷收口
@@ -296,4 +297,5 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 - 六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。
 - 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
-- 收口后的门禁基线：组件层 94 文件 1576 条（1570 通过 + 6 条浏览器层占位跳过）、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1849 条用例。
+- 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 9 文件 51 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1862 条用例。
+- 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。

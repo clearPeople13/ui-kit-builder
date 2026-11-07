@@ -341,12 +341,4 @@ describe('Tour 漫游式引导', () => {
     expect(mount(TourStep, { props: { description: '仅描述' } }).text()).toBe('仅描述')
     expect(mount(TourStep, { props: { title: '仅标题' } }).text()).toBe('仅标题')
   })
-
-  it.skip('【浏览器层覆盖】面板按 placement / offset 贴靠在目标周围', () => {
-    // 面板 left / top / transform 由目标矩形推导，happy-dom 下恒为 0，归 tests/browser/**
-  })
-
-  it.skip('【浏览器层覆盖】高亮框随目标尺寸与 gap padding / offset 精确包裹', () => {
-    // 高亮盒宽高依赖真实布局，归 tests/browser/**
-  })
 })

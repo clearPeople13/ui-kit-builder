@@ -21,7 +21,7 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 ```
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1576 条，含 6 条浏览器层占位 it.skip）
+tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1570 条，全部为真实断言，无占位跳过）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -33,7 +33,7 @@ tests/browser/_global-setup.ts 起一个 root 为仓库根的 Vite dev server，
 tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__probe 回传运行期事实，window.__kit/__vue 供页面内直接挂载组件
 tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
-tests/browser/*.spec.ts       浏览器层用例（8 个文件 42 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线
+tests/browser/*.spec.ts       浏览器层用例（9 个文件 51 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、固钉 / 回顶 / 引导
 tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
 tests/profiles/props-documented.spec.ts 属性字典双向守卫：运行时真实 props ↔ spec.mjs 的 coreProps / 已启用 feature props 互相回查
 tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
@@ -126,7 +126,7 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九
 
 ## 7. 未覆盖 / 待办
 
-- 四层用例合计 1849 条全绿：组件侧 94 文件 1576 条（含 6 条浏览器层占位跳过）、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例
+- 四层用例合计 1862 条全绿：组件侧 94 文件 1570 条、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 9 文件 51 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged

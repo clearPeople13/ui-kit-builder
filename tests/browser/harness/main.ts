@@ -49,7 +49,11 @@ const {
   Pagination,
   Tree,
   Carousel,
-  CarouselItem
+  CarouselItem,
+  Affix,
+  Backtop,
+  Tour,
+  TourStep
 } = kit as any
 
 function log(key: string) {
@@ -409,13 +413,86 @@ function sceneGallery() {
     )
 }
 
+/** 固钉 / 回顶 / 引导：吸附状态、容器内贴边、平滑滚动与目标贴靠都依赖真实滚动与矩形 */
+function sceneSticky() {
+  return () =>
+    h('div', {}, [
+      // 顶部留白：滚动前 sentinel 在 offset 之下，滚动越过后才吸附
+      h('div', { style: 'height: 220px' }),
+      h('div', { style: 'width: 300px' }, [
+        h(
+          Affix,
+          { id: 'probe-affix', offset: 24, zIndex: 1200 },
+          {
+            default: () =>
+              h(
+                'div',
+                {
+                  id: 'affix-content',
+                  style:
+                    'box-sizing: border-box; width: 300px; height: 48px; display: flex; align-items: center; padding: 0 16px; background: #fff; border: 1px solid #d0d7de'
+                },
+                '固钉内容'
+              )
+          }
+        )
+      ]),
+      h('div', { style: 'height: 900px' }),
+      // 容器内回顶：按钮用 calc 贴住容器可视区右下角
+      h(
+        'div',
+        {
+          id: 'backtop-box',
+          style:
+            'position: relative; margin-left: 80px; width: 520px; height: 300px; overflow: auto; border: 1px solid #ccc'
+        },
+        [
+          h('div', { style: 'height: 900px; padding: 12px' }, '容器内滚动内容'),
+          h(Backtop, { id: 'probe-backtop-box', target: '#backtop-box', right: 20, bottom: 20, visibilityHeight: 80 })
+        ]
+      ),
+      h('div', { style: 'height: 900px' }),
+      // 窗口回顶：真实平滑滚动
+      h(Backtop, { id: 'probe-backtop-window', visibilityHeight: 400 }),
+      h('div', { style: 'height: 1200px' }),
+      // 引导目标用 fixed 定位：scrollIntoView 关掉后坐标不随页面滚动变化
+      h(
+        'div',
+        {
+          id: 'tour-target',
+          style:
+            'position: fixed; left: 320px; top: 200px; width: 200px; height: 64px; background: #eef; border: 1px solid #99c'
+        },
+        '引导目标'
+      ),
+      h(
+        Tour,
+        {
+          modelValue: true,
+          current: 0,
+          offset: 16,
+          gap: { padding: 8, offset: 4, radius: 6 },
+          mask: { color: 'rgba(0, 0, 0, 0.5)' },
+          scrollIntoViewOptions: false
+        },
+        {
+          default: () => [
+            h(TourStep, { title: '第一步', target: '#tour-target', placement: 'right' }),
+            h(TourStep, { title: '第二步', target: '#tour-target', placement: 'bottom' })
+          ]
+        }
+      )
+    ])
+}
+
 const scenes: Record<string, () => any> = {
   floating: sceneFloating(),
   table: sceneTable(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),
-  gallery: sceneGallery()
+  gallery: sceneGallery(),
+  sticky: sceneSticky()
 }
 
 const requested = new URLSearchParams(window.location.search).get('scene') ?? 'floating'
