@@ -282,10 +282,11 @@ describe('TimePicker 时间选择', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([['09:08:07']])
     expect(wrapper.emitted('change')).toEqual([['09:08:07']])
     expect(dropdown()).not.toBeNull()
-    // 受控写法下展示值由使用方回写
-    expect(triggerText(wrapper)).toBe('09:24:36')
-    await wrapper.setProps({ modelValue: '09:08:07' })
+    // 触发区乐观同步本次写回（F-56）：不再出现"输入框显示 A、modelValue 却是 B"
     expect(triggerText(wrapper)).toBe('09:08:07')
+    // 使用方回写仍是唯一权威，会覆盖乐观值
+    await wrapper.setProps({ modelValue: '12:00:00' })
+    expect(triggerText(wrapper)).toBe('12:00:00')
   })
 
   it('确定按钮只收起面板，不额外抛写回事件', async () => {
@@ -347,11 +348,11 @@ describe('TimePicker 时间选择', () => {
     expect(wrapper.emitted('update:modelValue')).toEqual([['00:00:00']])
   })
 
-  it('clearable 为 false 时没有清空图标，但特性类仍挂着', async () => {
+  it('clearable 为 false 时清空图标与特性类都不出现（F-62）', async () => {
     const wrapper = mountPicker({ clearable: false })
     await flush()
     expect(wrapper.find('.ui-time-picker__clear').exists()).toBe(false)
-    expect(wrapper.classes()).toContain('ui-time-picker--clearable')
+    expect(wrapper.classes()).not.toContain('ui-time-picker--clearable')
   })
 
   it('禁用态标灰且无法展开', async () => {
@@ -443,19 +444,19 @@ describe('TimePicker 时间选择', () => {
     const wrapper = mountPicker({ isRange: true, modelValue: ['09:24', '18:30'] })
     await clickField(wrapper, 0)
     await clickNode(columnItems(0)[3])
-    expect(wrapper.emitted('update:modelValue')).toEqual([[['03:24:00', '18:30']]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['03:24:00', '18:30:00']]])
   })
 
   it('区间结束位选到更晚的小时写回，选到更早则静默丢弃', async () => {
     const wrapper = mountPicker({ isRange: true, modelValue: ['09:00', '10:00'] })
     await clickField(wrapper, 1)
     await clickNode(columnItems(0)[11])
-    expect(wrapper.emitted('update:modelValue')).toEqual([[['09:00', '11:00:00']]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['09:00:00', '11:00:00']]])
     // 早于开始时刻的选择被丢弃，既不写回也不提示
     await clickNode(columnItems(0)[2])
     expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
     await clickNode(columnItems(1)[40])
-    expect(wrapper.emitted('update:modelValue')).toEqual([[['09:00', '11:00:00']], [['09:00', '11:40:00']]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['09:00:00', '11:00:00']], [['09:00:00', '11:40:00']]])
   })
 
   it('区间的此刻写回当前时间，越界时贴到另一端', async () => {
@@ -463,7 +464,7 @@ describe('TimePicker 时间选择', () => {
     const before = mountPicker({ isRange: true, modelValue: ['09:00', '10:00'] })
     await clickField(before, 0)
     await clickNode(actions()[0])
-    expect(before.emitted('update:modelValue')).toEqual([[['09:08:07', '10:00']]])
+    expect(before.emitted('update:modelValue')).toEqual([[['09:08:07', '10:00:00']]])
     before.unmount()
     document.body.innerHTML = ''
 
@@ -472,7 +473,7 @@ describe('TimePicker 时间选择', () => {
     const after = mountPicker({ isRange: true, modelValue: ['09:00', '10:00'] })
     await clickField(after, 0)
     await clickNode(actions()[0])
-    expect(after.emitted('update:modelValue')).toEqual([[['10:00:00', '10:00']]])
+    expect(after.emitted('update:modelValue')).toEqual([[['10:00:00', '10:00:00']]])
   })
 
   it('type 参数不改变面板粒度', async () => {
@@ -645,5 +646,15 @@ describe('TimeSelect 时刻选择', () => {
     await flush()
     expect(selectDropdown()).not.toBeNull()
     expect(wrapper.find('.ui-time-select__trigger').attributes('aria-expanded')).toBe('true')
+  })
+
+  it('非严格时间串不再被吞成时间，回退到 00:00（F-57 同族口径）', async () => {
+    // shared/date.ts 的 parseTimeValue 首尾锚定后，time-select 也会受影响：
+    // 原先 'abc10:00' 被吞成 10:00，现在解析失败走 formatTime 的 00:00 兜底。
+    // 这是"不再静默吞垃圾"的有意口径变更，已审计但无害，在此锁住。
+    const wrapper = mountSelect({ modelValue: 'abc10:00' })
+    await flush()
+    expect(wrapper.find('.ui-time-select__value').text()).toBe('00:00')
+    expect((wrapper.find('input').element as HTMLInputElement).value).toBe('00:00')
   })
 })

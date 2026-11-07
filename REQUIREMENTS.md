@@ -192,14 +192,14 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 §9.4 里排在第三位的缺口——"profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据"——本批补齐；同时把"靠本地自觉执行 `npm run quality`"换成机制。
 
-### 10.1 门禁清单（第五批时九段，第七批起十段，构建流水线优化后十一段）
+### 10.1 门禁清单（第五批时九段，第七批起十段，构建流水线优化后十一段，第八批起十二段）
 
-`npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
+`npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 治理校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
 
 | 段落     | 命令                                   | 说明                                                                     |
 | -------- | -------------------------------------- | ------------------------------------------------------------------------ |
-| 秒级四段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验，`.githooks/pre-commit` 就是它             |
-| 全量十一段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
+| 秒级五段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验 / 治理校验，`.githooks/pre-commit` 就是它 |
+| 全量十二段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
 | 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位（该段仍会自行构建）                         |
 | 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
 
@@ -297,7 +297,7 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 | 第六批 | 63 个组件目录全量接入，94 文件 1576 条；属性字典双向回查 41 条 | `feature/20261107-tests-batch6`             | F-39…F-50                  |
 | 收口   | 15 条类型基线清零、格式与 lint 归零、全部合入 `main`            | `main`                                      | F-34…F-38（前批遗留）      |
 
-- 前六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。后续第七批、特性-属性修复与构建流水线优化新增的缺陷见 §12、§13、§14。
+- 前六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。后续第七批、特性-属性修复与构建流水线优化新增的缺陷见 §12、§13、§14、§15。
 - 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
 - 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1859 条用例；另有覆盖率层在同一批组件用例上重放并卡阈值（不重复计入条数，见 §12）。
 - 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
@@ -368,3 +368,77 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 实测（本机 Ryzen 9 7950X）：冷启动 `build:all` 10 分 17 秒（20 份 profile 65.0 s + 178 份试算 551.4 s），源码未变时命中缓存 57 s；`npm run quality` 从三次全量构建收敛为一次，`verify` 段从 70.5 s 降到复用后的秒级。
 
 新增守卫 `tests/build/build-hygiene.spec.ts`（6 条）：`dist/` 恰好是 20 份 profile、试算目录与 `.build/feat-*` 构建后为空、`sizes.json.features` 覆盖全部特性且为非负整数（正增量多于 100 条）、20 份 profile 元数据与 `sizes.json` 一一对应、缓存指纹是 40 位 sha1 且与本次 `sizes.json` 完全一致。构建器侧用例从 89 条增至 95 条。
+
+## 15. 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`）
+
+### 15.1 背景与机制
+
+TimePicker 被外部指出有问题：F-16 把触发区从纯 `span` 换成真实 `<input>` 时，§7.2 自己写下的"依赖触发区不是表单控件的写法需要复查"一直没人复查。组件层 39 条用例全绿、浏览器层 TimePicker 0 条用例，于是"点输入框会收起面板""输入被面板旧值覆盖"这类问题既修不掉也测不出来。本批不靠补用例数量，而是把流程缺的三道闸做成机器判定。
+
+| 闸   | 落地物                                                                | 失败条件                                                                                 |
+| ---- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| 场景契约化 | `REQUIREMENTS.md` F-NN 登记                                       | 守卫挂账却没登记，治理校验报红                                                       |
+| 必须先见红 | `tests/findings.spec.ts`（`it.fails`），常驻两份 vitest 配置的 include | 未修代码上守卫全绿＝缺陷已复现；修完转红才允许降级                               |
+| 影响面清单 | `scripts/verify-governance.mjs`                                    | 改 `shared/*` 而同族组件缺组件层用例；改交互代码而缺浏览器层场景用例               |
+| 基线零漂移 | `snap:layout` / `snap:pixels` + 覆盖率四维阈值 + `KNOWLEDGE.md` §5.1 归因口径 | 除报障场景外任何漂移，或覆盖率阈值下降                                       |
+| 全链路归档 | `npm run quality`（十二段）                                        | 任一段红                                                                                 |
+
+治理校验成为门禁第六段：`package.json` 新增 `verify:governance` 并插入 `quality` 链，`scripts/ci.mjs` 的 STAGES 同步增加 `governance`（`fast: true`，pre-commit 也跑），pre-push 注释与 `KNOWLEDGE.md` 的段数口径同步。它做五件静态检查：影响面清单、特性裁剪静态守卫、文档数字与产物对齐（README 组件数 ↔ `examples/consumer/src/demo/meta.json`；quality 段数 ↔ STAGES ↔ KNOWLEDGE 标注）、缺陷编号唯一性与连续性、三处文档的缺陷总数口径。可失败已验证：把 README 的 90 临时改成 91，校验立即报 `README 组件数 91 与 demo/meta.json 的 90 不一致（F-52 复发）` 并以退出码 1 结束，恢复后转绿；编号守卫的可失败验证见 §15.6。
+
+**并行编号冲突（本批真实发生两次）**：本批开工时主线停在 `e61b91c`（缺陷到 F-52、文档到 §12），先按 F-53…F-63、§13 登记。开发期间主线合入 `38db3d3`（`fix/20261107-prop-attribution`），占走 F-53 与 §13，本批第一次顺延为 F-54…F-64、§14；随后并行的 `perf/20261107-build-pipeline` 又占走 F-54 与 §14（构建流水线优化），第二次顺延为 F-55…F-65、§15。两次都由 `git fetch origin main` 与治理守卫的编号唯一性检查拦下，否则合入后同一编号会对应不同缺陷。收口时把"开新编号前先取主线最大编号、并确认其它在途分支的编号"写进 `KNOWLEDGE.md`，治理校验常驻守卫让撞号 / 断档 / 文档口径滞后在门禁第六段直接报红。
+
+### 15.2 第八批缺陷清单
+
+| 编号 | 位置                              | 现象                                                                 | 根因                                                                 | 修复 / 守护                                                                                                     |
+| ---- | --------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| F-55 | `time-picker/core.ts`             | 面板已开时点输入框会收起浮层，无法连续键入                         | `onClick: toggleSide` 挂在触发区 div 上，F-16 新增的 input 点击冒泡触发开关 | input 命中走 `openSide`（只开不关），其余区域仍 toggle；组件层 + 浏览器层各一条                          |
+| F-56 | `time-picker/core.ts`             | 键入草稿未回车就点列项，草稿被打开面板时的旧值覆盖，一次点击两次写回 | `commitDraft` 与 `applyTime` 各自基于不同状态，互不感知             | 统一 `writeValue`（一次操作一次 emit + 乐观同步草稿），`adoptDraft` 让所有写回通道先并入草稿；blur 到面板内部时跳过提交 |
+| F-57 | `shared/date.ts`                  | `abc1:2xyz` / `1:299` / `上午9:30随意` 被吞成合法时间提交           | `parseTimeValue` 正则未首尾锚定                                     | 锚定；新增 `parseTimeText` 按显示格式回输；同族 time-select 的口径变更另有一条用例锁住                     |
+| F-58 | `time-picker/core.ts`             | 照着 `format: 'HH 点 mm 分'` 显示的内容键入无法提交                 | 显示 / 输入 / 输出三套格式没打通                                    | `parseTimeText(text, displayFormat)` 按 pattern 编译正则回输                                                |
+| F-59 | `time-picker/core.ts`             | `defaultValue` / `defaultTime` 只影响面板高亮，输入框空着且默认值永远写不回 | `displayAt` 只读 `modelValue`                                 | 抽 `initialPartsAt` 共用默认值链，显示与初始高亮同一来源                                                   |
+| F-60 | `time-picker/core.ts`             | 区间写回一端带秒一端不带秒（`['03:24:00','18:30']`）               | `applyTime` 只格式化被改的一端                                      | `writeValue` 用 `normalizeModelValue` 规范化两端；原先把混合格式当预期的用例已改正                        |
+| F-61 | `time-picker/core.ts`             | 清空后输入框仍显示旧值                                               | `clearValue` 只 emit，不碰草稿                                      | 清空后同步两端草稿                                                                                              |
+| F-62 | `time-picker/features/clearable`  | `clearable: false` 时 `--clearable` 类名仍挂                        | `className` 把恒真的默认 `clearIcon` 一起判进去                    | 只认 `clearable`；改正组件层错误预期，`feature-class-switch` 补一组正反断言                              |
+| F-63 | `shared/date.ts`                  | `format: 'hh:mm A'` 输出字面量 `hh:24 A`                            | 格式化只支持 24 小时制 token                                        | 支持 `hh` / `h` / `A` / `a`；`hasSecondsToken` 取代 `includes('s')` 避免字面 s 误开秒列                  |
+| F-64 | `time-picker/core.ts`             | 构建时裁掉 `editable` 特性后输入框仍可键入                         | `props.editable !== false` 把"特性未启用=undefined"当成可编辑       | 只认显式 `=== true`；由治理校验的全库静态守卫守护                                                          |
+| F-65 | `date-picker/core.ts`             | 与 F-64 同源，`canEdit` 同样用 `!== false`                          | 全库静态扫描发现                                                    | 同样改为 `=== true`；静态守卫守护                                                                               |
+
+F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码上全部见红，修复后全部报 `Expect test to fail`，再降级为 `tests/components/time-picker-scenes.spec.ts` 的常规 `it` 并删除守卫文件。F-64 / F-65 属于构建期特性裁剪，运行时用例证不了，由 `verify:governance` 的常驻静态守卫覆盖。
+
+**行为口径变更（有意为之，不是回归）**：触发区在写回后立即乐观同步本次操作，父组件回写仍由 `watch` 覆盖；原用例「此刻按钮写回当前时间但不收起面板」里"受控写法下展示值由使用方回写"的断言已改为验证乐观值 + 外部回写覆盖。这一步消除了"输入框显示 A、modelValue 却是 B"的背离。
+
+### 15.3 全库静态扫描与审计结论
+
+治理校验扫描 90 个组件目录的 feature 布尔 prop，凡在 `core.ts` 里被写成 `props.x !== false` 就报红。除 F-64 / F-65 外还有 5 处命中，逐条核实后分类如下；按约定"已审计但无害"也必须落盘，白名单项必须带编号且能在本文查到，否则门禁变红。
+
+| 编号 | 命中                          | 结论                                                                                                                     |
+| ---- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| A-1  | `avatar.teleported`           | `panel` 由 `avatar-group-popper` 特性提供，特性裁掉时 `panel` 为 null，`panel && ...` 短路，Teleport 分支根本不会执行，无害 |
+| A-2  | `form.showMessage`            | 该 getter 缺省 true 与 core 默认展示校验消息一致；`form.validate` 特性裁剪后子项不再消费该 provide 值，无害               |
+| A-3  | `form.validateOnRuleChange`   | 同上，缺省 true 与默认行为一致，且只在校验规则变化时触发，裁剪后不产生额外能力，无害                                     |
+| A-4  | `tooltip.enterable`           | 缺省 true 与 Tooltip 默认"鼠标可进入浮层"一致，`tooltip.popper` 特性裁剪后浮层由该特性决定，无害                        |
+| —    | `date-picker-panel.clearable` | 误报：源码已有 `'clearable' in props &&` 存在性守卫，守卫已改为识别 `in props` 并跳过，不是缺陷                          |
+
+### 15.4 产物与数字
+
+- 组件层 95 文件 1582 条（原 94 / 1570）：新增 `time-picker-scenes.spec.ts` 9 条、`feature-class-switch` 2 条、time-select 同族口径 1 条，并把混合格式等被固化的错误预期改正。
+- 浏览器层 11 文件 65 条（原 10 / 58）：新增 `tests/browser/time-picker.scene.spec.ts` 7 条与 harness 的 `time-picker` 场景；**没有**把新场景登记进 `_geometry.ts` 的 `ANCHORS`，避免像素基线完整性守卫因缺 PNG 误红。
+- 门禁十二段，`scripts/ci.mjs` STAGES 与 `npm run quality` 段数一致；`KNOWLEDGE.md`、pre-push / pre-commit 注释同步。
+- 缺陷 F-1…F-65 全部修复，守卫文件已删除，无 `it.fails` 长期挂账。
+
+### 15.5 并行工作树的端口隔离
+
+专属工作树与主工作树、其他并行任务同时开发时，根 dev server / 调试台 / guardian 巡检若都抢 5173 / 5174 / 5199，会互相把服务顶掉或让浏览器层连错实例。本批把三处端口收敛到 `scripts/worktree-ports.mjs`：优先读环境变量，其次读工作树根目录的 `.env.workbuddy`，都没有才回退到原默认值；`.env.workbuddy` 已加进 `.gitignore`，每个工作树各写各的，不进版本库。
+
+- 主工作树：保持 5173 / 5174 / 5199，行为不变。
+- WorkBuddy 专属工作树 `C:/WorkBench/ui-kit-builder-wb`：5273 / 5274 / 5299，已确认三个端口均空闲、5173 仍归主工作树。
+- `tests/browser/_global-setup.ts` 的探针服务用 `port: 0` 随机取端口并把地址写进 `UIKIT_HARNESS_BASE`，不参与这套配置，天然不冲突。
+- 三个消费方均已改为读取导出值：`vite.config.mjs`（根 dev）、`examples/consumer/vite.config.mjs`（调试台）、`scripts/guardian/detectors/sweep.mjs`（巡检）；全仓已无 5173 / 5174 / 5199 的硬编码使用点，只在缺省值与注释里出现。
+
+### 15.6 治理守卫的可失败验证与自身盲点修复
+
+- 文档数字：临时把 README 的「90 个组件」改成 91 → 报 `README 组件数 91 与 demo/meta.json 的 90 不一致（F-52 复发）`，退出码 1；恢复后转绿。
+- 编号撞号：临时在 REQUIREMENTS 追加一行重复的 `| F-55 |` → 报 `F-55 被定义两次（并行分支撞号，合入前必须顺延）`，退出码 1；删除探针行后恢复。
+- 编号断档：第一次顺延后主线 F-53 尚未合入，守卫报 `缺陷编号断档：缺 F-53`；第二次顺延后构建流水线的 F-54 尚未合入，报 `缺 F-54`；两边都合入后转为「已登记 65 条，最大 F-65」且退出码 0。
+- **守卫自身盲点（已修）**：初版用 `git diff`（只看未暂存）取改动面，开发者只要先 `git add`，影响面清单就会打印"本次无源码改动"后静默跳过。改为 `git diff HEAD`（未暂存 + 已暂存）与 `git diff HEAD -- <components>`，并对未跟踪的新 `core.ts` 按全文补扫交互关键字。同一批已暂存改动的前后对照：修复前跳过，修复后重新报出「shared/date.ts 同族 3 个组件」「time-picker 浏览器层 1 个文件」。
+- **合并兼容性**：并行的构建流水线分支会把 `quality` 改成委托 `ci.mjs`、并新增统一 `build` 段。治理校验的段数判定同时认硬编码 `npm run` 链与委托形态；另外常驻一条「STAGES 必须含 `governance` 且 `package.json` 必须有 `verify:governance`」的守卫，避免合并 `ci.mjs` 时把治理段覆盖掉、让治理校验变成"没进门禁的脚本"。

@@ -1,5 +1,5 @@
 #!/bin/sh
-# 推送前的完整门禁：十一段检查（先统一构建一次），含真实浏览器层、源码覆盖率阈值与 20 份 profile 运行时。
+# 推送前的完整门禁：十二段检查（统一构建 + 治理校验），含真实浏览器层、源码覆盖率阈值与 20 份 profile 运行时。
 # 需要跳过时用：SKIP_HOOKS=1 git push ...
 [ -n "$SKIP_HOOKS" ] && exit 0
 exec node scripts/ci.mjs

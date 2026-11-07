@@ -1,5 +1,5 @@
 #!/bin/sh
-# 提交前的秒级检查：格式 / 类型 / lint / 库级校验。
+# 提交前的秒级检查：格式 / 类型 / lint / 库级校验 / 治理校验。
 # 装一次即可：npm run hooks:install
 # 需要跳过时用：SKIP_HOOKS=1 git commit ...（别养成习惯）
 [ -n "$SKIP_HOOKS" ] && exit 0

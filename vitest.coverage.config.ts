@@ -25,7 +25,7 @@ export default mergeConfig(
       }
     },
     test: {
-      include: ['tests/components/**/*.spec.ts'],
+      include: ['tests/components/**/*.spec.ts', 'tests/findings.spec.ts'],
       testTimeout: 15000,
       coverage: {
         provider: 'v8',

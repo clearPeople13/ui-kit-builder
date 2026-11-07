@@ -46,6 +46,7 @@ const {
   Drawer,
   Upload,
   DatePicker,
+  TimePicker,
   Pagination,
   Tree,
   Carousel,
@@ -485,7 +486,69 @@ function sceneSticky() {
     ])
 }
 
+/**
+ * TimePicker 场景契约：happy-dom 里没有真实焦点链与合成指针，
+ * "点输入框会不会收起面板""输入未回车就点列项会不会写回两次"这类问题
+ * 只有真浏览器能证。三个实例分别覆盖默认格式、自定义显示格式、区间格式。
+ * 写回载荷统一落进 probe，用例只读不改。
+ */
+function sceneTimePicker() {
+  const main = ref<string>('09:24:36')
+  const formatted = ref<string>('09:24:36')
+  const range = ref<string[]>(['09:00', '10:00'])
+  const mainEmits: string[] = []
+  const rangeEmits: string[][] = []
+
+  return () =>
+    h('div', { class: 'time-picker-scene' }, [
+      h(TimePicker, {
+        id: 'scene-time-picker',
+        popperClass: 'scene-tp-panel',
+        modelValue: main.value,
+        'onUpdate:modelValue': (next: string) => {
+          main.value = next
+          mainEmits.push(next)
+          probe.tpValue = next
+          probe.tpEmits = [...mainEmits]
+        }
+      }),
+      h(TimePicker, {
+        id: 'scene-time-picker-formatted',
+        popperClass: 'scene-tp-panel-formatted',
+        format: 'HH 点 mm 分',
+        modelValue: formatted.value,
+        'onUpdate:modelValue': (next: string) => {
+          formatted.value = next
+          probe.fmtValue = next
+        }
+      }),
+      h(TimePicker, {
+        id: ['scene-time-picker-range-start', 'scene-time-picker-range-end'],
+        popperClass: 'scene-tp-panel-range',
+        isRange: true,
+        modelValue: range.value,
+        'onUpdate:modelValue': (next: string[]) => {
+          range.value = next
+          rangeEmits.push(next)
+          probe.rangeValue = next
+          probe.rangeEmits = [...rangeEmits]
+        }
+      }),
+      // 固定在右上角：浮层从左上触发器向下展开，绝不会盖住"点外部"的落点
+      h(
+        'button',
+        {
+          id: 'scene-time-picker-outside',
+          type: 'button',
+          style: { position: 'fixed', top: '8px', right: '8px' }
+        },
+        '外部区域'
+      )
+    ])
+}
+
 const scenes: Record<string, () => any> = {
+  'time-picker': sceneTimePicker(),
   floating: sceneFloating(),
   table: sceneTable(),
   tree: sceneTree(),
