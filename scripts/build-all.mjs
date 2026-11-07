@@ -77,13 +77,27 @@ export async function buildAllProfiles() {
     }
   }
 
-  const sizes = {
-    generatedAt: new Date().toISOString(),
+  const sizesPath = path.join(rootDir, 'sizes.json')
+  const payload = {
     profiles: Object.fromEntries(results.map((result) => [result.name, result])),
     features
   }
+  // 产物没变就沿用上次的 generatedAt，避免每次构建/门禁都把 sizes.json 弄脏
+  let previous = null
+  try {
+    previous = JSON.parse(fs.readFileSync(sizesPath, 'utf8'))
+  } catch {
+    previous = null
+  }
+  const unchanged =
+    previous && JSON.stringify({ profiles: previous.profiles, features: previous.features }) === JSON.stringify(payload)
 
-  fs.writeFileSync(path.join(rootDir, 'sizes.json'), `${JSON.stringify(sizes, null, 2)}\n`, 'utf8')
+  const sizes = {
+    generatedAt: unchanged ? previous.generatedAt : new Date().toISOString(),
+    ...payload
+  }
+
+  fs.writeFileSync(sizesPath, `${JSON.stringify(sizes, null, 2)}\n`, 'utf8')
   await writeDemoMeta()
   return { results, sizes }
 }
