@@ -213,7 +213,7 @@ const state = {
   overrides: new Map(),
   // 变量名 → { token, scope, def, owners }，scope 为 global 或组件 id；owners 是消费该全局变量的组件
   varIndex: new Map(),
-  // 组件 id 按长度倒序，用于把令牌前缀匹配到最长组件名（select-v2 优先于 select）
+  // 组件 id 按长度倒序，用于把令牌前缀匹配到最长组件名（cascader-panel 优先于 cascader）
   tokenPrefixes: [],
   // 变量名 → 行 DOM 引用，用于回写与状态同步；只包含当前可见变量
   themeRows: new Map(),

@@ -91,9 +91,7 @@ export type MountSweep = {
 
 /** 按导出名给一份能挂起来的空属性，减少纯噪声 */
 function propsFor(name: string): Record<string, unknown> {
-  if (
-    /^(Table|TableColumn|Tree|TreeV2|Cascader|CascaderPanel|Transfer|Select|SelectV2|VirtualList|Timeline)$/.test(name)
-  ) {
+  if (/^(Table|TableColumn|Tree|TreeV2|Cascader|CascaderPanel|Transfer|Select|VirtualList|Timeline)$/.test(name)) {
     return { data: [] }
   }
   if (/^(TableColumn|TreeV2)/.test(name)) {

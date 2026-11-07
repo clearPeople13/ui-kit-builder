@@ -56,12 +56,12 @@ describe('体积预算', () => {
     }
   })
 
-  it('开满 178 个特性带来的增量落在可接受区间', () => {
+  it('开满 175 个特性带来的增量落在可接受区间', () => {
     const core = bundleOf('core').meta
     const full = bundleOf('full').meta
     const jsDelta = full.jsBytes - core.jsBytes
     const cssDelta = full.cssBytes - core.cssBytes
-    expect(featureEntries(registry).length).toBe(178)
+    expect(featureEntries(registry).length).toBe(175)
     // 实测：js +78.9 kB、css +19.4 kB；特性翻倍时不至于失控，也不至于什么都没带
     expect(jsDelta).toBeGreaterThan(60_000)
     expect(jsDelta).toBeLessThan(core.jsBytes * 0.2)
@@ -98,9 +98,9 @@ describe('sizes.json 的成本表', () => {
     expect(Number.isNaN(Date.parse(sizes.generatedAt))).toBe(false)
   })
 
-  it('features 段覆盖全部 178 个特性，且每项都是有符号增量', () => {
+  it('features 段覆盖注册表里的每一个特性，且每项都是有符号整数增量', () => {
     // F-27 修复：build-all 对每个特性都构建「full 去掉该特性」的临时产物与 full 相减，
-    // 所以 178 个特性都有边际成本数据，不再恒空。
+    // 所以每个特性都有边际成本数据，不再恒空。条数不写死，随注册表增删自动跟随。
     // F-69 修复：负边际不再夹成 0，这里只校验整数与归属，符号由 delta 单测覆盖。
     const all = featureEntries(registry)
       .map((entry) => entry.id)

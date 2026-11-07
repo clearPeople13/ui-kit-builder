@@ -4,6 +4,11 @@ import { createServer } from 'vite'
 
 const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)))
 
+/** 探针服务端口：避开 5173 段的 dev server 与工作树端口段（5273 / 5274 / 5299） */
+function randomPort() {
+  return 34000 + Math.floor(Math.random() * 2000)
+}
+
 /**
  * 浏览器层只需要一个静态站点：以仓库根为 Vite root，
  * 这样 /tests/browser/harness/ 与 /dist/full/ 都在服务范围内，不需要额外拷贝产物。
@@ -27,7 +32,8 @@ export default async function setup() {
       __VUE_PROD_DEVTOOLS__: 'false',
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'
     },
-    server: { host: '127.0.0.1', port: 0, strictPort: false }
+    // port: 0 在 Vite 里等同「没填」，会退回 5173 与并行工作树的 dev server 撞车；显式给随机高位端口
+    server: { host: '127.0.0.1', port: randomPort(), strictPort: false }
   })
   await server.listen()
   const address = server.httpServer?.address()

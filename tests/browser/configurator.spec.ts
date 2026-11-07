@@ -1,3 +1,6 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { Browser, Download, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -16,6 +19,12 @@ const messages: string[] = []
 
 const origin = new URL(process.env.UIKIT_HARNESS_BASE!).origin
 
+// 组件数不写死：直接数源码目录，增删组件时这两条断言自动跟随（F-52 同类漂移的预防）
+const componentDir = path.resolve(fileURLToPath(new URL('../../', import.meta.url)), 'packages/ui-kit/src/components')
+const componentCount = fs
+  .readdirSync(componentDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(componentDir, entry.name, 'spec.mjs'))).length
+
 beforeAll(async () => {
   browser = await chromium.launch()
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } })
@@ -30,9 +39,11 @@ beforeAll(async () => {
   // 从仓库根入口进入，验证 index.html 的 meta refresh 能落到构建器
   await page.goto(`${origin}/`, { waitUntil: 'load' })
   await page.waitForURL(/\/configurator\/$/)
-  await page.waitForFunction(() => document.querySelector('#component-total')?.textContent === '90', undefined, {
-    timeout: 30_000
-  })
+  await page.waitForFunction(
+    (expected) => document.querySelector('#component-total')?.textContent === String(expected),
+    componentCount,
+    { timeout: 30_000 }
+  )
 })
 
 afterAll(async () => {
@@ -47,9 +58,9 @@ describe('构建器 UI · 浏览器层', () => {
     }
   })
 
-  it('组件清单完整渲染 90 个组件', async () => {
-    expect(await page.locator('#component-total').textContent()).toBe('90')
-    expect(await page.locator('#component-list .component').count()).toBe(90)
+  it('组件清单完整渲染注册表里的全部组件', async () => {
+    expect(await page.locator('#component-total').textContent()).toBe(String(componentCount))
+    expect(await page.locator('#component-list .component').count()).toBe(componentCount)
     expect(messages).toEqual([])
   })
 

@@ -27,6 +27,7 @@
 | [§21](#s21) | 第十一批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍） |
 | [§22](#s22) | 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`） |
 | [§23](#s23) | 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`） |
+| [§24](#s24) | 选择器统一：只保留 Select 并吸收大数据虚拟列表（分支 `feature/20261107-select-unification`） |
 
 ## 缺陷编号索引
 
@@ -875,7 +876,38 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 复现前置：README 新增「环境要求」，写清 Node ≥ 22、`npm install`、`npm run hooks:install`、`npx playwright install chromium firefox`、首次 `npm run build:all` 与消费方独立依赖。
 - 目录结构：README 结构图改成五层用例（components / build / profiles / browser / coverage），补齐 `tools/`、`.githooks/`、`.github/workflows/` 与根目录清单源（`registry.mjs`、`sizes.json`、`vitest.*.config.ts`）；`reference/` 与 `scripts/guardian` 已按 B4 处置，不再出现在结构图里。
 - 本地目录：`.gitignore` 增加 `.workbuddy/`，与既有 `.env.workbuddy` 规则并列，换机器签出后 `git status` 不再出现本地工作目录。
-- REQUIREMENTS 导航：新增「目录」（23 个章节，全部带 `<a id="sN">` 稳定锚点）与「缺陷编号索引」（83 条 F-NN → 章节链接）；治理校验的编号解析改为只认五列登记行，索引的两列引用不参与唯一性判定。
+- REQUIREMENTS 导航：新增「目录」（24 个章节，全部带 `<a id="sN">` 稳定锚点）与「缺陷编号索引」（83 条 F-NN → 章节链接）；治理校验的编号解析改为只认五列登记行，索引的两列引用不参与唯一性判定。
 - 包元数据：`license: Apache-2.0` 与 `LICENSE` 一致（B4 已落 root 与产物），新增 `CHANGELOG.md` 记录 0.1.0 / 0.2.0 / 0.3.0，版本号唯一事实源仍是 root `package.json`。
 - 浏览器层稳定性：整跑门禁时 `a11y` 场景偶发 `color-contrast` serious（TabPane 的 180ms 淡入被 axe 扫到中间帧）；`tests/browser/axe.spec.ts` 在扫描前等 `document.getAnimations()` 收敛（封顶 500ms），KNOWLEDGE 同步记录该前置。
 - 门禁：与主干的视觉体检段合并后 `npm run quality` 十三段全绿；本批不新增用例，各层条数不变，仍以命令输出与 `ci-report.json` 为准。
+
+<a id="s24"></a>
+
+## 24. 选择器统一：只保留 Select 并吸收大数据虚拟列表（分支 `feature/20261107-select-unification`）
+
+> 编号口径：与 §18–§23 的工程与测试优化批次（Qoder 的 B1–B5）并行开发，两边同时从 §18 起排，本批在合入时顺延到 §24。本批是功能改造而非缺陷修复，沿用 F-1…F-83，不新增缺陷编号（与 B4 / B5 的「本批未新增缺陷编号」同例）。
+
+### 24.1 范围与目标
+
+用户要求：只保留 `Select` 一个选择器，删除 `SelectV2 虚拟列表选择器`，但大数据能力必须留在 Select 上，并在调试台补上大数据示例。
+
+改造前的全库静态审计结论：旧虚拟列表选择器相对 Select 的唯一增量是「扁平大列表窗口化」——阈值 100、overscan 5、运行时测量行高、`scrollTop` + `translateY` 可视窗口、分组列表回退全量；其余 `clearable` / `multiple` / `filterable` / `popper` / `loading` / 字段映射 / `effect` 都是 Select 已有能力的子集。Select 反而多出插槽 `Option` / `OptionGroup`、方向键与 Enter 导航、`clear` / `remove-tag` / `visible-change` 事件、`valueOnClear`、远程搜索 debounce 与 `focus` / `blur` 方法。因此合并方向定为：把窗口化做成 Select 的一个可选特性，其余全部丢弃。
+
+### 24.2 方案与验收口径
+
+- 新增特性 `select.select-virtualized`，props 为 `virtualized`（开关，默认开）、`itemSize`（默认 34，对齐 `cascader.virtualized`）、`virtualThreshold`（默认 100）；窗口计算依赖 `visibleOptions` / `activeIndex` / 面板 ref，逻辑落在 `select/core.ts`，滚动容器与虚拟层样式落在 `features/select-virtualized/style.css`。
+- 特性类名按项目约定走 `className(props)` 挂 `ui-select--virtualized`，样式只在特性被选中时生效（不写成常量类名，避免 F-11 那类「特性关掉仍挂类名」的复发）；core 只在真正进入窗口化时追加 `is-virtual`。
+- 分组列表、未达阈值、未开启特性时一律回退全量渲染，保证既有浮层场景与键盘导航语义不变；方向键移动后把活动项滚进可视区。
+- 删除 `packages/ui-kit/src/components/select-v2/` 整个组件目录，连带清理主题孤儿令牌与配置清单里的旧组件字面量；`Select` / `Option` / `OptionGroup` 三个导出名不变。
+- 调试台把原虚拟列表选择器的 1 万条场景迁到 `Select`，且 `demo-code.ts` 对大数据 `options` 只输出生成器调用、不内联 MB 级字面量（沿用 `heavy-tree` 的口径）。
+- 新增「旧选择器不得复活」的全库静态守卫，防止并行分支合并时把旧组件带回来；视觉体检画廊的组件数随导出数自动收敛。
+
+### 24.3 交付与数字
+
+- 组件目录 90 → **89**、导出 125 → **124**、gallery 逐组件图 124 → **123**；特性 178 → **175**（删 4 个 `select-v2.*`，新增 1 个 `select.select-virtualized`）。20 份 profile 与 `sizes.json` / `demo/meta.json` 全部重生成，旧组件名在这些产物里零残留。
+- 用例：删掉 `select-v2.spec.ts`，把虚拟窗口断言迁进 `select.spec.ts` 并扩成 5 条（阈值窗口化 / 滚动位移 / 开关关闭回退 / 分组回退 / 阈值与行高可调）；`model-value-boolean-cast.spec.ts` 的 F-38 同类回归改挂 `Select`。各层条数以 `npm run quality` 输出与 `ci-report.json` 为准。
+- 真实调试台复核：`#/c/select` 的「大数据虚拟列表（1 万条）」场景在默认 full 包下展开面板只渲染 14 个 `.ui-select__option`、虚拟层占位高 320000px（实测行高 32px × 1 万条）、控制台零报错；展开代码输出 `Array.from({ length: 10000 }, …)` 生成器，源码约 375 字符，不再内联 MB 级字面量，场景切换约 0.8s。
+- `audit:visual` 新增「消费方大数据现场」：另起调试台服务点开该场景并展开面板，断言虚拟层存在、渲染节点 ≤ 30、占位高 ≥ 100000px，截图进画廊；治理校验静态锁死 `BIG_DATA_SCENE` / `bigDataShot`，防止合并时把这层能力架空。
+- 治理校验新增「Select 统一守卫」：扫描源码 / profile / 配置 / 示例 / 测试里所有跟踪文件，旧组件名零残留；`select` 目录、新特性声明与生成物登记三者缺一即报红。历史缺陷登记（F-38 / F-47）与上游参考目录不在扫描范围内。
+- 门禁仍十三段，缺陷口径仍 F-1…F-83（本批为功能改造，不新增缺陷编号）；布局基线按 gallery 少一个组件重录，像素基线 6 场景保持零漂移。
+- 存量数字校正：令牌指纹快照按「删掉 1 个孤儿令牌」重录（每份 profile 少 1 条生效令牌），树摇快照同步去掉旧组件的 3 条不可标记特性。

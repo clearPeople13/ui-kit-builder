@@ -1,0 +1,19 @@
+/* 特性被选中时根节点才带 ui-select--virtualized，未开启的面板布局保持不变，
+   避免影响既有浮层场景的布局 / 像素基线。
+   只有真正进入窗口化（条数超过阈值）时 core 才追加 is-virtual */
+.ui-select--virtualized .ui-select__dropdown.is-virtual {
+  max-height: min(var(--ui-floating-panel-max-height, 274px), 70vh);
+  overflow-y: auto;
+}
+
+.ui-select--virtualized .ui-select__virtual {
+  position: relative;
+}
+
+.ui-select--virtualized .ui-select__virtual-window {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  will-change: transform;
+}

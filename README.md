@@ -8,7 +8,7 @@
 - **profile 驱动构建**：一个 profile 产出一个独立包（ESM + 类型声明 + 独立 CSS + `meta.json` 体积/特性清单）
 - **20 套主题**：15 套对齐主流设计体系（Ant Design、Arco、TDesign、Naive UI、View Design、Vant、Varlet、Semi、Material 3、Bootstrap、shadcn/ui、Fluent 2、Carbon、Mantine、iOS），另有 `core` / `full` / `branded` / `chinese` / `cute` 5 套内置风格；主题全部由 CSS 令牌驱动，不侵入组件逻辑
 - **可视化构建器**：勾选组件、特性与主题，实时生成构建配置并估算产物体积
-- **组件调试台**：90 个组件的场景预设、属性面板、API 属性表与在线编辑预览
+- **组件调试台**：89 个组件的场景预设、属性面板、API 属性表与在线编辑预览
 
 ## 目录结构
 
@@ -47,7 +47,7 @@ npm run build:all                        # 首次统一构建 20 份 profile（q
 # 启动构建器（http://localhost:5173；并行工作树可用 .env.workbuddy 换成独立端口段）
 npm run dev
 
-# 构建全部 profile 到 dist/（20 份正式包；178 个特性边际试算走 .build/，构建后清理）
+# 构建全部 profile 到 dist/（20 份正式包；175 个特性边际试算走 .build/，构建后清理）
 npm run build:all
 
 # 生成调试台元数据（组件、属性、包体积）
@@ -67,7 +67,7 @@ npm run demo:consumer
 - `scripts/build-lib.mjs` 按配置生成入口文件，只 import 选中的特性，未选中的代码与样式不会进入产物
 - 产物中的 `meta.json` 记录组件清单、特性矩阵、文件体积与 gzip 体积，可直接被构建器与调试台消费
 
-`sizes.json` 里"单个特性的边际体积"来自 178 份「full 去掉该特性」的试算产物：它们只写 `.build/feature-deltas/`，构建结束（含失败退出）即清理，不会混进 `dist/`。20 份正式 profile 与试算产物都按 6 路并发构建；试算结果按源码内容哈希缓存在 `.build/feature-size-cache.json`，源码、profiles、`registry.mjs` 与构建器都没变时直接复用——冷启动约 10 分钟，命中缓存约 1 分钟。需要强制重算时设 `UIKIT_NO_BUILD_CACHE=1`。
+`sizes.json` 里"单个特性的边际体积"来自 175 份「full 去掉该特性」的试算产物：它们只写 `.build/feature-deltas/`，构建结束（含失败退出）即清理，不会混进 `dist/`。20 份正式 profile 与试算产物都按 6 路并发构建；试算结果按源码内容哈希缓存在 `.build/feature-size-cache.json`，源码、profiles、`registry.mjs` 与构建器都没变时直接复用——冷启动约 10 分钟，命中缓存约 1 分钟。需要强制重算时设 `UIKIT_NO_BUILD_CACHE=1`。
 
 ## 质量检查
 
@@ -96,12 +96,12 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 
 各层用例条数不再写进文档（历史上手写计数漂移过多次），一律以对应命令的终端输出和 `ci-report.json` 的阶段记录为准。
 
-组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`：覆盖 90 个组件目录，含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归，无一目录遗漏。
+组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`：覆盖 89 个组件目录，含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归，无一目录遗漏。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
 特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约、dev-api 接口分支、demo meta 新鲜度、门禁选择器、组件分类唯一来源、版本 / license / engines 一致性。
 浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口；Firefox 只跑布局 / 定位 / 键盘子集），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
 布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"、`time-picker.scene.spec.ts` 的 7 条真实操作序列、构建器 UI（入口跳转 / 组件数 / 试算 / 构建产物 / 配置下载）、`core` / `antd` / `chinese` 裁剪产物冒烟、375×812 窄屏，以及 6 个场景的 axe wcag2a/aa 审计（serious / critical 白名单带理由）。
-另有 `npm run audit:visual` 的视觉体检：它在真实 Chromium 里对 124 个导出的组件做计算样式契约扫描（双层边框、原生外观残留、字体错配、文本裁切、渲染缺口），另开调试台服务对 5 个含原生控件的组件页做同一套检查（防止「源码修好、dist 产物或加载路径没跟上」），并产出 124 张逐组件截图 + 6 个重点场景首屏 + 5 张调试台页面的可视画廊 `visual-report/index.html`。像素基线只能防"以后变"，这一层专治"现在就长歪了"；有阻断项即非零退出，是门禁第十段。
+另有 `npm run audit:visual` 的视觉体检：它在真实 Chromium 里对 124 个导出的组件做计算样式契约扫描（双层边框、原生外观残留、字体错配、文本裁切、渲染缺口），另开调试台服务对 5 个含原生控件的组件页做同一套检查（防止「源码修好、dist 产物或加载路径没跟上」），并产出 123 张逐组件截图（1 个抽象导出默认态无内容）+ 6 个重点场景首屏 + 5 张调试台页面的可视画廊 `visual-report/index.html`。像素基线只能防"以后变"，这一层专治"现在就长歪了"；有阻断项即非零退出，是门禁第十段。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架。
 覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，报告输出逐文件表格，全局阈值 88 / 84 / 89 / 88，并对 `src/components/**` 设 21 / 33 / 21 的组件级下限，低于下限即红。
 用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 83 条缺陷（F-1…F-83），全部已修复。

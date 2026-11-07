@@ -129,7 +129,7 @@ function sourceFiles(files) {
 
 /**
  * 组件级缓存键：只包含该组件自己的源码 + shared + 注册表 + 构建器口径（A10）。
- * 改一个组件只让这个组件重算，不用把 178 个特性全部重打一遍。
+ * 改一个组件只让这个组件重算，不用把 175 个特性全部重打一遍。
  */
 export function componentFingerprint(componentId) {
   const dir = path.join(componentSrcDir, componentId)
@@ -385,7 +385,7 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
   const computed = {}
 
   // 特性边际统一用「full 去掉该特性」的临时产物与 full 相减，
-  // 得到该特性在完整产物里的边际成本。这样 178 个特性都有真实体积数据，
+  // 得到该特性在完整产物里的边际成本。这样 175 个特性都有真实体积数据，
   // 也不会因"某两份 profile 恰好配对"而走出另一套口径。
   // 临时产物写 .build/feature-deltas/，并在 try/finally 里清理，dist/ 永远只有 20 份正式包。
   const fullResult = results.find((result) => result.name === 'full')

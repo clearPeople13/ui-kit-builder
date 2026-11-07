@@ -25,7 +25,7 @@ scripts/worktree-ports.mjs     并行工作树端口段：读 .env.workbuddy / �
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts + 常驻的 findings.spec.ts，alias @ui-kit-full
 vitest.coverage.config.ts     同一批组件用例改走源码入口（.build/full/entry.ts），V8 覆盖率 + 四维阈值
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；全部为真实断言，无占位跳过；条数以 `npm run test` 输出为准）
+tests/components/<id>.spec.ts 组件用例（89 个组件目录各一份；全部为真实断言，无占位跳过；条数以 `npm run test` 输出为准）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -135,10 +135,11 @@ tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基
 
 `npm run audit:visual`（`scripts/visual-audit.mjs`，门禁第十段）补的是**能力**，不是又一批用例：
 
-- **可计算的视觉契约**：真实 Chromium 加载 `?scene=gallery`，对 124 个导出组件、21 个可见原生控件逐条查 `getComputedStyle` 与矩形，把"肉眼可见的丑"翻译成客观事实——双层边框（`nested-border`，阻断）、内层不透明底色、内层额外内边距、字体与外壳错配、文本被裁切、渲染缺口。不读源码、不比快照，所以能发现"现在就错"，跨主题跨 profile 都成立。
+- **可计算的视觉契约**：真实 Chromium 加载 `?scene=gallery`，对 123 个导出组件（124 个导出里 1 个是抽象层）、21 个可见原生控件逐条查 `getComputedStyle` 与矩形，把"肉眼可见的丑"翻译成客观事实——双层边框（`nested-border`，阻断）、内层不透明底色、内层额外内边距、字体与外壳错配、文本被裁切、渲染缺口。不读源码、不比快照，所以能发现"现在就错"，跨主题跨 profile 都成立。
 - **看得见的产物**：`visual-report/` 下每个组件一张元素截图、6 个重点场景一张首屏，`index.html` 是可直接打开的画廊，阻断项标红并写明命中规则。**改样式后必须亲眼看图**（助手用图像查看能力打开对应 PNG）再宣告修复；这一步写进 §5.1 第 5 道闸，防止"断言绿了但界面还是歪的"。
 - **自守卫 + 第二现场（F-67 之后）**：`verify:governance` 静态核对门禁必须含 `visual` 段、规则集不少于 6 条、`NON_VISUAL` 豁免清单覆盖 harness 的 `GALLERY_SKIP`、重点场景都在 harness 登记、脚本按 error 数决定退出码；体检器自身还有反向守卫：豁免清单里的组件哪天渲染出可见根节点就报错。**源码画廊全绿不等于用户看到的界面正确**：`node_modules/@demo` 软链在并行工作树里可能指向另一棵树的旧 dist，所以 `examples/consumer/vite.config.mjs` 用 alias 把 20 份 JS / CSS 钉到本工作树 `dist/<id>/`，体检器另起调试台服务打开 5 个组件页复用同一套契约，异常以 `consumer/<页面>` 记入画廊；治理校验静态锁死 alias 与页面清单。样式改动后除了看逐组件图，还要看画廊「消费方真实界面」区块。
-- 截图前注入静止样式（停动画/过渡/光标），**整页只截一次再按文档坐标裁出 124 张组件图**（逐元素截图会让门禁多跑四分钟），零尺寸组件写占位图并在画廊标注"默认态无内容"；画廊不进版本库，每次体检重新生成。
+- **大数据现场（§24 起）**：同一个体检器还会点开调试台 `#/c/select` 的「大数据虚拟列表（1 万条）」场景并展开面板，断言虚拟层存在、渲染节点 ≤ 30、占位高 ≥ 100000px，截图进画廊。理由是「窗口化有没有真的生效」在单测里只能看节点数量，看不到面板是否被撑爆或滚不动；治理校验静态锁死场景 id 与产物键名，防合并时被架空。
+- 截图前注入静止样式（停动画/过渡/光标），**整页只截一次再按文档坐标裁出 123 张组件图**（逐元素截图会让门禁多跑四分钟），零尺寸组件写占位图并在画廊标注"默认态无内容"；画廊不进版本库，每次体检重新生成。
 
 判定口径：`error` 非零退出，`warning` 只进画廊提示（例如 `InputTag` 输入框的 4px 内边距是设计如此）。**不要**为了让体检变绿而放宽规则或往豁免清单塞真组件。
 
@@ -155,7 +156,7 @@ npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需�
 npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
 npm run test:all      # 历史别名（= npm run quality），仅本机调试用，不作为门禁口径
 npm run verify:governance # 治理校验：影响面清单 / 特性裁剪静态守卫 / 文档数字对齐（秒级）
-npm run audit:visual # 视觉体检：124 组件计算样式契约 + 逐组件截图画廊（visual-report/index.html）
+npm run audit:visual # 视觉体检：124 个导出组件的计算样式契约 + 123 张逐组件截图（visual-report/index.html）
 npm run quality       # 唯一门禁（十三段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 视觉体检 → 消费方校验
 npm run ci            # quality 的 CI 别名（同一条命令），服务端流水线直接调用，逐段给结论与耗时并落机读的 ci-report.json
 npm run ci:fast       # 只跑秒级五段（格式 / 类型 / lint / 库级校验 / 治理校验），不触发构建
@@ -164,7 +165,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 
 ## 7. 未覆盖 / 待办
 
-- 五层用例：组件侧（`tests/components/**`，`npm run test`）、构建器侧（`tests/build/**`，`npm run test:build`）、profile 运行时（`tests/profiles/**`，`npm run test:profiles`）、浏览器层（`tests/browser/**`，`npm run test:browser`）、覆盖率层（同一批组件用例在源码入口重放并卡四维阈值，`npm run test:coverage`）；各层条数不写进文档，以命令输出与 `ci-report.json` 的阶段记录为准。90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧（`tests/components/**`，`npm run test`）、构建器侧（`tests/build/**`，`npm run test:build`）、profile 运行时（`tests/profiles/**`，`npm run test:profiles`）、浏览器层（`tests/browser/**`，`npm run test:browser`）、覆盖率层（同一批组件用例在源码入口重放并卡四维阈值，`npm run test:coverage`）；各层条数不写进文档，以命令输出与 `ci-report.json` 的阶段记录为准。89 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
@@ -175,9 +176,10 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - 第九批已交付（分支 `feature/20261107-visual-capability`）：视觉体检能力 + 逐组件截图画廊 + 治理自守卫，修复 F-66（TimePicker 触发区原生 input 未 reset 造成双层边框），门禁从十二段扩到十三段，详见 `REQUIREMENTS.md` §16 与本文 §5.2
 - 第十批已交付（分支 `fix/20261107-consumer-dist-isolation`）：把项目真正跑起来后查出 F-67（调试台经跨工作树软链加载旧 dist，用户看到的界面并未修复）；调试台产物来源用 alias 钉回本工作树，视觉体检新增 5 个消费方页面现场，详见 `REQUIREMENTS.md` §17 与本文 §5.2
 - 第十一批已交付（分支 `feature/20261107-optimization-plan` 与 `docs/20261107-docs-and-ci-entry`）：B1–B5 工程与测试优化——门禁短路与产物安全、构建缓存与清单单一来源、工具链测试、一致性与检查范围、服务端 CI 与文档收口，详见 `REQUIREMENTS.md` §18–§23
+- 选择器统一已交付（分支 `feature/20261107-select-unification`，与上一批并行开发）：**只保留 Select**，把旧虚拟列表选择器的窗口化能力做成 `select.select-virtualized` 可选特性（阈值 100 / overscan 5 / 运行时测行高 / 分组回退 / 方向键滚动跟随），调试台新增「大数据虚拟列表（1 万条）」场景且示例代码只输出生成器；视觉体检新增大数据现场检查、治理校验新增「旧组件不得复活」全库静态守卫。本批为功能改造不新增缺陷编号，章节在合入时顺延到 §24，详见 `REQUIREMENTS.md` §24
 - 已知仍不可测的维度：交互态像素（体检截默认态与 6 个重点场景首屏，浮层展开 / 拖拽中途仍未逐帧比对）、跨主题逐组件视觉回归（体检跑在源码画廊与 full 调试台页上，20 份 profile 只做运行时挂载）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为；服务端 runner 已由 `.github/workflows/quality.yml` 覆盖（执行同一条 `node scripts/ci.mjs`，但只在镜像到 GitHub 的仓库上生效）
 - 共记录 83 条缺陷（F-1…F-83）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下、特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-55…F-65 是第八批由场景缺陷闭环查出的 TimePicker 交互链路与全库特性裁剪语义（详见 `REQUIREMENTS.md` §15.2；另有 A-1…A-4 四条「已审计但无害」的结论在 §15.3），F-66 是第九批由视觉体检查出的 TimePicker 双层边框（详见 `REQUIREMENTS.md` §16 与本文 §5.2），F-67 是第十批把项目真正跑起来后查出的调试台跨工作树软链加载旧 dist（详见 `REQUIREMENTS.md` §17 与本文 §5.2），F-68…F-74 是第十一批 B1 的门禁短路、产物命名空间、复用指纹与有符号边际（详见 `REQUIREMENTS.md` §18.2），F-75…F-80 是 B2 的清单单一来源、组件级缓存、profile 缓存、`--fast` 复用与估算 LRU（详见 `REQUIREMENTS.md` §19.2），F-81…F-83 是 B3a 的 presets 悬空引用、超限请求体挂起与 verify 断言重叠（详见 `REQUIREMENTS.md` §20.2）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
-- **并行分支开新缺陷编号前必须先 `git fetch origin main` 取当前最大 F 编号**：两条分支同时从 F-53 起编号，合入后就会出现同号不同缺陷。本批（§15）在主线占掉 F-53 后整体顺延为 F-55…F-65、章节顺延为 §15；治理校验新增编号唯一性 / 连续性 / 三处文档口径一致性守卫，撞号或漏改会在门禁第六段直接报红
+- **并行分支开新缺陷编号前必须先 `git fetch origin main` 取当前最大 F 编号**：两条分支同时从 F-53 起编号，合入后就会出现同号不同缺陷。本批（§15）在主线占掉 F-53 后整体顺延为 F-55…F-65、章节顺延为 §15；治理校验新增编号唯一性 / 连续性 / 三处文档口径一致性守卫，撞号或漏改会在门禁第六段直接报红。**章节号同样会撞**：选择器统一批次先占 §22 并推上远端，另一批 B1–B5 随后合入主线占掉 §18–§23，合入时只能整体顺延到 §24 并同步「目录」与批次清单——功能改造批次（不新增缺陷号）撞的往往只是章节，取号后仍要在合入前重看远端 `REQUIREMENTS.md` 的最后一个章节号
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查，并在第九批 B4（C9）切到 `strict: true`：`as any` 全部改成 `as unknown as ...` 或结构化类型，构建脚本与产物（未带 .d.ts 的 ESM）通过 `tests/shims.d.ts` 的环境声明放行。**基线已清零**：库工程与用例工程均无报错；新增用例必须保持 strict 下零报错，也不允许再引入 `as any`
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
@@ -186,7 +188,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - **`meta.json` 是"上次构建"的事实，不是"当前源码"的事实**：`profile-contract.spec.ts` 里 `selection` 用例专门用当前 `registry.mjs` 重算一遍再比对，产物过期会直接红；同理 `sizes.json` 与 `dist/<profile>/meta.json` 逐字段对齐，只改一边会挂
 - **体积阈值按"带"不按"点"**：gzip 对拼接串不满足可加性（core 的 `js+css` 合并 gzip 反而比两文件 gzip 之和大 108 字节），所以自洽用例只能重算 `zlib.gzipSync(js+css, {level:9})` 再逐字节比，不能写成"合并值 ≤ 分量之和"
 - **前缀长度本身就是体积变量**：`rewritePrefix` 会把 `ui-` 换成 profile 前缀，`chinese`（7 字符）比 `antd`（4 字符）CSS 大近 4 kB，主题之间的差异只能按"前缀 + 皮肤"两个来源解释，不能假设同尺寸
-- **裁剪判定不能只看类名是否存在**：`shared/floating.css` 会给全部 90 个组件枚举 `.ui-*-panel__dropdown`，未选中组件的类名照样在包里。判"这个组件没进包"要用它的私有 BEM 选择器（`_helpers.ts` 的 `ownElementSelector`，取该组件 CSS 里没出现在共享 CSS 的那个 `__element`）加 `create<Id>` 在 JS 里缺席，两条一起才算证据
+- **裁剪判定不能只看类名是否存在**：`shared/floating.css` 会给全部 89 个组件枚举 `.ui-*-panel__dropdown`，未选中组件的类名照样在包里。判"这个组件没进包"要用它的私有 BEM 选择器（`_helpers.ts` 的 `ownElementSelector`，取该组件 CSS 里没出现在共享 CSS 的那个 `__element`）加 `create<Id>` 在 JS 里缺席，两条一起才算证据
 - **令牌裁剪判"没有 var() 消费者"**：`pruneUnusedThemeVars` 只裁 `:root` 里"包内无 `var()` 引用、且被未选中组件引用"的声明。取证据要用未选中组件 CSS 里的 `var(--ui-x-…)` 名单，再排除选中组件与 `shared/*.css` 仍在引用的项——直接拿 `--ui-dialog-*` 的全部出现位置去断言会误伤（`shared/theme.css` 里是声明不是消费）
 - **压缩器会吃掉注释标记**：`buildThemeCss` 留下的 `/* ui-kit theme raw css */` 在产物里被 minify 删掉，任何按这条注释找 rawCss 的断言都必红；要验证 rawCss 就断言它的内容（`@keyframes`）以及它同样过了前缀改写
 - **值也要过前缀改写**：`rewritePrefix` 作用于整段 CSS 文本，profile 里写 `"wave-animation": "ui-button-wave-spread 0.4s …"`，产物里是 `antd-button-wave-spread`。比对令牌值必须先 `localize(value, prefix)`，否则只能命中 `prefix === 'ui'` 的两份产物

@@ -31,7 +31,6 @@ export const CATEGORY_GROUPS = [
       'autocomplete',
       'mention',
       'select',
-      'select-v2',
       'cascader',
       'cascader-panel',
       'checkbox',

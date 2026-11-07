@@ -2,7 +2,7 @@ import { EventEmitter } from 'node:events'
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { profileNames, repoRoot } from './_helpers'
+import { loadTestRegistry, profileNames, repoRoot } from './_helpers'
 
 type ApiResult = { status: number; payload: any }
 type Handlers = {
@@ -142,10 +142,12 @@ describe('dev-api 接口契约', () => {
     expect(fs.existsSync(path.join(repoRoot, 'dist/full/package.json'))).toBe(true)
   })
 
-  it('registry 返回 90 个组件、归一化后的属性类型与主题令牌', async () => {
+  it('registry 返回注册表里的全部组件、归一化后的属性类型与主题令牌', async () => {
+    // 条数不写死：组件目录增删后这里只跟着注册表走，避免又出现「测试说 90、实际 89」
+    const registry = await loadTestRegistry()
     const result = await devApi.createApiHandlers().registry()
     expect(result.status).toBe(200)
-    expect(result.payload.components).toHaveLength(90)
+    expect(result.payload.components).toHaveLength(Object.keys(registry.components).length)
     expect(result.payload.tokens).toBeTruthy()
     const button = result.payload.components.find((item: any) => item.id === 'button')
     expect(button.exports.length).toBeGreaterThan(0)

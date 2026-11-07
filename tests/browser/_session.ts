@@ -35,7 +35,12 @@ export async function openScene(
     url.searchParams.set(key, value)
   }
 
-  const browser = await (options.engine === 'firefox' ? firefox : chromium).launch()
+  // Firefox 默认跟随系统代理：本机开着代理时，127.0.0.1 的模块请求也会被代理接走，
+  // 返回空 Content-Type 后模块被浏览器以「MIME 不符」拒载，场景页永远等不到 ready。
+  // Chromium 默认绕开 localhost，所以这个坑只在 Firefox 子集暴露。
+  const browser = await (options.engine === 'firefox'
+    ? firefox.launch({ firefoxUserPrefs: { 'network.proxy.type': 0 } })
+    : chromium.launch())
   const context = await browser.newContext({ viewport: options.viewport ?? { width: 1280, height: 720 } })
   const page = await context.newPage()
   const messages: string[] = []

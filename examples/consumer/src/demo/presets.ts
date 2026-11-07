@@ -453,6 +453,13 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
   Select: [
     { id: 'base', label: '基础', values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai' } },
     {
+      id: 'virtual',
+      label: '大数据虚拟列表（1 万条）',
+      hint: '10000 条选项，DOM 只渲染可视区十余行：滚动时内容即时替换；开发者工具 Elements 里数 option 节点，不随数据量增长',
+      requires: 'select.select-virtualized',
+      values: { options: SELECT_VIRTUAL_10K_OPTIONS, modelValue: '' }
+    },
+    {
       id: 'fit-width',
       label: '自适应宽度',
       hint: 'fitWidth=true，宽度跟随选中项；打开面板切换长选项观察变宽',
@@ -516,51 +523,6 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
         offset: 14,
         showArrow: false
       }
-    }
-  ],
-  SelectV2: [
-    { id: 'base', label: '基础', values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai' } },
-    {
-      id: 'virtual',
-      label: '虚拟滚动（1 万条）',
-      hint: '10000 条选项，DOM 只渲染可视区十余行：滚动时内容即时替换；开发者工具 Elements 里数 option 节点，不随数据量增长',
-      values: { options: SELECT_VIRTUAL_10K_OPTIONS, modelValue: '' }
-    },
-    {
-      id: 'fit-width',
-      label: '自适应宽度',
-      hint: 'fitWidth=true，宽度跟随选中项；打开面板切换长选项观察变宽',
-      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'short', fitWidth: true }
-    },
-    {
-      id: 'max-width',
-      label: '最大宽度',
-      hint: 'fitWidth + maxWidth=180：长文本最多 180px，超出省略',
-      values: { options: FIT_WIDTH_OPTIONS, modelValue: 'long', fitWidth: true, maxWidth: 180 }
-    },
-    {
-      id: 'multiple',
-      label: '多选',
-      requires: 'select-v2.multiple',
-      values: { options: SELECT_CITY_OPTIONS, modelValue: ['shanghai', 'hangzhou'], multiple: true }
-    },
-    {
-      id: 'filterable',
-      label: '可搜索',
-      requires: 'select-v2.filterable',
-      values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai', filterable: true }
-    },
-    {
-      id: 'clearable',
-      label: '可清除',
-      requires: 'select-v2.clearable',
-      values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai', clearable: true }
-    },
-    {
-      id: 'top',
-      label: '上方弹出 + 深色',
-      requires: 'select-v2.popper',
-      values: { options: SELECT_CITY_OPTIONS, modelValue: 'shanghai', placement: 'top-start', effect: 'dark' }
     }
   ],
   Cascader: [

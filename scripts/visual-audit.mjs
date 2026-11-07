@@ -56,7 +56,24 @@ const FOCUS_SCENES = ['floating', 'table', 'tree', 'color', 'a11y', 'time-picker
  * 第九批只体检了源码，结果源码修好了、调试台却因跨工作树软链仍在加载旧 CSS，
  * 用户看到的界面照样是双层边框。这里直接打开用户评审用的组件页做同一套契约。
  */
+/** 体检自带的两台 Vite 服务端口：避开 5173 段的 dev server 与工作树端口段 */
+function randomPort() {
+  return 36000 + Math.floor(Math.random() * 2000)
+}
+
 const CONSUMER_PAGES = ['time-picker', 'input', 'date-picker', 'autocomplete', 'input-number']
+
+/**
+ * 第十一批：两个选择器合并后，大数据能力由调试台的真实场景承载。
+ * 不只看"场景按钮在不在"，还要点开它、展开面板，确认 1 万条只渲染可视区。
+ */
+const BIG_DATA_SCENE = {
+  pageId: 'select',
+  label: '大数据虚拟列表',
+  shot: 'consumer-select-virtual.png',
+  maxRenderedOptions: 30,
+  minVirtualHeight: 100_000
+}
 
 const esc = (value) =>
   String(value).replace(
@@ -362,7 +379,9 @@ code{background:#eef1f7;padding:1px 5px;border-radius:4px}
       (name) =>
         `<figure><figcaption>${esc(name)}</figcaption><a href="shots/consumer-${encodeURIComponent(name)}.png" target="_blank"><img src="shots/consumer-${encodeURIComponent(name)}.png" alt="${esc(name)} 调试台页面" loading="lazy"></a></figure>`
     )
-    .join('')}</div>
+    .join(
+      ''
+    )}${report.bigDataShot ? `<figure><figcaption>Select 大数据虚拟列表（调试台真实场景）</figcaption><a href="shots/${esc(report.bigDataShot)}" target="_blank"><img src="shots/${esc(report.bigDataShot)}" alt="Select 大数据虚拟列表" loading="lazy"></a></figure>` : ''}</div>
 <h2>重点场景（真实交互态首屏）</h2>
 <div class="focus">${report.focusScenes
     .map(
@@ -388,7 +407,7 @@ async function main() {
       __VUE_PROD_DEVTOOLS__: 'false',
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'
     },
-    server: { host: '127.0.0.1', port: 0, strictPort: false }
+    server: { host: '127.0.0.1', port: randomPort(), strictPort: false }
   })
   await server.listen()
   const address = server.httpServer?.address()
@@ -403,7 +422,7 @@ async function main() {
     root: path.join(repoRoot, 'examples/consumer'),
     configFile: path.join(repoRoot, 'examples/consumer/vite.config.mjs'),
     logLevel: 'silent',
-    server: { host: '127.0.0.1', port: 0, strictPort: false }
+    server: { host: '127.0.0.1', port: randomPort(), strictPort: false }
   })
   await consumerServer.listen()
   const consumerAddress = consumerServer.httpServer?.address()
@@ -419,6 +438,7 @@ async function main() {
   let shots = 0
   let consumerControls = 0
   const consumerPages = []
+  let bigDataShot = ''
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 720 } })
     await page.goto(`${base}?scene=gallery`, { waitUntil: 'load' })
@@ -523,6 +543,54 @@ async function main() {
       await consumerPage.screenshot({ path: path.join(shotDir, `consumer-${id}.png`), timeout: 15_000 })
       consumerPages.push(id)
     }
+    // 第十一批：大数据示例必须在真实调试台里真的窗口化，而不是"按钮在、面板仍全量渲染"
+    await consumerPage.goto(`${consumerBase}#/c/${BIG_DATA_SCENE.pageId}`, {
+      waitUntil: 'load',
+      timeout: 30_000
+    })
+    await consumerPage.waitForTimeout(800)
+    await consumerPage.addStyleTag({
+      content:
+        '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}'
+    })
+    const sceneButton = consumerPage.locator('.cp-scenes button', { hasText: BIG_DATA_SCENE.label })
+    const buttonReady = (await sceneButton.count()) > 0 && !(await sceneButton.first().isDisabled())
+    if (!buttonReady) {
+      result.findings.push({
+        component: `consumer/${BIG_DATA_SCENE.pageId}-big-data`,
+        rule: 'render-gap',
+        severity: 'error',
+        detail: '调试台里找不到可用的大数据虚拟列表场景（特性被裁剪或示例被删）'
+      })
+    } else {
+      await sceneButton.first().click()
+      await consumerPage.waitForTimeout(600)
+      await consumerPage.locator('.ui-select__trigger').first().click()
+      await consumerPage.waitForTimeout(400)
+      const bigData = await consumerPage.evaluate(() => {
+        const layer = document.querySelector('.ui-select__virtual')
+        return {
+          virtual: Boolean(layer),
+          options: document.querySelectorAll('.ui-select__option').length,
+          height: Number.parseInt(layer?.style.height ?? '0', 10) || 0
+        }
+      })
+      if (
+        !bigData.virtual ||
+        bigData.options < 1 ||
+        bigData.options > BIG_DATA_SCENE.maxRenderedOptions ||
+        bigData.height < BIG_DATA_SCENE.minVirtualHeight
+      ) {
+        result.findings.push({
+          component: `consumer/${BIG_DATA_SCENE.pageId}-big-data`,
+          rule: 'render-gap',
+          severity: 'error',
+          detail: `大数据场景没有真正窗口化：虚拟层 ${bigData.virtual} / 渲染 ${bigData.options} 个选项 / 占位高度 ${bigData.height}px`
+        })
+      }
+    }
+    await consumerPage.screenshot({ path: path.join(shotDir, BIG_DATA_SCENE.shot), timeout: 15_000 })
+    bigDataShot = BIG_DATA_SCENE.shot
     await consumerPage.close()
 
     if (consumerPages.length !== CONSUMER_PAGES.length) {
@@ -559,6 +627,7 @@ async function main() {
     focusScenes: result.focusShots,
     consumerPages,
     consumerControls,
+    bigDataShot,
     errors: errors.length,
     warnings: warnings.length,
     findings: result.findings,
@@ -570,6 +639,7 @@ async function main() {
   process.stdout.write(
     `视觉体检：${report.components} 个组件 / ${report.controls} 个原生控件 / ${shots} 张截图 / ` +
       `${report.consumerPages.length} 个调试台页面 ${report.consumerControls} 控件 / ` +
+      `${report.bigDataShot ? '1 张大数据场景图' : '大数据场景图缺失'} / ` +
       `${report.errors} 项阻断 / ${report.warnings} 项提示\n`
   )
   for (const item of errors.slice(0, 20)) {

@@ -331,6 +331,33 @@ export default {
             }
           ]
         },
+        "select.select-virtualized": {
+          "title": "大数据虚拟列表",
+          "description": "大数据虚拟列表：virtualized、itemSize、virtualThreshold；超过阈值的扁平列表只渲染可视区，分组列表与未开启时回退全量",
+          "module": "packages/ui-kit/src/components/select/features/select-virtualized/index.ts",
+          "exportName": "selectVirtualizedFeature",
+          "requires": [],
+          "props": [
+            {
+              "name": "virtualized",
+              "type": "boolean",
+              "default": true,
+              "description": "是否启用窗口化渲染，默认开启"
+            },
+            {
+              "name": "itemSize",
+              "type": "number",
+              "default": 34,
+              "description": "单行高度 px；主题令牌影响行高时以运行时实测为准"
+            },
+            {
+              "name": "virtualThreshold",
+              "type": "number",
+              "default": 100,
+              "description": "超过该条数才启用窗口化"
+            }
+          ]
+        },
         "select.methods": {
           "title": "实例方法",
           "description": "通过 ref 调用选择器方法：focus、blur。",

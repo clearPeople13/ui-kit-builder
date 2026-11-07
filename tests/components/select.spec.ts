@@ -282,4 +282,62 @@ describe('Select', () => {
     const wrapper = mountSelect({ options, suffixIcon: 'Star' })
     expect(wrapper.find('.ui-select__arrow').exists()).toBe(true)
   })
+
+  // 原虚拟列表选择器的唯一增量能力，第十一批合并进 Select
+  describe('大数据虚拟列表', () => {
+    const big = Array.from({ length: 120 }, (_, index) => ({ value: index, label: `选项${index}` }))
+
+    async function openBig(extra: Record<string, any> = {}) {
+      const wrapper = mountSelect({ options: big, modelValue: undefined, ...extra })
+      await wrapper.find('.ui-select__trigger').trigger('click')
+      return wrapper
+    }
+
+    it('超过阈值只渲染可视区，并用总高度撑起滚动条', async () => {
+      await openBig()
+      const virtual = document.querySelector('.ui-select__virtual')
+      expect(virtual).not.toBeNull()
+      expect(virtual?.getAttribute('style')).toContain('height: 4080px')
+      expect(document.querySelector('.ui-select__virtual-window')?.getAttribute('style')).toContain('translateY(0px)')
+      expect(optionItems()).toHaveLength(14)
+      expect(document.querySelector('.ui-select__dropdown')?.className).toContain('is-virtual')
+    })
+
+    it('滚动后窗口位移，DOM 节点数不随数据量增长', async () => {
+      await openBig()
+      const panel = document.querySelector('.ui-select__dropdown') as HTMLElement
+      panel.scrollTop = 1020
+      panel.dispatchEvent(new Event('scroll', { bubbles: true }))
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(document.querySelector('.ui-select__virtual-window')?.getAttribute('style')).toContain('translateY(850px)')
+      expect(optionItems().length).toBeLessThan(30)
+      expect(optionItems()[0].textContent).toContain('选项25')
+    })
+
+    it('virtualized=false 回退全量渲染', async () => {
+      await openBig({ virtualized: false })
+      expect(document.querySelector('.ui-select__virtual')).toBeNull()
+      expect(optionItems()).toHaveLength(120)
+    })
+
+    it('分组列表行高不一，即使超阈值也回退全量', async () => {
+      const grouped = [
+        { label: '分组一', options: big.slice(0, 60) },
+        { label: '分组二', options: big.slice(60) }
+      ]
+      const wrapper = mountSelect({ options: grouped, modelValue: undefined })
+      await wrapper.find('.ui-select__trigger').trigger('click')
+      expect(document.querySelector('.ui-select__virtual')).toBeNull()
+      expect(document.querySelectorAll('.ui-select__group')).toHaveLength(2)
+      expect(optionItems()).toHaveLength(120)
+    })
+
+    it('virtualThreshold / itemSize 可由调用方调整', async () => {
+      const wrapper = mountSelect({ options, modelValue: undefined, virtualThreshold: 2, itemSize: 40 })
+      await wrapper.find('.ui-select__trigger').trigger('click')
+      const virtual = document.querySelector('.ui-select__virtual')
+      expect(virtual).not.toBeNull()
+      expect(virtual?.getAttribute('style')).toContain('height: 120px')
+    })
+  })
 })
