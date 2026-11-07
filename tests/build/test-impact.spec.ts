@@ -28,7 +28,7 @@ describe('变更范围选择器', () => {
   })
 
   it('改组件 core.ts：重建产物 + 组件用例 + 体积契约 + 视觉体检，不跑 20 份 profile 与覆盖率', () => {
-    const result = plan(['packages/ui-kit/src/components/button/core.ts'])
+    const result = plan(['packages/ui-kit/src/components/checkbox/core.ts'])
     expect(result.scope).toBe('scoped')
     expect(result.stages).toEqual([
       'build',
@@ -46,13 +46,19 @@ describe('变更范围选择器', () => {
   })
 
   it('组件用例只挑真的 import 了该组件的文件，不按名字子串误伤', () => {
-    const result = plan(['packages/ui-kit/src/components/button/core.ts'])
+    const result = plan(['packages/ui-kit/src/components/checkbox/core.ts'])
     const testFiles = result.filters.test ?? []
-    expect(testFiles).toContain('tests/components/button.spec.ts')
-    // alert.spec.ts 里出现过 button 这个词，但没 import Button，不能拉进来
+    expect(testFiles).toContain('tests/components/checkbox.spec.ts')
+    // alert.spec.ts 里出现过 checkbox 这个词，但没 import Checkbox，不能拉进来
     expect(testFiles).not.toContain('tests/components/alert.spec.ts')
-    // 泛化浏览器套件（属性 / a11y / 构建器）留给全量门禁；button 没有专属场景就不开这一层
+    // 泛化浏览器套件（属性 / a11y / 构建器）留给全量门禁；checkbox 没有专属场景就不开这一层
     expect(result.filters['test:browser']).toBeUndefined()
+  })
+
+  it('改有专属浏览器场景的组件（button）core.ts 时把场景文件排进 test:browser', () => {
+    const result = plan(['packages/ui-kit/src/components/button/core.ts'])
+    expect(result.stages).toContain('test:browser')
+    expect(result.filters['test:browser']).toEqual(['tests/browser/button-focus-trap.spec.ts'])
   })
 
   it('有专属浏览器场景的组件（time-picker）改 core.ts 时只跑那一个场景文件', () => {
