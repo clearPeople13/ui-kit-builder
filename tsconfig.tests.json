@@ -8,7 +8,9 @@
     },
     // C9：用例与门禁配置统一走 strict；新增用例不允许再写 `as any` / 隐式 any
     "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    // 与库工程分开写一份增量缓存：两份 include 不同，共用会互相判定"全部过期"
+    "tsBuildInfoFile": ".build/tsconfig.tests.tsbuildinfo"
   },
   "include": [
     "tests/**/*.ts",

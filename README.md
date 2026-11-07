@@ -89,10 +89,14 @@ npm run audit:visual  # 视觉体检（真实浏览器计算样式契约 + 逐�
 npm run verify:consumer  # 消费方校验（类型、负向用例、运行时渲染）
 npm run quality        # 唯一门禁（十三段）：先统一构建一次，再依次跑格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 视觉体检 → 消费方校验
 npm run ci             # quality 的 CI 别名（同一条命令），供服务端流水线直接调用，额外逐段输出耗时并落机读的 ci-report.json
+npm run ci:changed     # 内循环门禁：只跑这次改动影响到的阶段与用例（改一个组件 13 段 → 9 段）
+npm run ci:plan        # 只打印受影响范围，不执行（改完先看要跑什么）
 npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量十三段）钩子
 ```
 
 `quality` 是唯一的门禁入口，也是 `pre-push` 钩子与服务端 CI 执行的同一条命令；每段结论与耗时写入 `ci-report.json`，失败时按阶段名即可定位。`test:all` 只是同一命令的旧名字，保留它以免破坏既有习惯。
+
+`ci:changed` 是同一套阶段定义的收窄版本，不是第二套门禁：它按改动文件算出受影响的层与具体用例（组件用例按 `import` 判定归属，不按名字子串），共享模块、组件库入口、构建器、profile、测试基础设施与未知路径一律回落全量。**合入前仍要跑一次 `npm run quality`**，`ci:changed` 只负责把内循环从分钟级压到十秒级。
 
 各层用例条数不再写进文档（历史上手写计数漂移过多次），一律以对应命令的终端输出和 `ci-report.json` 的阶段记录为准。
 

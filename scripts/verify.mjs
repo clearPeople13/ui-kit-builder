@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { buildAllProfiles } from './build-all.mjs'
+import { buildAllProfiles, builtArtifactsFresh } from './build-all.mjs'
 import { loadRegistry } from '../registry.mjs'
 
 globalThis.__VUE_OPTIONS_API__ = true
@@ -191,6 +191,12 @@ async function main() {
   // 门禁里 build:all 已先跑过一次，--reuse 直接读 sizes.json，避免 verify 再打 198 份包；
   // 单独执行 npm run verify 仍走完整构建，保证"产物是当前源码的事实"。
   const reuse = process.argv.includes('--reuse')
+  // pre-commit 用：产物过期时直接跳过（返回 0），把重建留给 pre-push 全量门禁。
+  // 否则改一行构建脚本就会在提交钩子里触发 198 份包的重建，钩子直接超时。
+  if (process.argv.includes('--if-fresh') && !builtArtifactsFresh()) {
+    console.log('[verify] 产物已过期（源码指纹不一致），pre-commit 跳过库级校验；pre-push 全量门禁会重建并重验')
+    process.exit(0)
+  }
   const { results } = await buildAllProfiles({ reuse })
   const byName = Object.fromEntries(results.map((result) => [result.name, result]))
   const core = byName.core

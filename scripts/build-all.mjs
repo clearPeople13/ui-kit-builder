@@ -36,11 +36,20 @@ export function staleDistDirs(existingDirs, reservedNames) {
   return existingDirs.filter((name) => name !== 'custom' && !reservedNames.has(name))
 }
 
-/** 本机可用的构建并发度：留一个核给门禁自身与文件系统，最多 6 路 */
+/**
+ * 本机可用的构建并发度：留一个核给门禁自身与文件系统。
+ *
+ * 上限原来写死 6，而单次特性边际试算是一条 esbuild + 文件读写链，CPU 并不吃满；
+ * 16 核机器上 6 路会让冷启动卡在 9 分钟。放到 10 路后冷启动约 5–6 分钟，
+ * 热缓存（命中全部组件）不受影响。
+ */
 function concurrency() {
   const cpus = os.availableParallelism?.() ?? os.cpus().length
-  return Math.max(2, Math.min(6, cpus - 1))
+  return Math.max(2, Math.min(10, cpus - 1))
 }
+
+/** 单次特性边际试算的实测耗时（16 核 / 6 路时 175 个特性约 9 分钟，折合单次约 18s），只用于给"还要多久"一个量级 */
+const FEATURE_COLD_SECONDS = 18
 
 /** 固定并发池：结果按输入顺序返回，任一任务失败则整轮失败 */
 async function mapPool(items, limit, worker) {
@@ -69,9 +78,19 @@ function walkFiles(dir, files) {
 }
 
 /**
+ * 边际体积算法版本，进入缓存键。
+ *
+ * 缓存键原来直接包含本文件全文，结果"改一句日志文案"也要重算 175 个特性边际——
+ * 实测冷启动 467s，开发时一天能撞好几次。边际算法本身与日志无关，
+ * 所以改成显式版本号：**只要改了影响字节统计 / 差值 / 输出结构的代码，就把它 +1**；
+ * 只改日志、注释、进度提示不用动。治理校验会扫 diff：动了算法特征却没加版本号直接报红。
+ */
+export const SIZE_ALGO_VERSION = 2
+
+/**
  * 构建输入的指纹：产物与特性边际只取决于组件源码、profile 配置、注册表与构建器本身。
  * 这些内容都没变时，上次算出的边际值与已构建产物仍然成立；Node / 平台也进指纹，避免换环境后误复用。
- * 构建脚本自身（build-all.mjs）也算输入：改了边际算法就必须重算，否则缓存会把旧口径钉死（F-71）。
+ * 注意这里仍包含 build-all.mjs 全文——verify:reuse 宁可多重算一次，也不能复用到口径不明的产物。
  */
 export function sourceFingerprint() {
   const hash = crypto.createHash('sha1')
@@ -101,9 +120,12 @@ const profileCachePath = path.join(rootDir, '.build', 'profile-cache.json')
 const componentSrcDir = path.join(rootDir, 'packages/ui-kit/src/components')
 const sharedSrcDir = path.join(rootDir, 'packages/ui-kit/src/shared')
 
-function fingerprintFiles(files) {
+function fingerprintFiles(files, salt = '') {
   const hash = crypto.createHash('sha1')
   hash.update(`node=${process.version}\nplatform=${process.platform}\narch=${process.arch}\n`)
+  if (salt) {
+    hash.update(`salt=${salt}\n`)
+  }
   const sorted = [...files].sort()
   for (const file of sorted) {
     hash.update(path.relative(rootDir, file))
@@ -114,12 +136,18 @@ function fingerprintFiles(files) {
 }
 
 function builtinInputs() {
+  // build-all.mjs 全文不进键：它是编排与计量脚本，改日志文案不该让 175 个特性重算。
+  // 计量口径由 SIZE_ALGO_VERSION 代表，改算法时显式 +1（治理校验会盯这条）。
   return [
     path.join(rootDir, 'registry.mjs'),
     path.join(rootDir, 'scripts/build-lib.mjs'),
-    path.join(rootDir, 'scripts/build-all.mjs'),
     path.join(rootDir, 'package-lock.json')
   ]
+}
+
+/** 缓存键里的计量口径盐：版本号一变，所有组件 / profile 的缓存同时失效 */
+function algoSalt() {
+  return `size-algo=v${SIZE_ALGO_VERSION}`
 }
 
 function sourceFiles(files) {
@@ -139,7 +167,7 @@ export function componentFingerprint(componentId) {
   const files = [...builtinInputs(), path.join(rootDir, 'profiles/full.json')]
   walkFiles(dir, files)
   sourceFiles(files)
-  return fingerprintFiles(files)
+  return fingerprintFiles(files, algoSalt())
 }
 
 function profileInputFiles(entry) {
@@ -165,7 +193,7 @@ export function profileFingerprint(profileName) {
   if (!entry) {
     return null
   }
-  return fingerprintFiles(profileInputFiles(entry))
+  return fingerprintFiles(profileInputFiles(entry), algoSalt())
 }
 
 function readFeatureCache() {
@@ -301,6 +329,17 @@ function writeBuildFingerprint(fingerprint) {
   )
 }
 
+/**
+ * 当前产物是不是"由当前源码构建的"。
+ *
+ * pre-commit 只想知道"要不要因为产物过期而重建"：过期时不该在提交钩子里闷头重打 198 份包
+ * （实测 8 分钟，钩子会超时），而应该跳过库级校验、把重建留给 pre-push 的全量门禁。
+ */
+export function builtArtifactsFresh() {
+  const recorded = readBuildFingerprint()
+  return Boolean(recorded && recorded.fingerprint === sourceFingerprint())
+}
+
 /** 门禁里已经构建过一次时，verify 直接复用 sizes.json 的记录，不再重复打 198 份包 */
 function loadBuiltResults() {
   try {
@@ -417,6 +456,13 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
     if (pending.length) {
       const tempStarted = Date.now()
       const chunk = concurrency()
+      // 冷启动到底在干什么、要多久，必须开跑就说：以前只有一个进度条沉默 8 分钟，
+      // 外部只能靠猜是在正常重建还是卡死（上一批次就在这里盲等了 529s）。
+      const estimate = Math.ceil((pending.length * FEATURE_COLD_SECONDS) / chunk)
+      console.log(
+        `[build] 需要重算 ${pending.length} 个特性边际（并发 ${chunk} 路，单次约 ${FEATURE_COLD_SECONDS}s，` +
+          `量级 ${Math.ceil(estimate / 60)} 分钟，后续按实际进度修正）；其余命中组件级缓存`
+      )
       let completed = 0
       try {
         await mapPool(pending, chunk, async ({ component, id, feature }) => {
@@ -435,9 +481,19 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
             ...delta(result, fullResult)
           }
           completed += 1
-          // 每完成一批（并发窗口）就落盘，进程中断时已完成的部分不会白算（A10）
+          // 每完成一批（并发窗口）就落盘，进程中断时已完成的部分不会白算（A10）；
+          // 同时按"已完成比例 + 实际耗时"报一次进度，估算随真实吞吐修正，
+          // 不要用一个固定的 18s 常数骗人（第一次实测就偏了 50%）。
           if (useCache && completed % chunk === 0) {
             persist()
+          }
+          if (completed % (chunk * 2) === 0 || completed === pending.length) {
+            const elapsed = (Date.now() - tempStarted) / 1000
+            const remain = (elapsed / completed) * (pending.length - completed)
+            console.log(
+              `[build] 特性边际 ${completed}/${pending.length}（已用 ${(elapsed / 60).toFixed(1)} 分钟，` +
+                `预计还需 ${(remain / 60).toFixed(1)} 分钟）`
+            )
           }
         })
       } finally {
