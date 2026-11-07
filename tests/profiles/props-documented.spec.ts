@@ -11,13 +11,14 @@ import { loadProfile, profileNames, type Profile } from './_load'
  * 校验口径与 dist 产物逐一对齐，且要能穿越 20 份不同特性集的 profile，所以是
  * 混合式静态 + 运行时断言（不引入任何几何/布局断言）：
  *   - 正向（未记录）：产物上真实存在的每个运行时 prop，都必须能在该 export 的
- *     属性字典里找到——coreProps 或任意 feature 声明皆算记录。命中即"漏项/挂错 export"。
+ *     属性字典里找到——coreProps 加上"本 profile 已启用特性"的 props。命中即
+ *     "漏项/挂错 export/把 core prop 记到了某个特性名下"。
  *   - 反向（未实现）：字典里在当前 profile 生效范围内声明的每个 prop——coreProps
  *     加上"本 profile 已启用特性"的 props——都必须在运行时真实存在。命中即字典虚报。
  *
- * 之所以正向用"任意 feature"、反向用"已启用 feature"：core 之类的裁剪产物里
- * 组件恒带的基础 props（如 Tree 的 checkStrictly）可能只写在被关掉的那个 feature 上，
- * 正向仍应放行（它确实被记录了），而反向不能强求未启用特性的 props 出现在运行时。
+ * 两个方向口径必须完全一致：正向若放宽成"任意 feature 声明皆算记录"，被关掉的
+ * 特性就能替 core prop 背书（如 Tree 的 checkStrictly 曾只记在 selection 特性上），
+ * core 产物里它一旦丢了也没人发现。归属错了就是错了，字典按导出名就近查找。
  */
 
 const componentsRoot = resolve(process.cwd(), 'packages/ui-kit/src/components')
@@ -82,13 +83,18 @@ describe.each(profiles)('产物 %s 的属性字典双向一致', (name) => {
   it('运行时真实生效的 prop 都被记录在所属 export 的属性字典里', () => {
     const undocumented: string[] = []
     for (const spec of specs) {
+      // 与反向同一口径：只有本 profile 已启用的特性才能替这里的 prop 背书
+      const enabled = new Set(profile.components[spec.id] ?? [])
       for (const ex of spec.exports ?? []) {
         const runtime = runtimePropsOf(profile.module[ex.name])
         if (!runtime) {
           continue
         }
         const declared = new Set((ex.coreProps ?? []).map((p) => p.name))
-        for (const [, feature] of featureEntries(ex.features)) {
+        for (const [featureKey, feature] of featureEntries(ex.features)) {
+          if (!enabled.has(featureKey)) {
+            continue
+          }
           for (const p of feature?.props ?? feature?.coreProps ?? []) {
             declared.add(p.name)
           }

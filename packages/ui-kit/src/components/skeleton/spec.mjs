@@ -30,6 +30,12 @@ export default {
           "name": "throttle",
           "type": "number | Record<string, any>",
           "description": "throttle"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": true,
+          "description": "loading"
         }
       ],
       "features": {
@@ -39,13 +45,7 @@ export default {
           "module": "packages/ui-kit/src/components/skeleton/features/loading/index.ts",
           "exportName": "skeletonLoadingFeature",
           "requires": [],
-          "props": [
-            {
-              "name": "loading",
-              "type": "boolean",
-              "default": true
-            }
-          ]
+          "props": []
         }
       }
     },

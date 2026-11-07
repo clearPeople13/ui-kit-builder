@@ -26,6 +26,11 @@ export default {
           "type": "string",
           "default": "",
           "description": "status"
+        },
+        {
+          "name": "icon",
+          "type": "string | Record<string, any> | (...args: any[]) => any",
+          "description": "icon"
         }
       ],
       "features": {
@@ -35,12 +40,7 @@ export default {
           "module": "packages/ui-kit/src/components/steps/features/icons/index.ts",
           "exportName": "stepIconsFeature",
           "requires": [],
-          "props": [
-            {
-              "name": "icon",
-              "type": "string | Record<string, any> | (...args: any[]) => any"
-            }
-          ]
+          "props": []
         }
       }
     },

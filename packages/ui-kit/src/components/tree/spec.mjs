@@ -88,6 +88,11 @@ export default {
           default: false,
           description:
             '仅在 showCheckbox 为真时生效：点击节点文本区域是否切换该节点的勾选状态；开启时勾选优先，会短路 expandOnClickNode 的展开行为'
+        },
+        {
+          name: 'checkStrictly',
+          type: 'boolean',
+          description: 'checkStrictly'
         }
       ],
       features: {
@@ -132,10 +137,6 @@ export default {
           exportName: 'treeSelectionFeature',
           requires: [],
           props: [
-            {
-              name: 'checkStrictly',
-              type: 'boolean'
-            },
             {
               name: 'checkOnClickLeaf',
               type: 'boolean',

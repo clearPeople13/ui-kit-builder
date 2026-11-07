@@ -5409,6 +5409,12 @@
               "type": "boolean",
               "default": false,
               "description": "是否居中"
+            },
+            {
+              "name": "showClose",
+              "type": "boolean",
+              "default": false,
+              "description": "是否显示关闭按钮"
             }
           ],
           "features": [
@@ -5429,14 +5435,7 @@
               "id": "message.closable",
               "title": "可关闭",
               "description": "可关闭：showClose",
-              "props": [
-                {
-                  "name": "showClose",
-                  "type": "boolean",
-                  "default": false,
-                  "description": "是否显示关闭按钮"
-                }
-              ]
+              "props": []
             },
             {
               "id": "message.popper",
@@ -7691,6 +7690,12 @@
               "name": "throttle",
               "type": "number | Record<string, any>",
               "description": "节流间隔（毫秒）"
+            },
+            {
+              "name": "loading",
+              "type": "boolean",
+              "default": true,
+              "description": "是否加载中"
             }
           ],
           "features": [
@@ -7698,14 +7703,7 @@
               "id": "skeleton.loading",
               "title": "加载状态",
               "description": "加载状态：loading",
-              "props": [
-                {
-                  "name": "loading",
-                  "type": "boolean",
-                  "default": true,
-                  "description": "是否加载中"
-                }
-              ]
+              "props": []
             }
           ],
           "methods": []
@@ -8110,6 +8108,11 @@
               "type": "string",
               "default": "",
               "description": "状态"
+            },
+            {
+              "name": "icon",
+              "type": "string | Record<string, any> | (...args: any[]) => any",
+              "description": "图标"
             }
           ],
           "features": [
@@ -8117,13 +8120,7 @@
               "id": "steps.icons",
               "title": "图标",
               "description": "图标：icon",
-              "props": [
-                {
-                  "name": "icon",
-                  "type": "string | Record<string, any> | (...args: any[]) => any",
-                  "description": "图标"
-                }
-              ]
+              "props": []
             }
           ],
           "methods": []
@@ -10015,6 +10012,11 @@
               "type": "boolean",
               "default": false,
               "description": "仅在 showCheckbox 为真时生效：点击节点文本区域是否切换该节点的勾选状态；开启时勾选优先，会短路 expandOnClickNode 的展开行为"
+            },
+            {
+              "name": "checkStrictly",
+              "type": "boolean",
+              "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
             }
           ],
           "features": [
@@ -10057,11 +10059,6 @@
               "title": "高亮与勾选",
               "description": "高亮与勾选：checkStrictly、checkOnClickLeaf",
               "props": [
-                {
-                  "name": "checkStrictly",
-                  "type": "boolean",
-                  "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
-                },
                 {
                   "name": "checkOnClickLeaf",
                   "type": "boolean",

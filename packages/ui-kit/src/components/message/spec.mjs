@@ -50,6 +50,12 @@ export default {
           "type": "boolean",
           "default": false,
           "description": "center"
+        },
+        {
+          "name": "showClose",
+          "type": "boolean",
+          "default": false,
+          "description": "showClose"
         }
       ],
       "features": {
@@ -73,13 +79,7 @@ export default {
           "module": "packages/ui-kit/src/components/message/features/closable/index.ts",
           "exportName": "messageClosableFeature",
           "requires": [],
-          "props": [
-            {
-              "name": "showClose",
-              "type": "boolean",
-              "default": false
-            }
-          ]
+          "props": []
         },
         "message.popper": {
           "title": "浮层定位",
