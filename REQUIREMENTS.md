@@ -497,3 +497,39 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 门禁十三段，STAGES 与 `npm run quality` 段数一致；`KNOWLEDGE.md` 的「唯一门禁（十三段）」、README 与 pre-push 注释同步。
 - 缺陷 F-1…F-66 全部修复，守卫文件已删除，无 `it.fails` 长期挂账。
 - 用例数不变（组件层 95 文件 1582 条、构建器侧 8 文件 95 条、profile 2 文件 142 条、浏览器 11 文件 65 条）：本批交付的是门禁能力与复核入口，不是用例。
+
+## 17. 第十批：调试台产物隔离与视觉体检补齐消费方路径（F-67）
+
+### 17.1 触发：把项目跑起来才看见的真相
+
+用户问「项目有运行起来吗」，本批把可视化构建器（`5273`）与组件调试台（`5274`）真正启动，用真实 Chromium 打开 `#/c/time-picker` 复核第九批结论。结果 `.ui-time-picker__value` 的计算样式仍是 `2px inset rgb(118,118,118)` / 白底 / Arial / `appearance: auto` / `padding: 1px 2px` —— 用户截图里的双层边框**依然存在**。第九批的「已修复」只在源码与源码画廊里成立，用户实际评审的那个界面根本没吃到修复，用户此前的质疑成立。
+
+### 17.2 根因：跨工作树的软链 + 体检只覆盖源码
+
+`examples/consumer/node_modules/@demo/ui-kit-*` 是 `npm install` 按 `file:../../dist/<profile>` 生成的软链；在 WorkBuddy 专属工作树里，这些软链（连同 `examples/consumer/node_modules` 这个 Junction）指向主工作树 `C:/WorkBench/ui-kit-builder/dist/`，而主工作树由另一条工作流并行维护，其源码尚未包含第九批的 CSS 修复。于是：
+
+- `src/demo/main.ts` 静态 import 的 4 份 `style.css` 与 `playground-preview.ts` 静态 import 的 5 份组件 JS，全部从主工作树的旧 dist 加载；
+- `scripts/dev-api.mjs` 提供的 `/packs/<id>/…` 动态包反而正确指向本工作树 dist，两套来源混在同一页面；
+- 第九批的 `audit:visual` 只体检 `tests/browser/harness`（Vite 直接编译源码 CSS），看不到 dist 产物，更看不到加载路径，所以十三段门禁全绿、界面依旧是旧样式。
+
+结论：**视觉体检只做「源码现场」是不完整的**，必须同时体检「用户实际打开的界面」，否则「源码修了、产物没跟上 / 加载错产物」这类偏差没有监护人。
+
+### 17.3 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ----------- |
+| F-67 | `examples/consumer/vite.config.mjs`、`scripts/visual-audit.mjs` | 第九批修掉 TimePicker 双层边框后，组件调试台里仍显示 2px 深灰内框、白底与 Arial 字体；门禁与源码画廊全绿 | `node_modules/@demo` 软链跨工作树指向主工作树旧 dist；视觉体检只覆盖源码 harness，没有覆盖消费方页面 | `vite.config.mjs` 用两条 `resolve.alias` 把 20 份 profile 的 JS / CSS 钉到本工作树 `dist/<id>/`；`visual-audit.mjs` 另起调试台服务，对 5 个含原生控件的组件页跑同一套计算样式契约并把截图 / 异常写进画廊；`verify-governance` 静态锁死 alias 与页面清单 |
+
+### 17.4 修复与机制
+
+1. **产物来源钉死**：`examples/consumer/vite.config.mjs` 新增 `distDir` 与两条 alias（`@demo/ui-kit-<id>/style.css` → `dist/<id>/ui-kit.css`；`@demo/ui-kit-<id>` → `dist/<id>/ui-kit.js`）。调试台不再依赖 `npm install` 时生成的软链指向，每棵工作树各消费自己的构建产物；`/packs/…` 动态包本来就从本工作树 dist 提供，两套来源归一。
+2. **视觉体检第二现场**：`scripts/visual-audit.mjs` 在源码画廊之外另起一台调试台 Vite 服务（随机端口），用同一个 Chromium 打开 `#/c/time-picker`、`input`、`date-picker`、`autocomplete`、`input-number` 共 5 页，复用 6 条规则对可见原生控件做 `getComputedStyle` 体检；命中项以 `consumer/<页面>` 记入 `audit.json`，画廊新增「消费方真实界面」区块放 5 张页面截图。页面数 / 控件数不足即报 `render-gap` error，防止「页面没渲染出来也算绿」。
+3. **会红验证（本批实证）**：往 `dist/full/ui-kit.css` 临时注入旧规则后跑体检，退出码 1，命中 `consumer/time-picker [nested-border]`，同时带出 `opaque-fill` / `nested-padding` / `font-mismatch` 三条提示；恢复产物后 md5 一致、体检回到 0 阻断。即「源码画廊全绿、调试台页报红」这条链路确实能抓到 F-67，不是摆设。
+4. **治理自守卫**：`verify-governance.mjs` 静态核对调试台配置的 alias 未被删除、`CONSUMER_PAGES` 不少于 3 页且页面 id 都在 `demo/meta.json` 登记、体检器含 `inspectConsumerInPage` 与 `consumerServer`。与已有的 `visual` 段、规则集、豁免清单守卫并列，合并分支时不会把这层能力悄悄架空。
+
+### 17.5 产物与数字
+
+- 修复后调试台 `#/c/time-picker` 计算样式：`border: 0` / `background: rgba(0,0,0,0)` / `font: inherit` / `appearance: none` / `padding: 0`；真实页面截图已亲眼复核，内框消失、图标 / 文本 / 箭头落在同一条容器。
+- 视觉体检基线更新为：124 组件 / 21 可见原生控件 / 124 张组件图 / 6 张重点场景图 / **5 个调试台页面 5 个控件 / 5 张调试台截图** / 6 条规则；整段约 11s（原 3.4s，多出的是第二台服务与 5 页加载）。
+- 门禁仍为十三段，`audit:visual` 段名与位置不变；用例数不变（组件 1582 / 构建器侧 95 / profile 142 / 浏览器 65）。本批仍属能力层，不新增用例层断言。
+- 缺陷 F-1…F-67 全部修复，无 `it.fails` 长期挂账。改动文件：`examples/consumer/vite.config.mjs`、`scripts/visual-audit.mjs`、`scripts/verify-governance.mjs`、三份文档。
