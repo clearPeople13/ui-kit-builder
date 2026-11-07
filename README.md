@@ -8,7 +8,7 @@
 - **profile 驱动构建**：一个 profile 产出一个独立包（ESM + 类型声明 + 独立 CSS + `meta.json` 体积/特性清单）
 - **20 套主题**：15 套对齐主流设计体系（Ant Design、Arco、TDesign、Naive UI、View Design、Vant、Varlet、Semi、Material 3、Bootstrap、shadcn/ui、Fluent 2、Carbon、Mantine、iOS），另有 `core` / `full` / `branded` / `chinese` / `cute` 5 套内置风格；主题全部由 CSS 令牌驱动，不侵入组件逻辑
 - **可视化构建器**：勾选组件、特性与主题，实时生成构建配置并估算产物体积
-- **组件调试台**：91 个组件的场景预设、属性面板、API 属性表与在线编辑预览
+- **组件调试台**：90 个组件的场景预设、属性面板、API 属性表与在线编辑预览
 
 ## 目录结构
 
@@ -61,24 +61,26 @@ npm run test:build     # 构建器侧契约测试（跑前先构建全部 20 份
 npm run test:browser   # 真实浏览器层（Playwright + Chromium，跑前先构建 full 产物）
 npm run snap:layout    # 重新录入布局基线（改动样式/布局后按需执行）
 npm run test:profiles  # 20 份 profile 的运行时挂载校验（跑前先构建全部 profile）
-npm run test:all       # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层一次跑完
+npm run test:coverage  # 同一批组件用例在源码入口上重放并卡覆盖率阈值
+npm run test:all       # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层 + 覆盖率一次跑完
 npm run typecheck      # TypeScript 类型检查（库 + 用例两份 tsconfig）
 npm run lint           # ESLint
 npm run verify         # 库级校验（构建产物、API 一致性等）
 npm run verify:consumer  # 消费方校验（类型、负向用例、运行时渲染）
-npm run quality        # 唯一门禁（九段）：格式 → 类型 → lint → 库级校验 → 四层用例 → 消费方校验
+npm run quality        # 唯一门禁（十段）：格式 → 类型 → lint → 库级校验 → 五层用例 → 消费方校验
 npm run ci             # 同 quality，但逐段给结论与耗时，并落机读的 ci-report.json
-npm run hooks:install  # 装 pre-commit（秒级四段）与 pre-push（全量九段）钩子
+npm run hooks:install  # 装 pre-commit（秒级四段）与 pre-push（全量十段）钩子
 ```
 
 组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`；
-当前覆盖 30 个文件、629 条用例（含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层）。
+当前覆盖 94 个文件、1570 条用例（含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层），90 个组件目录无一遗漏。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
-特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约，共 68 条。
+特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约，共 89 条。
 浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
-布局与几何基线（`npm run snap:layout` 录入、漂移即报错）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"，共 42 条。
-profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 101 条。
-用例暴露的缺陷先以 `tests/findings.spec.ts` 里的 `it.fails` 守卫记录，修复后降级为组件文件里的常规回归用例、守卫文件退役；五批共记录 36 条缺陷（F-1…F-36），其中 34 条已修复，2 条死类名待补样式。
+布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"，共 58 条。
+profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 142 条。
+覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，按 statements / branches / functions / lines 卡阈值，低于基线即红。
+用例暴露的缺陷都以组件文件里的常规回归用例收尾；六批共记录 51 条缺陷（F-1…F-51），全部已修复。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## License

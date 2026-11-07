@@ -14,3 +14,6 @@ consumer-preview.png
 
 # 门禁机读报告（本地/CI 每次生成，不进仓库）
 ci-report.json
+
+# 覆盖率报告（本地/CI 生成，不进仓库）
+coverage/

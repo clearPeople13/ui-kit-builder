@@ -16,7 +16,7 @@ export type Session = {
  */
 export async function openScene(
   scene: string,
-  options: { viewport?: { width: number; height: number } } = {}
+  options: { viewport?: { width: number; height: number }; fixedTime?: Date } = {}
 ): Promise<Session> {
   const base = process.env.UIKIT_HARNESS_BASE
   if (!base) {
@@ -36,6 +36,12 @@ export async function openScene(
   page.on('pageerror', (error) => {
     messages.push(`[pageerror] ${error.message}`)
   })
+
+  // 只冻结 Date，不动 setTimeout / rAF：日期类组件不再随"今天"漂移，
+  // 场景页的两帧就绪探测仍然走真实动画帧
+  if (options.fixedTime) {
+    await page.clock.setFixedTime(options.fixedTime)
+  }
 
   await page.goto(`${base}?scene=${scene}`, { waitUntil: 'load' })
   await page.waitForFunction(

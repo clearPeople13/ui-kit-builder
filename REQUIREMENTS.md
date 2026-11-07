@@ -192,14 +192,14 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 §9.4 里排在第三位的缺口——"profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据"——本批补齐；同时把"靠本地自觉执行 `npm run quality`"换成机制。
 
-### 10.1 门禁清单（更新后共九段）
+### 10.1 门禁清单（第五批时九段，第七批起十段）
 
-`npm run quality` 与 `npm run ci` 同序：格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → 消费方校验。`node scripts/ci.mjs` 与 `npm run quality` 的区别是它给出逐段结论与耗时，并落一份机读的 `ci-report.json`（已 gitignore），任何 runner 都能只看退出码与 JSON 判定，不必 grep 终端输出。
+`npm run quality` 与 `npm run ci` 同序：格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。`node scripts/ci.mjs` 与 `npm run quality` 的区别是它给出逐段结论与耗时，并落一份机读的 `ci-report.json`（已 gitignore），任何 runner 都能只看退出码与 JSON 判定，不必 grep 终端输出。
 
 | 段落     | 命令                                   | 说明                                                                     |
 | -------- | -------------------------------------- | ------------------------------------------------------------------------ |
 | 秒级四段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验，`.githooks/pre-commit` 就是它             |
-| 全量九段 | `npm run ci`                           | 含三层用例、profile 运行时与消费方校验，`.githooks/pre-push` 就是它      |
+| 全量十段 | `npm run ci`                           | 含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
 | 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位                                             |
 | 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
 
@@ -230,6 +230,8 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 新增一层不改变任何产物内容：`sizes.json` 与 20 份 `dist/**` 在本批未动。九段门禁在本机一次跑通的体量约为组件层 30 s + 构建器层 15 s + profile 层 20 s + 浏览器层 60 s。
 
 仍存在的缺口：布局基线仍只比几何矩形不比像素；覆盖率仍未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入；`ci.mjs` 目前只在本机与钩子里生效，仓库还没有服务端 runner——Gitee 上这两个 Issue 的评论功能处于关闭状态，`PATCH /repos/.../issues/{number}` 对这类 Issue 返回 404，结案的评论需要开 Issue 评论权限或改用 Web 界面补。
+
+> 前两条已在第七批补上（像素基线 + 覆盖率阈值，见 §12）；其余仍然有效。
 
 ## 11. 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`）
 
@@ -279,7 +281,7 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 - 探针清零：本批遗留的 12 个 `_probe_*.spec.ts` 全部删除，`tests/components/` 只保留正式用例。
 - 产物变化来自 F-39…F-50 的源码修复，`npm run build:all` 重新生成 20 份产物与 `sizes.json`；`examples/consumer/src/demo/meta.json` 随 `meta:demo` 同步。
-- 门禁：组件层 94 文件 1570 条全部通过（无占位跳过）；构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 9 文件 51 条、`verify` 2239 项全部通过。
+- 门禁：组件层 94 文件 1570 条全部通过（无占位跳过）；构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项全部通过。
 - 用例工程 `tsconfig.tests.json` 的 15 条类型基线（affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space）已全部清零，`npm run typecheck` 两份工程均无输出。
 
 ### 11.5 六批次与缺陷收口
@@ -297,5 +299,43 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 - 六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。
 - 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
-- 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 9 文件 51 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1862 条用例。
+- 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1859 条用例；另有覆盖率层在同一批组件用例上重放并卡阈值（不重复计入条数，见 §12）。
 - 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
+
+## 12. 第七批交付（覆盖率阈值 + 像素基线，分支 `feature/20261107-coverage-pixel-baseline`）
+
+§10.4 留下的两个缺口——"覆盖率没有阈值门禁""布局基线只比几何不比像素"——本批一并补齐；顺带修掉一个工具链缺陷 F-51：`test:coverage` 脚本从写下那天起就没装过 coverage provider，真跑必失败。
+
+### 12.1 覆盖率层：把同一批组件用例在源码入口上重放
+
+直接给主配置加 `--coverage` 只能统计到 `dist/full/ui-kit.js` 这一个 bundle 的行覆盖——数字再高也说不出"哪个组件没被测到"。本批新增 `vitest.coverage.config.ts`：仍跑 `tests/components/**` 的同一批用例，但把 `@ui-kit-full` 指向 `.build/full/entry.ts` 源码入口。full profile 下产物与源码前缀同为 `ui-`、特性全开，1570 条用例在源码上逐条重放全过——这本身就是"产物与源码行为同构"的旁证。
+
+| 项目         | 说明                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------ |
+| 统计范围     | `packages/ui-kit/src/**/*.ts`，`all: true`（没被 import 的文件也进分母，删用例不能虚高）    |
+| 实测基线     | statements 88.35%（21031/23802）、branches 84.78%、functions 89.20%、lines 88.35%           |
+| 阈值         | statements 87 / branches 83 / functions 88 / lines 87，只允许往上走                        |
+| 输出         | 终端摘要 + `coverage/coverage-summary.json`（已 gitignore）                                 |
+| 接入门禁     | `npm run test:coverage` 成为第十段                                                          |
+
+阈值可失败已验证：临时把 statements 抬到 99% 时 Vitest 打印 `ERROR: Coverage for statements (88.35%) does not meet global threshold (99%)` 并以非零码退出。
+
+### 12.2 像素基线：6 个场景页的首屏截图
+
+几何指纹只比矩形，颜色、字号粗细、圆角、阴影、图标缺失这些纯视觉漂移它看不见。新增 `tests/browser/_pixels.ts` + `tests/browser/pixels.spec.ts`，复用 `_geometry.ts` 的场景表（floating / table / tree / color / a11y / gallery），在 1280×720 视口下截首屏逐像素对比。
+
+- **防误报**：基线按平台分桶（`tests/browser/__snapshots__/pixels/<platform>/`，当前提交 win32 的 6 张 PNG，合计约 136 KB）；`includeAA: false` 忽略抗锯齿像素；容差 0.1%（1280×720 下约 921 像素）。
+- **确定性**：`openScene` 新增 `fixedTime` 选项，用 `page.clock.setFixedTime(2026-06-15T10:30:00)` 只冻结 Date、不动 setTimeout / rAF，日期类组件不再随"今天"漂移；截图前停掉 CSS 动画与过渡、复位滚动与鼠标、等字体与两帧。
+- **录入**：`npm run snap:pixels`（`scripts/update-pixel-snapshot.mjs`），与 `snap:layout` 同一模式。
+- **失败信息**：直接给出差异像素数、比例与差异图路径（`shots/pixels-diff/<platform>-<scene>.png`，已 gitignore）。
+- **可失败已验证**：把 `color.png` 临时换成 `floating.png` 后立即报 `6952/921600 像素不同（0.754%，上限 0.1%）` 并落差异图，恢复后转绿；同一基线连续两次运行 0 差异。
+- **防静默跳过**：另有一条守卫断言"当前平台要么没录基线，要么 6 个场景齐全"，避免只录一半导致部分场景永远跳过。
+
+### 12.3 第七批缺陷清单
+
+| 编号 | 位置                    | 现象                                                  | 根因                                                                 | 修复                                                                                        |
+| ---- | ----------------------- | ----------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| F-51 | `package.json` 脚本     | `npm run test:coverage` 直接失败，覆盖率长期不可用    | 只有脚本没有 provider 依赖，`@vitest/coverage-v8` 从未安装            | 安装 `@vitest/coverage-v8`（对齐 vitest 3.2.7），补 `vitest.coverage.config.ts` 与阈值门禁   |
+| F-52 | `README.md:11`          | 调试台写"91 个组件的场景预设"，实际 90 个             | `meta:demo` 产出的 `components` 与 `dist/full/meta.json` 都是 90，文档多算了一个 | 改为 90，并以 `examples/consumer/src/demo/meta.json` 为唯一口径                              |
+
+门禁从九段变十段：`scripts/ci.mjs` 的 STAGES 增加 `test:coverage`（在 `test:browser` 之后），`npm run quality` 与 pre-push 钩子自动包含。

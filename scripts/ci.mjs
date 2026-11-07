@@ -6,7 +6,7 @@
  * 不必去 grep 终端输出。
  *
  * 用法：
- *   node scripts/ci.mjs                 # 全量八段
+ *   node scripts/ci.mjs                 # 全量十段
  *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
  */
@@ -21,7 +21,8 @@ const STAGES = [
   { name: 'test', script: 'test', desc: '组件单元测试（happy-dom，先构建 full 产物）' },
   { name: 'test:build', script: 'test:build', desc: '构建器侧契约（先构建 20 份 profile）' },
   { name: 'test:profiles', script: 'test:profiles', desc: '20 份 profile 的运行时挂载' },
-  { name: 'test:browser', script: 'test:browser', desc: '真实浏览器层（Playwright + Chromium + 布局基线）' },
+  { name: 'test:browser', script: 'test:browser', desc: '真实浏览器层（Playwright + Chromium + 布局 / 像素基线）' },
+  { name: 'test:coverage', script: 'test:coverage', desc: '源码覆盖率阈值（同一批组件用例在源码入口上重放）' },
   { name: 'consumer', script: 'verify:consumer', desc: '消费方校验（类型、负向用例、运行时）' }
 ]
 

@@ -20,23 +20,26 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 
 ```
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
+vitest.coverage.config.ts     同一批组件用例改走源码入口（.build/full/entry.ts），V8 覆盖率 + 四维阈值
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
 tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1570 条，全部为真实断言，无占位跳过）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
 tests/build/_helpers.ts       构建器侧用例的公共读盘工具：profile 清单、产物文本缓存、特性标记求解、令牌表解析
-tests/build/*.spec.ts         构建器侧契约用例（6 个文件 68 条），断言对象是 dist/ 下的 20 份产物与 scripts/ 的纯函数
+tests/build/*.spec.ts         构建器侧契约用例（7 个文件 89 条），断言对象是 dist/ 下的 20 份产物与 scripts/ 的纯函数
 tests/build/__snapshots__/    两份快照：tree-shaking 的"无可标记字面量特性"清单、theme-tokens 的 20 份令牌指纹
 vitest.browser.config.ts      environment: node + Playwright，include: tests/browser/**/*.spec.ts，串行（fileParallelism: false）
 tests/browser/_global-setup.ts 起一个 root 为仓库根的 Vite dev server，把地址写进 UIKIT_HARNESS_BASE
 tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__probe 回传运行期事实，window.__kit/__vue 供页面内直接挂载组件
 tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
-tests/browser/*.spec.ts       浏览器层用例（9 个文件 51 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、固钉 / 回顶 / 引导
+tests/browser/_pixels.ts      像素基线：截图稳定化、按平台分桶的 PNG 存取、pixelmatch 逐像素比对
+tests/browser/*.spec.ts       浏览器层用例（10 个文件 58 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、像素基线、固钉 / 回顶 / 引导
 tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
 tests/profiles/props-documented.spec.ts 属性字典双向守卫：运行时真实 props ↔ spec.mjs 的 coreProps / 已启用 feature props 互相回查
 tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
+tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基线（6 个场景），`npm run snap:pixels` 录入
 ```
 
 缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：六批共 50 条缺陷（F-1…F-50）全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
@@ -112,26 +115,28 @@ tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm
 ```bash
 npm test              # 先 build:full 再 vitest run（约 3s + 1.5s）
 npm run test:watch    # 增量
-npm run test:coverage # 覆盖率报告（未设阈值门禁）
+npm run test:coverage # 同一批组件用例在源码入口上重放，卡 statements 87 / branches 83 / functions 88 / lines 87
 npm run test:build    # 先 build:all（20 份 profile）再跑 tests/build/**，约 15s + 5s
 npm run test:profiles # 先 build:all 再把 20 份产物逐个 import 挂载，约 20s
-npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 60s
+npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 70s
 npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需执行）
-npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层一次跑完
-npm run quality       # 唯一门禁（九段）：格式 → 类型 → lint → 库级校验 → 四层用例 → 消费方校验
+npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
+npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层 + 覆盖率一次跑完
+npm run quality       # 唯一门禁（十段）：格式 → 类型 → lint → 库级校验 → 五层用例 → 消费方校验
 npm run ci            # 同 quality，但逐段给结论与耗时，并落机读的 ci-report.json
 npm run ci:fast       # 只跑秒级四段（格式 / 类型 / lint / 库级校验）
-npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九段）钩子
+npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十段）钩子
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 四层用例合计 1862 条全绿：组件侧 94 文件 1570 条、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 9 文件 51 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧 94 文件 1570 条、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 10 文件 58 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
-- 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 六批共记录 50 条缺陷（F-1…F-50）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- 第七批已交付（分支 `feature/20261107-coverage-pixel-baseline`）：源码入口覆盖率阈值（statement 88.35% 起步，阈值 87/83/88/87）与 6 个场景的像素基线（按平台分桶、忽略 AA、容差 0.1%），门禁从九段扩到十段，详见 `REQUIREMENTS.md` §12
+- 已知仍不可测的维度：整页与交互态像素（当前只截 6 个场景的首屏）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
+- 六批共记录 52 条缺陷（F-1…F-52）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**基线已清零**：库工程与用例工程均无报错（第六批收口时修完 affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space 的最后 15 条 VTU 泛型与字面量推断问题）；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
