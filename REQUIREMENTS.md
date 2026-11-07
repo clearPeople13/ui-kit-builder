@@ -230,7 +230,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 仍存在的缺口：布局基线仍只比几何矩形不比像素；覆盖率仍未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入；`ci.mjs` 目前只在本机与钩子里生效，仓库还没有服务端 runner——Gitee 上这两个 Issue 的评论功能处于关闭状态，`PATCH /repos/.../issues/{number}` 对这类 Issue 返回 404，结案的评论需要开 Issue 评论权限或改用 Web 界面补。
 
-## 11. 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-quality-gate`）
+## 11. 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`）
 
 §7 里"剩余未接入单元用例的组件"这类欠账，本批一次性抹平：`packages/ui-kit/src/components/` 下 90 个组件目录，此前 27 个有专属用例，本批补齐其余 63 个（含内部件 Slot、OnlyChild 一类无根节点的特殊件）。四路并行产出，逐文件跑绿后汇总。组件层用例从 30 文件 629 条扩到 94 文件 1576 条（其中 6 条是浏览器层覆盖的占位 `it.skip`），90 个组件目录全部有专属 spec。同批新增 `tests/profiles/props-documented.spec.ts`：把「运行时真实生效的 props 必须能在 spec.mjs 的 coreProps / feature props 里找到，字典里声明的 props 运行时也必须存在」做成贯穿 20 份产物的双向守卫。
 
