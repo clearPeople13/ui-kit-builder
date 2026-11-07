@@ -155,13 +155,18 @@ export function browserSpecs(id, root = ROOT) {
   })
 }
 
-/** 本次改动涉及哪些文件：分支差异 + 已暂存 + 未暂存 + 未跟踪 */
+/**
+ * 本次改动涉及哪些文件。
+ *
+ * 默认只看工作区（`git diff HEAD` + 未跟踪）：内循环问的是"我刚改了什么"，
+ * 不是"这条分支从 main 分出来以后一共动了什么"——后者在分支提交过几次之后
+ * 会包含脚本 / 配置改动，一律回落全量，等于选择器失效。
+ * 想看整条分支的累计影响面时显式传 `--base origin/main`。
+ */
 export function readChangedFiles({ root = ROOT, base = null } = {}) {
-  const resolved =
-    base ?? ['origin/main', 'main'].find((ref) => git(['rev-parse', '--verify', ref], root).length) ?? null
   const files = new Set()
-  if (resolved) {
-    for (const file of git(['diff', '--name-only', `${resolved}...HEAD`], root)) {
+  if (base) {
+    for (const file of git(['diff', '--name-only', `${base}...HEAD`], root)) {
       files.add(file)
     }
   }
@@ -172,7 +177,13 @@ export function readChangedFiles({ root = ROOT, base = null } = {}) {
   for (const file of git(['ls-files', '--others', '--exclude-standard'], root)) {
     files.add(file)
   }
-  return [...files].filter((file) => !IGNO.some((prefix) => file.startsWith(prefix))).sort()
+  return (
+    [...files]
+      .filter((file) => !IGNO.some((prefix) => file.startsWith(prefix)))
+      // 本地临时文件（.tmp-xxx.log / .bak 之类）不该把范围拉成全量
+      .filter((file) => !path.basename(file).startsWith('.tmp'))
+      .sort()
+  )
 }
 
 /**
@@ -364,7 +375,9 @@ function inLintScope(file) {
  * scope: none（无改动）/ scoped（只跑受影响层）/ full（拿不准，回落全量）
  */
 export function planFromChanges({ files = [], root = ROOT } = {}) {
-  const clean = [...new Set(files)].filter((file) => !IGNO.some((prefix) => file.startsWith(prefix)))
+  const clean = [...new Set(files)]
+    .filter((file) => !IGNO.some((prefix) => file.startsWith(prefix)))
+    .filter((file) => !path.basename(file).startsWith('.tmp'))
   const stages = new Set()
   const narrow = new Map()
   const wide = new Set()

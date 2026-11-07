@@ -5,6 +5,7 @@ shots/
 visual-report/
 _scratch/
 .tmp/
+.tmp-*
 .tmp-snapshot.txt
 configurator-preview.png
 configurator-test.png
