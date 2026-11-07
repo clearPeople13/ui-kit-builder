@@ -367,7 +367,7 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 实测（本机 Ryzen 9 7950X）：冷启动 `build:all` 10 分 17 秒（20 份 profile 65.0 s + 178 份试算 551.4 s），源码未变时命中缓存 57 s；`npm run quality` 从三次全量构建收敛为一次，`verify` 段从 70.5 s 降到复用后的秒级。
 
-新增守卫 `tests/build/build-hygiene.spec.ts`（6 条）：`dist/` 恰好是 20 份 profile、试算目录与 `.build/feat-*` 构建后为空、`sizes.json.features` 覆盖全部特性且为非负整数（正增量多于 100 条）、20 份 profile 元数据与 `sizes.json` 一一对应、缓存指纹是 40 位 sha1 且与本次 `sizes.json` 完全一致。构建器侧用例从 89 条增至 95 条。
+新增守卫 `tests/build/build-hygiene.spec.ts`（6 条）：`dist/` 含全部 20 份 profile 且无试算残留（构建器 UI 生成的自定义包允许存在）、试算目录与 `.build/feat-*` 构建后为空、`sizes.json.features` 覆盖全部特性且为非负整数（正增量多于 100 条）、20 份 profile 元数据与 `sizes.json` 一一对应、缓存指纹是 40 位 sha1 且与本次 `sizes.json` 完全一致。构建器侧用例从 89 条增至 95 条。
 
 ## 15. 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`）
 

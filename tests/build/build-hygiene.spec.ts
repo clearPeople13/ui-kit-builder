@@ -24,13 +24,15 @@ const sizes = readJson('sizes.json') as {
 }
 
 describe('构建产物目录的卫生边界', () => {
-  it('dist/ 恰好是 profiles/ 里的 20 份 profile，没有试算残留', () => {
+  it('20 份 profile 都在 dist/ 里，且没有试算残留', () => {
     const dirs = fs
       .readdirSync(path.join(repoRoot, 'dist'), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
-      .sort()
-    expect(dirs).toEqual([...profileNames].sort())
+    for (const name of profileNames) {
+      expect(dirs, `缺少 ${name} 产物`).toContain(name)
+    }
+    // 构建器 UI 的自定义包可以合法存在于 dist/，只有试算脚手架不许留
     expect(dirs.filter((name) => name.startsWith('feat-'))).toEqual([])
   })
 
