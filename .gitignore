@@ -25,3 +25,7 @@ ci-report.json
 
 # 覆盖率报告（本地/CI 生成，不进仓库）
 coverage/
+
+# 并行开发的工作树与任务认领台账（本地状态，不进仓库）
+.worktrees/
+.tasks/
