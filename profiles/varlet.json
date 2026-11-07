@@ -1,5 +1,7 @@
 {
   "name": "varlet",
+  "label": "Varlet 移动端",
+  "order": 11,
   "components": "full",
   "prefix": "varlet",
   "theme": {

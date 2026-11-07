@@ -1,5 +1,7 @@
 {
   "name": "antd",
+  "label": "Ant Design",
+  "order": 5,
   "components": "full",
   "prefix": "antd",
   "theme": {

@@ -1,5 +1,7 @@
 {
   "name": "bootstrap",
+  "label": "Bootstrap",
+  "order": 14,
   "components": "full",
   "prefix": "bootstrap",
   "theme": {

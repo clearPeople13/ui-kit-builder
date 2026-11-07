@@ -1,5 +1,7 @@
 {
   "name": "mantine",
+  "label": "Mantine",
+  "order": 18,
   "components": "full",
   "prefix": "mantine",
   "theme": {

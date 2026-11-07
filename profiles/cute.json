@@ -1,5 +1,7 @@
 {
   "name": "cute",
+  "label": "Cute 可爱主题",
+  "order": 4,
   "components": "full",
   "prefix": "cute",
   "theme": {

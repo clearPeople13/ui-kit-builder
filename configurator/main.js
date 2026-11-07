@@ -228,6 +228,7 @@ const state = {
 let isBuilding = false
 let estimateTimer = 0
 let estimateSeq = 0
+let estimateAbort = null
 let estimateLast = null
 
 const elements = {
@@ -2169,7 +2170,7 @@ function scheduleEstimate() {
     elements.estimateBadge.textContent = '已过期'
     elements.estimateNote.textContent = '选择已变化，正在重新试算…'
   }
-  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 700)
+  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 300)
 }
 
 async function runEstimate(seq) {
@@ -2182,22 +2183,28 @@ async function runEstimate(seq) {
     return
   }
 
+  // 新一次试算开始时终止上一次请求：用户连续勾选时，旧请求不必等打包完再被丢弃（C11）
+  estimateAbort?.abort()
+  estimateAbort = new AbortController()
+  const signal = estimateAbort.signal
+
   setEstimateLoading()
   try {
     const response = await fetch('/api/estimate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
+      signal,
     })
     const payload = await response.json()
     if (!response.ok) {throw new Error(payload.error || `HTTP ${response.status}`)}
-    if (seq !== estimateSeq) {return}
+    if (seq !== estimateSeq || signal.aborted) {return}
     const previous = estimateLast
     estimateLast = payload
     renderEstimate(payload, previous)
   }
   catch (error) {
-    if (seq !== estimateSeq) {return}
+    if (seq !== estimateSeq || error.name === 'AbortError') {return}
     renderEstimateError(error.message)
   }
 }

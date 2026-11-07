@@ -1,5 +1,7 @@
 {
   "name": "shadcn",
+  "label": "shadcn/ui",
+  "order": 15,
   "components": "full",
   "prefix": "shadcn",
   "theme": {

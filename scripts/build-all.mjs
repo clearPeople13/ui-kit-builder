@@ -5,30 +5,12 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { buildProfile, sanitizeName } from './build-lib.mjs'
 import { writeDemoMeta } from './generate-demo-meta.mjs'
+import { profileCatalog } from './profile-catalog.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
-const profileNames = [
-  'core',
-  'full',
-  'branded',
-  'chinese',
-  'cute',
-  'antd',
-  'arco',
-  'tdesign',
-  'naive',
-  'viewui',
-  'vant',
-  'varlet',
-  'semi',
-  'material3',
-  'bootstrap',
-  'shadcn',
-  'fluent',
-  'carbon',
-  'mantine',
-  'ios'
-]
+// profiles/*.json 即清单唯一来源（F-73）；按文件名排序，sizes.json 与 dist 顺序都跟着它走
+const profileEntries = profileCatalog(rootDir)
+const profileNames = profileEntries.map((entry) => entry.dirName)
 const sizesPath = path.join(rootDir, 'sizes.json')
 const distDir = path.join(rootDir, 'dist')
 // 特性边际试算不进 dist/：它只是体积测量脚手架，不该出现在包列表或产物目录里
@@ -115,22 +97,152 @@ export function sourceFingerprint() {
   return hash.digest('hex')
 }
 
-function readFeatureCache(fingerprint) {
+const profileCachePath = path.join(rootDir, '.build', 'profile-cache.json')
+const componentSrcDir = path.join(rootDir, 'packages/ui-kit/src/components')
+const sharedSrcDir = path.join(rootDir, 'packages/ui-kit/src/shared')
+
+function fingerprintFiles(files) {
+  const hash = crypto.createHash('sha1')
+  hash.update(`node=${process.version}\nplatform=${process.platform}\narch=${process.arch}\n`)
+  const sorted = [...files].sort()
+  for (const file of sorted) {
+    hash.update(path.relative(rootDir, file))
+    hash.update('\0')
+    hash.update(fs.readFileSync(file))
+  }
+  return hash.digest('hex')
+}
+
+function builtinInputs() {
+  return [
+    path.join(rootDir, 'registry.mjs'),
+    path.join(rootDir, 'scripts/build-lib.mjs'),
+    path.join(rootDir, 'scripts/build-all.mjs'),
+    path.join(rootDir, 'package-lock.json')
+  ]
+}
+
+function sourceFiles(files) {
+  walkFiles(sharedSrcDir, files)
+  return files
+}
+
+/**
+ * 组件级缓存键：只包含该组件自己的源码 + shared + 注册表 + 构建器口径（A10）。
+ * 改一个组件只让这个组件重算，不用把 178 个特性全部重打一遍。
+ */
+export function componentFingerprint(componentId) {
+  const dir = path.join(componentSrcDir, componentId)
+  if (!fs.existsSync(dir)) {
+    return null
+  }
+  const files = [...builtinInputs(), path.join(rootDir, 'profiles/full.json')]
+  walkFiles(dir, files)
+  sourceFiles(files)
+  return fingerprintFiles(files)
+}
+
+function profileInputFiles(entry) {
+  const files = [...builtinInputs(), path.join(rootDir, 'profiles', entry.fileName)]
+  const components = entry.config.components
+  const ids =
+    components && typeof components === 'object' && !Array.isArray(components)
+      ? Object.keys(components)
+      : fs.readdirSync(componentSrcDir).filter((name) => fs.existsSync(path.join(componentSrcDir, name)))
+  for (const id of ids) {
+    const dir = path.join(componentSrcDir, id)
+    if (fs.existsSync(dir)) {
+      walkFiles(dir, files)
+    }
+  }
+  sourceFiles(files)
+  return files
+}
+
+/** profile 级缓存键：profile 配置 + 选中组件源码 + shared + 注册表 + build-lib（C2） */
+export function profileFingerprint(profileName) {
+  const entry = profileEntries.find((item) => item.profileName === profileName || item.dirName === profileName)
+  if (!entry) {
+    return null
+  }
+  return fingerprintFiles(profileInputFiles(entry))
+}
+
+function readFeatureCache() {
   try {
     const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'))
-    return cache?.fingerprint === fingerprint && cache.features ? cache.features : null
+    return cache?.version === 2 && cache.components ? cache.components : null
   } catch {
     return null
   }
 }
 
-function writeFeatureCache(fingerprint, features) {
+function componentFeatures(component) {
+  return Object.entries(Object.assign({}, ...component.exports.map((item) => item.features ?? {})))
+}
+
+function groupFeatures(registry, features) {
+  const grouped = {}
+  for (const component of Object.values(registry.components)) {
+    const own = {}
+    for (const [id] of componentFeatures(component)) {
+      if (features[id]) {
+        own[id] = features[id]
+      }
+    }
+    grouped[component.id] = own
+  }
+  return grouped
+}
+
+function writeFeatureCache(fingerprints, grouped) {
+  const components = {}
+  for (const [componentId, features] of Object.entries(grouped)) {
+    if (!Object.keys(features).length || !fingerprints[componentId]) {
+      continue
+    }
+    components[componentId] = { fingerprint: fingerprints[componentId], features }
+  }
   fs.mkdirSync(path.dirname(cachePath), { recursive: true })
   fs.writeFileSync(
     cachePath,
-    `${JSON.stringify({ fingerprint, generatedAt: new Date().toISOString(), features }, null, 2)}\n`,
+    `${JSON.stringify({ version: 2, generatedAt: new Date().toISOString(), components }, null, 2)}\n`,
     'utf8'
   )
+}
+
+function readProfileCache() {
+  try {
+    const cache = JSON.parse(fs.readFileSync(profileCachePath, 'utf8'))
+    return cache?.version === 1 && cache.profiles ? cache.profiles : null
+  } catch {
+    return null
+  }
+}
+
+function writeProfileCache(profiles) {
+  fs.mkdirSync(path.dirname(profileCachePath), { recursive: true })
+  fs.writeFileSync(
+    profileCachePath,
+    `${JSON.stringify({ version: 1, generatedAt: new Date().toISOString(), profiles }, null, 2)}\n`,
+    'utf8'
+  )
+}
+
+/** 缓存命中的前提是产物三件套仍在且 meta 能解析，缺一件就当未命中 */
+function reusableProfileMeta(entry) {
+  const dir = path.join(distDir, entry.dirName)
+  for (const file of ['ui-kit.js', 'meta.json', 'package.json', 'index.d.ts']) {
+    if (!fs.existsSync(path.join(dir, file))) {
+      return null
+    }
+  }
+  try {
+    const meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'))
+    return meta.name === entry.dirName ? meta : null
+  } catch {
+    return null
+  }
 }
 
 /** 清掉上次中断留下的试算产物；旧版本曾把它们写进 dist/ 与 .build/，一并迁移清理 */
@@ -230,27 +342,47 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
 
   cleanTempArtifacts()
   const fingerprint = sourceFingerprint()
-  const profileConfigs = profileNames.map((profileName) => {
-    const configPath = path.join(rootDir, 'profiles', `${profileName}.json`)
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
-    return { profileName, dirName: sanitizeName(config.name ?? profileName), config }
-  })
   // 删掉清单里已经不存在的历史 profile，避免它们继续被 /api/packages 当成可安装产物（F-68）
-  cleanStaleProfiles(new Set(profileConfigs.map((item) => item.dirName)))
+  cleanStaleProfiles(new Set(profileNames))
 
+  const useCache = cache
+  const previousProfiles = useCache ? readProfileCache() : null
+  const nextProfiles = {}
+  let profileHits = 0
   const profileStarted = Date.now()
-  const results = await mapPool(profileConfigs, concurrency(), ({ profileName, config }) =>
-    buildProfile({
-      ...config,
-      name: config.name ?? profileName
+  const results = await mapPool(profileEntries, concurrency(), async (entry) => {
+    const profileKey = useCache ? profileFingerprint(entry.profileName) : null
+    if (useCache && profileKey && previousProfiles?.[entry.dirName]?.fingerprint === profileKey) {
+      // 配置与选中组件源码都没变，产物三件套也都在：直接复用上次的 meta，不再打一遍包（C2）
+      const meta = reusableProfileMeta(entry)
+      if (meta) {
+        profileHits += 1
+        nextProfiles[entry.dirName] = previousProfiles[entry.dirName]
+        return meta
+      }
+    }
+    const result = await buildProfile({
+      ...entry.config,
+      name: entry.config.name ?? entry.profileName
     })
-  )
+    if (useCache && profileKey) {
+      nextProfiles[entry.dirName] = { fingerprint: profileKey, generatedAt: new Date().toISOString() }
+    }
+    return result
+  })
+  if (useCache) {
+    writeProfileCache(nextProfiles)
+  }
   const profileSeconds = ((Date.now() - profileStarted) / 1000).toFixed(1)
-  console.log(`[build] ${profileNames.length} 份正式 profile 完成（${concurrency()} 路并发，${profileSeconds}s）`)
+  console.log(
+    `[build] ${profileNames.length} 份正式 profile 完成（${concurrency()} 路并发，${profileSeconds}s${
+      profileHits ? `，命中缓存 ${profileHits} 份` : ''
+    }）`
+  )
 
   const { loadRegistry, fullSelection } = await import('../registry.mjs')
   const registry = await loadRegistry()
-  const features = {}
+  const computed = {}
 
   // 特性边际统一用「full 去掉该特性」的临时产物与 full 相减，
   // 得到该特性在完整产物里的边际成本。这样 178 个特性都有真实体积数据，
@@ -258,41 +390,54 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
   // 临时产物写 .build/feature-deltas/，并在 try/finally 里清理，dist/ 永远只有 20 份正式包。
   const fullResult = results.find((result) => result.name === 'full')
   if (fullResult) {
-    const cached = cache ? readFeatureCache(fingerprint) : null
+    const componentFingerprints = {}
+    for (const component of Object.values(registry.components)) {
+      componentFingerprints[component.id] = componentFingerprint(component.id)
+    }
+    // 键从"全局一次哈希"改成"组件级指纹"：任一组件源码变化只重算它自己的特性（A10）
+    const cached = useCache ? readFeatureCache() : null
     const fullSel = fullSelection(registry)
     const pending = []
 
     for (const component of Object.values(registry.components)) {
+      const cachedComponent = cached?.[component.id]
+      const usable = cachedComponent && cachedComponent.fingerprint === componentFingerprints[component.id]
       for (const [id, feature] of Object.entries(
         Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
       )) {
-        if (cached?.[id]) {
-          features[id] = cached[id]
+        if (usable && cachedComponent.features[id]) {
+          computed[id] = cachedComponent.features[id]
           continue
         }
         pending.push({ component, id, feature })
       }
     }
 
+    const persist = () => writeFeatureCache(componentFingerprints, groupFeatures(registry, computed))
     if (pending.length) {
       const tempStarted = Date.now()
+      const chunk = concurrency()
+      let completed = 0
       try {
-        const built = await mapPool(pending, concurrency(), async ({ component, id }) => {
+        await mapPool(pending, chunk, async ({ component, id, feature }) => {
           const minusSel = JSON.parse(JSON.stringify(fullSel))
           minusSel[component.id] = (minusSel[component.id] ?? []).filter((featureId) => featureId !== id)
           const name = `__feat_${id}`
-          return buildProfile({
+          const result = await buildProfile({
             name,
             prefix: 'ui',
             components: minusSel,
             outDir: path.relative(rootDir, path.join(tempRoot, sanitizeName(name)))
           })
-        })
-        pending.forEach(({ component, id, feature }, index) => {
-          features[id] = {
+          computed[id] = {
             title: feature.title,
             component: component.id,
-            ...delta(built[index], fullResult)
+            ...delta(result, fullResult)
+          }
+          completed += 1
+          // 每完成一批（并发窗口）就落盘，进程中断时已完成的部分不会白算（A10）
+          if (useCache && completed % chunk === 0) {
+            persist()
           }
         })
       } finally {
@@ -302,25 +447,34 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
           fs.rmSync(path.join(rootDir, '.build', sanitizeName(`__feat_${id}`)), { recursive: true, force: true })
         }
       }
+      if (useCache) {
+        persist()
+      }
       const tempSeconds = ((Date.now() - tempStarted) / 1000).toFixed(1)
       console.log(`[build] ${pending.length} 个特性边际临时产物完成（${concurrency()} 路并发，${tempSeconds}s）`)
     } else if (cached) {
-      console.log(`[build] ${Object.keys(features).length} 个特性的边际体积命中内容哈希缓存，跳过临时构建`)
+      console.log(`[build] ${Object.keys(computed).length} 个特性的边际体积命中组件级缓存，跳过临时构建`)
     }
+  }
 
-    const negative = Object.entries(features).filter(([, feature]) => SIZE_KEYS.some((key) => feature[key] < 0))
-    if (negative.length) {
-      console.log(
-        `[build] ${negative.length} 个特性边际为负值（裁掉特性反而变大），已按原始差值写入 sizes.json：${negative
-          .slice(0, 5)
-          .map(([id]) => id)
-          .join(', ')}${negative.length > 5 ? ' 等' : ''}`
-      )
+  // 输出顺序固定按 registry 的组件 / 特性顺序，缓存命中与并发完成顺序都不会让 sizes.json 抖动
+  const features = {}
+  for (const component of Object.values(registry.components)) {
+    for (const id of Object.keys(Object.assign({}, ...component.exports.map((item) => item.features ?? {})))) {
+      if (computed[id]) {
+        features[id] = computed[id]
+      }
     }
+  }
 
-    if (cache) {
-      writeFeatureCache(fingerprint, features)
-    }
+  const negative = Object.entries(features).filter(([, feature]) => SIZE_KEYS.some((key) => feature[key] < 0))
+  if (negative.length) {
+    console.log(
+      `[build] ${negative.length} 个特性边际为负值（裁掉特性反而变大），已按原始差值写入 sizes.json：${negative
+        .slice(0, 5)
+        .map(([id]) => id)
+        .join(', ')}${negative.length > 5 ? ' 等' : ''}`
+    )
   }
 
   // 指纹与 sizes.json 同批落盘：下一次 verify:reuse / build:all --reuse 只有指纹一致才敢复用（F-70）

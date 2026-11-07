@@ -3,34 +3,17 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { loadRegistry } from '../registry.mjs'
 import { CATEGORY_ORDER, categoryOf } from './demo-categories.mjs'
+import { profileCatalog } from './profile-catalog.mjs'
 import { PROP_DESCRIPTIONS } from './prop-descriptions.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const outputFile = path.join(rootDir, 'examples/consumer/src/demo/meta.json')
 const distDir = path.join(rootDir, 'dist')
 
-const PACKAGE_LABELS = {
-  core: 'Core 基础包',
-  full: 'Full 全特性',
-  branded: 'Branded 品牌主题',
-  chinese: 'Chinese 中国风',
-  cute: 'Cute 可爱主题',
-  antd: 'Ant Design',
-  arco: 'Arco Design',
-  tdesign: 'TDesign 腾讯',
-  naive: 'Naive UI',
-  viewui: 'View Design (iView)',
-  vant: 'Vant 移动端',
-  varlet: 'Varlet 移动端',
-  semi: 'Semi Design',
-  material3: 'Material 3 谷歌',
-  bootstrap: 'Bootstrap',
-  shadcn: 'shadcn/ui',
-  fluent: 'Fluent 2 微软',
-  carbon: 'Carbon IBM',
-  mantine: 'Mantine',
-  ios: 'iOS 苹果'
-}
+// label 与排序都从 profiles/*.json 读，调试台不再维护第二份包名表（F-73）
+const profiles = profileCatalog(rootDir)
+const PACKAGE_LABELS = Object.fromEntries(profiles.map((entry) => [entry.dirName, entry.label]))
+const PACKAGE_ORDER = profiles.map((entry) => entry.dirName)
 
 function readConsumerDependencies() {
   const consumerPkgPath = path.join(rootDir, 'examples/consumer/package.json')
@@ -78,10 +61,9 @@ function readPackages(installed) {
       }
     })
   }
-  const known = Object.keys(PACKAGE_LABELS)
   packages.sort((left, right) => {
-    const leftIndex = known.indexOf(left.id)
-    const rightIndex = known.indexOf(right.id)
+    const leftIndex = PACKAGE_ORDER.indexOf(left.id)
+    const rightIndex = PACKAGE_ORDER.indexOf(right.id)
     return (leftIndex < 0 ? 99 : leftIndex) - (rightIndex < 0 ? 99 : rightIndex) || left.id.localeCompare(right.id)
   })
   return packages

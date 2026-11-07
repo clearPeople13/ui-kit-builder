@@ -1,5 +1,7 @@
 {
   "name": "fluent",
+  "label": "Fluent 2 微软",
+  "order": 16,
   "components": "full",
   "prefix": "fluent",
   "theme": {

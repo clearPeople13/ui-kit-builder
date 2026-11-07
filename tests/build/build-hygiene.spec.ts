@@ -125,18 +125,36 @@ describe('特性边际体积的完整性', () => {
   })
 })
 
-describe('特性边际的内容哈希缓存', () => {
+describe('特性边际与 profile 产物缓存（A10 / C2）', () => {
   const cacheFile = path.join(repoRoot, '.build/feature-size-cache.json')
+  const profileCacheFile = path.join(repoRoot, '.build/profile-cache.json')
   // UIKIT_NO_BUILD_CACHE=1 是调试开关，只在显式关掉缓存时跳过这组断言
   const enabled = process.env.UIKIT_NO_BUILD_CACHE !== '1'
 
-  it.skipIf(!enabled)('缓存指纹是源码内容的 sha1，且与本次 sizes.json 完全一致', () => {
+  it.skipIf(!enabled)('缓存 v2 按组件记录 sha1，合并后与本次 sizes.json 完全一致', () => {
     expect(fs.existsSync(cacheFile), 'build:all 应写出 .build/feature-size-cache.json').toBe(true)
     const cache = JSON.parse(fs.readFileSync(cacheFile, 'utf8')) as {
-      fingerprint: string
-      features: Record<string, unknown>
+      version: number
+      components: Record<string, { fingerprint: string; features: Record<string, unknown> }>
     }
-    expect(cache.fingerprint).toMatch(/^[0-9a-f]{40}$/)
-    expect(cache.features).toEqual(sizes.features)
+    expect(cache.version).toBe(2)
+    const merged = Object.assign({}, ...Object.values(cache.components).map((entry) => entry.features))
+    for (const [id, entry] of Object.entries(cache.components)) {
+      expect(entry.fingerprint, `${id} 的组件指纹`).toMatch(/^[0-9a-f]{40}$/)
+    }
+    expect(merged).toEqual(sizes.features)
+  })
+
+  it.skipIf(!enabled)('profile 缓存覆盖 20 份产物，指纹是 sha1', () => {
+    expect(fs.existsSync(profileCacheFile), 'build:all 应写出 .build/profile-cache.json').toBe(true)
+    const cache = JSON.parse(fs.readFileSync(profileCacheFile, 'utf8')) as {
+      version: number
+      profiles: Record<string, { fingerprint: string }>
+    }
+    expect(cache.version).toBe(1)
+    expect(Object.keys(cache.profiles).sort()).toEqual([...profileNames].sort())
+    for (const [name, entry] of Object.entries(cache.profiles)) {
+      expect(entry.fingerprint, `${name} 的 profile 指纹`).toMatch(/^[0-9a-f]{40}$/)
+    }
   })
 })

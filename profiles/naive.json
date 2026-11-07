@@ -1,5 +1,7 @@
 {
   "name": "naive",
+  "label": "Naive UI",
+  "order": 8,
   "components": "full",
   "prefix": "naive",
   "theme": {

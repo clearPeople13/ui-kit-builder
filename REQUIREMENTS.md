@@ -467,4 +467,34 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 - 构建器层新增 `tests/build/dev-api.spec.ts` 4 条（保留名 409、非法 JSON 400、空选择试算、自定义包落盘与包列表回读）与 `tests/build/build-hygiene.spec.ts` 3 条（A4 指纹、A5 陈旧目录判定、A6 有符号 delta）。
 - 门禁仍为十二段；`ci-report.json` 新增 `abortedBy` 与 `skipped` 字段，短路时汇总用 `· 未执行` 标记后续阶段。
-- 缺陷 F-1…F-72 全部修复；`REQUIREMENTS.md` / `README.md` / `KNOWLEDGE.md` 三处口径同步为 72 条。
+- 缺陷 F-1…F-72 全部修复；B1 交付时三处口径同步为 72 条（B2 继续追加 F-73…F-78）。
+
+## 17. 第九批交付（工程与测试优化 · B2：构建缓存与清单单一来源，分支 `feature/20261107-optimization-plan`）
+
+### 17.1 背景与范围
+
+B2 承接 B1 的指纹机制，把"每次门禁都像冷启动"的构建成本压下来：特性边际缓存从全局单键改成组件级分键、profile 产物加缓存、`--fast` 走指纹复用、注册表进程内只加载一次，并把 profile 清单 / 展示名 / 消费方依赖收敛到 `profiles/*.json` 一个来源（计划书 §3 的 A10、C1–C4、C11）。
+
+### 17.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-73 | `scripts/build-all.mjs` / `scripts/dev-api.mjs` / `scripts/generate-demo-meta.mjs` / `examples/consumer/package.json` | profile 清单、展示名、消费方依赖各维护一份，新增 profile 要改 4 处，`chinese` 一直没进示例工程 | 清单靠手写数组与包名表 | 新增 `scripts/profile-catalog.mjs` 作为唯一来源（含 `label` / `order`）；`npm run sync:consumer-deps` 从 `dist/` 生成消费方依赖 |
+| F-74 | `scripts/build-all.mjs` | 任一组件改动都会让 178 条特性边际全部重算 | 缓存只有一个全局 `sourceFingerprint` 键 | 缓存 v2 按组件分键（组件源码 + shared + 注册表 + build-lib + full 配置），每批完成即落盘 |
+| F-75 | `scripts/build-all.mjs` | 每次门禁都重打 20 份 profile，哪怕配置与源码没变 | profile 产物没有缓存 | profile 级指纹（配置 + 选中组件源码 + shared + 注册表 + build-lib）+ 产物三件套校验，命中直接复用 `meta.json` |
+| F-76 | `scripts/ci.mjs` | pre-commit 的 `--fast` 仍跑裸 `verify`，每次都重打 198 份包 | `verify` 段没有指纹复用 | `--fast` 改用 `verify:reuse`，产物没变秒过、源码变了自动重建 |
+| F-77 | `registry.mjs` | 同一次构建里 20 次 `buildProfile` 各加载一遍 90 个 `spec.mjs` | `loadRegistry` 无进程内缓存 | 进程级 Promise memo，dev 调试台用 `{ fresh: true }` 绕过 |
+| F-78 | `scripts/dev-api.mjs` / `configurator/main.js` | 来回切换相同组件组合会反复打包试算；旧请求不能中止 | 估算无缓存、请求只靠 seq 丢弃响应 | 估算结果按"选中组件 + 主题"LRU（30 条）；前端 debounce 降到 300ms 并新增 AbortController |
+
+### 17.3 交付与数字
+
+- `npm run build:all` 首轮冷构建：20 份 profile 43.5s + 178 条边际约 7 分钟；**第二轮 1.7 秒**（20/20 profile 命中、178 条边际命中组件级缓存）。
+- `sizes.json` 连续两次构建 SHA-256 完全一致（含 `generatedAt` 只在内容变化时更新）。
+- `node scripts/ci.mjs --fast` 实测约 24.5 秒（format 4.3s / typecheck 7.0s / lint 3.8s / verify 复用 8.5s / governance 0.9s；目标 15 秒，差距见 §17.4）。
+- 消费方依赖脚本同步后 20 个 `@demo/ui-kit-*` 全部就位（`chinese` 补上），`examples/consumer/package-lock.json` 一并更新。
+- 新增用例 `tests/build/build-cache.spec.ts` 3 条（组件 / profile / 注册表三类失效）与 `tests/build/consumer-deps.spec.ts` 1 条（依赖与产物一一对应）。
+- 缺陷 F-1…F-78 全部修复；三处文档口径同步为 78 条。
+
+### 17.4 遗留说明
+
+- `--fast` 实测高于计划书的 15 秒目标，主要由 typecheck（6.8s）与四次 npm 进程启动构成；进一步压缩需要把 pre-commit 改成直接调用本地 `tsc/eslint/prettier` 二进制（计划书 B3a 的 B8 已列为后续项），本批不改，避免把门禁入口再分叉。

@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildProfile, normalizePropType, sanitizeName, sanitizePrefix } from './build-lib.mjs'
+import { profileCatalog } from './profile-catalog.mjs'
 import { loadRegistry } from '../registry.mjs'
 import { loadThemeTokens } from './theme-tokens.mjs'
 
@@ -27,27 +28,8 @@ function readBody(request) {
   })
 }
 
-const PACKAGE_LABELS = {
-  core: 'Core 基础包',
-  full: 'Full 全特性',
-  branded: 'Branded 品牌主题',
-  chinese: 'Chinese 中国风',
-  cute: 'Cute 可爱主题',
-  antd: 'Ant Design',
-  arco: 'Arco Design',
-  tdesign: 'TDesign 腾讯',
-  naive: 'Naive UI',
-  viewui: 'View Design (iView)',
-  vant: 'Vant 移动端',
-  varlet: 'Varlet 移动端',
-  semi: 'Semi Design',
-  material3: 'Material 3 谷歌',
-  bootstrap: 'Bootstrap',
-  shadcn: 'shadcn/ui',
-  fluent: 'Fluent 2 微软',
-  carbon: 'Carbon IBM',
-  mantine: 'Mantine',
-  ios: 'iOS 苹果'
+function profileEntries() {
+  return profileCatalog(rootDir)
 }
 
 const PACK_MIME_TYPES = {
@@ -131,23 +113,7 @@ function listPresets() {
  * 否则会覆盖 dist/<profile> 这类可安装的正式产物（F-66）。
  */
 export function reservedProfileNames() {
-  const profilesDir = path.join(rootDir, 'profiles')
-  const names = new Set()
-  if (!fs.existsSync(profilesDir)) {
-    return names
-  }
-  for (const file of fs.readdirSync(profilesDir)) {
-    if (!file.endsWith('.json')) {
-      continue
-    }
-    try {
-      const profile = JSON.parse(fs.readFileSync(path.join(profilesDir, file), 'utf8'))
-      names.add(sanitizeName(profile.name ?? file.replace(/.json$/, '')))
-    } catch {
-      continue
-    }
-  }
-  return names
+  return new Set(profileEntries().map((entry) => entry.dirName))
 }
 
 /** 自定义包统一落在 dist/custom/<name>，与 20 份正式 profile 的命名空间隔离 */
@@ -155,7 +121,7 @@ export function customPackageDir(name) {
   return `dist/custom/${sanitizeName(name)}`
 }
 
-function describePackage(dir, id) {
+function describePackage(dir, id, label) {
   const metaPath = path.join(dir, 'meta.json')
   const pkgPath = path.join(dir, 'package.json')
   if (!fs.existsSync(metaPath) || !fs.existsSync(pkgPath)) {
@@ -184,7 +150,7 @@ function describePackage(dir, id) {
   const cssVersion = cssPath ? Math.round(fs.statSync(cssPath).mtimeMs) : 0
   return {
     id,
-    label: PACKAGE_LABELS[id] ?? meta.name ?? id,
+    label: label ?? meta.name ?? id,
     npm: pkg.name,
     prefix: meta.prefix ?? pkg.uiKit?.prefix ?? 'ui',
     features: meta.features ?? pkg.uiKit?.features ?? [],
@@ -211,6 +177,9 @@ function listBuiltPackages() {
     return []
   }
   const packages = []
+  const catalog = profileEntries()
+  const labels = new Map(catalog.map((item) => [item.dirName, item.label]))
+  const order = new Map(catalog.map((item, index) => [item.dirName, index]))
   const customDir = path.join(distDir, 'custom')
   for (const entry of fs.readdirSync(distDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) {
@@ -233,16 +202,15 @@ function listBuiltPackages() {
       }
       continue
     }
-    const described = describePackage(path.join(distDir, entry.name), entry.name)
+    const described = describePackage(path.join(distDir, entry.name), entry.name, labels.get(entry.name))
     if (described) {
       packages.push(described)
     }
   }
-  const known = Object.keys(PACKAGE_LABELS)
   packages.sort((left, right) => {
-    const leftIndex = known.indexOf(left.id)
-    const rightIndex = known.indexOf(right.id)
-    return (leftIndex < 0 ? 99 : leftIndex) - (rightIndex < 0 ? 99 : rightIndex) || left.id.localeCompare(right.id)
+    const leftIndex = order.has(left.id) ? order.get(left.id) : 99
+    const rightIndex = order.has(right.id) ? order.get(right.id) : 99
+    return leftIndex - rightIndex || left.id.localeCompare(right.id)
   })
   return packages
 }
@@ -295,11 +263,23 @@ export function createApiHandlers() {
     buildQueue = task.catch(() => {})
     return task
   }
+  // 估算结果按"选中组件 + 主题"缓存，来回切选项时同一组合不重复打包（C11）。
+  // Map 的插入顺序当 LRU 用：命中先删再插，超过上限时淘汰最旧的一条。
+  const estimateCache = new Map()
+  const ESTIMATE_CACHE_LIMIT = 30
+  const estimateKey = (body, selection) => {
+    const normalized = Object.keys(selection)
+      .sort()
+      .map((id) => `${id}:${(Array.isArray(selection[id]) ? [...selection[id]] : []).sort().join(',')}`)
+      .join('|')
+    return `${JSON.stringify(body.theme ?? {})}\n${normalized}`
+  }
 
   return {
     async registry() {
       try {
-        const registry = await loadRegistry()
+        // dev 侧要能看到刚改过的 spec，显式绕过进程级 memo（C3）
+        const registry = await loadRegistry({ fresh: true })
         return { status: 200, payload: { ...serializeRegistry(registry), tokens: loadThemeTokens() } }
       } catch (error) {
         return { status: 500, payload: { error: error.message } }
@@ -329,6 +309,14 @@ export function createApiHandlers() {
         }
       }
 
+      const cacheKey = estimateKey(body, selection)
+      if (process.env.UIKIT_NO_BUILD_CACHE !== '1' && estimateCache.has(cacheKey)) {
+        const hit = estimateCache.get(cacheKey)
+        estimateCache.delete(cacheKey)
+        estimateCache.set(cacheKey, hit)
+        return { status: 200, payload: hit }
+      }
+
       try {
         const result = await enqueue(() =>
           buildProfile({
@@ -340,17 +328,21 @@ export function createApiHandlers() {
             outDir: '.build/estimate-dist'
           })
         )
-        return {
-          status: 200,
-          payload: {
-            components: result.components.length,
-            features: result.features.length,
-            jsBytes: result.jsBytes,
-            cssBytes: result.cssBytes,
-            totalBytes: result.totalBytes,
-            gzipBytes: result.gzipBytes
+        const payload = {
+          components: result.components.length,
+          features: result.features.length,
+          jsBytes: result.jsBytes,
+          cssBytes: result.cssBytes,
+          totalBytes: result.totalBytes,
+          gzipBytes: result.gzipBytes
+        }
+        if (process.env.UIKIT_NO_BUILD_CACHE !== '1') {
+          estimateCache.set(cacheKey, payload)
+          while (estimateCache.size > ESTIMATE_CACHE_LIMIT) {
+            estimateCache.delete(estimateCache.keys().next().value)
           }
         }
+        return { status: 200, payload }
       } catch (error) {
         return { status: error.status || 500, payload: { error: error.message } }
       }

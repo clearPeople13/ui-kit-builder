@@ -15,7 +15,8 @@ import { spawnSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 
 // fullScript：全量模式下已经先跑过 build:all，各层改用不带 pretest 的 run 脚本，
-// 一次门禁只构建一轮；fast 模式或单独指定 --stage 时仍用自给自足的原始脚本，避免吃到陈旧产物。
+// 一次门禁只构建一轮；fast 模式用指纹校验过的 verify:reuse——产物没变就秒过，
+// 源码变了自动重建，不会像裸 verify 那样每次 pre-commit 都重打 198 份包（C1）。
 const STAGES = [
   {
     name: 'build',
@@ -28,10 +29,9 @@ const STAGES = [
   { name: 'lint', script: 'lint', fast: true, desc: 'ESLint' },
   {
     name: 'verify',
-    script: 'verify',
-    fullScript: 'verify:reuse',
+    script: 'verify:reuse',
     fast: true,
-    desc: '库级校验（产物、API 一致性、令牌落盘）'
+    desc: '库级校验（产物、API 一致性、令牌落盘；指纹一致时直接复用）'
   },
   {
     name: 'governance',
