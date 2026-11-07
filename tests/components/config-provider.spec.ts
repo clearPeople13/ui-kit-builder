@@ -33,18 +33,18 @@ describe('ConfigProvider', () => {
 
   it('size 空字符串等价于未设置，不向下传递', () => {
     const wrapper = mountProvider({ size: '' }, h(Segmented, { options: ['a'], modelValue: 'a' }))
-    expect(wrapper.find('.ui-segmented').classes()).not.toEqual(expect.arrayContaining(['is-size-small']))
+    expect(wrapper.find('.ui-segmented').classes()).not.toEqual(expect.arrayContaining(['--size-small']))
   })
 
   it('size 向下传递给未显式设置 size 的子组件', () => {
     const wrapper = mountProvider({ size: 'large' }, h(Segmented, { options: ['a', 'b'], modelValue: 'a' }))
-    expect(wrapper.find('.ui-segmented').classes()).toContain('is-size-large')
+    expect(wrapper.find('.ui-segmented').classes()).toContain('--size-large')
   })
 
   it('子组件显式 size 优先于全局 size', () => {
     const wrapper = mountProvider({ size: 'large' }, h(Segmented, { options: ['a'], modelValue: 'a', size: 'small' }))
-    expect(wrapper.find('.ui-segmented').classes()).toContain('is-size-small')
-    expect(wrapper.find('.ui-segmented').classes()).not.toContain('is-size-large')
+    expect(wrapper.find('.ui-segmented').classes()).toContain('--size-small')
+    expect(wrapper.find('.ui-segmented').classes()).not.toContain('--size-large')
   })
 
   it('size 向下传递给 Tag', () => {
@@ -75,7 +75,7 @@ describe('ConfigProvider', () => {
 
   it('无 provider 时子组件保持自身缺省尺寸', () => {
     const wrapper = mount(Segmented, { props: { options: ['a'], modelValue: 'a' }, attachTo: document.body })
-    expect(wrapper.classes()).not.toEqual(expect.arrayContaining(['is-size-large', 'is-size-small']))
+    expect(wrapper.classes()).not.toEqual(expect.arrayContaining(['--size-large', '--size-small']))
   })
 
   it('内层 ConfigProvider 的 size 覆盖外层，作用于其子树', () => {

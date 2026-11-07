@@ -6,5 +6,5 @@ export const imageLoadingFeature = createClassFeature({
   props: {
     loading: { type: String }
   },
-  className: (props) => (props.loading ? 'ui-image--loading' : undefined)
+  className: (props) => (props.loading ? 'is-loading' : undefined)
 })

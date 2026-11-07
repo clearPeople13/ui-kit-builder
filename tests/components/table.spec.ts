@@ -64,7 +64,7 @@ describe('Table', () => {
 
   it('stripe / border / size 映射类名', async () => {
     expect((await setup({ stripe: true, border: true, size: 'small' })).classes()).toEqual(
-      expect.arrayContaining(['ui-table', 'ui-table--striped', 'ui-table--bordered', 'ui-table--small'])
+      expect.arrayContaining(['ui-table', 'ui-table--striped', 'ui-table--bordered', 'ui-table--size-small'])
     )
   })
 
@@ -414,7 +414,7 @@ describe('Table', () => {
 
   it('loading 遮罩与文案', async () => {
     const wrapper = await setup({ loading: true })
-    expect(wrapper.classes()).toContain('ui-table--loading')
+    expect(wrapper.classes()).toContain('is-loading')
     expect(wrapper.find('.ui-table__loading').exists()).toBe(true)
     expect(wrapper.find('.ui-table__loading-spinner').exists()).toBe(true)
     expect(wrapper.find('.ui-table__loading-text').exists()).toBe(false)

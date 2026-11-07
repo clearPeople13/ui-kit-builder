@@ -8,7 +8,7 @@ describe('Container 布局容器', () => {
     const wrapper = mount(Container, { slots: { default: () => h(Main, {}, () => '主体') } })
     expect(wrapper.element.tagName).toBe('SECTION')
     expect(wrapper.classes()).toContain('ui-container')
-    expect(wrapper.classes()).toContain('ui-container--vertical')
+    expect(wrapper.classes()).toContain('is-vertical')
   })
 
   it('tag 替换根元素', () => {
@@ -20,7 +20,7 @@ describe('Container 布局容器', () => {
       slots: { default: () => [h(Aside, {}, () => '侧栏'), h(Main, {}, () => '主体')] }
     })
     expect(wrapper.classes()).toContain('ui-container')
-    expect(wrapper.classes()).not.toContain('ui-container--vertical')
+    expect(wrapper.classes()).not.toContain('is-vertical')
   })
 
   it('direction 显式覆盖自动判定', () => {
@@ -28,9 +28,9 @@ describe('Container 布局容器', () => {
       props: { direction: 'vertical' },
       slots: { default: () => [h(Aside, {}, () => 's'), h(Main, {}, () => 'm')] }
     })
-    expect(forcedVertical.classes()).toContain('ui-container--vertical')
+    expect(forcedVertical.classes()).toContain('is-vertical')
     const forcedHorizontal = mount(Container, { props: { direction: 'horizontal' } })
-    expect(forcedHorizontal.classes()).not.toContain('ui-container--vertical')
+    expect(forcedHorizontal.classes()).not.toContain('is-vertical')
   })
 
   it('Aside 渲染 aside 并带缺省宽度', () => {
@@ -98,7 +98,7 @@ describe('Container 布局容器', () => {
     expect(wrapper.findAll('.ui-aside')).toHaveLength(1)
     expect(wrapper.findAll('.ui-main')).toHaveLength(1)
     expect(wrapper.findAll('.ui-footer')).toHaveLength(1)
-    expect(wrapper.classes()).not.toContain('ui-container--vertical')
+    expect(wrapper.classes()).not.toContain('is-vertical')
   })
 
   it('空容器只渲染根', () => {

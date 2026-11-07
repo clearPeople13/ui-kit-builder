@@ -412,7 +412,7 @@ describe('DatePicker 日期选择', () => {
   it('size 与自定义 placeholder、format 生效', async () => {
     const wrapper = mountPicker({ size: 'large', placeholder: '请选择到访日期', format: 'YYYY年MM月DD日' })
     await nextTick()
-    expect(wrapper.classes()).toContain('is-size-large')
+    expect(wrapper.classes()).toContain('--size-large')
     expect(wrapper.find('input').attributes('placeholder')).toBe('请选择到访日期')
     expect(inputValue(wrapper)).toBe('2026年11月06日')
   })

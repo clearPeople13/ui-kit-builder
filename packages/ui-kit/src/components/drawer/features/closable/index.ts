@@ -10,6 +10,6 @@ export const drawerClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-drawer--closable'
+      ? 'is-closable'
       : undefined
 })

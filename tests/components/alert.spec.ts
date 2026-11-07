@@ -81,7 +81,7 @@ describe('Alert 警告提示', () => {
 
   it('closable 默认渲染关闭按钮', () => {
     const wrapper = mountAlert({ title: 'a' })
-    expect(wrapper.classes()).toContain('ui-alert--closable')
+    expect(wrapper.classes()).toContain('is-closable')
     const close = wrapper.find('.ui-alert__close')
     expect(close.exists()).toBe(true)
     expect(close.attributes('aria-label')).toBe('Close')
@@ -98,7 +98,7 @@ describe('Alert 警告提示', () => {
     await wrapper.find('.ui-alert__close').trigger('click')
     expect(wrapper.emitted('close')).toHaveLength(1)
     expect(wrapper.classes()).toContain('is-hidden')
-    expect(wrapper.classes()).not.toContain('ui-alert--closable')
+    expect(wrapper.classes()).not.toContain('is-closable')
     expect(wrapper.find('.ui-alert__close').exists()).toBe(false)
     // 标题仍在，只是关闭入口消失
     expect(wrapper.find('.ui-alert__title').text()).toBe('标题')

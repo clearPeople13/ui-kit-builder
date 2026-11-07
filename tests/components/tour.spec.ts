@@ -81,7 +81,7 @@ describe('Tour 漫游式引导', () => {
     expect(wrapper.classes()).toEqual([
       'ui-tour',
       'is-hidden',
-      'ui-tour--closable',
+      'is-closable',
       'ui-tour--popper',
       'ui-tour--validate',
       'ui-tour--modal'
@@ -154,7 +154,7 @@ describe('Tour 漫游式引导', () => {
   it('showClose 为 false 去掉关闭按钮与 closable 特性类；closeIcon 可自定义', async () => {
     const off = await openKit({ props: { showClose: false }, steps: [{ props: { title: '甲' } }] })
     expect(off.find('.ui-tour__panel__close').exists()).toBe(false)
-    expect(document.querySelector('.ui-tour')!.classList.contains('ui-tour--closable')).toBe(false)
+    expect(document.querySelector('.ui-tour')!.classList.contains('is-closable')).toBe(false)
     while (mounted.length) {
       mounted.pop()!.unmount()
     }

@@ -74,7 +74,7 @@ export function createContainer(features: UiFeature[] = []) {
           direction: () => resolveDirection(String(props.direction), slots.default?.() ?? [])
         }
       },
-      classes: (_props, state) => (state.direction() === 'vertical' ? ['ui-container--vertical'] : []),
+      classes: (_props, state) => (state.direction() === 'vertical' ? ['is-vertical'] : []),
       content: ({ slots }) => slots.default?.() ?? null
     },
     features

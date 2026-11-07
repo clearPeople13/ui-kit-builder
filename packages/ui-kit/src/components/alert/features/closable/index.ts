@@ -13,7 +13,7 @@ export const alertClosableFeature: UiFeature = {
   setup(props, { emit }) {
     const visible = ref(true)
     return {
-      class: () => (visible.value ? 'ui-alert--closable' : 'is-hidden'),
+      class: () => (visible.value ? 'is-closable' : 'is-hidden'),
       suffix: () => {
         if (!visible.value) {
           return null

@@ -6,5 +6,5 @@ export const selectLoadingFeature = createClassFeature({
     loading: { type: Boolean },
     loadingText: { type: String }
   },
-  className: (props) => (props.loading || props.loadingText ? 'ui-select--loading' : undefined)
+  className: (props) => (props.loading || props.loadingText ? 'is-loading' : undefined)
 })

@@ -103,10 +103,10 @@ describe('Segmented', () => {
     expect(items(wrapper)[0].classes()).toContain('is-active')
   })
 
-  it('size 枚举落 is-size-* 类名', () => {
-    expect(mountSegmented({ size: 'large' }).classes()).toContain('is-size-large')
-    expect(mountSegmented({ size: 'small' }).classes()).toContain('is-size-small')
-    expect(mountSegmented().classes()).not.toContain('is-size-large')
+  it('size 枚举落 --size-* 类名', () => {
+    expect(mountSegmented({ size: 'large' }).classes()).toContain('--size-large')
+    expect(mountSegmented({ size: 'small' }).classes()).toContain('--size-small')
+    expect(mountSegmented().classes()).not.toContain('--size-large')
   })
 
   it('direction 默认水平，可切垂直', () => {

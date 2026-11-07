@@ -162,16 +162,16 @@ describe('Drawer 抽屉', () => {
     expect(wrapper.emitted('close')).toHaveLength(1)
   })
 
-  it('showClose=false 去掉关闭按钮与 ui-drawer--closable 类名', () => {
+  it('showClose=false 去掉关闭按钮与 is-closable 类名', () => {
     mountDrawer({ showClose: false })
-    expect(containerClasses()).not.toContain('ui-drawer--closable')
+    expect(containerClasses()).not.toContain('is-closable')
     expect(document.querySelector('.ui-drawer__panel__close')).toBeNull()
     expect(document.querySelector('.ui-drawer__panel__title')?.textContent).toBe('抽屉标题')
   })
 
   it('closeIcon 自定义关闭图标并保留 closable 类名', () => {
     mountDrawer({ closeIcon: () => h('i', { class: 'probe-close-icon' }) })
-    expect(containerClasses()).toContain('ui-drawer--closable')
+    expect(containerClasses()).toContain('is-closable')
     expect(document.querySelector('.ui-drawer__panel__close i.probe-close-icon')).not.toBeNull()
   })
 

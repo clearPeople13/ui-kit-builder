@@ -88,7 +88,7 @@ export function createAvatarGroup(features: UiFeature[] = []) {
       tag: (props) => (props.tag as string) || 'span',
       classes: (props) => [
         props.shape ? `is-${props.shape}` : '',
-        props.size && props.size !== 'default' ? `is-size-${props.size}` : ''
+        props.size && props.size !== 'default' ? `--size-${props.size}` : ''
       ],
       // gap 是受控 prop，写成 CSS 变量交给 core.css 的负边距消费，避免透传成 DOM 属性
       styles: (props) => {

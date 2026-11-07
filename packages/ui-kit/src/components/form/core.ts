@@ -241,7 +241,7 @@ export function createForm(features: UiFeature[] = []) {
       classes: (props) => [
         props.inline ? 'is-inline' : '',
         props.labelPosition ? `is-label-${props.labelPosition}` : '',
-        props.size ? `is-size-${props.size}` : '',
+        props.size ? `--size-${props.size}` : '',
         props.disabled ? 'is-disabled' : ''
       ],
       styles: (props) => ({ '--ui-form-label-width': sizeValue(props.labelWidth) || '96px' }),
@@ -395,7 +395,7 @@ export function createFormItem(features: UiFeature[] = []) {
         state.effectiveStatus ? `is-${state.effectiveStatus}` : '',
         state.inlineMessage ? 'is-inline-message' : '',
         state.showStatusIcon ? 'is-status-icon' : '',
-        state.effectiveSize ? `is-size-${state.effectiveSize}` : '',
+        state.effectiveSize ? `--size-${state.effectiveSize}` : '',
         state.formDisabled ? 'is-disabled' : ''
       ],
       styles: (_props, state) => ({ '--ui-form-item-label-width': sizeValue(state.effectiveLabelWidth) || undefined }),

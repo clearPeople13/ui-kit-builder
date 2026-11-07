@@ -8,6 +8,6 @@ export const tagClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-tag--closable'
+      ? 'is-closable'
       : undefined
 })

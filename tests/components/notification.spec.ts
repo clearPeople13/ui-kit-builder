@@ -48,7 +48,7 @@ describe('Notification', () => {
     await nextTick()
     expect(wrapper.classes()).toContain('ui-notification')
     expect(wrapper.classes()).toContain('ui-notification--top-right')
-    expect(wrapper.classes()).toContain('ui-notification--closable')
+    expect(wrapper.classes()).toContain('is-closable')
     expect(wrapper.classes()).toContain('ui-notification--popper')
     expect(panel()?.getAttribute('role')).toBe('dialog')
     expect(document.querySelector('.ui-notification__panel__title')?.textContent).toBe('标题文字')
@@ -115,7 +115,7 @@ describe('Notification', () => {
     expect(document.querySelector('.ui-notification__panel__close')).toBeNull()
     expect(wrapper.element.querySelector('.ui-notification__panel__title')?.textContent).toBe('标题文字')
     // 特性类门控只看 closeIcon 默认值非空，与按钮渲染门控（showClose）不同步
-    expect(wrapper.classes()).toContain('ui-notification--closable')
+    expect(wrapper.classes()).toContain('is-closable')
   })
 
   it('icon 特性覆盖类型图标', async () => {

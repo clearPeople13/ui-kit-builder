@@ -25,7 +25,7 @@ export function createSegmented(features: UiFeature[] = []) {
       baseClass: 'ui-segmented',
       props: segmentedBaseProps,
       classes: (props) => [
-        props.size ? `is-size-${props.size}` : '',
+        props.size ? `--size-${props.size}` : '',
         props.block ? 'is-block' : '',
         props.direction ? `is-${props.direction}` : '',
         props.disabled ? 'is-disabled' : ''

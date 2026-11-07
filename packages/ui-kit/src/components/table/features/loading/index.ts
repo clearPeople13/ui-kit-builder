@@ -20,7 +20,7 @@ export const tableLoadingFeature: UiFeature = {
     }
 
     return {
-      class: () => (props.loading ? 'ui-table--loading' : ''),
+      class: () => (props.loading ? 'is-loading' : ''),
       suffix
     }
   }

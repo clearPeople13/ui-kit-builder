@@ -6,5 +6,5 @@ export const mentionLoadingFeature = createClassFeature({
   props: {
     loading: { type: Boolean }
   },
-  className: (props) => (props.loading || props.loadingText ? 'ui-mention--loading' : undefined)
+  className: (props) => (props.loading || props.loadingText ? 'is-loading' : undefined)
 })

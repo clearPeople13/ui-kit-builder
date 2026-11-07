@@ -57,12 +57,12 @@ describe('Image', () => {
     plain.unmount()
   })
 
-  it('loading 字符串输出原生属性与 ui-image--loading 类名', () => {
+  it('loading 字符串输出原生属性与 is-loading 类名', () => {
     const wrapper = mountImage({ src: 'a.png', loading: 'eager' })
     expect(wrapper.find('img').attributes('loading')).toBe('eager')
-    expect(wrapper.classes()).toContain('ui-image--loading')
+    expect(wrapper.classes()).toContain('is-loading')
     const plain = mountImage({ src: 'a.png' })
-    expect(plain.classes()).not.toContain('ui-image--loading')
+    expect(plain.classes()).not.toContain('is-loading')
     expect(plain.find('img').attributes('loading')).toBeUndefined()
     wrapper.unmount()
     plain.unmount()

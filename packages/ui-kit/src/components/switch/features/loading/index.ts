@@ -6,5 +6,5 @@ export const switchLoadingFeature = createClassFeature({
   props: {
     loading: { type: Boolean }
   },
-  className: (props) => (props.loading ? 'ui-switch--loading' : undefined)
+  className: (props) => (props.loading ? 'is-loading' : undefined)
 })

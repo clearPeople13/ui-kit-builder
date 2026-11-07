@@ -73,13 +73,13 @@
   font-size: 12px;
 }
 
-.ui-avatar-group.is-size-large .ui-avatar {
+.ui-avatar-group--size-large .ui-avatar {
   width: 56px;
   height: 56px;
   font-size: 20px;
 }
 
-.ui-avatar-group.is-size-small .ui-avatar {
+.ui-avatar-group--size-small .ui-avatar {
   width: 28px;
   height: 28px;
   font-size: 12px;

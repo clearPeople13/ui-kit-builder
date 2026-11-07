@@ -9,6 +9,6 @@ export const tourClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-tour--closable'
+      ? 'is-closable'
       : undefined
 })

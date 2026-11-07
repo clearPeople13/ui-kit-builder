@@ -153,9 +153,9 @@ describe('AvatarGroup 头像组', () => {
   it('组的 shape / size 类名落在根节点，size=default 时不产生尺寸类名', () => {
     const wrapper = mountGroup({ shape: 'square', size: 'large' })
     expect(wrapper.classes()).toContain('is-square')
-    expect(wrapper.classes()).toContain('is-size-large')
+    expect(wrapper.classes()).toContain('--size-large')
     const plain = mountGroup({ size: 'default' })
-    expect(plain.classes().filter((c) => c.startsWith('is-size'))).toEqual([])
+    expect(plain.classes().filter((c) => c.startsWith('--size'))).toEqual([])
   })
 
   it('gap 是受控 prop，写成 CSS 变量而不是 DOM 属性', () => {

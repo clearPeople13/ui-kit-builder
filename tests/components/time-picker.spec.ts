@@ -369,7 +369,7 @@ describe('TimePicker 时间选择', () => {
   it('size 与 tabindex、ariaLabel 落到触发区', async () => {
     const wrapper = mountPicker({ size: 'large', tabindex: 3, ariaLabel: '会议时间' })
     await flush()
-    expect(wrapper.classes()).toContain('is-size-large')
+    expect(wrapper.classes()).toContain('--size-large')
     const trigger = wrapper.find('.ui-time-picker__trigger')
     expect(trigger.attributes('tabindex')).toBe('3')
     expect(trigger.attributes('aria-label')).toBe('会议时间')
@@ -629,7 +629,7 @@ describe('TimeSelect 时刻选择', () => {
   it('size 生效，editable 为 false 时去掉特性类但保留隐藏 input', async () => {
     const wrapper = mountSelect({ size: 'small', editable: false })
     await flush()
-    expect(wrapper.classes()).toContain('is-size-small')
+    expect(wrapper.classes()).toContain('--size-small')
     expect(wrapper.classes()).not.toContain('ui-time-select--editable')
     expect(wrapper.findAll('input')).toHaveLength(1)
   })

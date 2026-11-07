@@ -119,7 +119,7 @@ describe('Dialog', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined()
   })
 
-  // 原缺陷 F-7：beforeClose 只参与 ui-dialog--closable 类名推导，
+  // 原缺陷 F-7：beforeClose 只参与 is-closable 类名推导，
   // 关闭路径没走它，异步确认无处生效；现在关闭按钮 / 遮罩 / Escape 都交给 beforeClose(done)
   it('beforeClose 不调用 done 时保持打开', async () => {
     const beforeClose = vi.fn((_done: () => void) => undefined)

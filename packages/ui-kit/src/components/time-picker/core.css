@@ -21,7 +21,9 @@
   color: var(--ui-text-color-primary);
   cursor: pointer;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-time-picker__trigger:hover,
@@ -44,13 +46,13 @@
   cursor: not-allowed;
 }
 
-.ui-time-picker.is-size-small .ui-time-picker__trigger,
-.ui-time-picker.is-size-small .ui-time-picker__fields {
+.ui-time-picker--size-small .ui-time-picker__trigger,
+.ui-time-picker--size-small .ui-time-picker__fields {
   --ui-input-height: 28px;
 }
 
-.ui-time-picker.is-size-large .ui-time-picker__trigger,
-.ui-time-picker.is-size-large .ui-time-picker__fields {
+.ui-time-picker--size-large .ui-time-picker__trigger,
+.ui-time-picker--size-large .ui-time-picker__fields {
   --ui-input-height: 36px;
 }
 
@@ -139,7 +141,9 @@
   cursor: pointer;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
 }
 
 .ui-time-picker:hover .ui-time-picker__clear,
@@ -164,7 +168,9 @@
 .ui-time-picker__arrow {
   display: inline-flex;
   font-size: 12px;
-  transition: transform 0.2s ease, opacity 0.15s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
 }
 
 .ui-time-picker__arrow.is-open {

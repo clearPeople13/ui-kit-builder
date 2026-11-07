@@ -12,7 +12,7 @@ describe('Form', () => {
     expect(wrapper.classes()).toContain('ui-form')
     expect(wrapper.classes()).toContain('is-label-top')
     expect(wrapper.classes()).toContain('is-inline')
-    expect(wrapper.classes()).toContain('is-size-small')
+    expect(wrapper.classes()).toContain('--size-small')
     expect(wrapper.find('form.ui-form__inner').exists()).toBe(true)
   })
 

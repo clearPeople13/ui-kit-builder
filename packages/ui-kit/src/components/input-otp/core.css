@@ -19,7 +19,9 @@
   text-align: center;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 120ms ease-out, box-shadow 120ms ease-out;
+  transition:
+    border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
 }
 
 .ui-input-otp__input:focus,
@@ -39,13 +41,13 @@
   font-size: 16px;
 }
 
-.ui-input-otp--small .ui-input-otp__input {
+.ui-input-otp--size-small .ui-input-otp__input {
   width: 32px;
   height: 36px;
   font-size: 15px;
 }
 
-.ui-input-otp--large .ui-input-otp__input {
+.ui-input-otp--size-large .ui-input-otp__input {
   width: 46px;
   height: 52px;
   font-size: 20px;

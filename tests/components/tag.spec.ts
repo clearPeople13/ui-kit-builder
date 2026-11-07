@@ -48,10 +48,10 @@ describe('Tag', () => {
     expect(mountTag().attributes('style') ?? '').not.toContain('background-color')
   })
 
-  it('closable 跟随 prop 挂 ui-tag--closable 类名', () => {
-    expect(mountTag({ closable: true }).classes()).toContain('ui-tag--closable')
-    expect(mountTag({ closable: false }).classes()).not.toContain('ui-tag--closable')
-    expect(mountTag().classes()).not.toContain('ui-tag--closable')
+  it('closable 跟随 prop 挂 is-closable 类名', () => {
+    expect(mountTag({ closable: true }).classes()).toContain('is-closable')
+    expect(mountTag({ closable: false }).classes()).not.toContain('is-closable')
+    expect(mountTag().classes()).not.toContain('is-closable')
   })
 
   it('round 与 hit 外观变体类名', () => {
@@ -103,7 +103,7 @@ describe('Tag', () => {
         'ui-tag--danger',
         'ui-tag--dark',
         'ui-tag--size-small',
-        'ui-tag--closable',
+        'is-closable',
         'is-round',
         'is-hit'
       ])

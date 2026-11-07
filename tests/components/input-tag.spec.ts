@@ -58,7 +58,7 @@ describe('InputTag 标签输入框', () => {
 
   it('size / effect / tagType 分别落到根节点与标签类名', () => {
     const wrapper = mountTag({ modelValue: ['a'], size: 'large', effect: 'dark', tagType: 'success' })
-    expect(wrapper.classes()).toContain('is-size-large')
+    expect(wrapper.classes()).toContain('--size-large')
     expect(wrapper.find('.ui-input-tag__tag').classes()).toEqual(['ui-input-tag__tag', 'is-dark', 'is-success'])
   })
 

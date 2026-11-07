@@ -73,9 +73,9 @@ describe('Cascader', () => {
     expect(panel()?.getAttribute('style')).toContain('display: none')
   })
 
-  it('size / disabled 落到 is-size-* / is-disabled 类，禁用时不可聚焦', async () => {
+  it('size / disabled 落到 --size-* / is-disabled 类，禁用时不可聚焦', async () => {
     const sized = mountCascader({ options: tree, size: 'small' })
-    expect(sized.classes()).toContain('is-size-small')
+    expect(sized.classes()).toContain('--size-small')
 
     reset()
     const disabled = mountCascader({ options: tree, disabled: true, modelValue: ['zj', 'hz'], clearable: true })

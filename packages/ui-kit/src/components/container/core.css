@@ -7,7 +7,7 @@
   min-width: 0;
 }
 
-.ui-container.ui-container--vertical {
+.ui-container.is-vertical {
   flex-direction: column;
 }
 

@@ -9,6 +9,6 @@ export const notificationClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-notification--closable'
+      ? 'is-closable'
       : undefined
 })

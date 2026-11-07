@@ -21,7 +21,9 @@
   color: var(--ui-text-color-primary);
   cursor: pointer;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-date-picker__trigger:hover,
@@ -44,13 +46,13 @@
   cursor: not-allowed;
 }
 
-.ui-date-picker.is-size-small .ui-date-picker__trigger,
-.ui-date-picker.is-size-small .ui-date-picker__fields {
+.ui-date-picker--size-small .ui-date-picker__trigger,
+.ui-date-picker--size-small .ui-date-picker__fields {
   --ui-input-height: 28px;
 }
 
-.ui-date-picker.is-size-large .ui-date-picker__trigger,
-.ui-date-picker.is-size-large .ui-date-picker__fields {
+.ui-date-picker--size-large .ui-date-picker__trigger,
+.ui-date-picker--size-large .ui-date-picker__fields {
   --ui-input-height: 36px;
 }
 
@@ -119,7 +121,9 @@
   cursor: pointer;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
 }
 
 .ui-date-picker:hover .ui-date-picker__clear,
@@ -144,7 +148,9 @@
 .ui-date-picker__arrow {
   display: inline-flex;
   font-size: 12px;
-  transition: transform 0.2s ease, opacity 0.15s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
 }
 
 .ui-date-picker.is-open .ui-date-picker__arrow {

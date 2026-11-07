@@ -20,7 +20,9 @@
   color: var(--ui-text-color-primary);
   cursor: pointer;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-time-select__trigger:hover {
@@ -39,11 +41,11 @@
   cursor: not-allowed;
 }
 
-.ui-time-select.is-size-small .ui-time-select__trigger {
+.ui-time-select--size-small .ui-time-select__trigger {
   --ui-input-height: 28px;
 }
 
-.ui-time-select.is-size-large .ui-time-select__trigger {
+.ui-time-select--size-large .ui-time-select__trigger {
   --ui-input-height: 36px;
 }
 
@@ -81,7 +83,9 @@
 .ui-time-select__arrow {
   display: inline-flex;
   font-size: 12px;
-  transition: transform 0.2s ease, opacity 0.15s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
 }
 
 .ui-time-select__arrow.is-open {
@@ -97,7 +101,9 @@
   cursor: pointer;
   visibility: hidden;
   opacity: 0;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    visibility 0.15s ease;
 }
 
 .ui-time-select:hover .ui-time-select__clear,

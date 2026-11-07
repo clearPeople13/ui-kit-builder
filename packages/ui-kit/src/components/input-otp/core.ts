@@ -126,7 +126,7 @@ export function createInputOtp(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props) => [props.size ? `ui-input-otp--${props.size}` : '', props.disabled ? 'is-disabled' : ''],
+      classes: (props) => [props.size ? `ui-input-otp--size-${props.size}` : '', props.disabled ? 'is-disabled' : ''],
       content: ({ props, state }) => {
         const length = Math.max(1, Number(props.length) || 6)
         const value = String(props.modelValue ?? '')

@@ -135,7 +135,7 @@ describe('Message', () => {
   it('showClose 渲染按钮，点击后抛 close 并移除面板', async () => {
     const wrapper = mountMessage({ showClose: true, message: '可关' })
     await nextTick()
-    expect(wrapper.classes()).toContain('ui-message--closable')
+    expect(wrapper.classes()).toContain('is-closable')
     const btn = wrapper.element.querySelector('.ui-message__close') as HTMLElement
     btn.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     await nextTick()

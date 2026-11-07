@@ -991,7 +991,7 @@ export function createCascader(features: UiFeature[] = []) {
         }
       },
       classes: (props, state) => [
-        props.size ? `is-size-${props.size}` : '',
+        props.size ? `--size-${props.size}` : '',
         props.disabled ? 'is-disabled' : '',
         state.open ? 'is-open' : ''
       ],

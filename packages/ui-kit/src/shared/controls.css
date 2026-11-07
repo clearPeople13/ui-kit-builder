@@ -51,7 +51,6 @@
   text-align: center;
 }
 
-
 .ui-input,
 .ui-input-number,
 .ui-select,
@@ -77,7 +76,9 @@
   border-radius: var(--ui-input-radius, 4px);
   background: var(--ui-bg-color);
   color: var(--ui-text-color-primary);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-input:hover,
@@ -118,7 +119,9 @@
   font: inherit;
   font-family: var(--ui-font-family);
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-input__inner,
@@ -175,7 +178,7 @@
 .ui-input-number--size-small,
 .ui-select--size-small,
 .ui-cascader--size-small,
-.ui-input-tag.is-size-small {
+.ui-input-tag--size-small {
   --ui-input-height: 28px;
 }
 
@@ -183,7 +186,7 @@
 .ui-input-number--size-large,
 .ui-select--size-large,
 .ui-cascader--size-large,
-.ui-input-tag.is-size-large {
+.ui-input-tag--size-large {
   --ui-input-height: 36px;
 }
 
@@ -416,7 +419,10 @@
   background-repeat: no-repeat;
   appearance: none;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-checkbox__inner:hover {
@@ -470,7 +476,10 @@
   background-color: var(--ui-bg-color);
   appearance: none;
   cursor: pointer;
-  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-radio:hover:not(.is-disabled) .ui-radio__inner {
@@ -614,7 +623,10 @@
   font-size: 13px;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .ui-checkbox-button__inner {
@@ -698,7 +710,10 @@
   line-height: 1;
   cursor: pointer;
   user-select: none;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .ui-radio-button__inner {
@@ -1055,7 +1070,9 @@
   border-radius: 50%;
   background: var(--ui-slider-button-bg);
   box-shadow: var(--ui-slider-button-shadow);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .ui-slider__inner:hover .ui-slider__button {
@@ -1490,16 +1507,16 @@
   content: none;
 }
 
-.ui-form-item.is-size-small .ui-form-item__label {
+.ui-form-item--size-small .ui-form-item__label {
   font-size: 12px;
   line-height: 28px;
 }
 
-.ui-form-item.is-label-top.is-size-small .ui-form-item__label {
+.ui-form-item--size-small.is-label-top .ui-form-item__label {
   line-height: 1.5;
 }
 
-.ui-form-item.is-size-large .ui-form-item__label {
+.ui-form-item--size-large .ui-form-item__label {
   font-size: 14px;
   line-height: 36px;
 }
@@ -1532,11 +1549,11 @@
   color: var(--ui-color-danger);
 }
 
-.ui-form-item.is-size-small .ui-form-item__status {
+.ui-form-item--size-small .ui-form-item__status {
   top: 6px;
 }
 
-.ui-form-item.is-size-large .ui-form-item__status {
+.ui-form-item--size-large .ui-form-item__status {
   top: 10px;
 }
 

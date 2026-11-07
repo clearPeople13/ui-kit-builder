@@ -10,6 +10,6 @@ export const dialogClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-dialog--closable'
+      ? 'is-closable'
       : undefined
 })

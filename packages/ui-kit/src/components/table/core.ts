@@ -1263,7 +1263,7 @@ export function createTable(features: UiFeature[] = []) {
           resolved.fit === false ? 'ui-table--auto-fit' : '',
           resolved.stripe ? 'ui-table--striped' : '',
           resolved.border ? 'ui-table--bordered' : '',
-          resolved.size ? `ui-table--${resolved.size}` : '',
+          resolved.size ? `ui-table--size-${resolved.size}` : '',
           resolved.showOverflowTooltip ? 'ui-table--overflow-tooltip' : '',
           hasFixedLeft ? 'has-fixed-left' : '',
           hasFixedRight ? 'has-fixed-right' : '',

@@ -42,7 +42,7 @@ export function createInputTag(features: UiFeature[] = []) {
           classes.push('is-disabled')
         }
         if (props.size) {
-          classes.push(`is-size-${props.size}`)
+          classes.push(`--size-${props.size}`)
         }
         return classes
       },

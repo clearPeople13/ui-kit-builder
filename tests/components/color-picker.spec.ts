@@ -343,7 +343,7 @@ describe('ColorPicker 颜色选择', () => {
   it('size 与 tabindex、ariaLabel 落到触发区', async () => {
     const wrapper = mountPicker({ size: 'large', tabindex: 4, ariaLabel: '主题色' })
     await flush()
-    expect(wrapper.classes()).toContain('is-size-large')
+    expect(wrapper.classes()).toContain('--size-large')
     const trigger = wrapper.find('.ui-color-picker__trigger')
     expect(trigger.attributes('tabindex')).toBe('4')
     expect(trigger.attributes('aria-label')).toBe('主题色')

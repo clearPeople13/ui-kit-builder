@@ -42,11 +42,11 @@
   cursor: not-allowed;
 }
 
-.ui-cascader.is-size-small .ui-cascader__trigger {
+.ui-cascader--size-small .ui-cascader__trigger {
   --ui-input-height: 28px;
 }
 
-.ui-cascader.is-size-large .ui-cascader__trigger {
+.ui-cascader--size-large .ui-cascader__trigger {
   --ui-input-height: 36px;
 }
 
@@ -104,7 +104,9 @@
 .ui-cascader__arrow {
   display: inline-flex;
   font-size: 12px;
-  transition: transform 0.2s ease, opacity 0.15s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
 }
 
 .ui-cascader__arrow.is-open {

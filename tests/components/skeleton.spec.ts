@@ -15,7 +15,7 @@ function groups(wrapper: ReturnType<typeof mountSkeleton>) {
 describe('Skeleton 骨架屏', () => {
   it('缺省渲染 1 组 3 行占位并标记最后一行', () => {
     const wrapper = mountSkeleton()
-    expect(wrapper.classes()).toEqual(['ui-skeleton', 'ui-skeleton--loading'])
+    expect(wrapper.classes()).toEqual(['ui-skeleton', 'is-loading'])
     expect(groups(wrapper)).toHaveLength(1)
     const items = wrapper.findAll('.ui-skeleton__item')
     expect(items).toHaveLength(3)
@@ -40,7 +40,7 @@ describe('Skeleton 骨架屏', () => {
 
   it('loading=false 且无插槽时渲染为空', () => {
     const wrapper = mountSkeleton({ loading: false })
-    expect(wrapper.classes()).not.toContain('ui-skeleton--loading')
+    expect(wrapper.classes()).not.toContain('is-loading')
     expect(wrapper.find('.ui-skeleton__item').exists()).toBe(false)
   })
 

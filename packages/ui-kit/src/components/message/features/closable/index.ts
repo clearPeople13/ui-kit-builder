@@ -8,6 +8,6 @@ export const messageClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-message--closable'
+      ? 'is-closable'
       : undefined
 })

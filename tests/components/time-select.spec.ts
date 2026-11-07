@@ -284,7 +284,7 @@ describe('TimeSelect 时间选择器', () => {
       popperStyle: { width: '300px' }
     })
     await nextTick()
-    expect(wrapper.classes()).toContain('is-size-small')
+    expect(wrapper.classes()).toContain('--size-small')
     expect(hiddenInput()?.getAttribute('name')).toBe('meeting')
     await open(wrapper)
     const panel = dropdown() as HTMLElement

@@ -68,7 +68,7 @@ describe('InputOtp 验证码输入框', () => {
 
   it('size 与 disabled 落到根类名和每格输入属性', () => {
     const wrapper = mountOtp({ modelValue: '1', size: 'large', disabled: true })
-    expect(wrapper.classes()).toContain('ui-input-otp--large')
+    expect(wrapper.classes()).toContain('ui-input-otp--size-large')
     expect(wrapper.classes()).toContain('is-disabled')
     inputs(wrapper).forEach((input) => expect(input.attributes('disabled')).toBeDefined())
   })

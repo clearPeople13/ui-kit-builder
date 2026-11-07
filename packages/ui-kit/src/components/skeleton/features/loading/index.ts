@@ -6,5 +6,5 @@ export const skeletonLoadingFeature = createClassFeature({
   props: {
     loading: { type: Boolean, default: true }
   },
-  className: (props) => (props.loading || props.loadingText ? 'ui-skeleton--loading' : undefined)
+  className: (props) => (props.loading || props.loadingText ? 'is-loading' : undefined)
 })
