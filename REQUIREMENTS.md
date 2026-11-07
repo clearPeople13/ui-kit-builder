@@ -1053,3 +1053,24 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 组件层：tabs + tree-v2 共 53/53 用例通过（含新增键盘导航与 ARIA 契约用例）。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
 - 缺陷口径：F-1…F-98 全部修复，三处文档同步为 98 条。
+
+## 29. 优化计划第二波：测试补盲（特性组合抽样 / 触摸 / SSR）（分支 `test/20261108-combo-ssr-blinds`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G5 的 A15 / A16。纯测试批次，沿用 B4/B5 先例不新增修复类缺陷；批次中发现的存量缺陷登记为 F-99。
+
+### 29.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-99 | `packages/ui-kit/src/components/tabs/core.ts` | SSR 首渲页签栏为空：服务端渲染的 HTML 里 tab 导航无内容，hydrate 后才出现 | TabPane 在 setup 里向父级注册，晚于父组件首次渲染，父级导航依赖的子组件元数据首渲不存在 | 已登记未修复（第二刀）：导航元数据需改为声明式（从 slots/VDOM 推导）或注册提前到 beforeMount；当前用例在 `tests/build/ssr-hydrate.spec.ts` 注释中固化现状，修复后移除豁免 |
+
+### 29.2 本批测试层交付
+
+- A15 特性中间组合抽样：`tests/profiles/feature-combos.spec.ts`——样本从 registry 实际 `requires` 推导（当前三对：`button.gradient→button.bg-color`、`cascader.select-all→cascader.multiple`、`table.column-sort→table.sort`），每对现场构建「仅关该特性、其余全开」临时产物（`build-lib.mjs` 真实 CLI，落 `.tmp/` 不进 dist）并 sweepMount 全量挂载，9 条用例。
+- A16 触摸：`tests/browser/touch.spec.ts`——tabs 经 CDP `Input.dispatchTouchEvent` tap 切换页签、slider 触摸序列不抛错；窄屏：`tests/browser/narrow.spec.ts` 追加 375×812 表格横向滚动与列宽下限断言；SSR：`tests/build/ssr-hydrate.spec.ts`——renderToString → createSSRApp hydrate 零告警 + 事件接管可用，3 条用例。
+
+### 29.3 验证
+
+- profiles 9/9、browser touch+narrow 4/4、build ssr 3/3 全绿；typecheck 零错误。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`（profiles/build 层用例要求 20 份产物齐备，由门禁 build 段保证）。
+- 缺陷口径：F-1…F-99（F-99 登记未修复，属已知豁免），三处文档同步为 99 条。
