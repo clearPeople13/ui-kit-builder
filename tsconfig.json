@@ -5,6 +5,11 @@
     "moduleResolution": "Bundler",
     "strict": true,
     "noEmit": true,
+    // 类型检查是门禁第三段，每次 7s 里绝大部分是重复解析 / 绑定 90 个组件的类型图。
+    // 开增量后第二次起只重查改动文件及其依赖，热跑 2s 级；
+    // 缓存落在 .build/（已 gitignore），与构建缓存同处一地，清缓存命令也能一起清掉。
+    "incremental": true,
+    "tsBuildInfoFile": ".build/tsconfig.lib.tsbuildinfo",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

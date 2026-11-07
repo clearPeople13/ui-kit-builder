@@ -85,7 +85,7 @@ function hasComponentSpec(id) {
 }
 
 // ---- 1. 改动面与影响面清单 ----
-const base = ['main', 'origin/main'].find((candidate) => git(['rev-parse', '--verify', candidate]).length)
+const base = ['origin/main', 'main'].find((candidate) => git(['rev-parse', '--verify', candidate]).length)
 const changed = [
   ...new Set([
     ...(base ? git(['diff', '--name-only', `${base}...HEAD`]) : []),
@@ -277,6 +277,62 @@ if (shellMissing.length) {
 notes.push(
   `虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），空壳特性 ${SHELL_VIRTUAL_FEATURES.length} 个已登记`
 )
+
+// ---- 2.3 构建缓存口径守卫（§26）----
+// 边际体积缓存键不再包含 build-all.mjs 全文，改口径只看库里的 SIZE_ALGO_VERSION。
+// 代价是"改了算法却忘了加版本号"会静默复用旧值，所以这里扫 diff：
+// 动了统计 / 差值 / 输出结构的代码，就必须让版本号相对改动前发生变化。
+const ALGO_MARK = /delta\(|SIZE_KEYS|writeFeatureCache|writeProfileCache|computed\[|features\[|buildProfile\(/
+const algoVersionOf = (text) => Number(text.match(/export const SIZE_ALGO_VERSION = (\d+)/)?.[1] ?? 0)
+const buildAllAt = (ref) => {
+  try {
+    return execFileSync('git', ['show', `${ref}:scripts/build-all.mjs`], { cwd: ROOT, encoding: 'utf8' })
+  } catch {
+    return ''
+  }
+}
+/**
+ * 版本号有没有真的变，只能拿"改动前那份文件的同一行"来比。
+ * 在 diff 里出现 SIZE_ALGO_VERSION 三个字是不够的：本次刚新增这一行时，
+ * 之后的任何算法改动都能蹭着它过检（这条守卫第一版就栽在这）。
+ */
+const versionSegments = [
+  {
+    label: `基线 ${base ?? 'HEAD'}`,
+    diff: base ? git(['diff', '--no-color', `${base}...HEAD`, '--', 'scripts/build-all.mjs']).join('\n') : '',
+    before: algoVersionOf(buildAllAt(base ?? 'HEAD')),
+    after: algoVersionOf(buildAllAt('HEAD'))
+  },
+  {
+    label: '工作区',
+    diff: git(['diff', '--no-color', 'HEAD', '--', 'scripts/build-all.mjs']).join('\n'),
+    before: algoVersionOf(buildAllAt('HEAD')),
+    after: algoVersionOf(read('scripts/build-all.mjs'))
+  }
+]
+for (const segment of versionSegments) {
+  const algoLines = segment.diff
+    .split('\n')
+    .filter((line) => /^[+-]/.test(line) && !/^(\+\+\+|---)/.test(line))
+    // 只认代码行：注释与纯文案改动不该逼人升版本号，否则"改日志要重算"会从后门回来
+    .map((line) =>
+      line
+        .slice(1)
+        .replace(/\/\/.*$/, '')
+        .trim()
+    )
+    .filter(Boolean)
+  if (algoLines.some((line) => ALGO_MARK.test(line)) && segment.after === segment.before) {
+    fail(
+      `改了 build-all.mjs 的边际算法相关代码（${segment.label}），但 SIZE_ALGO_VERSION 仍是 v${segment.after}：` +
+        '组件级缓存会继续复用旧口径（§26）'
+    )
+  }
+}
+if (!/export const SIZE_ALGO_VERSION = \d+/.test(read('scripts/build-all.mjs'))) {
+  fail('build-all.mjs 的 SIZE_ALGO_VERSION 被删或改成非常量：缓存口径失去唯一来源（§26）')
+}
+notes.push('构建缓存口径：SIZE_ALGO_VERSION 仍是常量，算法改动必须显式升版')
 
 // ---- 3. 文档数字与产物对齐 ----
 const meta = JSON.parse(read('examples/consumer/src/demo/meta.json') || '{}')

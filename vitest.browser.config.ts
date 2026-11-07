@@ -16,7 +16,14 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/browser/**/*.spec.ts'],
     globalSetup: ['./tests/browser/_global-setup.ts'],
-    fileParallelism: false,
+    // 每个用例文件各自起一个 Chromium，拼的是"16 个文件 × 单文件 3–5s"的串行墙钟。
+    // 16 个文件串行要 46s，真正占满 CPU 的时间不到一半，其余都在等浏览器启动 / 等待帧。
+    // 并发放到 3 路：单个 Chromium 常驻约 300–500MB，本机 32GB 足够；
+    // 探针服务由 globalSetup 统一拉一个随机高位端口，worker 之间共享，不会抢端口。
+    // Firefox 子集（network.proxy.type=0）自成一条 file，同样受益。
+    fileParallelism: true,
+    maxWorkers: 3,
+    minWorkers: 1,
     testTimeout: 60000,
     hookTimeout: 120000,
     reporters: ['default']

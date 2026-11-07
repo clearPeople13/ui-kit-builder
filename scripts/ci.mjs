@@ -7,14 +7,20 @@
  *
  * 用法：
  *   node scripts/ci.mjs                 # 全量十三段（先 build 一次，后续各层复用产物）
+ *   node scripts/ci.mjs --changed       # 只跑这次改动影响到的阶段与用例（内循环用，分钟级 → 十秒级）
+ *   node scripts/ci.mjs --changed --dry # 只打印受影响范围，不执行
  *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
  *   node scripts/ci.mjs --keep-going    # build / verify 失败后仍继续跑后续阶段（默认立即短路）
+ *
+ * `--changed` 只解决"改三个文件等两分钟"，不替代合并门禁：
+ * 合入前仍然跑一次全量，受影响范围拿不准时它自己也会回落全量。
  */
 import { spawnSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { describePlan, planFromChanges, readChangedFiles } from './test-impact.mjs'
 
 // fullScript：全量模式下已经先跑过 build:all，各层改用不带 pretest 的 run 脚本，
 // 一次门禁只构建一轮；fast 模式用指纹校验过的 verify:reuse——产物没变就秒过，
@@ -32,6 +38,8 @@ export const STAGES = [
   {
     name: 'verify',
     script: 'verify:reuse',
+    // pre-commit 用：产物过期就跳过，别在提交钩子里重建 198 份包（pre-push 会重建）
+    fastScript: 'verify:if-fresh',
     fast: true,
     desc: '库级校验（产物、API 一致性、令牌落盘；指纹一致时直接复用）'
   },
@@ -86,21 +94,60 @@ export function selectStages({ fast = false, only = null } = {}) {
 function main(argv) {
   const fast = argv.includes('--fast')
   const keepGoing = argv.includes('--keep-going')
+  const changed = argv.includes('--changed')
+  const dry = argv.includes('--dry')
   const stageFlag = argv.indexOf('--stage')
   const only = stageFlag >= 0 ? argv[stageFlag + 1] : null
+  const baseFlag = argv.indexOf('--base')
+  const base = baseFlag >= 0 ? argv[baseFlag + 1] : null
 
-  const selected = selectStages({ fast, only })
-  if (selected.length === 0) {
+  if (changed && fast) {
+    console.error('--changed 与 --fast 不能同时用：前者按影响面选层，后者是固定五段的秒级子集')
+    return 2
+  }
+
+  // 变更范围选择器（scripts/test-impact.mjs）只决定"跑哪几段、哪几个用例"，
+  // 阶段定义仍以本文件的 STAGES 为唯一来源，段数不受影响。
+  let plan = null
+  let selected = selectStages({ fast, only })
+  if (changed) {
+    plan = planFromChanges({ files: readChangedFiles({ base }) })
+    if (plan.scope === 'none') {
+      process.stdout.write('\n没有改动，门禁无需执行\n')
+      writeReport({ mode: 'changed', results: [], plan })
+      return 0
+    }
+    const wanted = new Set(plan.stages)
+    selected = selected.filter((stage) => wanted.has(stage.name))
+    if (!selected.length) {
+      console.error(`受影响范围没有可执行阶段：${describePlan(plan)}`)
+      return 2
+    }
+    process.stdout.write(`\n── 变更范围 · ${describePlan(plan)}\n`)
+    for (const file of plan.files) {
+      process.stdout.write(`   · ${file}\n`)
+    }
+    for (const reason of plan.reasons) {
+      process.stdout.write(`   → ${reason}\n`)
+    }
+    if (dry) {
+      process.stdout.write(`\n执行计划：${selected.map((stage) => stage.name).join(' → ')}\n`)
+      for (const [stage, list] of Object.entries(plan.filters)) {
+        process.stdout.write(`  ${stage}：${list.join(' ')}\n`)
+      }
+      return 0
+    }
+  }
+
+  // 只有"真的先跑了 build"时，后续阶段才能复用同一批产物改走 fullScript；
+  // --stage 单跑、fast 模式、只改了测试的 --changed 都没有这份保证，必须用各自会自行构建的原始脚本。
+  const singleBuild = !fast && selected.some((stage) => stage.name === 'build')
+  if (!selected.length) {
     console.error(`没有匹配的阶段：--stage ${only ?? ''}`)
     return 2
   }
 
-  // 只有"全量模式且真的先跑了 build"时，后续阶段才能复用同一批产物改走 fullScript；
-  // --stage 单跑或 fast 模式都没有这份保证，必须用各自会自行构建的原始脚本。
-  const singleBuild = !fast && selected.some((stage) => stage.name === 'build')
-
   const results = []
-  let failed = false
   let abortedBy = null
 
   // 在 npm 里跑时复用同一个 npm-cli.js（跨平台、不依赖 PATH 上的 shim）；
@@ -108,19 +155,40 @@ function main(argv) {
   const npmCli = process.env.npm_execpath
   const command = npmCli ? process.execPath : process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
+  // 两个隐式前置条件不再靠人记（漏一条就误红一轮门禁，历史上至少三次）：
+  //   1. 宿主 safe-delete 保护会让 Vite 清空 dist/ 生成物时直接失败 → 构建段整段假红。
+  //      宿主默认注入 =1，所以这里必须显式覆盖成 0（只作用于本命令拉起的子进程）：
+  //      门禁删的只有 dist/、.build/ 这类生成物，保护与构建本身是冲突的。
+  //   2. 本机 HTTP 代理会把 127.0.0.1 的模块请求接走 → 浏览器层 Firefox 子集超时。
+  const childEnv = { ...process.env, CODEBUDDY_SAFE_DELETE_ENABLED: '0' }
+  const autoEnv = ['CODEBUDDY_SAFE_DELETE_ENABLED=0（构建段需要清空 dist/ 生成物）']
+  if (!childEnv.NO_PROXY && !childEnv.no_proxy) {
+    childEnv.NO_PROXY = '127.0.0.1,localhost'
+    childEnv.no_proxy = '127.0.0.1,localhost'
+    autoEnv.push('NO_PROXY=127.0.0.1,localhost')
+  }
+  process.stdout.write(`\n环境自愈：${autoEnv.join('、')}\n`)
+
   for (const [index, stage] of selected.entries()) {
     const started = Date.now()
-    const script = singleBuild && stage.fullScript ? stage.fullScript : stage.script
-    process.stdout.write(`\n── ${stage.name} · ${stage.desc}\n`)
-    const run = spawnSync(command, npmCli ? [npmCli, 'run', script] : ['run', script], {
+    const script =
+      singleBuild && stage.fullScript ? stage.fullScript : fast && stage.fastScript ? stage.fastScript : stage.script
+    // 受影响范围只在必要时收窄到具体用例文件：整层优先，漏跑比多跑贵
+    const files = plan?.filters?.[stage.name] ?? []
+    process.stdout.write(`\n── ${stage.name} · ${stage.desc}${files.length ? `（${files.length} 个文件）` : ''}\n`)
+    const npmArgs = npmCli ? [npmCli, 'run', script] : ['run', script]
+    if (files.length) {
+      npmArgs.push('--', ...files)
+    }
+    const run = spawnSync(command, npmArgs, {
       stdio: 'inherit',
       shell: !npmCli,
-      encoding: 'utf8'
+      encoding: 'utf8',
+      env: childEnv
     })
     const durationMs = Date.now() - started
     const ok = run.status === 0
-    failed = failed || !ok
-    results.push({ stage: stage.name, script, ok, durationMs })
+    results.push({ stage: stage.name, script, files: files.length ? files : null, ok, durationMs })
     process.stdout.write(
       `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
     )
@@ -134,16 +202,12 @@ function main(argv) {
     }
   }
 
-  const report = {
-    generatedAt: new Date().toISOString(),
-    mode: fast ? 'fast' : only ? `stage:${only}` : 'full',
-    ok: !failed,
-    abortedBy,
-    skipped: results.filter((item) => item.skipped).map((item) => item.stage),
-    totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
-    stages: results
-  }
-  writeFileSync(new URL('../ci-report.json', import.meta.url), `${JSON.stringify(report, null, 2)}\n`)
+  const report = writeReport({
+    mode: changed ? 'changed' : fast ? 'fast' : only ? `stage:${only}` : 'full',
+    results,
+    plan,
+    abortedBy
+  })
 
   process.stdout.write('\n阶段汇总\n')
   for (const item of results) {
@@ -151,8 +215,28 @@ function main(argv) {
     const detail = item.skipped ? '未执行' : `${(item.durationMs / 1000).toFixed(1)}s`
     process.stdout.write(`  ${mark} ${item.stage.padEnd(16)} ${detail}\n`)
   }
+  if (plan) {
+    process.stdout.write(`\n变更范围：${describePlan(plan)}\n`)
+  }
   process.stdout.write(`\n${report.ok ? '门禁通过' : '门禁失败'}，明细见 ci-report.json\n`)
   return report.ok ? 0 : 1
+}
+
+function writeReport({ mode, results, plan = null, abortedBy = null }) {
+  const report = {
+    generatedAt: new Date().toISOString(),
+    mode,
+    ok: results.every((item) => item.ok || item.skipped === true),
+    abortedBy,
+    skipped: results.filter((item) => item.skipped).map((item) => item.stage),
+    totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
+    stages: results,
+    changed: plan
+      ? { scope: plan.scope, files: plan.files, reasons: plan.reasons, stages: plan.stages, filters: plan.filters }
+      : null
+  }
+  writeFileSync(new URL('../ci-report.json', import.meta.url), `${JSON.stringify(report, null, 2)}\n`)
+  return report
 }
 
 const entryUrl = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : ''
