@@ -1,8 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { textConfig } from '../../shared/behavior'
-import { linkIconsFeature } from './features/icons/index'
-import { linkAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const linkBaseProps = {

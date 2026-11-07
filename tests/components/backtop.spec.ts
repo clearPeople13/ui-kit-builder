@@ -18,11 +18,11 @@ let scrollToSpy: ReturnType<typeof vi.fn>
 
 beforeEach(() => {
   scrollToSpy = vi.fn()
-  ;(window as any).scrollTo = scrollToSpy
+  ;(window as unknown as Record<string, any>).scrollTo = scrollToSpy
 })
 
 afterEach(() => {
-  ;(window as any).scrollY = 0
+  ;(window as unknown as Record<string, any>).scrollY = 0
   document.documentElement.scrollTop = 0
   document.body.innerHTML = ''
   vi.restoreAllMocks()
@@ -42,11 +42,11 @@ describe('Backtop 回到顶部', () => {
   it('window 滚动超过 visibilityHeight 阈值后浮现（手动触发显隐路径）', async () => {
     const wrapper = mountBacktop({ visibilityHeight: 200 })
     expect(wrapper.classes()).toContain('is-hidden')
-    ;(window as any).scrollY = 300
+    ;(window as unknown as Record<string, any>).scrollY = 300
     window.dispatchEvent(new Event('scroll'))
     await nextTick()
     expect(wrapper.classes()).toEqual(['ui-backtop', 'is-visible'])
-    ;(window as any).scrollY = 0
+    ;(window as unknown as Record<string, any>).scrollY = 0
     window.dispatchEvent(new Event('scroll'))
     await nextTick()
     expect(wrapper.classes()).toContain('is-hidden')

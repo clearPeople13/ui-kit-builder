@@ -9,9 +9,6 @@ import type { UiTreeNode } from '../../shared/tree'
 import { sameValue } from '../../shared/value'
 import { useFloatingPanel } from '../../shared/panel'
 import { sizeValue } from '../../shared/behavior'
-import { treeSelectMultipleFeature } from './features/multiple/index'
-import { treeSelectFilterableFeature } from './features/filterable/index'
-import { treeSelectPopperFeature } from './features/popper/index'
 import './core.css'
 
 const treeSelectBaseProps = {

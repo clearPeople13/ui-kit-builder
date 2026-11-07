@@ -14,7 +14,7 @@ import type {
   ScrollbarInstance as FullScrollbarInstance
 } from '@demo/ui-kit-full'
 import type { ComponentProps } from 'vue-component-type-helpers'
-import { Button as BrandedButton, Input as BrandedInput } from '@demo/ui-kit-branded'
+import { Button as BrandedButton } from '@demo/ui-kit-branded'
 import { Button as CoreButton, Input as CoreInput } from '@demo/ui-kit-core'
 import { Button as FullButton, Input as FullInput } from '@demo/ui-kit-full'
 

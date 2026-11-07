@@ -12,12 +12,12 @@ import '../../../dist/full/ui-kit.css'
  */
 
 const probe: Record<string, any> = {}
-;(window as any).__probe = probe
+;(window as unknown as Record<string, any>).__probe = probe
 // 探针脚本在没有 Vue 依赖的页面上下文里也需要挂载组件
-;(window as any).__vue = { h, createApp }
+;(window as unknown as Record<string, any>).__vue = { h, createApp }
 // 用例侧 page.evaluate 会被 Vitest 改写成 SSR 形式，里面不能写 import()，
 // 因此把产物本身也挂到 window 上供扫描用
-;(window as any).__kit = kit
+;(window as unknown as Record<string, any>).__kit = kit
 
 const {
   Button,
@@ -55,12 +55,34 @@ const {
   Backtop,
   Tour,
   TourStep
-} = kit as any
+} = kit as Record<string, any>
 
 function log(key: string) {
   return (value: unknown) => {
     probe[key] = value
   }
+}
+
+/** 非 full 产物按 profile 动态加载：裁剪包也要在真浏览器里冒烟一次（B3b-B2） */
+const profileModules = import.meta.glob('../../../dist/*/ui-kit.js') as Record<string, () => Promise<any>>
+const profileStyles = import.meta.glob('../../../dist/*/ui-kit.css') as Record<string, () => Promise<unknown>>
+
+function sceneProfile(kitModule: any) {
+  return () =>
+    h('div', {}, [
+      h(kitModule.Button, { id: 'profile-button' }, { default: () => 'Probe' }),
+      h(kitModule.Input, { id: 'profile-input', modelValue: '探针文本', placeholder: '输入' }),
+      h(kitModule.Tag, { id: 'profile-tag' }, { default: () => '标签' }),
+      h(
+        'div',
+        { class: 'edge-bottom' },
+        h(
+          kitModule.Tooltip,
+          { placement: 'bottom', content: '裁剪产物里的浮层', popperClass: 'panel-profile-tip' },
+          { default: () => h(kitModule.Button, { id: 'profile-tip' }, { default: () => '浮层触发器' }) }
+        )
+      )
+    ])
 }
 
 /** 浮层定位：贴边翻转、视口内夹取、滚动跟随 */
@@ -558,18 +580,40 @@ const scenes: Record<string, () => any> = {
   sticky: sceneSticky()
 }
 
-const requested = new URLSearchParams(window.location.search).get('scene') ?? 'floating'
+const params = new URLSearchParams(window.location.search)
+const requested = params.get('scene') ?? 'floating'
+const profile = params.get('profile')
 const scene = scenes[requested]
 probe.ready = false
 
-if (!scene) {
-  probe.error = `未知场景 ${requested}`
-} else {
-  createApp({ render: scene }).mount('#app')
+async function boot() {
+  try {
+    if (profile) {
+      const loadJs = profileModules[`../../../dist/${profile}/ui-kit.js`]
+      const loadCss = profileStyles[`../../../dist/${profile}/ui-kit.css`]
+      if (!loadJs) {
+        probe.error = `dist/${profile} 缺少产物，请先 npm run build:all`
+        return
+      }
+      await loadCss?.()
+      const kitModule = await loadJs()
+      createApp({ render: sceneProfile(kitModule) }).mount('#app')
+    } else if (!scene) {
+      probe.error = `未知场景 ${requested}`
+      return
+    } else {
+      createApp({ render: scene }).mount('#app')
+    }
+  } catch (error) {
+    probe.error = error instanceof Error ? `${error.message}\n${error.stack ?? ''}` : String(error)
+    return
+  }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      probe.ready = true
+    })
+  })
 }
 
-requestAnimationFrame(() => {
-  requestAnimationFrame(() => {
-    probe.ready = true
-  })
-})
+boot()

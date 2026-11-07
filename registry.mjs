@@ -4,8 +4,29 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const rootDir = path.resolve(fileURLToPath(new URL('.', import.meta.url)))
 const componentsDir = path.join(rootDir, 'packages/ui-kit/src/components')
+const rootPackage = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'))
 
-export async function loadRegistry() {
+let registryPromise = null
+
+/**
+ * 同一次构建里 build:all / build-lib / 调试台会反复要注册表，没有进程内缓存时
+ * 每次都要重新 import 90 个 spec.mjs（冷构建日志里出现过 2 次以上加载）。
+ * 这里按进程 memo：同一 Node 进程只解析一次；dev 侧要看最新 spec 时传 { fresh: true }（C3）。
+ */
+export async function loadRegistry({ fresh = false } = {}) {
+  if (fresh) {
+    registryPromise = null
+  }
+  if (!registryPromise) {
+    registryPromise = readRegistry().catch((error) => {
+      registryPromise = null
+      throw error
+    })
+  }
+  return registryPromise
+}
+
+async function readRegistry() {
   const components = {}
 
   const entries = fs
@@ -24,7 +45,8 @@ export async function loadRegistry() {
 
   return {
     name: '@demo/ui-kit',
-    version: '0.3.0',
+    // 版本只有 package.json 一处事实源，产物 package.json 随 registry.version 走（A8）
+    version: rootPackage.version,
     components,
     order: Object.keys(components).sort((left, right) => {
       return (components[left].order ?? 999) - (components[right].order ?? 999) || left.localeCompare(right)

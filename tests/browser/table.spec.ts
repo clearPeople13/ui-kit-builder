@@ -28,7 +28,7 @@ describe('浏览器层 · 表格', () => {
     const summaryBefore = await rect(page, '.ui-table__summary-row')
 
     await page.evaluate(() => {
-      document.querySelector('.ui-table__wrapper').scrollTop = 600
+      document.querySelector('.ui-table__wrapper')!.scrollTop = 600
     })
     await page.waitForTimeout(200)
 
@@ -48,13 +48,13 @@ describe('浏览器层 · 表格', () => {
   it('横向滚动将表头与表体同步，冻结列钉在原处', async () => {
     const { page } = session
     await page.evaluate(() => {
-      document.querySelector('.ui-table__wrapper').scrollLeft = 60
+      document.querySelector('.ui-table__wrapper')!.scrollLeft = 60
     })
     await page.waitForTimeout(200)
 
     const scroll = await page.evaluate(() => {
-      const wrapper = document.querySelector('.ui-table__wrapper')
-      return { body: wrapper.scrollLeft, header: document.querySelector('.ui-table__header-view').scrollLeft }
+      const wrapper = document.querySelector('.ui-table__wrapper')!
+      return { body: wrapper.scrollLeft, header: document.querySelector('.ui-table__header-view')!.scrollLeft }
     })
     expect(scroll.body).toBeGreaterThan(0)
     expect(scroll.header).toBe(scroll.body)

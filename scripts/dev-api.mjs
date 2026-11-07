@@ -1,13 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { buildProfile, normalizePropType, sanitizeName, sanitizePrefix } from './build-lib.mjs'
+import { buildProfile, normalizePropType, sanitizeName } from './build-lib.mjs'
+import { profileCatalog } from './profile-catalog.mjs'
 import { loadRegistry } from '../registry.mjs'
 import { loadThemeTokens } from './theme-tokens.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
-
-let buildQueue = Promise.resolve()
 
 export function sendJson(response, statusCode, payload) {
   response.statusCode = statusCode
@@ -29,27 +28,8 @@ function readBody(request) {
   })
 }
 
-const PACKAGE_LABELS = {
-  core: 'Core 基础包',
-  full: 'Full 全特性',
-  branded: 'Branded 品牌主题',
-  chinese: 'Chinese 中国风',
-  cute: 'Cute 可爱主题',
-  antd: 'Ant Design',
-  arco: 'Arco Design',
-  tdesign: 'TDesign 腾讯',
-  naive: 'Naive UI',
-  viewui: 'View Design (iView)',
-  vant: 'Vant 移动端',
-  varlet: 'Varlet 移动端',
-  semi: 'Semi Design',
-  material3: 'Material 3 谷歌',
-  bootstrap: 'Bootstrap',
-  shadcn: 'shadcn/ui',
-  fluent: 'Fluent 2 微软',
-  carbon: 'Carbon IBM',
-  mantine: 'Mantine',
-  ios: 'iOS 苹果'
+function profileEntries() {
+  return profileCatalog(rootDir)
 }
 
 const PACK_MIME_TYPES = {
@@ -98,6 +78,8 @@ function listPresets() {
   if (!fs.existsSync(profilesDir)) {
     return []
   }
+  // label 与构建器、调试台同源，统一从 profiles/*.json 读（F-75 的遗漏分支）
+  const labels = new Map(profileEntries().map((entry) => [entry.dirName, entry.label]))
   const presets = []
   for (const file of fs.readdirSync(profilesDir)) {
     if (!file.endsWith('.json')) {
@@ -119,7 +101,7 @@ function listPresets() {
       .filter(Boolean)
     presets.push({
       id,
-      label: PACKAGE_LABELS[id] ?? id,
+      label: labels.get(id) ?? id,
       theme: { global: themeGlobal },
       palette,
       tokens: Object.keys(themeGlobal).length
@@ -128,12 +110,79 @@ function listPresets() {
   return presets.sort((left, right) => left.id.localeCompare(right.id))
 }
 
+/**
+ * 正式 profile 名来自 profiles/*.json，是保留名：自定义包不允许与其同名，
+ * 否则会覆盖 dist/<profile> 这类可安装的正式产物（F-68）。
+ */
+export function reservedProfileNames() {
+  return new Set(profileEntries().map((entry) => entry.dirName))
+}
+
+/** 自定义包统一落在 dist/custom/<name>，与 20 份正式 profile 的命名空间隔离 */
+export function customPackageDir(name) {
+  return `dist/custom/${sanitizeName(name)}`
+}
+
+function describePackage(dir, id, label) {
+  const metaPath = path.join(dir, 'meta.json')
+  const pkgPath = path.join(dir, 'package.json')
+  if (!fs.existsSync(metaPath) || !fs.existsSync(pkgPath)) {
+    return null
+  }
+  let meta
+  let pkg
+  try {
+    meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'))
+    pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
+  } catch {
+    return null
+  }
+  const files = Array.isArray(meta.files) ? meta.files : []
+  const jsFile = files.find((item) => item.file.endsWith('.js'))?.file
+  if (!jsFile) {
+    return null
+  }
+  const jsPath = path.join(dir, jsFile)
+  if (!fs.existsSync(jsPath)) {
+    return null
+  }
+  const cssFile = files.find((item) => item.file.endsWith('.css'))?.file
+  const cssPath = cssFile ? path.join(dir, cssFile) : ''
+  const jsVersion = Math.round(fs.statSync(jsPath).mtimeMs)
+  const cssVersion = cssPath ? Math.round(fs.statSync(cssPath).mtimeMs) : 0
+  return {
+    id,
+    label: label ?? meta.name ?? id,
+    npm: pkg.name,
+    prefix: meta.prefix ?? pkg.uiKit?.prefix ?? 'ui',
+    features: meta.features ?? pkg.uiKit?.features ?? [],
+    componentFeatures: pkg.uiKit?.components ?? {},
+    components: meta.components ?? [],
+    selection: meta.selection ?? pkg.uiKit?.components ?? {},
+    files,
+    sizes: {
+      js: meta.jsBytes ?? 0,
+      css: meta.cssBytes ?? 0,
+      total: meta.totalBytes ?? 0,
+      gzip: meta.gzipBytes ?? 0
+    },
+    moduleUrl: fsModuleUrl(jsPath, jsVersion),
+    rawModuleUrl: rawPackUrl(id, jsFile, jsVersion),
+    styleUrl: cssPath ? fsModuleUrl(cssPath, cssVersion) : '',
+    rawStyleUrl: cssPath ? rawPackUrl(id, cssFile, cssVersion) : ''
+  }
+}
+
 function listBuiltPackages() {
   const distDir = path.join(rootDir, 'dist')
   if (!fs.existsSync(distDir)) {
     return []
   }
   const packages = []
+  const catalog = profileEntries()
+  const labels = new Map(catalog.map((item) => [item.dirName, item.label]))
+  const order = new Map(catalog.map((item, index) => [item.dirName, index]))
+  const customDir = path.join(distDir, 'custom')
   for (const entry of fs.readdirSync(distDir, { withFileTypes: true })) {
     if (!entry.isDirectory()) {
       continue
@@ -142,60 +191,28 @@ function listBuiltPackages() {
     if (entry.name.startsWith('feat-')) {
       continue
     }
-    const dir = path.join(distDir, entry.name)
-    const metaPath = path.join(dir, 'meta.json')
-    const pkgPath = path.join(dir, 'package.json')
-    if (!fs.existsSync(metaPath) || !fs.existsSync(pkgPath)) {
+    // dist/custom/<name> 是构建器 UI 的自定义包命名空间，按 custom/<name> 列出，不与正式 profile 混排
+    if (entry.name === 'custom') {
+      for (const custom of fs.readdirSync(customDir, { withFileTypes: true })) {
+        if (!custom.isDirectory()) {
+          continue
+        }
+        const described = describePackage(path.join(customDir, custom.name), `custom/${custom.name}`)
+        if (described) {
+          packages.push(described)
+        }
+      }
       continue
     }
-    let meta
-    let pkg
-    try {
-      meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'))
-      pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'))
-    } catch {
-      continue
+    const described = describePackage(path.join(distDir, entry.name), entry.name, labels.get(entry.name))
+    if (described) {
+      packages.push(described)
     }
-    const files = Array.isArray(meta.files) ? meta.files : []
-    const jsFile = files.find((item) => item.file.endsWith('.js'))?.file
-    if (!jsFile) {
-      continue
-    }
-    const jsPath = path.join(dir, jsFile)
-    if (!fs.existsSync(jsPath)) {
-      continue
-    }
-    const cssFile = files.find((item) => item.file.endsWith('.css'))?.file
-    const cssPath = cssFile ? path.join(dir, cssFile) : ''
-    const jsVersion = Math.round(fs.statSync(jsPath).mtimeMs)
-    const cssVersion = cssPath ? Math.round(fs.statSync(cssPath).mtimeMs) : 0
-    packages.push({
-      id: entry.name,
-      label: PACKAGE_LABELS[entry.name] ?? entry.name,
-      npm: pkg.name,
-      prefix: meta.prefix ?? pkg.uiKit?.prefix ?? 'ui',
-      features: meta.features ?? pkg.uiKit?.features ?? [],
-      componentFeatures: pkg.uiKit?.components ?? {},
-      components: meta.components ?? [],
-      selection: meta.selection ?? pkg.uiKit?.components ?? {},
-      files,
-      sizes: {
-        js: meta.jsBytes ?? 0,
-        css: meta.cssBytes ?? 0,
-        total: meta.totalBytes ?? 0,
-        gzip: meta.gzipBytes ?? 0
-      },
-      moduleUrl: fsModuleUrl(jsPath, jsVersion),
-      rawModuleUrl: rawPackUrl(entry.name, jsFile, jsVersion),
-      styleUrl: cssPath ? fsModuleUrl(cssPath, cssVersion) : '',
-      rawStyleUrl: cssPath ? rawPackUrl(entry.name, cssFile, cssVersion) : ''
-    })
   }
-  const known = Object.keys(PACKAGE_LABELS)
   packages.sort((left, right) => {
-    const leftIndex = known.indexOf(left.id)
-    const rightIndex = known.indexOf(right.id)
-    return (leftIndex < 0 ? 99 : leftIndex) - (rightIndex < 0 ? 99 : rightIndex) || left.id.localeCompare(right.id)
+    const leftIndex = order.has(left.id) ? order.get(left.id) : 99
+    const rightIndex = order.has(right.id) ? order.get(right.id) : 99
+    return leftIndex - rightIndex || left.id.localeCompare(right.id)
   })
   return packages
 }
@@ -227,21 +244,167 @@ function serializeRegistry(registry) {
   }
 }
 
+function parseBody(rawBody) {
+  try {
+    const payload = JSON.parse(rawBody)
+    return { ok: true, value: payload && typeof payload === 'object' ? payload : {} }
+  } catch {
+    return { ok: false, value: {} }
+  }
+}
+
+/**
+ * 接口实现与 HTTP 通道分离：handler 只吃原始请求体、吐 { status, payload }，
+ * 这样 node 环境可以直接覆盖正常 / 400 / 409 / 超限等分支，不必起 dev server。
+ * 顺序化的 build 队列留在闭包里，同一进程内 estimate 与 build 不会互相覆盖产物。
+ */
+export function createApiHandlers() {
+  let buildQueue = Promise.resolve()
+  const enqueue = (factory) => {
+    const task = buildQueue.then(factory)
+    buildQueue = task.catch(() => {})
+    return task
+  }
+  // 估算结果按"选中组件 + 主题"缓存，来回切选项时同一组合不重复打包（C11）。
+  // Map 的插入顺序当 LRU 用：命中先删再插，超过上限时淘汰最旧的一条。
+  const estimateCache = new Map()
+  const ESTIMATE_CACHE_LIMIT = 30
+  const estimateKey = (body, selection) => {
+    const normalized = Object.keys(selection)
+      .sort()
+      .map((id) => `${id}:${(Array.isArray(selection[id]) ? [...selection[id]] : []).sort().join(',')}`)
+      .join('|')
+    return `${JSON.stringify(body.theme ?? {})}\n${normalized}`
+  }
+
+  return {
+    async registry() {
+      try {
+        // dev 侧要能看到刚改过的 spec，显式绕过进程级 memo（C3）
+        const registry = await loadRegistry({ fresh: true })
+        return { status: 200, payload: { ...serializeRegistry(registry), tokens: loadThemeTokens() } }
+      } catch (error) {
+        return { status: 500, payload: { error: error.message } }
+      }
+    },
+
+    packages() {
+      return { status: 200, payload: { packages: listBuiltPackages() } }
+    },
+
+    presets() {
+      return { status: 200, payload: { presets: listPresets() } }
+    },
+
+    async estimate(rawBody) {
+      const parsed = parseBody(rawBody)
+      if (!parsed.ok) {
+        return { status: 400, payload: { error: '请求 JSON 无法解析' } }
+      }
+
+      const body = parsed.value
+      const selection = body.components && typeof body.components === 'object' ? body.components : {}
+      if (!Object.keys(selection).length) {
+        return {
+          status: 200,
+          payload: { components: 0, features: 0, jsBytes: 0, cssBytes: 0, totalBytes: 0, gzipBytes: 0 }
+        }
+      }
+
+      const cacheKey = estimateKey(body, selection)
+      if (process.env.UIKIT_NO_BUILD_CACHE !== '1' && estimateCache.has(cacheKey)) {
+        const hit = estimateCache.get(cacheKey)
+        estimateCache.delete(cacheKey)
+        estimateCache.set(cacheKey, hit)
+        return { status: 200, payload: hit }
+      }
+
+      try {
+        const result = await enqueue(() =>
+          buildProfile({
+            name: 'estimate-internal',
+            prefix: 'ui',
+            theme: body.theme && typeof body.theme === 'object' ? body.theme : {},
+            selection,
+            logLevel: 'silent',
+            outDir: '.build/estimate-dist'
+          })
+        )
+        const payload = {
+          components: result.components.length,
+          features: result.features.length,
+          jsBytes: result.jsBytes,
+          cssBytes: result.cssBytes,
+          totalBytes: result.totalBytes,
+          gzipBytes: result.gzipBytes
+        }
+        if (process.env.UIKIT_NO_BUILD_CACHE !== '1') {
+          estimateCache.set(cacheKey, payload)
+          while (estimateCache.size > ESTIMATE_CACHE_LIMIT) {
+            estimateCache.delete(estimateCache.keys().next().value)
+          }
+        }
+        return { status: 200, payload }
+      } catch (error) {
+        return { status: error.status || 500, payload: { error: error.message } }
+      }
+    },
+
+    async build(rawBody) {
+      const parsed = parseBody(rawBody)
+      if (!parsed.ok) {
+        return { status: 400, payload: { error: '请求 JSON 无法解析' } }
+      }
+
+      const body = parsed.value
+      const name = sanitizeName(typeof body.name === 'string' ? body.name : 'custom')
+      if (reservedProfileNames().has(name)) {
+        return {
+          status: 409,
+          payload: { error: `"${name}" 是正式 profile 的保留名，自定义包请换一个名字` }
+        }
+      }
+
+      try {
+        const result = await enqueue(() =>
+          buildProfile({
+            name,
+            prefix: typeof body.prefix === 'string' ? body.prefix : 'ui',
+            theme: body.theme && typeof body.theme === 'object' ? body.theme : {},
+            selection: body.components,
+            features: Array.isArray(body.features) ? body.features : [],
+            logLevel: 'silent',
+            outDir: customPackageDir(name)
+          })
+        )
+        const types = fs.readFileSync(path.join(rootDir, result.dir, 'index.d.ts'), 'utf8')
+        console.log(
+          `[build] ${result.dir} <- ${result.components.length} components / ${result.features.length} features`
+        )
+        return { status: 200, payload: { ...result, types } }
+      } catch (error) {
+        return { status: error.status || 500, payload: { error: error.message } }
+      }
+    }
+  }
+}
+
 export function apiPlugin() {
+  const handlers = createApiHandlers()
+  const respond = async (response, task) => {
+    const { status, payload } = await task
+    sendJson(response, status, payload)
+  }
+
   return {
     name: 'ui-kit-build-api',
     configureServer(server) {
-      server.middlewares.use('/api/registry', async (request, response) => {
+      server.middlewares.use('/api/registry', (request, response) => {
         if (request.method !== 'GET') {
           sendJson(response, 405, { error: '只支持 GET' })
           return
         }
-        try {
-          const registry = await loadRegistry()
-          sendJson(response, 200, { ...serializeRegistry(registry), tokens: loadThemeTokens() })
-        } catch (error) {
-          sendJson(response, 500, { error: error.message })
-        }
+        respond(response, handlers.registry())
       })
 
       server.middlewares.use('/api/packages', (request, response) => {
@@ -249,7 +412,7 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 GET' })
           return
         }
-        sendJson(response, 200, { packages: listBuiltPackages() })
+        respond(response, handlers.packages())
       })
 
       server.middlewares.use('/packs', (request, response) => {
@@ -265,7 +428,7 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 GET' })
           return
         }
-        sendJson(response, 200, { presets: listPresets() })
+        respond(response, handlers.presets())
       })
 
       server.middlewares.use('/api/estimate', async (request, response) => {
@@ -273,46 +436,20 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 POST' })
           return
         }
-
-        let payload
+        let rawBody
         try {
-          payload = JSON.parse(await readBody(request))
-        } catch {
-          sendJson(response, 400, { error: '请求 JSON 无法解析' })
+          rawBody = await readBody(request)
+        } catch (error) {
+          // 请求体超过 512 KB 时直接给 413，避免中间件 promise 悬挂
+          sendJson(response, 413, { error: error.message })
           return
         }
-
-        const body = payload && typeof payload === 'object' ? payload : {}
-        const selection = body.components && typeof body.components === 'object' ? body.components : {}
-        if (!Object.keys(selection).length) {
-          sendJson(response, 200, { components: 0, features: 0, jsBytes: 0, cssBytes: 0, totalBytes: 0, gzipBytes: 0 })
-          return
-        }
-        const task = buildQueue.then(() =>
-          buildProfile({
-            name: 'estimate-internal',
-            prefix: 'ui',
-            theme: body.theme && typeof body.theme === 'object' ? body.theme : {},
-            selection,
-            logLevel: 'silent',
-            outDir: '.build/estimate-dist'
+        respond(
+          response,
+          handlers.estimate(rawBody).catch((error) => {
+            return { status: 500, payload: { error: error.message } }
           })
         )
-        buildQueue = task.catch(() => {})
-
-        try {
-          const result = await task
-          sendJson(response, 200, {
-            components: result.components.length,
-            features: result.features.length,
-            jsBytes: result.jsBytes,
-            cssBytes: result.cssBytes,
-            totalBytes: result.totalBytes,
-            gzipBytes: result.gzipBytes
-          })
-        } catch (error) {
-          sendJson(response, error.status || 500, { error: error.message })
-        }
       })
 
       server.middlewares.use('/api/build', async (request, response) => {
@@ -320,39 +457,19 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 POST' })
           return
         }
-
-        let payload
+        let rawBody
         try {
-          payload = JSON.parse(await readBody(request))
-        } catch {
-          sendJson(response, 400, { error: '请求 JSON 无法解析' })
+          rawBody = await readBody(request)
+        } catch (error) {
+          sendJson(response, 413, { error: error.message })
           return
         }
-
-        const body = payload && typeof payload === 'object' ? payload : {}
-        const name = typeof body.name === 'string' ? body.name : 'custom'
-        const task = buildQueue.then(() =>
-          buildProfile({
-            name,
-            prefix: typeof body.prefix === 'string' ? body.prefix : 'ui',
-            theme: body.theme && typeof body.theme === 'object' ? body.theme : {},
-            selection: body.components,
-            features: Array.isArray(body.features) ? body.features : [],
-            logLevel: 'silent'
+        respond(
+          response,
+          handlers.build(rawBody).catch((error) => {
+            return { status: 500, payload: { error: error.message } }
           })
         )
-        buildQueue = task.catch(() => {})
-
-        try {
-          const result = await task
-          const types = fs.readFileSync(path.join(rootDir, result.dir, 'index.d.ts'), 'utf8')
-          console.log(
-            `[build] ${result.dir} <- ${result.components.length} components / ${result.features.length} features`
-          )
-          sendJson(response, 200, { ...result, types })
-        } catch (error) {
-          sendJson(response, error.status || 500, { error: error.message })
-        }
       })
     }
   }

@@ -1,10 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { inputConfig } from '../../shared/behavior'
-import { inputClearableFeature } from './features/clearable/index'
-import { inputPasswordFeature } from './features/password/index'
-import { inputWordLimitFeature } from './features/word-limit/index'
-import { inputIconsFeature } from './features/icons/index'
 import './core.css'
 
 const inputBaseProps = {

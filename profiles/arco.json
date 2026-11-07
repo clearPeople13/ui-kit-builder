@@ -1,5 +1,7 @@
 {
   "name": "arco",
+  "label": "Arco Design",
+  "order": 6,
   "components": "full",
   "prefix": "arco",
   "theme": {

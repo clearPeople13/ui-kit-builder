@@ -1,5 +1,7 @@
 {
   "name": "carbon",
+  "label": "Carbon IBM",
+  "order": 17,
   "components": "full",
   "prefix": "carbon",
   "theme": {

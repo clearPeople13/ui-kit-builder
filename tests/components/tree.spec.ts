@@ -239,10 +239,10 @@ describe('Tree', () => {
   it('filter 默认按标签匹配并保留命中节点的父级', async () => {
     const wrapper = mountTree({ defaultExpandAll: true })
     await nextTick()
-    ;(wrapper.vm as any).filter('二级 1-1')
+    ;(wrapper.vm as unknown as Record<string, any>).filter('二级 1-1')
     await nextTick()
     expect(wrapper.findAll('.ui-tree__label').map((item) => item.text())).toEqual(['一级 1', '二级 1-1'])
-    ;(wrapper.vm as any).filter('')
+    ;(wrapper.vm as unknown as Record<string, any>).filter('')
     await nextTick()
     expect(nodes(wrapper)).toHaveLength(5)
   })
@@ -257,7 +257,7 @@ describe('Tree', () => {
       filterNodeMethod: (_value: string, raw: { keep: boolean }) => Boolean(raw.keep)
     })
     await nextTick()
-    ;(wrapper.vm as any).filter('keep')
+    ;(wrapper.vm as unknown as Record<string, any>).filter('keep')
     await nextTick()
     expect(wrapper.findAll('.ui-tree__label').map((item) => item.text())).toEqual(['甲', '甲一'])
   })
@@ -265,9 +265,9 @@ describe('Tree', () => {
   it('setCheckedKeys 与 getCheckedNodes 对外接口', async () => {
     const wrapper = mountTree({ defaultExpandAll: true, showCheckbox: true })
     await nextTick()
-    ;(wrapper.vm as any).setCheckedKeys([5])
+    ;(wrapper.vm as unknown as Record<string, any>).setCheckedKeys([5])
     await nextTick()
-    expect([...((wrapper.emitted('update:checked-keys')?.slice(-1)?.[0]?.[0] ?? []) as any[])].sort()).toEqual([
+    expect([...((wrapper.emitted('update:checked-keys')?.slice(-1)?.[0]?.[0] ?? []) as unknown[])].sort()).toEqual([
       3, 4, 5
     ])
     expect(wrapper.findAll('.ui-tree__checkbox input').map((item) => inputOf(item).checked)).toEqual([
@@ -277,7 +277,7 @@ describe('Tree', () => {
       true,
       true
     ])
-    expect((wrapper.vm as any).getCheckedNodes().length).toBe(3)
+    expect((wrapper.vm as unknown as Record<string, any>).getCheckedNodes().length).toBe(3)
   })
 
   it('renderContent 自定义节点内容', async () => {
@@ -290,7 +290,7 @@ describe('Tree', () => {
   })
 
   it('icon 自定义展开图标', async () => {
-    const wrapper = mountTree({ icon: h('span', { class: 'my-icon' }) as any })
+    const wrapper = mountTree({ icon: h('span', { class: 'my-icon' }) as unknown as Record<string, unknown> })
     await nextTick()
     expect(wrapper.find('.my-icon').exists()).toBe(true)
   })

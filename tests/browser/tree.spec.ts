@@ -23,9 +23,9 @@ describe('浏览器层 · 树形大数据', () => {
         new Promise<void>((resolve) => {
           requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
         })
-      const box = document.querySelector('#tree-wide-box')
+      const box = document.querySelector('#tree-wide-box')!
       const before = box.querySelectorAll('.ui-tree__node').length
-      const icon = box.querySelector('.ui-tree__expand')
+      const icon = box.querySelector('.ui-tree__expand')!
       const start = performance.now()
       icon.dispatchEvent(new MouseEvent('click', { bubbles: true }))
       await nextTwoFrames()
@@ -46,10 +46,10 @@ describe('浏览器层 · 树形大数据', () => {
         new Promise<void>((resolve) => {
           requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
         })
-      const box = document.querySelector('#tree-box')
+      const box = document.querySelector('#tree-box')!
       const seen = [box.querySelectorAll('.ui-tree__node').length]
       for (const index of [0, 1]) {
-        const icon = box.querySelectorAll('.ui-tree__expand')[index]
+        const icon = box.querySelectorAll('.ui-tree__expand')[index]!
         icon.dispatchEvent(new MouseEvent('click', { bubbles: true }))
         await nextTwoFrames()
         seen.push(box.querySelectorAll('.ui-tree__node').length)

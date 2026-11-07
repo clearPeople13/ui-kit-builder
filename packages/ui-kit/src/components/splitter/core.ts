@@ -4,8 +4,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { sizeValue, wrapperConfig } from '../../shared/behavior'
 import { clamp } from '../../shared/utils'
-import { splitterLazyFeature } from './features/lazy/index'
-import { splitterPanelDraggableFeature } from './features/splitter-panel-draggable/index'
 import './core.css'
 
 interface SplitterPanelMeta {

@@ -38,30 +38,30 @@ describe('Collection 集合注册', () => {
   })
 
   it('暴露 getItem 命中已注册元素', () => {
-    const vm = mountCollection().vm as any
+    const vm = mountCollection().vm as unknown as Record<string, any>
     expect(vm.getItem(alpha).constructor.name).toBe('HTMLDivElement')
     expect(vm.getItem(beta).constructor.name).toBe('HTMLDivElement')
     expect(vm.getItem(alpha).classList.contains('ui-collection__item')).toBe(true)
   })
 
   it('getItem 对未登记对象返回 null', () => {
-    const vm = mountCollection().vm as any
+    const vm = mountCollection().vm as unknown as Record<string, any>
     expect(vm.getItem({ id: 'ghost' })).toBeNull()
   })
 
   it('itemRefs 记录条目数量', () => {
-    const vm = mountCollection().vm as any
+    const vm = mountCollection().vm as unknown as Record<string, any>
     expect(vm.itemRefs.size).toBe(2)
   })
 
   it('空集合时不渲染子项且映射为空', () => {
     const wrapper = mount(Collection, { slots: { default: () => [] } })
     expect(wrapper.findAll('.ui-collection__item')).toHaveLength(0)
-    expect((wrapper.vm as any).itemRefs.size).toBe(0)
+    expect((wrapper.vm as unknown as Record<string, any>).itemRefs.size).toBe(0)
   })
 
   it('单条目集合大小为一', () => {
-    const vm = mountCollection([alpha]).vm as any
+    const vm = mountCollection([alpha]).vm as unknown as Record<string, any>
     expect(vm.itemRefs.size).toBe(1)
     expect(vm.getItem(alpha)).toBeTruthy()
   })
@@ -89,9 +89,9 @@ describe('Collection 集合注册', () => {
     })
     const wrapper = mount(Host)
     const collection = wrapper.findComponent(Collection)
-    expect((collection.vm as any).itemRefs.size).toBe(2)
+    expect((collection.vm as unknown as Record<string, any>).itemRefs.size).toBe(2)
     await wrapper.setProps({ two: false })
-    expect((collection.vm as any).itemRefs.size).toBe(1)
+    expect((collection.vm as unknown as Record<string, any>).itemRefs.size).toBe(1)
     expect(wrapper.findAll('.ui-collection__item')).toHaveLength(1)
   })
 
@@ -104,7 +104,7 @@ describe('Collection 集合注册', () => {
       }
     })
     expect(wrapper.findAll('.ui-collection__item')).toHaveLength(2)
-    const vm = wrapper.vm as any
+    const vm = wrapper.vm as unknown as Record<string, any>
     expect(vm.itemRefs.size).toBe(2)
     expect(vm.getItem(inner)).toBeTruthy()
   })

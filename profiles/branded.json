@@ -1,5 +1,7 @@
 {
   "name": "branded",
+  "label": "Branded 品牌主题",
+  "order": 2,
   "components": "full",
   "prefix": "acme",
   "theme": {

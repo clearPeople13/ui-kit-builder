@@ -6,11 +6,6 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { formatDateValue, parseTimeValue } from '../../shared/date'
-import { timeSelectClearableFeature } from './features/clearable/index'
-import { timeSelectIconsFeature } from './features/icons/index'
-import { timeSelectPopperFeature } from './features/popper/index'
-import { timeSelectEditableFeature } from './features/editable/index'
-import { timeSelectFormatFeature } from './features/format/index'
 import './core.css'
 
 const timeSelectBaseProps = {
@@ -133,13 +128,6 @@ export function createTimeSelect(features: UiFeature[] = []) {
             closePanel()
           } else {
             openPanel()
-          }
-        }
-
-        function handleKeydown(event: KeyboardEvent) {
-          if (event.key === 'Escape' && open.value) {
-            event.preventDefault()
-            closePanel()
           }
         }
 

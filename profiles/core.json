@@ -1,4 +1,6 @@
 {
   "name": "core",
+  "label": "Core 基础包",
+  "order": 0,
   "components": "all"
 }

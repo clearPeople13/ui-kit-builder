@@ -7,12 +7,6 @@ import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import type { TimeParts } from '../../shared/date'
 import { formatDateValue, hasSecondsToken, pad, parseDateValue, parseTimeText } from '../../shared/date'
-import { timePickerClearableFeature } from './features/clearable/index'
-import { timePickerIconsFeature } from './features/icons/index'
-import { timePickerPopperFeature } from './features/popper/index'
-import { timePickerEditableFeature } from './features/editable/index'
-import { timePickerFormatFeature } from './features/format/index'
-import { timePickerRangeFeature } from './features/range/index'
 import './core.css'
 
 const timePickerBaseProps = {

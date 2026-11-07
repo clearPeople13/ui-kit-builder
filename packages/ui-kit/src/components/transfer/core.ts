@@ -4,8 +4,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { createCheckbox } from '../checkbox/core'
-import { transferFilterableFeature } from './features/filterable/index'
-import { transferVirtualizedFeature } from './features/virtualized/index'
 import './core.css'
 
 const TransferCheckbox = createCheckbox([])

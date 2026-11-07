@@ -73,7 +73,7 @@ describe('modelValue 布尔联合类型必须显式声明 default', () => {
   })
 
   it('dist 产物里的 SelectV2 也带着这条 default（构建没有把它抹掉）', () => {
-    const props = (SelectV2 as any).props
+    const props = (SelectV2 as unknown as { props: Record<string, { default?: unknown }> }).props
     expect('default' in props.modelValue).toBe(true)
     expect(props.modelValue.default).toBeUndefined()
   })

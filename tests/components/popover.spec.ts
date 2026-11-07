@@ -201,7 +201,7 @@ describe('Popover 浮层气泡', () => {
   })
 
   it('className 与 popperClass 一起附加到面板', async () => {
-    const wrapper = mountPopover({ className: 'extra', popperClass: ['mine'] })
+    mountPopover({ className: 'extra', popperClass: ['mine'] })
     await nextTick()
     expect(panel()!.className.split(' ')).toEqual(
       expect.arrayContaining(['ui-popover__panel', 'ui-floating-panel', 'extra', 'mine'])

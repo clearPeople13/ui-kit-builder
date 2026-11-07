@@ -3,7 +3,6 @@ import { ImageIcon } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
-import { skeletonLoadingFeature } from './features/loading/index'
 import './core.css'
 
 const skeletonBaseProps = {

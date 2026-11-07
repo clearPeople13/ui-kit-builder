@@ -1,7 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { rateConfig } from '../../shared/behavior'
-import { rateClearableFeature } from './features/clearable/index'
 import './core.css'
 
 const rateBaseProps = {

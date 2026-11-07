@@ -9,6 +9,8 @@ import { consumerPort } from '../../scripts/worktree-ports.mjs'
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const repoDir = path.resolve(rootDir, '../..')
 const configuratorDir = path.join(repoDir, 'configurator')
+const scriptsDir = path.join(repoDir, 'scripts')
+
 // F-67：node_modules/@demo 是 npm install 时生成的软链，在并行工作树里可能指向
 // 另一棵工作树（主工作树）的 dist。调试台必须始终消费当前工作树刚构建的产物，
 // 否则源码改完、界面依旧是旧版，单测与源码体检测不出来。
@@ -84,7 +86,9 @@ export default defineConfig({
   server: {
     port: consumerPort,
     fs: {
-      allow: [rootDir, repoDir]
+      // C10：只放行消费方自身、dist 产物、构建器与共享分类清单，
+      // 不再把整个仓库（含 .git / 测试 / 草稿）暴露给 /@fs
+      allow: [rootDir, distDir, configuratorDir, scriptsDir]
     },
     watch: {
       ignored: ['**/.build/**', '**/dist/**']

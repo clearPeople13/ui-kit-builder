@@ -7,10 +7,6 @@ import { renderIcon } from '../../shared/icon'
 import { sameValue } from '../../shared/value'
 import { useFloatingPanel } from '../../shared/panel'
 import { sizeValue } from '../../shared/behavior'
-import { selectV2ClearableFeature } from './features/clearable/index'
-import { selectV2FilterableFeature } from './features/filterable/index'
-import { selectV2MultipleFeature } from './features/multiple/index'
-import { selectV2PopperFeature } from './features/popper/index'
 import './core.css'
 
 const selectV2BaseProps = {

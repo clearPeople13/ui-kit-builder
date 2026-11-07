@@ -1,5 +1,125 @@
 # 需求说明：组件库测试用例体系（前两批共 27 个组件）
 
+## 目录
+
+| 章节 | 标题 |
+| --- | --- |
+| [§1](#s1) | 需求背景 |
+| [§2](#s2) | 需求范围 |
+| [§3](#s3) | 关键设计决定 |
+| [§4](#s4) | 验收标准 |
+| [§5](#s5) | 已知缺陷清单（首批记录，现已全部修复） |
+| [§6](#s6) | 后续批次建议 |
+| [§7](#s7) | 第二批交付（15 个组件文件、319 条组件用例 + 15 条缺陷守卫，守卫已随 §7.2 降级） |
+| [§8](#s8) | 第三批交付（6 个构建器侧测试文件、68 条用例，分支 `feature/20261107-tests-batch3`） |
+| [§9](#s9) | 第四批交付（质量门禁：真实浏览器层 + 统一入口，分支 `feature/20261107-quality-gate`） |
+| [§10](#s10) | 第五批交付（全 profile 运行时校验 + 门禁阶段化与提交钩子，分支 `feature/20261107-every-profile-runtime`） |
+| [§11](#s11) | 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`） |
+| [§12](#s12) | 第七批交付（覆盖率阈值 + 像素基线，分支 `feature/20261107-coverage-pixel-baseline`） |
+| [§13](#s13) | 缺陷修复：特性-属性归属（分支 `fix/20261107-prop-attribution`） |
+| [§14](#s14) | 构建流水线优化（分支 `perf/20261107-build-pipeline`） |
+| [§15](#s15) | 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`） |
+| [§16](#s16) | 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`） |
+| [§17](#s17) | 第十批：调试台产物隔离与视觉体检补齐消费方路径（F-67） |
+| [§18](#s18) | 第十一批交付（工程与测试优化 · B1：门禁短路与产物安全，分支 `feature/20261107-optimization-plan`） |
+| [§19](#s19) | 第十一批交付（工程与测试优化 · B2：构建缓存与清单单一来源，分支 `feature/20261107-optimization-plan`） |
+| [§20](#s20) | 第十一批交付（工程与测试优化 · B3a：工具链测试，分支 `feature/20261107-optimization-plan`） |
+| [§21](#s21) | 第十一批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍） |
+| [§22](#s22) | 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`） |
+| [§23](#s23) | 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`） |
+
+## 缺陷编号索引
+
+每条缺陷的登记行（现象 / 根因 / 修复落点）都在对应章节的表格里；编号连续性与唯一性由 `scripts/verify-governance.mjs`（门禁 `governance` 段）校验。
+
+| 缺陷 | 章节 |
+| --- | --- |
+| F-1 | [§5](#s5) |
+| F-2 | [§5](#s5) |
+| F-3 | [§5](#s5) |
+| F-4 | [§5](#s5) |
+| F-5 | [§5](#s5) |
+| F-6 | [§5](#s5) |
+| F-7 | [§5](#s5) |
+| F-8 | [§5](#s5) |
+| F-9 | [§5](#s5) |
+| F-10 | [§5](#s5) |
+| F-11 | [§7](#s7) |
+| F-12 | [§7](#s7) |
+| F-13 | [§7](#s7) |
+| F-14 | [§7](#s7) |
+| F-15 | [§7](#s7) |
+| F-16 | [§7](#s7) |
+| F-17 | [§7](#s7) |
+| F-18 | [§7](#s7) |
+| F-19 | [§7](#s7) |
+| F-20 | [§7](#s7) |
+| F-21 | [§7](#s7) |
+| F-22 | [§7](#s7) |
+| F-23 | [§7](#s7) |
+| F-24 | [§7](#s7) |
+| F-25 | [§7](#s7) |
+| F-26 | [§8](#s8) |
+| F-27 | [§8](#s8) |
+| F-28 | [§8](#s8) |
+| F-29 | [§9](#s9) |
+| F-30 | [§9](#s9) |
+| F-31 | [§9](#s9) |
+| F-32 | [§9](#s9) |
+| F-33 | [§9](#s9) |
+| F-34 | [§10](#s10) |
+| F-35 | [§10](#s10) |
+| F-36 | [§10](#s10) |
+| F-37 | [§11](#s11) |
+| F-38 | [§11](#s11) |
+| F-39 | [§11](#s11) |
+| F-40 | [§11](#s11) |
+| F-41 | [§11](#s11) |
+| F-42 | [§11](#s11) |
+| F-43 | [§11](#s11) |
+| F-44 | [§11](#s11) |
+| F-45 | [§11](#s11) |
+| F-46 | [§11](#s11) |
+| F-47 | [§11](#s11) |
+| F-48 | [§11](#s11) |
+| F-49 | [§11](#s11) |
+| F-50 | [§11](#s11) |
+| F-51 | [§12](#s12) |
+| F-52 | [§12](#s12) |
+| F-53 | [§13](#s13) |
+| F-54 | [§14](#s14) |
+| F-55 | [§15](#s15) |
+| F-56 | [§15](#s15) |
+| F-57 | [§15](#s15) |
+| F-58 | [§15](#s15) |
+| F-59 | [§15](#s15) |
+| F-60 | [§15](#s15) |
+| F-61 | [§15](#s15) |
+| F-62 | [§15](#s15) |
+| F-63 | [§15](#s15) |
+| F-64 | [§15](#s15) |
+| F-65 | [§15](#s15) |
+| F-66 | [§16](#s16) |
+| F-67 | [§17](#s17) |
+| F-68 | [§18](#s18) |
+| F-69 | [§18](#s18) |
+| F-70 | [§18](#s18) |
+| F-71 | [§18](#s18) |
+| F-72 | [§18](#s18) |
+| F-73 | [§18](#s18) |
+| F-74 | [§18](#s18) |
+| F-75 | [§19](#s19) |
+| F-76 | [§19](#s19) |
+| F-77 | [§19](#s19) |
+| F-78 | [§19](#s19) |
+| F-79 | [§19](#s19) |
+| F-80 | [§19](#s19) |
+| F-81 | [§20](#s20) |
+| F-82 | [§20](#s20) |
+| F-83 | [§20](#s20) |
+
+<a id="s1"></a>
+
 ## 1. 需求背景
 
 项目此前只有一层"构建产物是否正确打包"的校验（`npm run verify`、`npm run verify:consumer`），
@@ -7,6 +127,8 @@
 改动 `shared/behavior.ts` 或某个特性模块时无法快速判断影响面。
 
 本需求为组件库建立可持续运行的单元测试层，并先把使用频率最高的核心组件覆盖起来。
+
+<a id="s2"></a>
 
 ## 2. 需求范围
 
@@ -26,6 +148,8 @@
 - 不覆盖其余组件（Menu、Dropdown、Upload、DatePicker 等留待第二批，见 §6）
 - 不引入覆盖率阈值门禁（只提供 `npm run test:coverage` 命令）
 
+<a id="s3"></a>
+
 ## 3. 关键设计决定
 
 | 决定     | 结论                                                         | 原因                                                                                                          |
@@ -37,6 +161,8 @@
 | 浮层组件 | `attachTo: document.body` + 直接查询 `document`              | Select 下拉、Dialog 面板 teleport 到 body，`wrapper.html()` 只剩传送门注释                                    |
 | 缺陷记录 | `tests/findings.spec.ts` 内使用 `it.fails`                   | 断言失败才算通过；组件一旦修好该用例会转为失败，提示把断言迁回对应组件用例                                    |
 
+<a id="s4"></a>
+
 ## 4. 验收标准
 
 1. `npm test` 全绿，首批交付为 13 个测试文件、258 条用例；缺陷修复批次补齐守卫后为 12 个文件、266 条用例；第二批交付后为 28 个文件、600 条用例（新增 15 个组件 319 条 + 缺陷守卫 15 条），单次运行耗时 ≤ 5 秒（不含构建）
@@ -44,6 +170,8 @@
 3. `npm run format:check`、`npm run lint`、`npm run typecheck`、`npm run verify` 均不因新增测试而失败
 4. 12 个组件各自具备"行为 + 属性 + 事件 + 边界"四类断言，缺失维度需在文档或注释中说明原因
 5. 已知缺陷以 `it.fails` 守卫形式存在且有根因注释；修复批次把守卫降级为组件文件里的常规回归用例，而不是删掉了事
+
+<a id="s5"></a>
 
 ## 5. 已知缺陷清单（首批记录，现已全部修复）
 
@@ -62,6 +190,8 @@
 
 修复批次（`fix/20261106-component-defects`）不改动组件的公开 API 与事件语义，只补齐声明已承诺却未接线的行为；`tests/findings.spec.ts` 的 `it.fails` 守卫全部降级为组件文件里的常规用例，守卫文件随之删除，待第二批再发现缺陷时重建。
 
+<a id="s6"></a>
+
 ## 6. 后续批次建议
 
 - 第二批已交付（分支 `feature/20261106-component-tests-batch2`，内容见 §7），其缺陷也已清除（分支 `fix/20261107-component-defects-batch2`，内容见 §7.1）
@@ -70,6 +200,8 @@
 - 第五批（建议）：把 `npm run quality` 接到 CI 与提交钩子（当前仍是本地一条命令），并把"裁剪后 19 份 profile 的运行时可用性"补成按 profile 起 alias 的关键用例
 - 缺陷修复已按"单独分支 + 单独 PR"完成（`fix/20261106-component-defects`），每条 `it.fails` 守卫都降级为组件文件里的常规用例；后续批次沿用同一约定
 - §5 的 F-1~F-10、§7.1 的 F-11~F-25 均已修复，守卫文件 `tests/findings.spec.ts` 按约定删除
+
+<a id="s7"></a>
 
 ## 7. 第二批交付（15 个组件文件、319 条组件用例 + 15 条缺陷守卫，守卫已随 §7.2 降级）
 
@@ -112,6 +244,8 @@
 
 F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成常量求值的特性才是缺陷，已改 17 个；`--popper`、`--validate`、`--format`、`autocomplete--filterable` 一类结构性类名没有对应开关，其特性 CSS 为空或仅由 core 选择器引用，保留常量形式并在源码注释里说明。
 
+<a id="s8"></a>
+
 ## 8. 第三批交付（6 个构建器侧测试文件、68 条用例，分支 `feature/20261107-tests-batch3`）
 
 组件用例只跑 `dist/full` 这一份产物，管的是"组件行为对不对"；构建器管的是"装进包里的是不是选中的那一份"，这两件事互看不到。第三批把后者单独建成一套用例：`vitest.build.config.ts`（`environment: 'node'`，只读文本、起 happy-dom 反而拖慢）跑 `tests/build/**`，先 `npm run build:all` 产出 20 份 profile 再断言，命令是 `npm run test:build`，`npm run test:all` 一次跑完两侧。
@@ -134,6 +268,8 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | F-26 | `scripts/build-lib.mjs` | `meta.features` 报 179 条，入口 `entry.ts` 出现重复 import 语句                  | 同一个特性可以挂在同组件的多个导出上（`table.selection` 同时在 `Table` 与 `TableColumn`），`generateEntry` 按"导出 × 特性"逐条推送，没去重 | 入口生成按 `导出名 + 模块` 去重 import、按特性 id 去重 `activeFeatures`；类型生成侧同样按 id 去重                                                                                                  | `profile-contract.spec.ts`「features 是 registry 声明顺序下的特性 id，且不含重复项」+ `tree-shaking.spec.ts`「entry.ts 的特性 import 恰好等于被选中的特性模块，且没有重复行」 |
 | F-27 | `scripts/build-all.mjs` | `sizes.json.features` 恒为空对象，构建器界面拿不到"单个特性的体积成本"           | 增量靠"恰好等于 `requires` 与 `requires + [id]` 的两份 profile"配对求得；仓库里除 core（0 特性）外 19 份都是全特性集，任何配对都不成立     | 已修：对每个特性构建一份「full 去掉该特性」的临时产物与 `full` 相减，得到该特性在完整产物里的边际成本；178 个特性全部有数据，临时产物构建后清理 | `size-budget.spec.ts`「features 段覆盖全部 178 个特性，且每项都是非负增量」 |
 | F-28 | `normalizePropType`     | `index.d.ts` 里出现 `((...args: any[]) => any \| any[])`，数组分支被吞进返回类型 | 括号深度表把 `=>` 的 `>` 当右括号，深度穿到负数，箭头函数之后的顶层 `\|` 不再拆分                                                          | 深度计算跳过 `=` 之后的 `>`；两份 `spec.mjs` 把有歧义的类型写成显式括号（`((...args: any[]) => any) \| any[]`、`(value: string) => (boolean \| string \| undefined)`），生成器 `tsType` 同步补括号 | `builder-functions.spec.ts`「F-28：=> 的右尖括号不计入括号深度」「d.ts 里每一行属性类型都已规范化且幂等」                                                                     |
+
+<a id="s9"></a>
 
 ## 9. 第四批交付（质量门禁：真实浏览器层 + 统一入口，分支 `feature/20261107-quality-gate`）
 
@@ -184,9 +320,11 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 行为变化只有两处，且都是"补齐键盘通路"：触发型浮层现在响应 Enter / Space 开合，以及 Escape 收起栈顶浮层；依赖"按 Enter 不展开"的宿主写法需要复查。`style` 的路由口径同步写进文档与用例：Aside 的宽度由 `width` 属性决定、Popover 的 `style` / `className` 落到面板，这两点在 attributes.spec 里以白名单形式钉住并写明理由，新增同类例外必须附理由才会被放行。
 
-配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；`sweep-shots.mjs` 顺带过了一遍 `eslint --fix`。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
+配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；本地截图脚本顺带过了一遍 `eslint --fix`（该脚本已在 C7 删除）。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
 
 仍存在的缺口，按重要性排列：没有 CI 与提交钩子，`npm run quality` 目前靠本地自觉执行；布局基线只比几何矩形不比像素，且非本机平台自动跳过；浏览器层 8 个文件串行执行约 15 s，profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据；覆盖率未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入。
+
+<a id="s10"></a>
 
 ## 10. 第五批交付（全 profile 运行时校验 + 门禁阶段化与提交钩子，分支 `feature/20261107-every-profile-runtime`）
 
@@ -232,6 +370,8 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 仍存在的缺口：布局基线仍只比几何矩形不比像素；覆盖率仍未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入；`ci.mjs` 目前只在本机与钩子里生效，仓库还没有服务端 runner——Gitee 上这两个 Issue 的评论功能处于关闭状态，`PATCH /repos/.../issues/{number}` 对这类 Issue 返回 404，结案的评论需要开 Issue 评论权限或改用 Web 界面补。
 
 > 前两条已在第七批补上（像素基线 + 覆盖率阈值，见 §12）；其余仍然有效。
+
+<a id="s11"></a>
 
 ## 11. 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`）
 
@@ -302,6 +442,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 - 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1859 条用例；另有覆盖率层在同一批组件用例上重放并卡阈值（不重复计入条数，见 §12）。
 - 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
 
+<a id="s12"></a>
+
 ## 12. 第七批交付（覆盖率阈值 + 像素基线，分支 `feature/20261107-coverage-pixel-baseline`）
 
 §10.4 留下的两个缺口——"覆盖率没有阈值门禁""布局基线只比几何不比像素"——本批一并补齐；顺带修掉一个工具链缺陷 F-51：`test:coverage` 脚本从写下那天起就没装过 coverage provider，真跑必失败。
@@ -340,6 +482,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 门禁从九段变十段：`scripts/ci.mjs` 的 STAGES 增加 `test:coverage`（在 `test:browser` 之后），`npm run quality` 与 pre-push 钩子自动包含。
 
+<a id="s13"></a>
+
 ## 13. 缺陷修复：特性-属性归属（分支 `fix/20261107-prop-attribution`）
 
 第七批把属性字典的双向守卫收紧到"已启用特性"口径后，暴露出四组把 core prop 记在特性名下的归属错误：这些 props 在组件 `core.ts` 里无条件声明、core 产物里也真实存在，字典却只挂在某个可被裁掉的特性上。后果有两层——开关关掉后属性仍在运行时，但生成的 `index.d.ts` 不再声明它；正向守卫用"任意特性"放行，等于让被关掉的特性替 core prop 背书，再丢也没人发现。
@@ -349,6 +493,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 | F-53 | message / skeleton / steps / tree 的 spec | 4 条 core prop 记在特性名下，特性关闭后 d.ts 缺声明而运行时仍有该 prop | `showClose`、`loading`、`icon`、`checkStrictly` 在 `core.ts` 已无条件声明，spec 却重复记在 `closable` / `loading` / `icons` / `selection` 上 | 四条移入对应 export 的 `coreProps`，特性 props 置空或只保留真正由特性提供的项 |
 
 守卫同步收紧：`tests/profiles/props-documented.spec.ts` 的正向检查从"coreProps 或任意 feature"改为"coreProps 加上本 profile 已启用的特性"，与反向完全同口径；原先为这四条开的后门注释一并删除。修复后 20 份 profile 的正反向守卫全绿，`index.d.ts` 与运行时 props 重新一一对应。
+
+<a id="s14"></a>
 
 ## 14. 构建流水线优化（分支 `perf/20261107-build-pipeline`）
 
@@ -368,6 +514,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 实测（本机 Ryzen 9 7950X）：冷启动 `build:all` 10 分 17 秒（20 份 profile 65.0 s + 178 份试算 551.4 s），源码未变时命中缓存 57 s；`npm run quality` 从三次全量构建收敛为一次，`verify` 段从 70.5 s 降到复用后的秒级。
 
 新增守卫 `tests/build/build-hygiene.spec.ts`（6 条）：`dist/` 含全部 20 份 profile 且无试算残留（构建器 UI 生成的自定义包允许存在）、试算目录与 `.build/feat-*` 构建后为空、`sizes.json.features` 覆盖全部特性且为非负整数（正增量多于 100 条）、20 份 profile 元数据与 `sizes.json` 一一对应、缓存指纹是 40 位 sha1 且与本次 `sizes.json` 完全一致。构建器侧用例从 89 条增至 95 条。
+
+<a id="s15"></a>
 
 ## 15. 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`）
 
@@ -433,7 +581,7 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 主工作树：保持 5173 / 5174 / 5199，行为不变。
 - WorkBuddy 专属工作树 `C:/WorkBench/ui-kit-builder-wb`：5273 / 5274 / 5299，已确认三个端口均空闲、5173 仍归主工作树。
 - `tests/browser/_global-setup.ts` 的探针服务用 `port: 0` 随机取端口并把地址写进 `UIKIT_HARNESS_BASE`，不参与这套配置，天然不冲突。
-- 三个消费方均已改为读取导出值：`vite.config.mjs`（根 dev）、`examples/consumer/vite.config.mjs`（调试台）、`scripts/guardian/detectors/sweep.mjs`（巡检）；全仓已无 5173 / 5174 / 5199 的硬编码使用点，只在缺省值与注释里出现。
+- 三个消费方均已改为读取导出值：`vite.config.mjs`（根 dev）、`examples/consumer/vite.config.mjs`（调试台）、`tools/guardian/detectors/sweep.mjs`（巡检）；全仓已无 5173 / 5174 / 5199 的硬编码使用点，只在缺省值与注释里出现。
 
 ### 15.6 治理守卫的可失败验证与自身盲点修复
 
@@ -442,6 +590,9 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 编号断档：第一次顺延后主线 F-53 尚未合入，守卫报 `缺陷编号断档：缺 F-53`；第二次顺延后构建流水线的 F-54 尚未合入，报 `缺 F-54`；两边都合入后转为「已登记 65 条，最大 F-65」且退出码 0。
 - **守卫自身盲点（已修）**：初版用 `git diff`（只看未暂存）取改动面，开发者只要先 `git add`，影响面清单就会打印"本次无源码改动"后静默跳过。改为 `git diff HEAD`（未暂存 + 已暂存）与 `git diff HEAD -- <components>`，并对未跟踪的新 `core.ts` 按全文补扫交互关键字。同一批已暂存改动的前后对照：修复前跳过，修复后重新报出「shared/date.ts 同族 3 个组件」「time-picker 浏览器层 1 个文件」。
 - **合并兼容性**：并行的构建流水线分支会把 `quality` 改成委托 `ci.mjs`、并新增统一 `build` 段。治理校验的段数判定同时认硬编码 `npm run` 链与委托形态；另外常驻一条「STAGES 必须含 `governance` 且 `package.json` 必须有 `verify:governance`」的守卫，避免合并 `ci.mjs` 时把治理段覆盖掉、让治理校验变成"没进门禁的脚本"。
+
+
+<a id="s16"></a>
 
 ## 16. 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`）
 
@@ -498,6 +649,9 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 缺陷 F-1…F-66 全部修复，守卫文件已删除，无 `it.fails` 长期挂账。
 - 用例数不变（组件层 95 文件 1582 条、构建器侧 8 文件 95 条、profile 2 文件 142 条、浏览器 11 文件 65 条）：本批交付的是门禁能力与复核入口，不是用例。
 
+
+<a id="s17"></a>
+
 ## 17. 第十批：调试台产物隔离与视觉体检补齐消费方路径（F-67）
 
 ### 17.1 触发：把项目跑起来才看见的真相
@@ -533,3 +687,195 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 视觉体检基线更新为：124 组件 / 21 可见原生控件 / 124 张组件图 / 6 张重点场景图 / **5 个调试台页面 5 个控件 / 5 张调试台截图** / 6 条规则；整段约 11s（原 3.4s，多出的是第二台服务与 5 页加载）。
 - 门禁仍为十三段，`audit:visual` 段名与位置不变；用例数不变（组件 1582 / 构建器侧 95 / profile 142 / 浏览器 65）。本批仍属能力层，不新增用例层断言。
 - 缺陷 F-1…F-67 全部修复，无 `it.fails` 长期挂账。改动文件：`examples/consumer/vite.config.mjs`、`scripts/visual-audit.mjs`、`scripts/verify-governance.mjs`、三份文档。
+
+<a id="s18"></a>
+
+## 18. 第十一批交付（工程与测试优化 · B1：门禁短路与产物安全，分支 `feature/20261107-optimization-plan`）
+
+### 18.1 背景与范围
+
+`OPTIMIZATION_PLAN.md` 把 2026-11-07 全量审计的 37 项工程 / 测试 / 文档问题分成五批，B1 只做"会静默出错或被覆盖"的一类（计划书 §3 的 A1–A7、A9）。本批的判定标准不是"改完能跑"，而是三类故障都能在门禁里直接报红：人为制造构建失败、覆盖正式包、复用旧产物。
+
+### 18.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-68 | `scripts/dev-api.mjs` | `/api/build` 传 `name=full` 可直接覆盖 `dist/full` 这类正式产物 | 自定义构建直接写 `dist/<name>`，没有校验保留名 | 保留名来自 `profiles/*.json`，命中返回 409；自定义包统一写 `dist/custom/<name>`，返回体新增 `dir` |
+| F-69 | `scripts/build-all.mjs` | 特性负边际被夹成 `0`，与"真的没变"无法区分 | `delta()` 对四项差值取 `Math.max(0, …)` | `delta()` 返回带符号差值，负值原样写入 `sizes.json`，构建日志给出负值提示 |
+| F-70 | `scripts/build-all.mjs` | 删掉 profile JSON 后旧 `dist/<name>` 仍在，继续被 `/api/packages` 当成可安装包 | 构建前没有清理陈旧目录 | 构建前清理"不在 `profiles/` 且不在 `dist/custom/`"的目录，先打印再删除 |
+| F-71 | `scripts/build-all.mjs` | 改了边际算法后仍命中旧缓存，负边际继续被旧值覆盖 | 特性缓存指纹没有包含 `scripts/build-all.mjs` | 指纹输入补 `scripts/build-all.mjs`，改算法即全量重算 |
+| F-72 | `scripts/verify.mjs` / `scripts/build-all.mjs` | `verify:reuse` 只看 `ui-kit.js` 是否存在，改一行源码后仍复用旧产物 | 复用凭据只有文件存在性与 `sizes.json` | `build:all` 落盘 `.build/build-fingerprint.json`；`loadBuiltResults` 校验源码指纹，不符返回 `null` 触发重建 |
+| F-73 | `scripts/ci.mjs` | build 失败后仍继续跑后续阶段，二次报错掩盖真正的失败点 | 循环只累计 `failed`，没有短路 | `build` / `verify` 失败立即中断（`--keep-going` 可改为继续）；汇总与 `ci-report.json` 标记未执行阶段 |
+| F-74 | `dist/` 自定义包 | 自定义包名以 `feat-` 开头会被下一次构建当作试算残留删除 | 清理逻辑按 `feat-*` 前缀扫描 `dist/` | 自定义包进入 `dist/custom/` 命名空间，清理只针对 `dist/` 顶层目录且保留 `custom/` |
+
+计划书 A7（`sameFeatures` 配对的死代码分支）属于构建口径收敛，不是缺陷：本批直接删除该分支，特性边际统一走"full 减去特性"的试算路径，`sizes.json` 全部 178 条都由同一套口径产出。
+
+### 18.3 交付与数字
+
+- 构建器层新增 `tests/build/dev-api.spec.ts` 4 条（保留名 409、非法 JSON 400、空选择试算、自定义包落盘与包列表回读）与 `tests/build/build-hygiene.spec.ts` 3 条（A4 指纹、A5 陈旧目录判定、A6 有符号 delta）。
+- 门禁十二段（本批未动 `STAGES` 条目；与主干的视觉体检段合并后为十三段）；`ci-report.json` 新增 `abortedBy` 与 `skipped` 字段，短路时汇总用 `· 未执行` 标记后续阶段。
+- 缺陷 F-1…F-74 全部修复；B1 交付时三处口径同步为 74 条（B2 继续追加 F-75…F-80）。
+
+<a id="s19"></a>
+
+## 19. 第十一批交付（工程与测试优化 · B2：构建缓存与清单单一来源，分支 `feature/20261107-optimization-plan`）
+
+### 19.1 背景与范围
+
+B2 承接 B1 的指纹机制，把"每次门禁都像冷启动"的构建成本压下来：特性边际缓存从全局单键改成组件级分键、profile 产物加缓存、`--fast` 走指纹复用、注册表进程内只加载一次，并把 profile 清单 / 展示名 / 消费方依赖收敛到 `profiles/*.json` 一个来源（计划书 §3 的 A10、C1–C4、C11）。
+
+### 19.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-75 | `scripts/build-all.mjs` / `scripts/dev-api.mjs` / `scripts/generate-demo-meta.mjs` / `examples/consumer/package.json` | profile 清单、展示名、消费方依赖各维护一份，新增 profile 要改 4 处，`chinese` 一直没进示例工程 | 清单靠手写数组与包名表 | 新增 `scripts/profile-catalog.mjs` 作为唯一来源（含 `label` / `order`）；`npm run sync:consumer-deps` 从 `dist/` 生成消费方依赖 |
+| F-76 | `scripts/build-all.mjs` | 任一组件改动都会让 178 条特性边际全部重算 | 缓存只有一个全局 `sourceFingerprint` 键 | 缓存 v2 按组件分键（组件源码 + shared + 注册表 + build-lib + full 配置），每批完成即落盘 |
+| F-77 | `scripts/build-all.mjs` | 每次门禁都重打 20 份 profile，哪怕配置与源码没变 | profile 产物没有缓存 | profile 级指纹（配置 + 选中组件源码 + shared + 注册表 + build-lib）+ 产物三件套校验，命中直接复用 `meta.json` |
+| F-78 | `scripts/ci.mjs` | pre-commit 的 `--fast` 仍跑裸 `verify`，每次都重打 198 份包 | `verify` 段没有指纹复用 | `--fast` 改用 `verify:reuse`，产物没变秒过、源码变了自动重建 |
+| F-79 | `registry.mjs` | 同一次构建里 20 次 `buildProfile` 各加载一遍 90 个 `spec.mjs` | `loadRegistry` 无进程内缓存 | 进程级 Promise memo，dev 调试台用 `{ fresh: true }` 绕过 |
+| F-80 | `scripts/dev-api.mjs` / `configurator/main.js` | 来回切换相同组件组合会反复打包试算；旧请求不能中止 | 估算无缓存、请求只靠 seq 丢弃响应 | 估算结果按"选中组件 + 主题"LRU（30 条）；前端 debounce 降到 300ms 并新增 AbortController |
+
+### 19.3 交付与数字
+
+- `npm run build:all` 首轮冷构建：20 份 profile 43.5s + 178 条边际约 7 分钟；**第二轮 1.7 秒**（20/20 profile 命中、178 条边际命中组件级缓存）。
+- `sizes.json` 连续两次构建 SHA-256 完全一致（含 `generatedAt` 只在内容变化时更新）。
+- `node scripts/ci.mjs --fast` 实测约 24.5 秒（format 4.3s / typecheck 7.0s / lint 3.8s / verify 复用 8.5s / governance 0.9s；目标 15 秒，差距见 §19.4）。
+- 消费方依赖脚本同步后 20 个 `@demo/ui-kit-*` 全部就位（`chinese` 补上），`examples/consumer/package-lock.json` 一并更新。
+- 新增用例 `tests/build/build-cache.spec.ts` 3 条（组件 / profile / 注册表三类失效）与 `tests/build/consumer-deps.spec.ts` 1 条（依赖与产物一一对应）。
+- 缺陷 F-1…F-80 全部修复；三处文档口径同步为 80 条。
+
+### 19.4 遗留说明
+
+- `--fast` 实测高于计划书的 15 秒目标，主要由 typecheck（6.8s）与四次 npm 进程启动构成；进一步压缩需要把 pre-commit 改成直接调用本地 `tsc/eslint/prettier` 二进制（计划书 B3a 的 B8 已列为后续项），本批不改，避免把门禁入口再分叉。
+
+<a id="s20"></a>
+
+## 20. 第十一批交付（工程与测试优化 · B3a：工具链测试，分支 `feature/20261107-optimization-plan`）
+
+### 20.1 背景与范围
+
+B3a 给仓库里两块没有安全网的代码补用例（计划书 §3 的 B1、B5、B6、B10）：dev-api 从 HTTP 中间件里拆出可导出的 `createApiHandlers()`，node 直测正常 / 405 / 400 / 413 / 409 六类分支；浏览器层新增 `configurator.spec.ts`；`verify.mjs` 与 `tests/build/**` 的重叠断言逐组迁移；门禁选择器抽成纯函数并加单测。
+
+### 20.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-81 | `scripts/dev-api.mjs` | `/api/presets` 每次返回 500，构建器打开即报错 | B2 删除模块级 `PACKAGE_LABELS` 后，`listPresets()` 仍在引用该变量 | label 改从 `profileCatalog()` 读，与构建器 / 调试台同源 |
+| F-82 | `scripts/dev-api.mjs` | POST 请求体超过 512 KB 时中间件 promise 拒绝且无人兜底，请求挂起、无响应 | `readBody()` 的 reject 直接抛出 `async` 中间件 | 中间件捕获后返回 413（`请求体过大`），estimate / build 两条路由一致 |
+| F-83 | `scripts/verify.mjs` | 2239 条断言里大量内容与 `tests/build/**` 重复，同一事实两套口径各自漂移 | verify 同时承担产物细查与运行时冒烟 | 令牌 / 前缀 / d.ts / 特性标记 / package.json 细查迁到 `tests/build`，verify 收缩为产物存在性 / 导出冒烟 / SSR 冒烟三类 |
+
+### 20.3 交付与数字
+
+- 构建器侧用例 107 → **131 条**（14 个文件）：新增 `ci-stages.spec.ts` 4 条（全量 / fast / `--stage build` / 无匹配）、`demo-meta.spec.ts` 3 条（包集合 / 体积 / 清单与 `dist/*/meta.json` 一致）、`core-css.spec.ts` 6 条（从 verify 迁出的 core CSS/JS 边界）；`dev-api.spec.ts` 4 → 14 条（405 / 413 / 409 / 名字净化 / registry / packages / presets / estimate 缓存）；`theme-tokens.spec.ts` 新增 1 条主题皮肤规则随前缀改写。
+- 浏览器层用例 65 → **70 条**（12 个文件）：新增 `configurator.spec.ts` 5 条（根入口跳转、90 个组件、选 2 个组件试算为正、构建产物清单、配置下载）；浏览器层 setup 挂上 `apiPlugin()`，原探针场景不请求接口，控制台仍归零。
+- `node scripts/verify.mjs --reuse` 断言数 2239 → **44 项**，执行内容收敛为产物存在性、`activeComponents` 导出冒烟、类型测试与 SSR 渲染冒烟。
+- 门禁十二段（B10 只导出纯函数，不改 `STAGES` 条目；与主干的视觉体检段合并后为十三段）；`ci.mjs` 顶层执行加了入口守卫，被测试 import 时不会真的跑门禁。
+- 缺陷 F-1…F-83 全部修复；三处文档口径同步为 83 条。
+
+<a id="s21"></a>
+
+## 21. 第十一批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍）
+
+### 21.1 背景与范围
+
+B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"大盘达标"变成"单组件也有底线"（计划书 §3 的 B2、B3、B4、B7）：core / antd / chinese 各加一个冒烟场景；浏览器层补 Firefox 子集与 375×812 窄屏断言；覆盖率开启 per-file 文本报告、全局阈值各 +1、`src/components/**` 设组件级下限；接入 `@axe-core/playwright` 对 6 个场景跑 wcag2a/aa。
+
+### 21.2 交付与数字
+
+- 浏览器层用例 70 → **83 条**（16 个文件）：`profile-smoke.spec.ts` 3 条（core / antd / chinese 各挂 3 个代表组件 + 贴底浮层 + 控制台静默）、`firefox.spec.ts` 3 条（布局 / 定位 / 键盘）、`narrow.spec.ts` 1 条（375×812 无横向溢出且浮层夹在视口内）、`axe.spec.ts` 6 条（`it.each` 六个场景）。
+- 消费方依赖仍为 20/20（`chinese` 在 B2 已由 `sync:consumer-deps` 纳入），profile 冒烟与 `consumer-deps.spec.ts` 互相印证。
+- 覆盖率阈值 87/83/88/87 → **88/84/89/88**（仍贴着实测 88.31 / 84.81 / 89.27 / 88.31）；`src/components/**` 增设组件级下限 **statements 21 / branches 33 / lines 21**（按当前实测最小值向下取整）；报告器增加 `text`，每次 `test:coverage` 输出逐文件表格。
+- 新增 devDependency `@axe-core/playwright`；6 个场景只把 serious / critical 计为失败，白名单逐条带理由（§21.4）。
+- 本批未新增缺陷编号：Firefox、窄屏与 axe 首轮发现的样式 / 无障碍项均为已知限制或测试脚手架占位，按白名单与专项跟踪，不混入"已修复"统计。
+
+### 21.3 top-10 低覆盖清单与组件级下限
+
+| 文件 | lines | branches |
+| ---- | ---- | ---- |
+| `tree/features/draggable/index.ts` | 21.67 | 50.00 |
+| `drawer/features/draggable/resize.ts` | 34.42 | 66.66 |
+| `collapse-transition/core.ts` | 37.66 | 100.00 |
+| `table/features/resize/index.ts` | 46.93 | 44.44 |
+| `splitter/core.ts` | 48.22 | 77.27 |
+| `button/features/bg-color/index.ts` | 59.52 | 60.00 |
+| `scrollbar/core.ts` | 67.06 | 73.07 |
+| `anchor/core.ts` | 69.84 | 76.47 |
+| `table/core.ts` | 72.82 | 74.10 |
+| `input-number/features/methods/index.ts` | 75.00 | 100.00 |
+
+这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑（低于 21 / 33 / 21 直接红），后续补完拖拽类单测再抬线。
+
+### 21.4 axe 白名单（按场景 × 规则）
+
+| 规则 | 涉及场景 | 理由 / 归属 |
+| ---- | ---- | ---- |
+| `aria-allowed-attr` | gallery / floating / a11y | 浮层触发器把 `aria-expanded` 加在 role 不匹配的元素上，待统一 role 方案 |
+| `aria-command-name` / `aria-input-field-name` | gallery / floating / color | 触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名 |
+| `aria-required-children` / `aria-tooltip-name` | gallery | 空数据级联面板与通用 popper 内容区缺语义 role，属对应组件专项 |
+| `button-name` | gallery / a11y | 仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 `aria-label` |
+| `color-contrast` | gallery | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题 |
+| `image-alt` / `label` / `listitem` | gallery / a11y | 探针场景用空 props 渲染，没有 alt / label；列表 role 语义待统一 |
+| `scrollable-region-focusable` | table | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项 |
+
+白名单按「场景 + 规则」登记，新增未登记的 serious / critical 会直接报红。
+
+<a id="s22"></a>
+
+## 22. 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`）
+
+### 22.1 范围
+
+按 `OPTIMIZATION_PLAN.md` 的 B4 执行 A8 与 C5–C10：版本 / engines / license 单一事实源、组件分类合并、workspaces 决策、死资产清理、格式化与 ESLint 范围、用例 strict 与 `as any` 清理、消费方 `fs.allow` 收敛。本批未新增缺陷编号（F-84 起保留给后续真实缺陷），以下均为计划条目落地与配套守卫。
+
+### 22.2 交付与数字
+
+- 版本三处对齐：`package.json` 由 `0.1.0` 升到 `0.3.0`，`registry.mjs` 改为直接读 root `package.json` 的 `version`，产物 `dist/*/package.json` 继续用 registry 版本；三者由 `tests/build/package-consistency.spec.ts`（3 条）守住。
+- `license` 与 `engines`：root 声明 `Apache-2.0`（与 `LICENSE` 一致）与 `node >= 22`；`scripts/build-lib.mjs` 生成产物 package.json 时从 root 读取同源字段，消费方 `file:` 依赖不写版本号，升级只跟随产物。
+- 组件分类合并：`scripts/demo-categories.mjs` 成为唯一来源（8 组，含标题与说明），`configurator/main.js` 直接 import；`tests/build/category-groups.spec.ts`（3 条）校验 90 个组件无重复、无遗漏、`categoryOf` 与 `meta.json` 一致。
+- 死资产清理：删除 root `manifest.json`、`sweep-shots.mjs`、`scripts/generate-suite.mjs`、`reference/`；`scripts/guardian/**` 移入 `tools/guardian/**` 并更新 `package.json` 与文档路径，全仓 `git grep` 已无悬空引用。
+- 检查范围：`format` / `format:check` 覆盖 `configurator/**`（js/css/html）、根 `index.html`、消费方配置 / html / css、`tools/**/*.mjs`；ESLint 接入 `@typescript-eslint/recommended`，清掉 194 条新增报错（153 条未使用导入 + 41 条未使用局部变量 / 参数），唯一保留例外是 `no-explicit-any`（600+ 处历史泛型标注，见 20.4）。
+- 用例 strict：`tsconfig.tests.json` 改为 `strict: true` / `noImplicitAny: true`，`tests/shims.d.ts` 为未带声明的 `.mjs` / `.js` 产物提供环境声明；`npm run typecheck` 全绿。测试内 36 处 `as any` 全部改为 `as unknown as <具体形状>`，新用例不再允许 `as any`。
+- 消费方 `fs.allow`：从整个仓库收窄为 `examples/consumer`、`dist/`、`configurator/`、`scripts/` 四个目录；实测 `GET /` 200、`GET /configurator/` 200、`GET /@fs/<repo>/.git/config` 403、`GET /@fs/<repo>/tests/...` 403。
+- 用例数字：构建器侧 131 → **137 条**（16 个文件）；组件侧 1582、profile 142、浏览器 83 不变；`npm run quality` 十二段全绿（与主干的视觉体检段合并后为十三段）。覆盖率清理死代码后实测 statements 88.39% / branches 84.81% / functions 89.39% / lines 88.39%，仍高于 88 / 84 / 89 / 88。
+
+### 22.3 死资产处置明细
+
+| 资产 | 处置 | 理由 |
+| --- | --- | --- |
+| `manifest.json` | 删除 | 只登记了 Button 的过时清单，与 `registry.mjs` / `meta.json` 重复 |
+| `sweep-shots.mjs` | 删除 | 一次性截图巡检脚本，不进门禁、无引用 |
+| `reference/element-plus-2.14.7-catalog.json` | 删除 | 早期对标快照，组件清单已由 registry 维护 |
+| `scripts/generate-suite.mjs` | 删除 | 一次性搭骨架生成器，spec.mjs 已是手工事实源 |
+| `scripts/guardian/**` | 移到 `tools/guardian/**` | 常驻巡检不属于构建流水线；端口仍走 `scripts/worktree-ports.mjs` |
+
+### 22.4 ESLint recommended 的例外
+
+`@typescript-eslint/recommended` 的 `no-explicit-any` 在 90 个组件与测试里命中 600+ 处，多为泛型插槽 / 事件载荷的历史标注。本批按计划 C9 只清「新文件与 36 处 `as any`」，不把这个规则一次性转成 error，以免把大规模类型重写混进一致性批次；其余 recommended 规则（未使用变量、空对象类型、`Function` 类型误用等）已全部清零。后续新增文件仍受 `no-explicit-any` 之外的全部 recommended 约束。
+
+### 22.5 workspaces 决策记录（C6）
+
+- 决策：**不迁移到 npm workspaces**。消费方 `examples/consumer` 虽然有独立 `package.json` / `package-lock.json`，但它依赖的 20 个 `@demo/ui-kit-*` 是 `file:../../dist/<profile>`，产物目录不是 workspace 包；迁移后 npm 仍要按 `file:` 复制 / 链接，收益只有少一个 `npm ci`，却会把「先构建 dist、再安装消费方」的隐式顺序藏进 workspace 链接，风险大于收益。
+- `file:` 语义：依赖值不带版本号，npm 以链接方式指向 `dist/<profile>` 的实际 `package.json`；版本升级只需改 root `package.json` → `npm run build:all` → 重装消费方依赖，不需要在消费方逐个改版本。
+- 升级步骤：`npm run build:all` → `npm --prefix examples/consumer ci` → `npm run verify:consumer`。
+- CI 缓存策略（与 B5 服务端流水线一致）：分别缓存 root 与 `examples/consumer` 的 `node_modules`，key 用各自的 `package-lock.json` 哈希；dist 不进缓存，必须由当前提交现场构建，避免旧产物被链接进消费方。
+
+<a id="s23"></a>
+
+## 23. 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`）
+
+### 23.1 范围
+
+按 `OPTIMIZATION_PLAN.md` 的 B5 执行 A2、B8、B9 与 D1–D6：服务端 CI、删除手写用例计数、`test:all` 与 `quality` 同源、复现前置、目录结构与测试分层、本地目录忽略、REQUIREMENTS 目录与缺陷索引、包元数据、单一门禁入口。本批同样不新增缺陷编号（沿用 F-1…F-83），以下为计划条目落地与配套守卫。
+
+### 23.2 交付与数字
+
+- 服务端 CI：新增 `.github/workflows/quality.yml`，push / PR 触发后依次执行 `npm ci` → `npx playwright install --with-deps chromium firefox` → `npm run build:all` → `npm --prefix examples/consumer ci` → `node scripts/ci.mjs`，无论成败上传 `ci-report.json`；流水线不复制任何判定逻辑，阶段名与耗时完全由 `ci.mjs` 输出。仓库托管在 Gitee，文档写明 Gitee Go 用 Node 22 执行同一条命令的等价做法。
+- 文档计数：README / KNOWLEDGE 删除「95 个文件 1582 条」「共 137 条」「共 142 条」「共 83 条」等手写值，改为「测试层 + 命令 + 报告路径」；治理校验新增两条守卫——文档不得再出现手写用例计数，且 `test:all` 必须与 `quality` 同一条命令。
+- 入口收敛：`test:all` 改为 `node scripts/ci.mjs` 的别名，与 `quality` / `ci` 同源，只保留名字兼容；文档明确 `quality` 是唯一门禁入口，`test:all` 仅本机调试。
+- 复现前置：README 新增「环境要求」，写清 Node ≥ 22、`npm install`、`npm run hooks:install`、`npx playwright install chromium firefox`、首次 `npm run build:all` 与消费方独立依赖。
+- 目录结构：README 结构图改成五层用例（components / build / profiles / browser / coverage），补齐 `tools/`、`.githooks/`、`.github/workflows/` 与根目录清单源（`registry.mjs`、`sizes.json`、`vitest.*.config.ts`）；`reference/` 与 `scripts/guardian` 已按 B4 处置，不再出现在结构图里。
+- 本地目录：`.gitignore` 增加 `.workbuddy/`，与既有 `.env.workbuddy` 规则并列，换机器签出后 `git status` 不再出现本地工作目录。
+- REQUIREMENTS 导航：新增「目录」（23 个章节，全部带 `<a id="sN">` 稳定锚点）与「缺陷编号索引」（83 条 F-NN → 章节链接）；治理校验的编号解析改为只认五列登记行，索引的两列引用不参与唯一性判定。
+- 包元数据：`license: Apache-2.0` 与 `LICENSE` 一致（B4 已落 root 与产物），新增 `CHANGELOG.md` 记录 0.1.0 / 0.2.0 / 0.3.0，版本号唯一事实源仍是 root `package.json`。
+- 浏览器层稳定性：整跑门禁时 `a11y` 场景偶发 `color-contrast` serious（TabPane 的 180ms 淡入被 axe 扫到中间帧）；`tests/browser/axe.spec.ts` 在扫描前等 `document.getAnimations()` 收敛（封顶 500ms），KNOWLEDGE 同步记录该前置。
+- 门禁：与主干的视觉体检段合并后 `npm run quality` 十三段全绿；本批不新增用例，各层条数不变，仍以命令输出与 `ci-report.json` 为准。

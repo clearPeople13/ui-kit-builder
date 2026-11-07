@@ -186,7 +186,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           return []
         }
 
-        function isExpandable(node: PanelNode, path: any[]): boolean {
+        function isExpandable(node: PanelNode, _path: any[]): boolean {
           return node.children.length > 0 || (lazyEnabled.value && !node.leaf)
         }
 

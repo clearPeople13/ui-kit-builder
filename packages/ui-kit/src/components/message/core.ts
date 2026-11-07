@@ -5,10 +5,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { nextZIndex, resolveZIndex } from '../../shared/z-index'
-import { messageIconsFeature } from './features/icons/index'
-import { messageClosableFeature } from './features/closable/index'
-import { messagePopperFeature } from './features/popper/index'
-import { messageAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const MESSAGE_ICONS: Record<string, Component> = {

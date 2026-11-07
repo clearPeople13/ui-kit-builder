@@ -3,7 +3,6 @@ import { Check } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
-import { stepIconsFeature } from './features/icons/index'
 import './core.css'
 
 interface StepsContext {

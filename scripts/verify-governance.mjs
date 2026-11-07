@@ -290,7 +290,11 @@ notes.push(
 // ---- 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径 ----
 // 两条并行分支各自按"开工时的最大编号 + 1"登记，合入后会出现同号不同缺陷；
 // 这条守卫让撞号、断档、文档口径滞后在门禁第六段直接报红，而不是靠维护者记得 fetch main。
-const definedIds = [...read('REQUIREMENTS.md').matchAll(/^\|\s*F-(\d+)\s*\|/gm)].map((match) => Number(match[1]))
+// 只认登记表里的五列行（编号 / 位置 / 现象 / 根因 / 修复），
+// 文档头部的缺陷索引是"编号 → 章节"的两列引用，不重复登记（D4 / B8）。
+const definedIds = [...read('REQUIREMENTS.md').matchAll(/^\|\s*F-(\d+)\s*\|(.*)$/gm)]
+  .filter((match) => (match[2].match(/\|/g) ?? []).length >= 3)
+  .map((match) => Number(match[1]))
 const seenIds = new Set()
 for (const id of definedIds) {
   if (seenIds.has(id)) {
@@ -315,6 +319,28 @@ for (const doc of ['README.md', 'KNOWLEDGE.md']) {
   }
 }
 notes.push(`缺陷编号：已登记 ${definedIds.length} 条，最大 F-${maxId}（唯一性 / 连续性 / 口径由上方校验判定）`)
+
+// ---- 3.2 手写用例计数与门禁入口（B8 / B9）----
+// 用例条数只认命令输出与 ci-report.json；一旦又被写回文档，"文档说 1582、实际 1590"就会重演。
+const staleCounts = [
+  { pattern: /（共\s*\d+\s*条）/, hint: '「（共 N 条）」' },
+  { pattern: /\d+\s*个文件[、，]?\s*\d+\s*条/, hint: '「N 个文件 M 条」' },
+  { pattern: /共\s*\d+\s*条(?!缺陷)/, hint: '「共 N 条」' }
+]
+for (const doc of ['README.md', 'KNOWLEDGE.md']) {
+  const docText = read(doc)
+  for (const item of staleCounts) {
+    const hit = docText.match(item.pattern)
+    if (hit) {
+      fail(`${doc} 又写入手写用例计数 ${item.hint}：条数只认命令输出与 ci-report.json（B8）`)
+    }
+  }
+}
+// test:all 曾是一串会重复构建、又漏掉消费方校验的 && 链；保留旧名字时必须与 quality 同源（B9）
+if (pkg.scripts['test:all'] !== pkg.scripts.quality) {
+  fail(`test:all 必须与 quality 同一条命令（B9），当前为 ${pkg.scripts['test:all']} / ${pkg.scripts.quality}`)
+}
+notes.push('文档计数：README / KNOWLEDGE 无手写用例条数；test:all 与 quality 同源')
 
 // 守卫挂账必须与 REQUIREMENTS 的缺陷登记对应，避免"守卫长期挂着却没人认领"
 const guardRel = 'tests/findings.spec.ts'

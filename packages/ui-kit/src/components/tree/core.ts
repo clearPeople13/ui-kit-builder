@@ -8,9 +8,6 @@ import { renderIcon } from '../../shared/icon'
 import { collectDescendantKeys, collectTreeKeys, normalizeTreeNodes } from '../../shared/tree'
 import type { UiTreeNode } from '../../shared/tree'
 import { createCheckbox } from '../checkbox/core'
-import { treeIconsFeature } from './features/icons/index'
-import { treeDraggableFeature } from './features/draggable/index'
-import { treeSelectionFeature } from './features/selection/index'
 import './core.css'
 
 const TreeCheckbox = createCheckbox([])

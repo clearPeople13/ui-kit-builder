@@ -1,4 +1,6 @@
 {
   "name": "full",
+  "label": "Full 全特性",
+  "order": 1,
   "components": "full"
 }

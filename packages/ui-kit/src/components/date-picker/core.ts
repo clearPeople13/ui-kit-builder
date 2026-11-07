@@ -15,12 +15,6 @@ import {
   parseDateValue,
   startOfMonth
 } from '../../shared/date'
-import { datePickerClearableFeature } from './features/clearable/index'
-import { datePickerIconsFeature } from './features/icons/index'
-import { datePickerPopperFeature } from './features/popper/index'
-import { datePickerEditableFeature } from './features/editable/index'
-import { datePickerFormatFeature } from './features/format/index'
-import { datePickerRangeFeature } from './features/range/index'
 import './core.css'
 
 const datePickerBaseProps = {

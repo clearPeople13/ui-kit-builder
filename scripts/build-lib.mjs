@@ -12,6 +12,7 @@ import {
 } from '../registry.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
+const rootPackage = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'))
 const iconSourcePath = 'packages/ui-kit/src/shared/icons.ts'
 const iconGatewayExports = [
   'registerIcon',
@@ -242,7 +243,7 @@ function pruneUnusedThemeVars(css, unselectedRefs) {
   }
 
   let index = 0
-  return css.replace(ROOT_BLOCK_RE, (full, body) => {
+  return css.replace(ROOT_BLOCK_RE, (_full, _body) => {
     const survivors = parsed[index++].filter((decl) => kept.has(decl.name))
     return survivors.length ? `:root{${survivors.map((decl) => decl.raw).join(';')}}` : ''
   })
@@ -688,6 +689,8 @@ export async function buildProfile({
   const packageJson = {
     name: `${registry.name}-${profileName}`,
     version: registry.version,
+    license: rootPackage.license,
+    engines: rootPackage.engines,
     type: 'module',
     main: './ui-kit.js',
     module: './ui-kit.js',

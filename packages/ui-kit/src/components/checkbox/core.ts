@@ -2,7 +2,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { checkboxConfig } from '../../shared/behavior'
 import { checkboxGroupConfig } from '../../shared/behavior'
-import { checkboxAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const checkboxBaseProps = {

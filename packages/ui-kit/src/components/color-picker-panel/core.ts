@@ -2,7 +2,6 @@ import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import chroma from 'chroma-js'
 import { createUiComponent } from '../../shared/component'
-import { colorPickerPanelAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 type Rgba = { r: number; g: number; b: number; a: number }

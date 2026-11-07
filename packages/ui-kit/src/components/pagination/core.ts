@@ -1,7 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { paginationConfig } from '../../shared/behavior'
-import { paginationIconsFeature } from './features/icons/index'
 import './core.css'
 
 const paginationBaseProps = {

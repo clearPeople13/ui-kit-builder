@@ -3,12 +3,6 @@ import { Teleport, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef } fr
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { useFloatingPanel } from '../../shared/panel'
-import { mentionClearableFeature } from './features/clearable/index'
-import { mentionPasswordFeature } from './features/password/index'
-import { mentionWordLimitFeature } from './features/word-limit/index'
-import { mentionIconsFeature } from './features/icons/index'
-import { mentionLoadingFeature } from './features/loading/index'
-import { mentionPopperFeature } from './features/popper/index'
 import './core.css'
 
 const mentionBaseProps = {
@@ -54,18 +48,6 @@ function fieldKey(props: Record<string, any>, name: string, fallback: string): s
   const mapping = props.props
   const value = mapping && typeof mapping === 'object' ? mapping[name] : undefined
   return typeof value === 'string' && value ? value : fallback
-}
-
-function optionRawValue(item: unknown, props: Record<string, any>): string {
-  if (item === null || item === undefined) {
-    return ''
-  }
-  if (typeof item === 'string' || typeof item === 'number') {
-    return String(item)
-  }
-  const key = fieldKey(props, 'value', 'value')
-  const value = (item as Record<string, unknown>)[key]
-  return value === null || value === undefined ? '' : String(value)
 }
 
 function optionLabel(item: unknown, props: Record<string, any>): string {

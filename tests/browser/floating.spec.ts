@@ -44,7 +44,6 @@ describe('浏览器层 · 浮层定位', () => {
     const { page } = session
     await moveToCenter(page, '#tip-bottom', 0, -300)
     await moveToCenter(page, '#tip-flow')
-    const trigger = await rect(page, '#tip-flow')
     const panel = await rect(page, '.panel-tip-bottom')
     expect(panel.height).toBe(0)
     const flowClasses = await page.evaluate(() => {

@@ -1,5 +1,7 @@
 {
   "name": "semi",
+  "label": "Semi Design",
+  "order": 12,
   "components": "full",
   "prefix": "semi",
   "theme": {

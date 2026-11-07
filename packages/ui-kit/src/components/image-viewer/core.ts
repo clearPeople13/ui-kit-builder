@@ -1,8 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { overlayConfig } from '../../shared/behavior'
-import { imageViewerPopperFeature } from './features/popper/index'
-import { imageViewerModalFeature } from './features/modal/index'
 import './core.css'
 
 const imageViewerBaseProps = {

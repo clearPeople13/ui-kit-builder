@@ -12,10 +12,16 @@ const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)))
  * 不定义的话每次进页面都会刷一条 feature flags 告警，把"控制台归零"断言永久污染。
  */
 export default async function setup() {
+  // 构建器页需要 /api/* 与 /packs/*；探针场景页不请求这些路由，
+  // 挂上后只是多注册几条中间件，不会给组件用例带来额外接口日志（B1）
+  const { apiPlugin } = (await import('../../scripts/dev-api.mjs')) as {
+    apiPlugin: () => { name: string; configureServer: (server: unknown) => void }
+  }
   const server = await createServer({
     root: repoRoot,
     configFile: false,
     logLevel: 'silent',
+    plugins: [apiPlugin()],
     define: {
       __VUE_OPTIONS_API__: 'true',
       __VUE_PROD_DEVTOOLS__: 'false',
