@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 import { InputNumber } from '@ui-kit-full'
 
@@ -63,6 +63,16 @@ describe('InputNumber', () => {
     await decrease(wrapper).trigger('click')
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([3])
     expect(wrapper.emitted('change')).toHaveLength(2)
+  })
+
+  // 回归（G2b）：未声明 emits 时 onInput 落入 attrs 被铺到根节点，原生 input 冒泡 +
+  // emit('input') 构成双通道；声明 emits 后手动输入必须只回调一次
+  it('声明 emits 后手动输入的 input 只触发一次（消除 attrs 双通道）', async () => {
+    const onInput = vi.fn()
+    const wrapper = mount(InputNumber, { props: { modelValue: undefined, onInput } })
+    await wrapper.find('input').setValue('5')
+    expect(onInput).toHaveBeenCalledTimes(1)
+    expect(onInput).toHaveBeenCalledWith(5)
   })
 
   it('到达上下限时按钮禁用并停止步进', async () => {

@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Checkbox, CheckboxButton, CheckboxGroup } from '@ui-kit-full'
 
 describe('Checkbox', () => {
@@ -32,6 +32,16 @@ describe('Checkbox', () => {
     const checkedWrapper = mount(Checkbox, { props: { modelValue: true } })
     await checkedWrapper.find('input').setValue(false)
     expect(checkedWrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+  })
+
+  // 回归（G2b）：未声明 emits 时 onChange 落入 attrs 被铺到根节点，原生 change 冒泡 +
+  // emit('change') 构成双通道；声明 emits 后一次勾选必须只回调一次
+  it('声明 emits 后 change 只触发一次（消除 attrs 双通道）', async () => {
+    const onChange = vi.fn()
+    const wrapper = mount(Checkbox, { props: { modelValue: false, onChange } })
+    await wrapper.find('input').setValue(true)
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(true)
   })
 
   it('trueValue / falseValue 自定义开关值', async () => {

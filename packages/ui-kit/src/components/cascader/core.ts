@@ -99,6 +99,8 @@ export function createCascader(features: UiFeature[] = []) {
       name: 'UiCascader',
       baseClass: 'ui-cascader',
       props: cascaderBaseProps,
+      // 逐个对应本文件里的 emit(...) 调用点，避免监听落入 attrs 与 emit 双通道
+      emits: ['update:modelValue', 'change', 'clear', 'expand-change', 'visible-change'],
       setup(props, { emit }) {
         const open = ref(false)
         const query = ref('')

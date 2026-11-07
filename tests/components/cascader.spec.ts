@@ -119,6 +119,18 @@ describe('Cascader', () => {
     expect(wrapper.classes()).not.toContain('is-open')
   })
 
+  // 回归（G2b）：未声明 emits 时 onChange 落入 attrs 被铺到根节点，节点点击的 change 冒泡 +
+  // emit('change') 构成双通道；声明 emits 后选中叶子必须只回调一次
+  it('声明 emits 后选中叶子的 change 只触发一次（消除 attrs 双通道）', async () => {
+    const onChange = vi.fn()
+    const wrapper = mountCascader({ options: tree, onChange })
+    await openByClick(wrapper)
+    await click(nodesOf()[0])
+    await click(nodesOf()[2])
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(['zj', 'hz'])
+  })
+
   it('默认回显完整路径，separator / showAllLevels 影响文案', async () => {
     const full = mountCascader({ options: tree, modelValue: ['zj', 'hz'] })
     expect(full.find('.ui-cascader__selected').text()).toBe('浙江 / 杭州')

@@ -23,11 +23,14 @@ const inputNumberBaseProps = {
 
 export function createInputNumber(features: UiFeature[] = []) {
   return createUiComponent(
-    inputNumberConfig({
-      name: 'UiInputNumber',
-      baseClass: 'ui-input-number',
-      props: inputNumberBaseProps
-    }),
+    {
+      ...inputNumberConfig({
+        name: 'UiInputNumber',
+        baseClass: 'ui-input-number',
+        props: inputNumberBaseProps
+      }),
+      emits: ['update:modelValue', 'input', 'change']
+    },
     features
   )
 }

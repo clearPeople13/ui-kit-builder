@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Input } from '@ui-kit-full'
 
 function mountInput(props: Record<string, any> = {}) {
@@ -66,6 +66,19 @@ describe('Input', () => {
   it('id 落到内部控件上，textarea 同样生效', () => {
     expect(mountInput({ id: 'kw' }).find('input').attributes('id')).toBe('kw')
     expect(mountInput({ id: 'desc', type: 'textarea' }).find('textarea').attributes('id')).toBe('desc')
+  })
+
+  // 回归（G2b）：未声明 emits 时 onChange/onInput 落入 attrs 被铺到根节点，原生事件冒泡 +
+  // emit() 回退调用构成双通道。setValue 会依次派发原生 input 与 change（VTU 为 v-model.lazy 补发），
+  // 声明 emits 后两个事件都必须只回调一次。
+  it('声明 emits 后 change / input 只触发一次（消除 attrs 双通道）', async () => {
+    const onChange = vi.fn()
+    const onInput = vi.fn()
+    const wrapper = mount(Input, { props: { modelValue: '', onChange, onInput } })
+    await wrapper.find('input').setValue('hello')
+    expect(onInput).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith('hello')
   })
 
   it('inputStyle 写到容器行内样式', () => {

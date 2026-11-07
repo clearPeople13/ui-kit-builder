@@ -63,6 +63,36 @@ describe('Autocomplete', () => {
     expect(dropdown()).toBeNull()
   })
 
+  // 回归（G2b）：未声明 emits 时 onInput/onChange 落入 attrs 被铺到根节点，原生事件冒泡 +
+  // emit 构成双通道（spec 头部的 stringEvents 过滤正是在绕开它）；声明 emits 后必须只回调一次
+  it('声明 emits 后 input / change 只触发一次（消除 attrs 双通道）', async () => {
+    const onInput = vi.fn()
+    const onChange = vi.fn()
+    const onSelect = vi.fn()
+    // fetch 有 300ms debounce，先起假时钟再挂载，与同文件其它用例一致
+    vi.useFakeTimers()
+    const wrapper = track(
+      mountAutocomplete({
+        modelValue: '',
+        fetchSuggestions: (query: string, cb: (list: unknown[]) => void) => cb([{ value: `${query}-1` }]),
+        onInput,
+        onChange,
+        onSelect
+      })
+    )
+    await type(wrapper, 'abc')
+    expect(onInput).toHaveBeenCalledTimes(1)
+    expect(onInput).toHaveBeenCalledWith('abc')
+
+    await vi.advanceTimersByTimeAsync(300)
+    await nextTick()
+    options()[0]?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith('abc-1')
+    expect(onSelect).toHaveBeenCalledTimes(1)
+  })
+
   it('modelValue / placeholder / name / id / form / aria-label 透传到输入框', () => {
     const wrapper = track(
       mountAutocomplete({

@@ -21,11 +21,14 @@ const switchBaseProps = {
 
 export function createSwitch(features: UiFeature[] = []) {
   return createUiComponent(
-    switchConfig({
-      name: 'UiSwitch',
-      baseClass: 'ui-switch',
-      props: switchBaseProps
-    }),
+    {
+      ...switchConfig({
+        name: 'UiSwitch',
+        baseClass: 'ui-switch',
+        props: switchBaseProps
+      }),
+      emits: ['update:modelValue', 'change']
+    },
     features
   )
 }

@@ -77,6 +77,10 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
   return defineComponent({
     name: config.name,
     inheritAttrs: false,
+    // emits 必须显式声明齐全：未声明事件的监听（onChange/onInput/...）会留在 attrs 里，
+    // 而下方 render 把 attrs 整体铺到根节点（约 117 行 ...attrs），组件内 emit() 对未声明事件
+    // 又会回退调用 attrs 上的同名监听 —— 原生事件冒泡到根节点再触发一次，形成双通道二次回调。
+    // 声明 emits 后 Vue 会把对应监听从 attrs 中剔除，只保留 emit 单通道。
     emits: config.emits,
     props: { ...baseProps, ...mergeFeatureProps(features) },
     setup(props, { attrs, slots, emit, expose }) {
@@ -114,6 +118,8 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
         const node = h(
           tag,
           {
+            // 注意：attrs 里可能含未声明事件的监听（见 emits 处注释），铺到根节点后
+            // 会与 emit() 构成双通道；补全各组件 config.emits 是消除双绑的正确方式。
             ...attrs,
             ref: root,
             ...(config.attrs?.(renderProps, state) ?? {}),

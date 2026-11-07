@@ -27,11 +27,15 @@ const checkboxBaseProps = {
 
 export function createCheckbox(features: UiFeature[] = []) {
   return createUiComponent(
-    checkboxConfig({
-      name: 'UiCheckbox',
-      baseClass: 'ui-checkbox',
-      props: checkboxBaseProps
-    }),
+    {
+      ...checkboxConfig({
+        name: 'UiCheckbox',
+        baseClass: 'ui-checkbox',
+        props: checkboxBaseProps
+      }),
+      // checkboxChoiceState.toggle 发 update:modelValue/update:checked/change
+      emits: ['update:modelValue', 'update:checked', 'change']
+    },
     features
   )
 }
@@ -62,6 +66,7 @@ export function createCheckboxButton(features: UiFeature[] = []) {
         baseClass: 'ui-checkbox-button',
         props: checkboxButtonBaseProps
       }),
+      emits: ['update:modelValue', 'update:checked', 'change'],
       classes: (props, _state) => [
         'ui-checkbox-button',
         props.disabled ? 'is-disabled' : '',
@@ -88,11 +93,14 @@ const checkboxGroupBaseProps = {
 
 export function createCheckboxGroup(features: UiFeature[] = []) {
   return createUiComponent(
-    checkboxGroupConfig({
-      name: 'UiCheckboxGroup',
-      baseClass: 'ui-checkbox-group',
-      props: checkboxGroupBaseProps
-    }),
+    {
+      ...checkboxGroupConfig({
+        name: 'UiCheckboxGroup',
+        baseClass: 'ui-checkbox-group',
+        props: checkboxGroupBaseProps
+      }),
+      emits: ['update:modelValue', 'change']
+    },
     features
   )
 }

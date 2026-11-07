@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { Switch } from '@ui-kit-full'
 
 describe('Switch', () => {
@@ -27,6 +27,16 @@ describe('Switch', () => {
     const on = mount(Switch, { props: { modelValue: true } })
     await on.find('input').setValue(false)
     expect(on.emitted('update:modelValue')?.[0]).toEqual([false])
+  })
+
+  // 回归（G2b）：未声明 emits 时 onChange 落入 attrs 被铺到根节点，原生 change 冒泡 +
+  // emit('change') 构成双通道；声明 emits 后一次切换必须只回调一次
+  it('声明 emits 后 change 只触发一次（消除 attrs 双通道）', async () => {
+    const onChange = vi.fn()
+    const wrapper = mount(Switch, { props: { modelValue: false, onChange } })
+    await wrapper.find('input').setValue(true)
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(onChange).toHaveBeenCalledWith(true)
   })
 
   it('activeValue / inactiveValue 支持字符串与数字', async () => {

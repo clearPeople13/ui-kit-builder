@@ -66,6 +66,8 @@ export function createAutocomplete(features: UiFeature[] = []) {
       name: 'UiAutocomplete',
       baseClass: 'ui-autocomplete',
       props: autocompleteBaseProps,
+      // 对应 setup 内与 clearable 特性里的 emit(...)：update:modelValue/input/change/focus/blur/select/visible-change/clear
+      emits: ['update:modelValue', 'input', 'change', 'focus', 'blur', 'select', 'visible-change', 'clear'],
       classes: (props) => {
         const classes: string[] = []
         if (typeof props.size === 'string' && props.size) {
