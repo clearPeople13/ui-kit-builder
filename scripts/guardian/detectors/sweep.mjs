@@ -1,8 +1,9 @@
 import { spawn, spawnSync } from 'node:child_process'
 import { openSync, writeFileSync, rmSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { sweepPort } from '../../worktree-ports.mjs'
 
-const PORT = 5199
+const PORT = sweepPort
 const SWEEP_TIMEOUT = 420
 
 function hasEgo() {

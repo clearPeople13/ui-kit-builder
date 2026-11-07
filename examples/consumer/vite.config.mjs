@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
 import { apiPlugin } from '../../scripts/dev-api.mjs'
+import { consumerPort } from '../../scripts/worktree-ports.mjs'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const repoDir = path.resolve(rootDir, '../..')
@@ -71,7 +72,7 @@ export default defineConfig({
     dedupe: ['vue']
   },
   server: {
-    port: 5174,
+    port: consumerPort,
     fs: {
       allow: [rootDir, repoDir]
     },

@@ -6,7 +6,7 @@
  * 不必去 grep 终端输出。
  *
  * 用法：
- *   node scripts/ci.mjs                 # 全量十一段（先 build 一次，后续各层复用产物）
+ *   node scripts/ci.mjs                 # 全量十二段（先 build 一次，后续各层复用产物）
  *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
  */
@@ -31,6 +31,12 @@ const STAGES = [
     fullScript: 'verify:reuse',
     fast: true,
     desc: '库级校验（产物、API 一致性、令牌落盘）'
+  },
+  {
+    name: 'governance',
+    script: 'verify:governance',
+    fast: true,
+    desc: '治理校验（影响面清单、特性裁剪静态守卫、缺陷编号与文档数字对齐）'
   },
   { name: 'test', script: 'test', fullScript: 'test:unit', desc: '组件单元测试（happy-dom）' },
   { name: 'test:build', script: 'test:build', fullScript: 'test:build:run', desc: '构建器侧契约' },

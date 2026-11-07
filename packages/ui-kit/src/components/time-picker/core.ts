@@ -5,7 +5,8 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
-import { formatDateValue, pad, parseDateValue, parseTimeValue } from '../../shared/date'
+import type { TimeParts } from '../../shared/date'
+import { formatDateValue, hasSecondsToken, pad, parseDateValue, parseTimeText } from '../../shared/date'
 import { timePickerClearableFeature } from './features/clearable/index'
 import { timePickerIconsFeature } from './features/icons/index'
 import { timePickerPopperFeature } from './features/popper/index'
@@ -59,8 +60,10 @@ export function createTimePicker(features: UiFeature[] = []) {
         const range = computed(() => Boolean(props.isRange) || String(props.type || '') === 'time-range')
         const displayFormat = computed(() => String(props.format || props.timeFormat || 'HH:mm:ss'))
         const outputFormat = computed(() => String(props.valueFormat || displayFormat.value))
-        const showSeconds = computed(() => displayFormat.value.includes('s'))
-        const canEdit = computed(() => props.editable !== false && !props.readonly && !props.disabled)
+        const showSeconds = computed(() => hasSecondsToken(displayFormat.value))
+        // 特性被裁剪掉时 props.editable 是 undefined（Vue 不会给未声明的 prop 套 default）。
+        // 只认显式 true，才能保证"关掉 editable 特性 = 不可键入"，而不是漏成可编辑。
+        const canEdit = computed(() => props.editable === true && !props.readonly && !props.disabled)
         const hasValue = computed(() => {
           const value = props.modelValue
           if (range.value) {
@@ -73,7 +76,7 @@ export function createTimePicker(features: UiFeature[] = []) {
           if (!range.value) {
             return null
           }
-          const other = parseTimeValue(valueAt(activeSide.value === 0 ? 1 : 0))
+          const other = parseModelValue(valueAt(activeSide.value === 0 ? 1 : 0))
           if (!other) {
             return null
           }
@@ -97,6 +100,72 @@ export function createTimePicker(features: UiFeature[] = []) {
           emit('change', value)
         }
 
+        function toDate(parts: TimeParts): Date {
+          return new Date(2000, 0, 1, parts.hours, parts.minutes, parts.seconds)
+        }
+
+        // modelValue 按 outputFormat 写、草稿按 displayFormat 写，两者不能共用一套解析
+        function parseModelValue(value: unknown): TimeParts | null {
+          return parseTimeText(value, outputFormat.value)
+        }
+
+        function parseDraftText(value: unknown): TimeParts | null {
+          return parseTimeText(value, displayFormat.value)
+        }
+
+        function formatDisplay(parts: TimeParts): string {
+          return formatDateValue(toDate(parts), displayFormat.value)
+        }
+
+        function displayFromModel(value: unknown): string {
+          const parts = parseModelValue(value)
+          if (parts) {
+            return formatDisplay(parts)
+          }
+          return value === undefined || value === null || value === '' ? '' : String(value)
+        }
+
+        function normalizeModelValue(value: unknown): string {
+          const parts = parseModelValue(value)
+          if (parts) {
+            return formatDateValue(toDate(parts), outputFormat.value)
+          }
+          return value === undefined || value === null || value === '' ? '' : String(value)
+        }
+
+        // 默认值链只在这里定义一次：面板初始高亮与输入框初始回显共用（F-59）
+        function initialPartsAt(index: number): TimeParts | null {
+          const fallback = Array.isArray(props.defaultTime) ? props.defaultTime[index] : props.defaultTime
+          const fallbackTime = parseModelValue(fallback)
+          if (fallbackTime) {
+            return fallbackTime
+          }
+          const fallbackDate = parseDateValue(fallback)
+          if (fallbackDate) {
+            return {
+              hours: fallbackDate.getHours(),
+              minutes: fallbackDate.getMinutes(),
+              seconds: fallbackDate.getSeconds()
+            }
+          }
+          const rawDefault = Array.isArray(props.defaultValue)
+            ? props.defaultValue[index]
+            : index === 0
+              ? props.defaultValue
+              : undefined
+          if (rawDefault instanceof Date) {
+            const date = parseDateValue(rawDefault)
+            if (date) {
+              return {
+                hours: date.getHours(),
+                minutes: date.getMinutes(),
+                seconds: date.getSeconds()
+              }
+            }
+          }
+          return parseModelValue(rawDefault)
+        }
+
         function valueAt(index: number): unknown {
           const value = props.modelValue
           if (range.value) {
@@ -106,14 +175,16 @@ export function createTimePicker(features: UiFeature[] = []) {
         }
 
         function displayAt(index: number): string {
-          const parsed = parseTimeValue(valueAt(index))
-          if (!parsed) {
-            return String(valueAt(index) ?? '')
+          const raw = valueAt(index)
+          const parsed = parseModelValue(raw)
+          if (parsed) {
+            return formatDisplay(parsed)
           }
-          return formatDateValue(
-            new Date(2000, 0, 1, parsed.hours, parsed.minutes, parsed.seconds),
-            displayFormat.value
-          )
+          if (raw !== undefined && raw !== null && String(raw) !== '') {
+            return String(raw)
+          }
+          const initial = initialPartsAt(index)
+          return initial ? formatDisplay(initial) : ''
         }
 
         function assignTime(parts: { hours: number; minutes: number; seconds: number }) {
@@ -138,67 +209,54 @@ export function createTimePicker(features: UiFeature[] = []) {
           return { hours: bound.hours, minutes: bound.minutes, seconds: bound.seconds }
         }
 
+        /**
+         * 所有写回都经这里：一次操作只 emit 一次，并同步把草稿改成"显示值"，
+         * 消除"输入框显示 A、modelValue 却是 B"的背离（F-56 / F-61）。
+         * 区间两端一律按 outputFormat 规范化，不再出现一端带秒一端不带秒（F-60）。
+         */
+        function writeValue(index: number, value: string, parts: TimeParts) {
+          if (!range.value) {
+            drafts[0].value = formatDisplay(parts)
+            drafts[1].value = ''
+            emitValue(value)
+            return
+          }
+          const current: string[] = Array.isArray(props.modelValue)
+            ? props.modelValue.map(normalizeModelValue)
+            : ['', '']
+          while (current.length < 2) {
+            current.push('')
+          }
+          current[index] = value
+          drafts[0].value = displayFromModel(current[0])
+          drafts[1].value = displayFromModel(current[1])
+          emitValue(current)
+        }
+
         function applyTime() {
           const parts = clampToRange({ hours: hours.value, minutes: minutes.value, seconds: seconds.value })
           if (parts.hours !== hours.value || parts.minutes !== minutes.value || parts.seconds !== seconds.value) {
             assignTime(parts)
           }
-          const value = formatDateValue(
-            new Date(2000, 0, 1, parts.hours, parts.minutes, parts.seconds),
-            outputFormat.value
-          )
-          if (!range.value) {
-            emitValue(value)
-            return
-          }
-          const current = Array.isArray(props.modelValue) ? [...props.modelValue] : ['', '']
-          current[activeSide.value] = value
-          emitValue(current)
+          writeValue(activeSide.value, formatDateValue(toDate(parts), outputFormat.value), parts)
         }
 
         function syncFromValue() {
-          const parsed = parseTimeValue(valueAt(activeSide.value))
+          const parsed = parseModelValue(valueAt(activeSide.value))
           if (parsed) {
             assignTime(clampToRange(parsed))
             return
           }
           if (range.value) {
-            const other = parseTimeValue(valueAt(activeSide.value === 0 ? 1 : 0))
+            const other = parseModelValue(valueAt(activeSide.value === 0 ? 1 : 0))
             if (other) {
               assignTime(other)
               return
             }
           }
-          const fallback = Array.isArray(props.defaultTime) ? props.defaultTime[activeSide.value] : props.defaultTime
-          const fallbackTime = parseTimeValue(fallback)
-          if (fallbackTime) {
-            assignTime(fallbackTime)
-            return
-          }
-          const fallbackDate = parseDateValue(fallback)
-          if (fallbackDate) {
-            assignTime({
-              hours: fallbackDate.getHours(),
-              minutes: fallbackDate.getMinutes(),
-              seconds: fallbackDate.getSeconds()
-            })
-            return
-          }
-          const rawDefault = Array.isArray(props.defaultValue)
-            ? props.defaultValue[activeSide.value]
-            : activeSide.value === 0
-              ? props.defaultValue
-              : undefined
-          if (rawDefault instanceof Date) {
-            const date = parseDateValue(rawDefault)
-            if (date) {
-              assignTime({ hours: date.getHours(), minutes: date.getMinutes(), seconds: date.getSeconds() })
-              return
-            }
-          }
-          const defaultParsed = parseTimeValue(rawDefault)
-          if (defaultParsed) {
-            assignTime(defaultParsed)
+          const initial = initialPartsAt(activeSide.value)
+          if (initial) {
+            assignTime(initial)
             return
           }
           const now = new Date()
@@ -246,6 +304,18 @@ export function createTimePicker(features: UiFeature[] = []) {
           openPanel(side)
         }
 
+        // 触发区里的真实 <input> 只负责"打开"，不负责"关闭"（F-55）。
+        // 面板已开时点输入框应能继续键入 / 移动光标，而不是把浮层收起。
+        function openSide(side: number) {
+          if (props.disabled || props.readonly) {
+            return
+          }
+          if (open.value && activeSide.value === side) {
+            return
+          }
+          openPanel(side)
+        }
+
         function clearValue() {
           const valueOnClear = props.valueOnClear
           const fallback = range.value ? ['', ''] : ''
@@ -257,6 +327,14 @@ export function createTimePicker(features: UiFeature[] = []) {
                 : fallback
           emit('clear')
           emitValue(next)
+          if (range.value) {
+            const pair = Array.isArray(next) ? next : ['', '']
+            drafts[0].value = displayFromModel(pair[0])
+            drafts[1].value = displayFromModel(pair[1])
+          } else {
+            drafts[0].value = displayFromModel(Array.isArray(next) ? next[0] : next)
+            drafts[1].value = ''
+          }
         }
 
         function confirmPanel() {
@@ -317,6 +395,7 @@ export function createTimePicker(features: UiFeature[] = []) {
         }
 
         function pickHour(value: number) {
+          adoptDraft(activeSide.value)
           hours.value = value
           applyTime()
           if (props.showConfirm === false) {
@@ -325,6 +404,7 @@ export function createTimePicker(features: UiFeature[] = []) {
         }
 
         function pickMinute(value: number) {
+          adoptDraft(activeSide.value)
           minutes.value = value
           applyTime()
           if (props.showConfirm === false) {
@@ -333,6 +413,7 @@ export function createTimePicker(features: UiFeature[] = []) {
         }
 
         function pickSecond(value: number) {
+          adoptDraft(activeSide.value)
           seconds.value = value
           applyTime()
           if (props.showConfirm === false) {
@@ -471,32 +552,35 @@ export function createTimePicker(features: UiFeature[] = []) {
           drafts[1].value = displayAt(1)
         }
 
+        /**
+         * 把草稿并入面板的时分秒，不 emit。所有写回通道（回车 / 失焦 / 点列项）
+         * 都先经过它，保证同一次点击不会用"打开面板时的旧值"覆盖用户输入（F-56）。
+         */
+        function adoptDraft(index: number): boolean {
+          const text = drafts[index].value
+          if (text === displayAt(index)) {
+            return false
+          }
+          const parsed = parseDraftText(text)
+          if (!parsed) {
+            // 解析失败：不提交，回退到原显示
+            drafts[index].value = displayAt(index)
+            return false
+          }
+          assignTime(parsed)
+          return true
+        }
+
         function commitDraft(index: number) {
           if (!canEdit.value) {
             drafts[index].value = displayAt(index)
             return
           }
-          if (drafts[index].value === displayAt(index)) {
-            // 文本未变化：不产生多余的写回事件
+          if (!adoptDraft(index)) {
             return
           }
-          const parsed = parseTimeValue(drafts[index].value)
-          if (!parsed) {
-            // 解析失败：不提交，回退到原显示
-            drafts[index].value = displayAt(index)
-            return
-          }
-          const value = formatDateValue(
-            new Date(2000, 0, 1, parsed.hours, parsed.minutes, parsed.seconds),
-            outputFormat.value
-          )
-          if (!range.value) {
-            emitValue(value)
-            return
-          }
-          const current = Array.isArray(props.modelValue) ? [...props.modelValue] : ['', '']
-          current[index] = value
-          emitValue(current)
+          const parts = { hours: hours.value, minutes: minutes.value, seconds: seconds.value }
+          writeValue(index, formatDateValue(toDate(parts), outputFormat.value), parts)
         }
 
         function handleDraftInput(index: number, event: Event) {
@@ -510,7 +594,13 @@ export function createTimePicker(features: UiFeature[] = []) {
           }
         }
 
-        function handleDraftBlur(index: number) {
+        function handleDraftBlur(index: number, event?: FocusEvent) {
+          const next = (event?.relatedTarget ?? document.activeElement) as Node | null
+          // 焦点移到面板内部时，草稿交给 pickXxx 的 adoptDraft 统一处理，
+          // 避免"输入未回车 → 点列项"这一真实浏览器序列产生两次写回。
+          if (next && panelRef.value?.contains(next)) {
+            return
+          }
           commitDraft(index)
         }
 
@@ -543,6 +633,7 @@ export function createTimePicker(features: UiFeature[] = []) {
           },
           fieldRefs,
           toggleSide,
+          openSide,
           closePanel,
           clearValue,
           renderPanel,
@@ -594,7 +685,15 @@ export function createTimePicker(features: UiFeature[] = []) {
               role: 'combobox',
               'aria-expanded': state.open && state.activeSide === index,
               'aria-label': props.ariaLabel,
-              onClick: () => state.toggleSide(index),
+              onClick: (event: MouseEvent) => {
+                const target = event.target as HTMLElement | null
+                // 点到真实输入框时只开不关（F-55）；图标等其余区域仍走 toggle
+                if (target?.tagName === 'INPUT' || target?.closest?.('input')) {
+                  state.openSide(index)
+                  return
+                }
+                state.toggleSide(index)
+              },
               onKeydown: (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
                   state.closePanel()
@@ -617,7 +716,7 @@ export function createTimePicker(features: UiFeature[] = []) {
                 name: state.nameAt(index),
                 onInput: (event: Event) => state.handleDraftInput(index, event),
                 onKeydown: (event: KeyboardEvent) => state.handleDraftKeydown(index, event),
-                onBlur: () => state.handleDraftBlur(index)
+                onBlur: (event: FocusEvent) => state.handleDraftBlur(index, event)
               }),
               ...(state.range ? [] : [renderActions()])
             ]

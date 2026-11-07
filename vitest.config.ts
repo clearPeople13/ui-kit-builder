@@ -12,7 +12,10 @@ export default defineConfig({
   },
   test: {
     environment: 'happy-dom',
-    include: ['tests/components/**/*.spec.ts'],
+    // findings.spec.ts 是临时的 it.fails 守卫，常驻 include：根目录不在默认发现范围里，
+    // 不显式列出就会出现"守卫挂了却全绿"。守卫降级进组件层后本条目不影响发现，
+    // 下次重建守卫也不必再改配置。
+    include: ['tests/components/**/*.spec.ts', 'tests/findings.spec.ts'],
     testTimeout: 15000,
     reporters: ['default']
   }

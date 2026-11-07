@@ -90,6 +90,15 @@ const cases: SwitchCase[] = [
     offProps: { editable: false },
     onProps: { editable: true },
     className: 'ui-date-picker--editable'
+  },
+  {
+    // F-62：clearIcon 有恒真的默认对象，原先把它一起判进去会掩盖 clearable:false
+    label: 'TimePicker clearable',
+    component: TimePicker,
+    baseProps: { modelValue: '09:24:36' },
+    offProps: { clearable: false },
+    onProps: { clearable: true },
+    className: 'ui-time-picker--clearable'
   }
 ]
 

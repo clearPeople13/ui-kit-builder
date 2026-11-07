@@ -33,6 +33,7 @@
     "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
     "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
     "verify": "node scripts/verify.mjs",
+    "verify:governance": "node scripts/verify-governance.mjs",
     "verify:reuse": "node scripts/verify.mjs --reuse",
     "pretest": "npm run build:full",
     "test": "vitest run",

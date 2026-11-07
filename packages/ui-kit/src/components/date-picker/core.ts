@@ -167,7 +167,10 @@ export function createDatePicker(features: UiFeature[] = []) {
           return Boolean(displayStart.value)
         })
 
-        const canEdit = computed(() => props.editable !== false && !props.readonly && !props.disabled)
+        // F-65：editable 由 date-picker.editable 特性提供，裁剪掉时是 undefined。
+        // 与 TimePicker 的 F-64 同源，只认显式 true 才能保证"关掉特性=不可键入"，
+        // 由 scripts/verify-governance.mjs 的全库静态守卫守护。
+        const canEdit = computed(() => props.editable === true && !props.readonly && !props.disabled)
         const secondPanelDate = computed(() =>
           props.unlinkPanels ? rightPanelDate.value : addMonths(panelDate.value, rightOffset.value)
         )

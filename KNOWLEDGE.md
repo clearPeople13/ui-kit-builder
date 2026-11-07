@@ -19,10 +19,13 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 ## 2. 目录与命名
 
 ```
-vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
+scripts/verify-governance.mjs  治理校验：影响面清单、特性裁剪静态守卫、文档数字对齐（门禁第六段）
+scripts/worktree-ports.mjs     并行工作树端口段：读 .env.workbuddy / 环境变量，缺省仍是 5173 / 5174 / 5199
+.env.workbuddy（本地忽略）    每个工作树一份端口覆盖；专属工作树用 5273 / 5274 / 5299，不进版本库
+vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts + 常驻的 findings.spec.ts，alias @ui-kit-full
 vitest.coverage.config.ts     同一批组件用例改走源码入口（.build/full/entry.ts），V8 覆盖率 + 四维阈值
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1570 条，全部为真实断言，无占位跳过）
+tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 95 个文件 1582 条，全部为真实断言，无占位跳过）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -35,14 +38,15 @@ tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__p
 tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
 tests/browser/_pixels.ts      像素基线：截图稳定化、按平台分桶的 PNG 存取、pixelmatch 逐像素比对
-tests/browser/*.spec.ts       浏览器层用例（10 个文件 58 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、像素基线、固钉 / 回顶 / 引导
+tests/browser/*.spec.ts       浏览器层用例（11 个文件 65 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、像素基线、固钉 / 回顶 / 引导、TimePicker 场景契约（焦点链 / teleport / 输入未回车就点列项）
+tests/browser/time-picker.scene.spec.ts  第八批新增：7 条真实操作序列，专门证组件层证不了的焦点与合成指针行为
 tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
 tests/profiles/props-documented.spec.ts 属性字典双向守卫：运行时真实 props ↔ spec.mjs 的 coreProps / 已启用 feature props 互相回查
 tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
 tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基线（6 个场景），`npm run snap:pixels` 录入
 ```
 
-缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：六批共 50 条缺陷（F-1…F-50）全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
+缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：六批共 50 条缺陷（F-1…F-50）全部修复后，守卫降级进各组件文件，该文件删除。第八批又按同一约定重建过一次（F-55…F-63 的 9 条 `it.fails`），修复后降级为 `tests/components/time-picker-scenes.spec.ts` 并再次删除守卫文件。`vitest.config.ts` / `vitest.coverage.config.ts` 的 include 常驻该路径，避免"守卫挂在根目录却永远不被发现"。
 
 约定：
 
@@ -110,6 +114,20 @@ tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基
 5. 发现"应该是 A但实际是 B"时：先判断是测试写错还是库缺陷；确认是缺陷就加 `it.fails` 守卫 + 根因注释，并同步 `REQUIREMENTS.md` 缺陷表
 6. `npx prettier --write tests/**/*.ts`、`npx eslint tests`、`npm run test` 全绿后提交
 
+### 5.1 场景缺陷闭环（第八批起强制执行）
+
+外部报障不许直接改源码，按五道闸走；`scripts/verify-governance.mjs` 把其中三道闸，加上缺陷编号与改动面自身完整性，共五类检查做成门禁第六段（`verify:governance`），失败即非零退出。
+
+1. **场景契约化**：把用户描述写成可执行条目（操作序列、期望的 DOM/aria/emit/显示文本、跑哪几层与哪些 profile），登记 F-NN 进 `REQUIREMENTS.md`，冻结验收口径。报障不再只停留在对话里。
+2. **必须先见红**：重建 `tests/findings.spec.ts`，用 `it.fails` 断言"修复后应满足"的行为，在**未修代码**上必须全部见红（表现为守卫文件全绿），证明用例真的打到了缺陷上；修完后 `it.fails` 会反过来报 `Expect test to fail`，此时才允许降级。该路径常驻两份 vitest 配置的 include，否则根目录守卫永远不会被跑到。
+3. **影响面清单**：动手前跑治理校验。改了 `shared/*` → 引用它的同族组件必须各有组件层回归用例；改了 `core.ts` 里的点击 / 焦点 / 浮层代码 → 该组件必须有浏览器层场景契约用例（组件层证不了焦点链）。同时全库扫描"feature 提供的布尔 prop 被写成 `props.x !== false`"这一裁剪语义陷阱。改动面必须取 `git diff HEAD`：只看 `git diff` 会在 `git add` 之后静默跳过检查，未跟踪的新 `core.ts` 还要按全文补扫一遍。
+4. **基线零漂移**：改前录组件层行为快照与浏览器层 `snap:layout` / `snap:pixels`；改后只接受报障场景由红转绿，其余快照零漂移、覆盖率四维阈值不下降。任何额外变化自动判失败。
+5. **全链路归档**：`npm run quality` 十二段全绿 → 守卫改常规 `it` 搬进组件层 → 删 `tests/findings.spec.ts` → F-NN 写清根因、影响面、同族审计结论。
+
+**基线漂移归因口径**：`snap:layout` / `snap:pixels` 报漂移时按这个顺序排查，不许直接重录基线 —— ① 同一次运行连跑两遍是否都漂（环境抖动可复现）；② 差异图是否集中在字体 / AA / 动画（截图稳定化问题）；③ `git diff` 是否触及该场景的 CSS 令牌或组件结构（真回归）。只有 ③ 成立且确认是预期视觉变更才允许 `snap:*` 重录，并在提交信息里写明场景与原因。
+
+**同类缺陷满三次触发全库扫描**：确认"已审计但无害"的命中项也必须写进 `REQUIREMENTS.md`，并在守卫白名单里带上对应 A-NN 编号；白名单没登记会让门禁变红，不许变成绕过检查的后门。
+
 ## 6. 命令
 
 ```bash
@@ -122,23 +140,26 @@ npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/br
 npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需执行）
 npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
 npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层 + 覆盖率一次跑完
-npm run quality       # 唯一门禁（十一段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 五层用例 → 消费方校验
+npm run verify:governance # 治理校验：影响面清单 / 特性裁剪静态守卫 / 文档数字对齐（秒级）
+npm run quality       # 唯一门禁（十二段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 消费方校验
 npm run ci            # 与 quality 同一条命令，逐段给结论与耗时，并落机读的 ci-report.json
-npm run ci:fast       # 只跑秒级四段（格式 / 类型 / lint / 库级校验），不触发构建
-npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十一段）钩子
+npm run ci:fast       # 只跑秒级五段（格式 / 类型 / lint / 库级校验 / 治理校验），不触发构建
+npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十二段）钩子
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 五层用例：组件侧 94 文件 1570 条、构建器侧 8 文件 95 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 10 文件 58 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧 95 文件 1582 条、构建器侧 8 文件 95 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 11 文件 65 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫 + 7 条 TimePicker 场景契约）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
 - 第七批已交付（分支 `feature/20261107-coverage-pixel-baseline`）：源码入口覆盖率阈值（statement 88.35% 起步，阈值 87/83/88/87）与 6 个场景的像素基线（按平台分桶、忽略 AA、容差 0.1%），门禁从九段扩到十段，详见 `REQUIREMENTS.md` §12
 - 特性-属性归属已校正（分支 `fix/20261107-prop-attribution`）：把 `showClose` / `loading` / `icon` / `checkStrictly` 四条 core prop 从特性字典移回 `coreProps`，双向守卫的正向口径同步收紧为"coreProps + 已启用特性"，被关掉的特性不再能替 core prop 背书（F-53，详见 `REQUIREMENTS.md` §13）
 - 构建流水线已优化（分支 `perf/20261107-build-pipeline`）：`quality` 从"三次 198 份包"收敛为"一次统一构建 + 各层复用"，178 条特性边际值按源码 sha1 缓存，profile 与试算池 6 路并发，试算产物移出 `dist/` 并强制清理（F-54，详见 `REQUIREMENTS.md` §14）
+- 第八批已交付（分支 `feature/20261107-scene-defect-closure`，WorkBuddy 专属工作树 `C:/WorkBench/ui-kit-builder-wb`）：场景缺陷闭环五道闸、治理校验门禁第六段（门禁从十二段扩到十二段）、TimePicker 交互链路修复与浏览器层场景契约，详见 `REQUIREMENTS.md` §15 与本文 §5.1
 - 已知仍不可测的维度：整页与交互态像素（当前只截 6 个场景的首屏）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 共记录 54 条缺陷（F-1…F-54）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下导致特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-54 是门禁重复构建三次、试算产物污染 `dist/`（详见 `REQUIREMENTS.md` §14）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- 共记录 65 条缺陷（F-1…F-65）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下、特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-55…F-65 是第八批由场景缺陷闭环查出的 TimePicker 交互链路与全库特性裁剪语义（详见 `REQUIREMENTS.md` §15.2；另有 A-1…A-4 四条「已审计但无害」的结论在 §15.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- **并行分支开新缺陷编号前必须先 `git fetch origin main` 取当前最大 F 编号**：两条分支同时从 F-53 起编号，合入后就会出现同号不同缺陷。本批（§15）在主线占掉 F-53 后整体顺延为 F-55…F-65、章节顺延为 §15；治理校验新增编号唯一性 / 连续性 / 三处文档口径一致性守卫，撞号或漏改会在门禁第六段直接报红
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**基线已清零**：库工程与用例工程均无报错（第六批收口时修完 affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space 的最后 15 条 VTU 泛型与字面量推断问题）；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
@@ -169,10 +190,11 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十
 
 ## 10. 统一门禁与布局基线
 
-- `npm run quality` 是唯一入口，它就是 `node scripts/ci.mjs`：先跑一次 `build`，再依次 `format:check → typecheck（库 + 用例两份 tsconfig）→ lint → verify → test → test:build → test:profiles → test:browser → test:coverage → verify:consumer`。任何一层红都直接失败，不产出"警告式"结论
+- `npm run quality` 是唯一入口，它就是 `node scripts/ci.mjs`：先跑一次 `build`，再依次 `format:check → typecheck → lint → verify → verify:governance → test → test:build → test:profiles → test:browser → test:coverage → verify:consumer`。任何一层红都直接失败，不产出"警告式"结论；`scripts/ci.mjs` 的 `STAGES` 必须与这条链逐项对齐，治理校验会静态核对三方段数
 - **一次门禁只构建一轮**：`build` 段跑完 `build:all` 后，`verify` 切到 `verify:reuse`（直接读 `sizes.json` 与 20 份 `dist/`，缺失才回退完整构建），四层用例切到不带 pretest 的 `test:*:run`。只有"全量模式且确实选中了 `build`"才走这些变体，`--fast` 与 `--stage xxx` 单跑时仍用各自会自行构建的原始脚本，避免吃到陈旧产物
 - **`sizes.json.features` 的 178 条边际值不便宜**：每条要构建一份「full 去掉该特性」，冷启动约 9 分钟；结果按 sha1 内容指纹缓存在 `.build/feature-size-cache.json`（指纹覆盖 `packages/ui-kit/src`、`profiles`、`registry.mjs`、`build-lib.mjs`、`package.json`、`package-lock.json` 与 node/平台），命中后整轮约 1 分钟。调试缓存逻辑用 `UIKIT_NO_BUILD_CACHE=1` 强制重算，别把缓存文件提交进仓库（`.build/` 已 gitignore）
 - **试算产物不许进 `dist/`**：它们写 `.build/feature-deltas/`，`try/finally` 连同 `.build/feat-*` 入口目录一起清理；旧版本的 `dist/feat-*` 残留在下次构建开头清掉。`tests/build/build-hygiene.spec.ts` 守住 dist 目录清单、清理结果与缓存一致性
+- **并行工作树的端口各自独立**：根 dev（`npm run dev`）、调试台（`demo:consumer`）、guardian 巡检（`sweep.mjs`）三处端口统一经 `scripts/worktree-ports.mjs` 读取 `UIKIT_DEV_PORT` / `UIKIT_CONSUMER_PORT` / `UIKIT_SWEEP_PORT`，缺省 5173 / 5174 / 5199。新开工作树时只需在该工作树根目录写一份被 `.gitignore` 忽略的 `.env.workbuddy` 换成空闲端口段，主工作树与他人工作树都不受影响。浏览器层探针服务用 `port: 0` 随机取端口，本来就不需要配置
 - 布局基线在 `tests/browser/__snapshots__/geometry.json`，按 `process.platform` 分桶，键是场景名、值是"锚点选择器 → 文档坐标矩形数组 + `<document>` 总高"。容差 1px；锚点表在 `tests/browser/_geometry.ts` 的 `ANCHORS`，新增场景必须同时登记锚点，否则用例会以"没有登记布局锚点"失败
 - 改样式或布局导致基线变红时，先读差异（谁从哪儿挪到哪儿），确认是预期变化再 `npm run snap:layout` 重录；把重录当成默认动作等于关掉这道门
 - 基线在别的机器上缺失时该用例自动跳过（`it.skipIf`），不会凭空报错；但录入模式下锚点找不到元素会当场失败，这是防"锚点写错却全绿"的保险
