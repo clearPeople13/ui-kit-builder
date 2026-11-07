@@ -533,3 +533,28 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 视觉体检基线更新为：124 组件 / 21 可见原生控件 / 124 张组件图 / 6 张重点场景图 / **5 个调试台页面 5 个控件 / 5 张调试台截图** / 6 条规则；整段约 11s（原 3.4s，多出的是第二台服务与 5 页加载）。
 - 门禁仍为十三段，`audit:visual` 段名与位置不变；用例数不变（组件 1582 / 构建器侧 95 / profile 142 / 浏览器 65）。本批仍属能力层，不新增用例层断言。
 - 缺陷 F-1…F-67 全部修复，无 `it.fails` 长期挂账。改动文件：`examples/consumer/vite.config.mjs`、`scripts/visual-audit.mjs`、`scripts/verify-governance.mjs`、三份文档。
+
+<a id="s22"></a>
+
+## 22. 第十一批：Select 统一与大数据虚拟列表（分支 `feature/20261107-select-unification`）
+
+> 编号口径：§18–§21 与 F-68…F-81 已被 Qoder 在途的第九批 B1–B5（远端 `origin/docs/20261107-docs-and-ci-entry`，`c2ba257`）占用，本批顺延到 §22；本批是功能改造而非缺陷修复，沿用 F-1…F-67，不新增缺陷编号（与 B4 / B5 的「本批未新增缺陷编号」同例）。
+
+### 22.1 范围与目标
+
+用户要求：只保留 `Select` 一个选择器，删除 `SelectV2 虚拟列表选择器`，但大数据能力必须留在 Select 上，并在调试台补上大数据示例。
+
+改造前的全库静态审计结论：SelectV2 相对 Select 的唯一增量是「扁平大列表窗口化」——阈值 100、overscan 5、运行时测量行高、`scrollTop` + `translateY` 可视窗口、分组列表回退全量；其余 `clearable` / `multiple` / `filterable` / `popper` / `loading` / 字段映射 / `effect` 都是 Select 已有能力的子集。Select 反而多出插槽 `Option` / `OptionGroup`、方向键与 Enter 导航、`clear` / `remove-tag` / `visible-change` 事件、`valueOnClear`、远程搜索 debounce 与 `focus` / `blur` 方法。因此合并方向定为：把窗口化做成 Select 的一个可选特性，其余全部丢弃。
+
+### 22.2 方案与验收口径
+
+- 新增特性 `select.select-virtualized`，props 为 `virtualized`（开关）、`itemSize`（默认 34，对齐 `cascader.virtualized`）、`threshold`（默认 100）；窗口计算依赖 `visibleOptions` / `activeIndex` / 面板 ref，逻辑落在 `select/core.ts`，滚动容器与虚拟层样式落在 `select/core.css`。
+- 分组列表、未达阈值、未开启特性时一律回退全量渲染，保证既有 40 项浮层场景与键盘导航语义不变；方向键移动后把活动项滚进可视区。
+- 删除 `packages/ui-kit/src/components/select-v2/` 整个组件目录，连带清理主题孤儿令牌与配置清单里的 `select-v2` 字面量；`Select` / `Option` / `OptionGroup` 三个导出名不变。
+- 调试台把原 `SelectV2.virtual`（1 万条）场景迁到 `Select`，且 `demo-code.ts` 对大数据 `options` 只输出生成器调用、不内联 MB 级字面量（沿用 `heavy-tree` 的口径）。
+- 新增「SelectV2 不得复活」的全库静态守卫，防止并行分支合并时把旧组件带回来；视觉体检画廊的组件数随导出数自动收敛，文档数字与产物对齐后由治理校验兜底。
+
+### 22.3 交付与数字
+
+（实现完成后补录：组件目录数、导出组件数、特性数、用例数、门禁段数与耗时、视觉体检基线。）
+
