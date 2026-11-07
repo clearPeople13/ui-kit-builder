@@ -983,7 +983,7 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 26.2 做法
 
-- **受影响范围选择器**（`scripts/test-impact.mjs` + `ci.mjs --changed`）：把「文件 → 受影响层 + 受影响用例」写成纯函数。组件用例按 `import` 判定归属（不是名字子串，`button` 不会把 `alert.spec.ts` 拉进来）；共享模块 / 组件库入口 / 构建器 / profile / 测试基础设施 / 未知路径一律回落全量。`npm run ci:plan` 只打印计划，`npm run ci:changed` 才执行。
+- **受影响范围选择器**（`scripts/test-impact.mjs` + `ci.mjs --changed`）：把「文件 → 受影响层 + 受影响用例」写成纯函数。默认只看工作区（`git diff HEAD` + 未跟踪），要看整条分支的累计影响面得显式 `--base origin/main`——否则分支提交过几轮之后，脚本与配置改动必然进入 diff，选择器会一律回落全量（真机踩过：只改了一个组件却跑了十三段）。组件用例按 `import` 判定归属（不是名字子串，`button` 不会把 `alert.spec.ts` 拉进来）；共享模块 / 组件库入口 / 构建器 / profile / 测试基础设施 / 未知路径一律回落全量。`npm run ci:plan` 只打印计划，`npm run ci:changed` 才执行。
 - **产物相关层不可省**：组件用例读的是 `dist/full/ui-kit.js`，`--changed` 仍保留 `build` / `verify` / 体积契约，否则是拿旧产物测新代码。
 - **浏览器层 3 路并行**：16 个文件 46s → 20s；探针服务仍由 `globalSetup` 单实例提供，worker 共享同一随机高位端口。
 - **类型检查增量**：两份 tsconfig 各写一份 `tsBuildInfoFile` 到 `.build/`，库 7.0s → 2.7s、用例 5.0s → 2.8s。
@@ -995,7 +995,7 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 ### 26.3 验证数字
 
 - 全量门禁非构建段：132.7s → 118.9s（浏览器 −26s、类型 −4.3s；`test:build` +14s 是冷产物首次读取，热态回落）。
-- `ci:changed` 判据实测：改 `button/core.ts` → 9 段（build/format/typecheck/lint/verify/governance/test/test:build/visual），`test` 只跑 `button.spec.ts` 与 `style-attrs.spec.ts`；改 `time-picker/core.css` 额外带 `tests/browser/time-picker.scene.spec.ts` 与 CSS 令牌两条构建器用例；只改 `README.md` → 仅 governance。
+- `ci:changed` 端到端实测：只改 `button/core.ts` 时 **41.2s / 9 段**（build 5.0 / format 4.5 / typecheck 2.5 / lint 4.2 / verify 4.8 / governance 1.0 / test 1.9 / test:build 5.3 / visual 11.1），同一场景走全量是 125s 起、产物过期时还要加一次构建；其中 `test` 只跑 `button.spec.ts` 与 `style-attrs.spec.ts`；改 `time-picker/core.css` 额外带 `tests/browser/time-picker.scene.spec.ts` 与 CSS 令牌两条构建器用例；只改 `README.md` → 仅 governance。
 - pre-commit（`ci:fast`）：14s（format 4.8 / typecheck 2.6 / lint 4.3 / verify 0.9 跳过 / governance 1.1）。
 - 缓存口径守卫自测：仅追加注释 → 通过；追加 `delta(` 调用但不升版本号 → 报红并指出「SIZE_ALGO_VERSION 仍是 v2」。
 

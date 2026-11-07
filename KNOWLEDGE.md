@@ -236,7 +236,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 
 ## 12. 门禁成本与受影响范围（改门禁 / 写用例前先读）
 
-- **两个入口，一个定义**：`npm run quality` 是合并门禁（十三段全量），`npm run ci:changed` 是内循环（同一份 `STAGES`，只挑受影响的层与用例），`npm run ci:plan` 只打印计划。段定义只有 `scripts/ci.mjs` 一处，治理校验核对段数，别在选择器里复制一份。
+- **两个入口，一个定义**：`npm run quality` 是合并门禁（十三段全量），`npm run ci:changed` 是内循环（同一份 `STAGES`，只挑受影响的层与用例），`npm run ci:plan` 只打印计划。前者默认只看工作区改动，整条分支的累计影响面用 `--base origin/main`。段定义只有 `scripts/ci.mjs` 一处，治理校验核对段数，别在选择器里复制一份。
 - **选择器宁可多跑不可漏跑**：共享模块、`packages/ui-kit/src` 根入口、`registry.mjs`、`build-lib.mjs`、`profiles/`、测试基础设施、`package.json`、任何未识别路径一律回落全量。新增文件类型时，先想清楚"它影响谁"，再往 `scripts/test-impact.mjs` 的规则表里加一条，否则默认全量。
 - **组件用例按 `import` 判定归属**：`button` 会出现在 `alert.spec.ts` 的文本里，但没 import `Button`，名字子串匹配会把整层拉进来。`componentSpecs()` 用 `import { ... Button ... } from '@ui-kit-full'` 匹配，`tests/build/test-impact.spec.ts` 还守着"每个组件目录都能映射到至少一个用例"。
 - **产物相关层不能省**：组件用例的断言对象是 `dist/full/ui-kit.js`，`--changed` 必须保留 `build`（重建产物）、`verify`（API 一致性）与体积契约（`size-budget` / `tree-shaking`），否则是拿旧产物测新代码。
