@@ -6,6 +6,7 @@ import { collectFeatureHooks } from './feature'
 import { renderIcon } from './icon'
 import { useFloatingPanel } from './panel'
 import { useScrollLock } from './scroll-lock'
+import { normalizeOptions } from './options'
 import { addUnit, clamp, isFunction, isNil, isObject, isString } from './utils'
 import { nextZIndex, resolveZIndex } from './z-index'
 
@@ -289,29 +290,6 @@ export function inputNumberConfig(options: { name: string; baseClass: string; pr
       return [input, h('div', { class: `${options.baseClass}__controls` }, [increase, decrease])]
     }
   }
-}
-
-function normalizeOptions(
-  options: unknown,
-  mapping?: Record<string, any>
-): Array<{ label: string; value: any; disabled?: boolean }> {
-  if (!Array.isArray(options)) {
-    return []
-  }
-  const labelKey = typeof mapping?.label === 'string' && mapping.label ? mapping.label : 'label'
-  const valueKey = typeof mapping?.value === 'string' && mapping.value ? mapping.value : 'value'
-  const disabledKey = typeof mapping?.disabled === 'string' && mapping.disabled ? mapping.disabled : 'disabled'
-  return options.map((option) => {
-    if (option && typeof option === 'object') {
-      const record = option as AnyProps
-      return {
-        label: String(record[labelKey] ?? record.value ?? record.label ?? ''),
-        value: record[valueKey] ?? record.value ?? record.label,
-        disabled: Boolean(record[disabledKey])
-      }
-    }
-    return { label: String(option), value: option }
-  })
 }
 
 export function selectConfig(options: { name: string; baseClass: string; props: AnyProps }): UiComponentConfig {

@@ -1,6 +1,7 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { normalizeOptions } from '../../shared/options'
 import './core.css'
 
 const segmentedBaseProps = {
@@ -15,30 +16,6 @@ const segmentedBaseProps = {
   props: { type: Object, default: () => ({}) },
   block: { type: Boolean },
   id: { type: String }
-}
-
-function normalizeOptions(
-  options: unknown,
-  mapping?: unknown
-): Array<{ label: string; value: any; disabled: boolean }> {
-  const config = mapping && typeof mapping === 'object' ? (mapping as Record<string, any>) : {}
-  const labelKey = typeof config.label === 'string' && config.label ? config.label : 'label'
-  const valueKey = typeof config.value === 'string' && config.value ? config.value : 'value'
-  const disabledKey = typeof config.disabled === 'string' && config.disabled ? config.disabled : 'disabled'
-  if (!Array.isArray(options)) {
-    return []
-  }
-  return options.map((option) => {
-    if (option && typeof option === 'object') {
-      const record = option as Record<string, any>
-      return {
-        label: String(record[labelKey] ?? record.value ?? record.label ?? ''),
-        value: record[valueKey] ?? record.value ?? record.label,
-        disabled: Boolean(record[disabledKey])
-      }
-    }
-    return { label: String(option), value: option, disabled: false }
-  })
 }
 
 export function createSegmented(features: UiFeature[] = []) {

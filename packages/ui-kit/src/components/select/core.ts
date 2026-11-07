@@ -7,6 +7,7 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
+import { normalizeOptions, type UiOption } from '../../shared/options'
 import { sizeValue } from '../../shared/behavior'
 import './core.css'
 
@@ -16,19 +17,7 @@ const optionBaseProps = {
   disabled: { type: Boolean }
 }
 
-export interface SelectOption {
-  label: string
-  value: any
-  disabled: boolean
-  group?: boolean
-}
-
-const optionFields = {
-  label: 'label',
-  value: 'value',
-  disabled: 'disabled',
-  options: 'options'
-}
+export type SelectOption = UiOption
 
 /**
  * 虚拟窗口由 `select.select-virtualized` 特性注入（§25）：
@@ -123,48 +112,6 @@ function collectSlotOptions(nodes: VNodeChild, result: SelectOption[]): void {
   }
 }
 
-function optionFieldKeys(mapping?: Record<string, any>): Record<keyof typeof optionFields, string> {
-  const pick = (key: keyof typeof optionFields) =>
-    typeof mapping?.[key] === 'string' && mapping[key] ? String(mapping[key]) : optionFields[key]
-  return {
-    label: pick('label'),
-    value: pick('value'),
-    disabled: pick('disabled'),
-    options: pick('options')
-  }
-}
-
-function normalizeOptions(input: unknown, mapping?: Record<string, any>): SelectOption[] {
-  if (!Array.isArray(input)) {
-    return []
-  }
-  const fields = optionFieldKeys(mapping)
-  const result: SelectOption[] = []
-  for (const item of input) {
-    if (!item || typeof item !== 'object') {
-      result.push({ label: String(item), value: item, disabled: false })
-      continue
-    }
-    const record = item as Record<string, any>
-    if (Array.isArray(record[fields.options])) {
-      result.push({
-        label: String(record[fields.label] ?? ''),
-        value: record[fields.label],
-        disabled: true,
-        group: true
-      })
-      result.push(...normalizeOptions(record[fields.options], mapping))
-      continue
-    }
-    result.push({
-      label: String(record[fields.label] ?? record[fields.value] ?? ''),
-      value: record[fields.value] ?? record[fields.label],
-      disabled: Boolean(record[fields.disabled])
-    })
-  }
-  return result
-}
-
 export function createOption(features: UiFeature[] = []) {
   return createUiComponent(
     {
@@ -218,7 +165,7 @@ export function createSelect(features: UiFeature[] = []) {
         })
 
         const optionList = computed(() => {
-          const list = normalizeOptions(props.options, props.props)
+          const list = normalizeOptions(props.options, props.props, { groups: true })
           return list.length ? list : slotOptions.value
         })
 
