@@ -1136,3 +1136,22 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - worktree 全绿：`build:all`、组件层 95 文件 1609 用例、build 层 24 文件 206 用例（含新守卫）、双配置 typecheck；prettier/eslint 零告警。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
 - 缺陷口径：F-1…F-104（F-101 为唯一已登记存量待改项），三处文档同步为 104 条。
+
+## 34. 优化计划第七波：组件写法收敛到统一基座（G7 A24）（分支 `refactor/20261108-writing-convergence`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G7 A24。同类实现必须收敛到 shared 出口（执行规范 11），三种组件写法（基座 / 手写 defineComponent / behavior 配置工厂）并存属同类漂移。执行中 agent 中途失联，交付物由整合者补完（button 涟漪渲染桩、悬空 state 引用、expose 残留）。
+
+### 34.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-105 | `packages/ui-kit/src/components/{button,focus-trap,infinite-scroll,virtual-list}/core.ts`、`shared/component.ts` | 组件写法三轨并存：button/virtual-list 手写 defineComponent 自铺 render 管线，与基座 createUiComponent 的能力（特性 states/expose/attrs 合并）大量平行实现 | 基座早期能力缺口（无 root ref 进 setup、无 append/expose 覆盖点、attrs 拿不到特性 states、全局 size 注入不可关），组件绕过基座自造 | 基座补四个扩展点后四组件全部迁回：setup 上下文带 root ref、append（button 水波层）、组件级 expose（focus-trap/infinite-scroll/virtual-list 的 api）、attrs 第三参透传 states、globalSize:false 关闭开关（button 的 属性→按钮组→全局 继承链）；button 涟漪节点渲染、focusout  emit、virtual-list 受控窗口语义保持不动 |
+
+### 34.2 验证
+
+- worktree 全绿：双配置 typecheck、组件层 95 文件 1609 用例、build 层 24 文件 207 用例（含新守卫）、profiles 层 151 用例；prettier/eslint 零告警。
+- 新守卫 `tests/build/writing-convergence.spec.ts`：扫描组件 core.ts 的 defineComponent 残留，未豁免即红 + 豁免清单反向校验防死登记；已用 A24 前 main 反证非空转（当时报 button/focus-trap/infinite-scroll/virtual-list 四组件）。
+- 豁免清单（带理由）：table（渲染管线复杂，迁移单列波次）、scrollbar（原生滚动封装，expose/事件面不重合）、roving-focus-group（headless 焦点组）、collection（纯注册节点）、collapse-transition（Transition 壳）、slot（渲染工具）。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-105（F-101 为唯一已登记存量待改项），三处文档同步为 105 条。
+
