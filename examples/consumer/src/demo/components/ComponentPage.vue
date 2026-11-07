@@ -318,6 +318,10 @@ const lockedFeatures = computed(() => {
   return featureGroups.value.filter((group) => !group.available)
 })
 
+function apiBlockId(name: string): string {
+  return 'cp-api-' + name.toLowerCase()
+}
+
 const tocItems = computed<TocItem[]>(() => {
   const items: TocItem[] = [{ id: 'cp-sec-demo', title: '代码演示' }]
   items.push({ id: 'cp-sec-features', title: '特性开关' })
@@ -325,6 +329,9 @@ const tocItems = computed<TocItem[]>(() => {
     items.push({ id: 'cp-sec-icons', title: '图标库' })
   }
   items.push({ id: 'cp-sec-api', title: 'API' })
+  for (const block of apiBlocks.value) {
+    items.push({ id: apiBlockId(block.name), title: block.name, level: 1 })
+  }
   if (lockedFeatures.value.length) {
     items.push({ id: 'cp-sec-locked', title: '本包裁剪的特性' })
   }
@@ -715,7 +722,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
         <h2 class="cp-block__title">API</h2>
         <p class="cp-block__hint">灰显区块表示 {{ target.label }} 未启用该特性，对应属性不在构建产物中</p>
       </div>
-      <div v-for="block in apiBlocks" :key="block.name" class="cp-api">
+      <div v-for="block in apiBlocks" :key="block.name" :id="apiBlockId(block.name)" class="cp-api">
         <h3 class="cp-api__export">{{ block.name }}</h3>
         <div
           v-for="sec in block.sections"

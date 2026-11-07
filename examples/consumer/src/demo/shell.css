@@ -428,6 +428,7 @@ body {
 .app-content .ov-hero,
 .app-content .ov-section,
 .app-content .cp-block,
+.app-content .cp-api,
 .app-content .cp-locked {
   scroll-margin-top: 84px;
 }
@@ -436,12 +437,19 @@ body {
 
 .app-toc {
   position: sticky;
-  top: 16px;
+  top: 0;
   align-self: start;
-  height: max-content;
-  max-height: calc(100vh - 32px);
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
   padding: 18px 8px 18px 16px;
   overflow-y: auto;
+}
+
+.pg-anchor {
+  margin: auto 0;
+  min-width: 0;
 }
 
 .pg-anchor__title {
@@ -467,25 +475,28 @@ body {
 .pg-anchor__item a {
   display: block;
   margin-left: -1px;
-  padding: 5px 10px;
+  padding: 7px 12px;
   border-left: 2px solid transparent;
   color: var(--app-muted);
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   text-decoration: none;
+  border-radius: 0 6px 6px 0;
   transition:
     color 120ms ease,
-    border-color 120ms ease;
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.pg-anchor__item a:hover {
+  color: var(--app-ink);
+  background: #f4f6fb;
 }
 
 .pg-anchor__item.is-sub a {
   padding-left: 22px;
   color: var(--app-faint);
   font-size: 11.5px;
-}
-
-.pg-anchor__item a:hover {
-  color: var(--app-ink);
 }
 
 .pg-anchor__item.is-active a {
