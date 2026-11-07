@@ -3,8 +3,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { sizeValue, triggerConfig, wrapperConfig } from '../../shared/behavior'
-import { dropdownPopperFeature } from './features/popper/index'
-import { dropdownItemIconsFeature } from './features/dropdown-item-icons/index'
 import './core.css'
 
 const dropdownBaseProps = {

@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
+import { nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { TreeV2 } from '@ui-kit-full'
 
@@ -181,6 +181,6 @@ describe('TreeV2', () => {
   })
 
   it('非数组数据按空树处理', () => {
-    expect(mountTreeV2({ data: 'oops' as any }).findAll('.ui-tree-v2__node')).toHaveLength(0)
+    expect(mountTreeV2({ data: 'oops' as unknown as never[] }).findAll('.ui-tree-v2__node')).toHaveLength(0)
   })
 })

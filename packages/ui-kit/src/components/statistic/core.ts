@@ -1,7 +1,6 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { statisticFormatFeature } from './features/format/index'
 import './core.css'
 
 const statisticBaseProps = {

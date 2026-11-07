@@ -5,7 +5,11 @@ export const tableSummaryFeature = {
     sumText: { type: String, default: '合计' },
     summaryMethod: { type: Function }
   },
-  setup(props: { showSummary?: boolean; sumText?: string; summaryMethod?: Function }) {
+  setup(props: {
+    showSummary?: boolean
+    sumText?: string
+    summaryMethod?: (payload: { columns: Array<Record<string, any>>; data: any[] }) => unknown
+  }) {
     function tableSummary(columns: Array<Record<string, any>>, rows: any[]) {
       if (!props.showSummary) {
         return null

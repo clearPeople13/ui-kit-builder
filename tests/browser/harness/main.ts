@@ -12,12 +12,12 @@ import '../../../dist/full/ui-kit.css'
  */
 
 const probe: Record<string, any> = {}
-;(window as any).__probe = probe
+;(window as unknown as Record<string, any>).__probe = probe
 // 探针脚本在没有 Vue 依赖的页面上下文里也需要挂载组件
-;(window as any).__vue = { h, createApp }
+;(window as unknown as Record<string, any>).__vue = { h, createApp }
 // 用例侧 page.evaluate 会被 Vitest 改写成 SSR 形式，里面不能写 import()，
 // 因此把产物本身也挂到 window 上供扫描用
-;(window as any).__kit = kit
+;(window as unknown as Record<string, any>).__kit = kit
 
 const {
   Button,
@@ -55,7 +55,7 @@ const {
   Backtop,
   Tour,
   TourStep
-} = kit as any
+} = kit as Record<string, any>
 
 function log(key: string) {
   return (value: unknown) => {

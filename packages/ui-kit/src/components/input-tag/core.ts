@@ -3,9 +3,6 @@ import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
-import { inputTagClearableFeature } from './features/clearable/index'
-import { inputTagDraggableFeature } from './features/draggable/index'
-import { inputTagSeparatorFeature } from './features/separator/index'
 import './core.css'
 
 const TRIGGER_KEY_MAP: Record<string, string | null> = {

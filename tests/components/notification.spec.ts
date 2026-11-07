@@ -133,13 +133,13 @@ describe('Notification', () => {
   })
 
   it('受控值 false 时不渲染面板', async () => {
-    const wrapper = mountNotif({ modelValue: false })
+    mountNotif({ modelValue: false })
     await nextTick()
     expect(panel()).toBeNull()
   })
 
   it('空正文与空标题时结构节点仍存在', async () => {
-    const wrapper = mountNotif({ title: '', message: '' })
+    mountNotif({ title: '', message: '' })
     await nextTick()
     expect(document.querySelector('.ui-notification__panel__body')?.textContent).toBe('')
     expect(panel()).not.toBeNull()

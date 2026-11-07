@@ -1,9 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { sliderConfig } from '../../shared/behavior'
-import { sliderPopperFeature } from './features/popper/index'
-import { sliderFormatFeature } from './features/format/index'
-import { sliderRangeFeature } from './features/range/index'
 import './core.css'
 
 const sliderBaseProps = {

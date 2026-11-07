@@ -4,8 +4,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { sizeValue, triggerConfig } from '../../shared/behavior'
-import { popconfirmIconsFeature } from './features/icons/index'
-import { popconfirmPopperFeature } from './features/popper/index'
 import './core.css'
 
 const popconfirmBaseProps = {

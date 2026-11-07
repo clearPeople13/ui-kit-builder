@@ -3,8 +3,8 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { exists, featureEntries, loadTestRegistry, profileNames, readJson, repoRoot } from './_helpers'
 
-const SIZE_KEYS = ['jsBytes', 'cssBytes', 'totalBytes', 'gzipBytes'] as const
-type SizeRecord = Record<(typeof SIZE_KEYS)[number], number>
+type SizeKey = 'jsBytes' | 'cssBytes' | 'totalBytes' | 'gzipBytes'
+type SizeRecord = Record<SizeKey, number>
 const buildAllModule = (await import('../../scripts/build-all.mjs')) as {
   delta: (base: SizeRecord, target: SizeRecord) => SizeRecord
   staleDistDirs: (existingDirs: string[], reservedNames: Set<string>) => string[]

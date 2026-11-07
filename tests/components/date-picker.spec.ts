@@ -107,12 +107,12 @@ describe('DatePicker 日期选择', () => {
       '11月'
     ])
     expect(panel()!.querySelectorAll('.ui-date-picker__nav')).toHaveLength(2)
-    await clickNative(panel()!.querySelector('.ui-date-picker__nav[aria-label="下一页"]'))
+    await clickNative(panel()!.querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="下一页"]'))
     expect(Array.from(panel()!.querySelectorAll('.ui-date-picker__title')).map((t) => t.textContent)).toEqual([
       '2026年',
       '12月'
     ])
-    await clickNative(panel()!.querySelector('.ui-date-picker__nav[aria-label="上一页"]'))
+    await clickNative(panel()!.querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="上一页"]'))
     expect(Array.from(panel()!.querySelectorAll('.ui-date-picker__title')).map((t) => t.textContent)).toEqual([
       '2026年',
       '11月'

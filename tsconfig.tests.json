@@ -6,8 +6,9 @@
     "paths": {
       "@ui-kit-full": ["./dist/full/index.d.ts"]
     },
-    "strict": false,
-    "noImplicitAny": false
+    // C9：用例与门禁配置统一走 strict；新增用例不允许再写 `as any` / 隐式 any
+    "strict": true,
+    "noImplicitAny": true
   },
   "include": [
     "tests/**/*.ts",

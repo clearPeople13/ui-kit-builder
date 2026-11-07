@@ -25,10 +25,6 @@ function assertIncludes(content, needle, label) {
   assert(String(content).includes(needle), `${label} 应包含 ${needle}`)
 }
 
-function assertExcludes(content, needle, label) {
-  assert(!String(content).includes(needle), `${label} 不应包含 ${needle}`)
-}
-
 async function render(result, componentName, props, slots) {
   const { createSSRApp, h } = await import('vue')
   const { renderToString } = await import('@vue/server-renderer')

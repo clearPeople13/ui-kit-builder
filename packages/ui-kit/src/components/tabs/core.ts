@@ -1,12 +1,7 @@
 import type { VNodeChild } from 'vue'
-import { computed, h, onBeforeUnmount, ref, watch } from 'vue'
+import { h, onBeforeUnmount, ref, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { tabPaneClosableFeature } from './features/closable/index'
-import { tabPaneLazyFeature } from './features/lazy/index'
-import { tabPaneEditableFeature } from './features/editable/index'
-import { tabsClosableFeature } from './features/tabs-closable/index'
-import { tabsEditableFeature } from './features/tabs-editable/index'
 import './core.css'
 
 interface TabPaneMeta {

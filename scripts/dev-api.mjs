@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { buildProfile, normalizePropType, sanitizeName, sanitizePrefix } from './build-lib.mjs'
+import { buildProfile, normalizePropType, sanitizeName } from './build-lib.mjs'
 import { profileCatalog } from './profile-catalog.mjs'
 import { loadRegistry } from '../registry.mjs'
 import { loadThemeTokens } from './theme-tokens.mjs'

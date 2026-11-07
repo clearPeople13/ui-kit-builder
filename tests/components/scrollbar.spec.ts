@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
+import { h } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Scrollbar } from '@ui-kit-full'
 
@@ -81,7 +81,7 @@ describe('Scrollbar', () => {
   })
 
   it('对外暴露 update/handleScroll/setScrollTop/setScrollLeft 方法', () => {
-    const api = mountScrollbar().vm as any
+    const api = mountScrollbar().vm as unknown as Record<string, any>
     expect(typeof api.update).toBe('function')
     expect(typeof api.handleScroll).toBe('function')
     expect(typeof api.setScrollTop).toBe('function')

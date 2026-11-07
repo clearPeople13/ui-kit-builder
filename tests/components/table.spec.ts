@@ -289,7 +289,7 @@ describe('Table', () => {
       { rowKey: 'id' },
       { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
     )
-    const api = wrapper.vm as any
+    const api = wrapper.vm as unknown as Record<string, any>
     api.toggleAllSelection()
     await nextTick()
     expect(api.getSelectionRows()).toHaveLength(3)
@@ -307,8 +307,8 @@ describe('Table', () => {
       { rowKey: 'id' },
       { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
     )
-    const api = wrapper.vm as any
-    const proxyRow = (wrapper.vm.$props as any).data[0]
+    const api = wrapper.vm as unknown as Record<string, any>
+    const proxyRow = (wrapper.vm.$props as unknown as { data: Array<Record<string, any>> }).data[0]
     expect(proxyRow).not.toBe(rows[0])
 
     api.toggleRowSelection(rows[0], true)
@@ -333,7 +333,7 @@ describe('Table', () => {
       { rowKey: 'id' },
       { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
     )
-    const api = wrapper.vm as any
+    const api = wrapper.vm as unknown as Record<string, any>
     api.toggleRowSelection({ id: 3, name: 'C', age: 22 }, true)
     await nextTick()
     expect(api.getSelectionRows()).toHaveLength(1)
@@ -345,7 +345,7 @@ describe('Table', () => {
       { rowKey: 'id' },
       { default: () => [h(TableColumn, { type: 'selection' }), ...columns([{ prop: 'name', label: '名称' }])()] }
     )
-    const api = wrapper.vm as any
+    const api = wrapper.vm as unknown as Record<string, any>
     api.toggleRowSelection({ id: 99 }, true)
     await nextTick()
     expect(api.getSelectionRows()).toHaveLength(0)

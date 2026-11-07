@@ -2,7 +2,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { wrapperConfig } from '../../shared/behavior'
 import { ROW_GUTTER } from '../../shared/layout'
-import { colPopperFeature } from './features/popper/index'
 import './core.css'
 
 const colBaseProps = {

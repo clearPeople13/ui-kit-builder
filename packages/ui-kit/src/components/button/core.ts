@@ -1,7 +1,6 @@
 import type { Component, VNodeChild } from 'vue'
 import { defineComponent, h, inject, shallowRef } from 'vue'
 import type { UiFeature } from '../../shared/feature'
-import { createUiComponent } from '../../shared/component'
 import { UI_CONFIG_KEY } from '../../shared/config'
 import { mergeStyles } from '../../shared/utils'
 import { BUTTON_GROUP_CONTEXT, type ButtonGroupContext } from './button-group/core'

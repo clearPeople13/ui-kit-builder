@@ -3,10 +3,6 @@ import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { Aside, Container, Footer, Header, Main } from '@ui-kit-full'
 
-function find(wrapper: any, selector: string) {
-  return wrapper.find(selector)
-}
-
 describe('Container 布局容器', () => {
   it('缺省渲染 section 并按内容判定纵向', () => {
     const wrapper = mount(Container, { slots: { default: () => h(Main, {}, () => '主体') } })

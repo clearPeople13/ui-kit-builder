@@ -90,7 +90,7 @@ describe('ImageViewer', () => {
     expect(autoStyle).toMatch(/z-index:\s*2\d{3}/)
     auto.unmount()
     document.body.innerHTML = ''
-    const explicit = mountViewer({ zIndex: 3000, teleported: true })
+    mountViewer({ zIndex: 3000, teleported: true })
     await nextTick()
     expect(container()?.getAttribute('style') ?? '').toContain('z-index: 3000')
   })

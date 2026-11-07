@@ -118,7 +118,7 @@ describe('dev-api 接口契约', () => {
     expect(fs.existsSync(path.join(dir, 'meta.json'))).toBe(true)
     expect(fs.existsSync(path.join(dir, 'ui-kit.js'))).toBe(true)
 
-    const packages = handlers.packages().payload.packages
+    const packages = handlers.packages().payload.packages as Array<{ id: string }>
     const demo = packages.find((item) => item.id === 'custom/demo')
     expect(demo, '自定义包应出现在 /api/packages 列表').toBeTruthy()
 

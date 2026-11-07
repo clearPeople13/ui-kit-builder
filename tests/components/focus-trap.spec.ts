@@ -75,13 +75,13 @@ describe('FocusTrap 焦点陷阱', () => {
   })
 
   it('focusStartEl=container 聚焦容器，=last 聚焦末位', async () => {
-    const containerStart = mountTrap({ trapped: true, focusStartEl: 'container' })
+    mountTrap({ trapped: true, focusStartEl: 'container' })
     await nextTick()
     expect(activeClass()).toContain('ui-focus-trap')
     mounted.pop()?.unmount()
     document.body.innerHTML = ''
 
-    const lastStart = mountTrap({ trapped: true, focusStartEl: 'last' })
+    mountTrap({ trapped: true, focusStartEl: 'last' })
     await nextTick()
     expect(activeClass()).toBe('ft-last')
   })
@@ -194,7 +194,7 @@ describe('FocusTrap 焦点陷阱', () => {
     await nextTick()
     const last = wrapper.find('.ft-last').element as HTMLElement
     last.focus()
-    ;(wrapper.vm as any).focusStart()
+    ;(wrapper.vm as unknown as Record<string, any>).focusStart()
     await nextTick()
     expect(activeClass()).toBe('ft-first')
   })

@@ -7,13 +7,6 @@ import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
 import { sizeValue } from '../../shared/behavior'
-import { cascaderClearableFeature } from './features/clearable/index'
-import { cascaderMultipleFeature } from './features/multiple/index'
-import { cascaderFilterableFeature } from './features/filterable/index'
-import { cascaderPopperFeature } from './features/popper/index'
-import { cascaderLazyFeature } from './features/lazy/index'
-import { cascaderVirtualizedFeature } from './features/virtualized/index'
-import { cascaderFormatFeature } from './features/format/index'
 import './core.css'
 
 const cascaderBaseProps = {
@@ -391,14 +384,6 @@ export function createCascader(features: UiFeature[] = []) {
 
         function isPathSelected(path: any[]): boolean {
           return modelPaths.value.some((item) => pathEquals(item, path))
-        }
-
-        function isLeafSelected(node: CascaderNode, level: number): boolean {
-          const path = [...activePath.value.slice(0, level), node.value]
-          if (isExpandable(node, path)) {
-            return false
-          }
-          return isPathSelected(path)
         }
 
         function toggleLeaf(path: any[]) {

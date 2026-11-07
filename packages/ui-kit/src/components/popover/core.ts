@@ -3,7 +3,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { sizeValue, triggerConfig } from '../../shared/behavior'
 import { mergeStyles } from '../../shared/utils'
-import { popoverPopperFeature } from './features/popper/index'
 import './core.css'
 
 const popoverBaseProps = {

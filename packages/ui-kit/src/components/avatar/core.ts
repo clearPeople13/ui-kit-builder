@@ -4,8 +4,6 @@ import { createUiComponent } from '../../shared/component'
 import { sizeValue } from '../../shared/behavior'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
-import { avatarIconsFeature } from './features/icons/index'
-import { avatarGroupPopperFeature } from './features/avatar-group-popper/index'
 import './core.css'
 
 function flattenAvatarNodes(nodes: unknown): any[] {

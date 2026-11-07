@@ -1,9 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { imageConfig } from '../../shared/behavior'
-import { imageLoadingFeature } from './features/loading/index'
-import { imageLazyFeature } from './features/lazy/index'
-import { imagePreviewFeature } from './features/preview/index'
 import './core.css'
 
 const imageBaseProps = {
