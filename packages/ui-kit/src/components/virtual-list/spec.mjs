@@ -50,6 +50,23 @@ export default {
           "type": "number",
           "default": 0,
           "description": "数据总条数，默认取 data.length"
+        },
+        {
+          "name": "scrollTop",
+          "type": "number",
+          "description": "受控滚动位置；传了它就由调用方维护滚动，本组件不再监听自身 scroll"
+        },
+        {
+          "name": "viewportHeight",
+          "type": "number",
+          "default": 0,
+          "description": "受控模式下的可视高度，未传时退回 height"
+        },
+        {
+          "name": "scrollable",
+          "type": "boolean",
+          "default": true,
+          "description": "为 false 时不渲染自己的滚动容器（不设高度与 overflow），只输出窗口内容"
         }
       ],
       "features": {}

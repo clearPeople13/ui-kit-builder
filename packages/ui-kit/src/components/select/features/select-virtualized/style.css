@@ -6,14 +6,9 @@
   overflow-y: auto;
 }
 
+/* §25：窗口内容由 VirtualList 的标准结构承载（spacer + 绝对定位行），
+   这里只保证它在 Select 面板里占满宽度、不自己形成第二层滚动 */
 .ui-select--virtualized .ui-select__virtual {
   position: relative;
-}
-
-.ui-select--virtualized .ui-select__virtual-window {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  will-change: transform;
+  width: 100%;
 }

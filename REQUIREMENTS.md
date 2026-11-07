@@ -28,6 +28,7 @@
 | [§22](#s22) | 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`） |
 | [§23](#s23) | 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`） |
 | [§24](#s24) | 选择器统一：只保留 Select 并吸收大数据虚拟列表（分支 `feature/20261107-select-unification`） |
+| [§25](#s25) | 虚拟列表统一：一套算法、一个组件、真按需打包（分支 `feature/20261107-virtual-list-unify`） |
 
 ## 缺陷编号索引
 
@@ -118,6 +119,8 @@
 | F-81 | [§20](#s20) |
 | F-82 | [§20](#s20) |
 | F-83 | [§20](#s20) |
+| F-84 | [§25](#s25) |
+| F-85 | [§25](#s25) |
 
 <a id="s1"></a>
 
@@ -826,7 +829,7 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 22.1 范围
 
-按 `OPTIMIZATION_PLAN.md` 的 B4 执行 A8 与 C5–C10：版本 / engines / license 单一事实源、组件分类合并、workspaces 决策、死资产清理、格式化与 ESLint 范围、用例 strict 与 `as any` 清理、消费方 `fs.allow` 收敛。本批未新增缺陷编号（F-84 起保留给后续真实缺陷），以下均为计划条目落地与配套守卫。
+按 `OPTIMIZATION_PLAN.md` 的 B4 执行 A8 与 C5–C10：版本 / engines / license 单一事实源、组件分类合并、workspaces 决策、死资产清理、格式化与 ESLint 范围、用例 strict 与 `as any` 清理、消费方 `fs.allow` 收敛。本批未新增缺陷编号（F-84 起保留给后续真实缺陷，已在 §25 使用），以下均为计划条目落地与配套守卫。
 
 ### 22.2 交付与数字
 
@@ -911,3 +914,54 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 治理校验新增「Select 统一守卫」：扫描源码 / profile / 配置 / 示例 / 测试里所有跟踪文件，旧组件名零残留；`select` 目录、新特性声明与生成物登记三者缺一即报红。历史缺陷登记（F-38 / F-47）与上游参考目录不在扫描范围内。
 - 门禁仍十三段，缺陷口径仍 F-1…F-83（本批为功能改造，不新增缺陷编号）；布局基线按 gallery 少一个组件重录，像素基线 6 场景保持零漂移。
 - 存量数字校正：令牌指纹快照按「删掉 1 个孤儿令牌」重录（每份 profile 少 1 条生效令牌），树摇快照同步去掉旧组件的 3 条不可标记特性。
+
+<a id="s25"></a>
+
+## 25. 虚拟列表统一：一套算法、一个组件、真按需打包（分支 `feature/20261107-virtual-list-unify`）
+
+> 编号口径：本批新增 F-84（特性裁剪失效）与 F-85（构建器侧用例 flaky），正好用掉 §22 预留的起始号 F-84。
+
+### 25.1 触发问题与审计结论
+
+用户提问：仓库里多处用到虚拟列表，却几乎不用 `virtual-list` 组件，是不是每个都自己实现了一套？
+
+对 `packages/ui-kit/src/components` 全量静态审计后，答案是「是」，而且比预想更分散：
+
+| 位置 | 改造前实现 | 窗口算法 |
+| --- | --- | --- |
+| `select/core.ts` | `virtualWindow()` + `.ui-select__virtual` / `__virtual-window` + `translateY` | overscan 5、运行时实测行高、分组回退全量 |
+| `cascader/core.ts` | `.ui-cascader__window` + 逐行 `top` 定位 | overscan 4、`itemSize` 下限 16 |
+| `cascader-panel/core.ts` | 与 cascader 同一段逻辑的第二份拷贝 | overscan 4、`itemSize > 0` 才启用 |
+| `table/core.ts` | 变量行高前缀和 + 贴底锁 + 滚动停稳后实测回填 | 动态行高，与前三种不同类 |
+| `transfer.virtualized` | 只挂 `ui-transfer--virtualized` 类名 | **无实现（空壳）** |
+| `virtual-list` 组件 | 除自身用例与调试台元数据外**全仓零引用** | 第三套固定行高实现 |
+
+决定性证据来自 `sizes.json`：`select.select-virtualized` 的边际体积只有 **441 B js / 310 B css**，与同样是空壳的 `cascader.virtualized`（240 B）同量级。这说明 §24 把窗口算术写进 `select/core.ts` 后，**不开特性也照样打包**，「开了才打包」只是运行时 `props.virtualized === true` 的分支判定，并没有发生体积裁剪。
+
+### 25.2 改造方案
+
+- **一套算法**：新增 `packages/ui-kit/src/shared/virtual-window.ts`，只放纯函数（`computeVirtualRange` / `alignVirtualScrollTop` / 默认值解析）。空列表、不足一屏、滚动越界、行高与可视高度未知、总高收缩这些边界统一在这里收敛。
+- **一个组件**：`virtual-list` 接入内核，并新增受控窗口模式（`scrollTop` / `viewportHeight` / `scrollable`），让「外层容器负责滚动、内部只渲染窗口」的场景也能复用它——Select 的浮层面板正是这种形态。另暴露 `scrollToIndex` / `scrollToTop`，供方向键跟随使用。
+- **Select 真按需打包**：`select/core.ts` 删除全部虚拟状态与算术，只保留 `featureHook` 扩展点（`renderOptionList` / `onListScroll` / `onListOpen` / `onListClose` / `onListReset` / `onActiveChange`）；虚拟渲染整体搬进 `features/select-virtualized/`，用 `h(VirtualList, { scrollable: false, scrollTop })` 渲染，单行仍交给 core 的 `renderOption`，保证 `role=option` / `aria-selected` / 悬停高亮 / 点击选择语义不变。特性未选中时，该模块与 VirtualList 都不会被构建器写入产物。
+- **其余组件收敛**：`cascader` / `cascader-panel` 的窗口算术改为调用内核（等价替换，渲染结构不变）。
+
+### 25.3 验证与数字
+
+- 裁剪实测（同一份源码，只改选中的特性）：仅 `select.select-clearable` 的包 **60924 B**；仅 `select.select-virtualized` 的包 **67820 B**；差 **6896 B**。前者产物里 `ui-virtual-list` / `virtual-list__spacer` / `ui-select__virtual` 命中数均为 **0**，后者为 3 / 1 / 1。
+- `sizes.json` 里 `select.select-virtualized` 从 **441 B** 变为 **2499 B js / 209 B css（gzip 727 B）**——边际值终于反映真实实现，这也是本批的机器判据。
+- 新增 `tests/components/virtual-window.spec.ts` 14 条纯函数边界用例；`select.spec.ts` 的 5 条虚拟断言改认新结构（占位高落在 `.ui-virtual-list__spacer`、位移改看行的 `top`），其余回退语义（开关关闭 / 分组 / 阈值与行高可调）不动。
+- 治理校验新增「虚拟窗口统一守卫」（门禁 `governance` 段）：`select/core.ts` 的 import 里不得出现虚拟实现、`select-virtualized` 必须 import `virtual-list/core`、该特性边际值不得低于 1500 B，三者任一破坏即报红。
+
+### 25.4 本批未统一的部分（已登记，避免被当成已完成）
+
+- `cascader.virtualized` / `cascader-panel.virtualized` / `transfer.virtualized` 三个特性仍是「只挂类名」：前两者的窗口逻辑在各自 `core.ts` 里（已接内核但仍在 core，裁不掉），`transfer.virtualized` 完全没有实现。三者已列入待统一清单，治理守卫会阻止新增空壳。
+- `table` 的虚拟滚动是变量行高 + 前缀和 + 贴底锁，与固定行高窗口不是同一种算法，强行套内核会丢掉动态行高能力，本批不动。
+
+### 25.5 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-84 | `packages/ui-kit/src/components/select/core.ts` | 不选 `select.select-virtualized` 也照样打包虚拟渲染代码；该特性边际值只有 441 B，「开了才打包」名不副实 | §24 把窗口算术与 `ui-select__virtual` 渲染写进 core；构建器只裁特性模块，不裁 core 里的分支 | 虚拟实现整体搬进 `features/select-virtualized/`，core 只留 `featureHook` 扩展点并复用 `virtual-list`；off/on 实测差 6896 B，边际值 441 B → 2499 B |
+| F-85 | `tests/build/build-cache.spec.ts` | `npm run test:build` 偶发红（同一份代码一次红一次绿），失败点固定在「改组件源码只让该组件的缓存键变化」 | 固定名探针 `__cache_probe.tmp` 在 Windows 上偶发删不掉；下次 `before` 已包含探针内容，再写入同样内容指纹不变 | 写入前先清残留、探针内容带唯一值、删除带重试；`vitest.build.config.ts` 改串行（这批用例会真改源码、真打包，与只读断言并发互相污染） |
+
+

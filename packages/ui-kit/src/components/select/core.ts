@@ -1,7 +1,8 @@
 import type { VNode, VNodeChild } from 'vue'
 import { Fragment, Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Check, ChevronDown, X } from '../../shared/icons'
-import type { UiFeature } from '../../shared/feature'
+import type { UiFeature, UiFeatureState } from '../../shared/feature'
+import { collectFeatureHooks } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
@@ -15,7 +16,7 @@ const optionBaseProps = {
   disabled: { type: Boolean }
 }
 
-interface SelectOption {
+export interface SelectOption {
   label: string
   value: any
   disabled: boolean
@@ -29,17 +30,21 @@ const optionFields = {
   options: 'options'
 }
 
-const VIRTUAL_OVERSCAN = 5
-const VIRTUAL_FALLBACK_ITEM_HEIGHT = 34
-const VIRTUAL_FALLBACK_VIEW_HEIGHT = 274
-
-interface VirtualWindow {
+/**
+ * 虚拟窗口由 `select.select-virtualized` 特性注入（§25）：
+ * core 只留扩展点，不开特性时这段渲染代码根本不会进产物。
+ */
+export interface SelectOptionListContext {
   list: SelectOption[]
-  itemHeight: number
-  total: number
-  start: number
-  end: number
+  activeIndex: number
+  /** 面板可视高度，未挂载时为 0，由特性自行兜底 */
+  viewport: number
+  isSelected: (option: SelectOption) => boolean
+  renderOption: (option: SelectOption, index: number) => VNodeChild
+  selectOption: (option: SelectOption) => void
 }
+
+export type SelectOptionListRenderer = (context: SelectOptionListContext) => VNodeChild
 
 const optionGroupBaseProps = {
   label: { type: String, default: '' },
@@ -203,9 +208,6 @@ export function createSelect(features: UiFeature[] = []) {
         const triggerRef = ref<HTMLElement>()
         const panelRef = ref<HTMLElement>()
         const inputRef = ref<HTMLInputElement>()
-        // 虚拟窗口：滚动位置与实测行高（主题令牌决定 option 高度，运行时量最准）
-        const listScrollTop = ref(0)
-        const measuredItemHeight = ref(0)
         let remoteTimer: ReturnType<typeof setTimeout> | null = null
 
         const slotOptions = computed(() => {
@@ -265,58 +267,13 @@ export function createSelect(features: UiFeature[] = []) {
           fallbackPlacements: () => props.fallbackPlacements as string[] | undefined
         })
 
-        // ---- 大数据虚拟窗口（由原虚拟列表选择器合并而来）----
-        // 分组行高不一，回退全量渲染；仅扁平大列表且开启特性时走窗口化
-        function virtualWindow(): VirtualWindow | null {
-          const list = visibleOptions.value
-          const threshold = Number(props.virtualThreshold ?? 100)
-          if (props.virtualized !== true || list.length <= threshold || list.some((option) => option.group)) {
-            return null
-          }
-          const itemHeight = measuredItemHeight.value || Number(props.itemSize) || VIRTUAL_FALLBACK_ITEM_HEIGHT
-          const viewHeight = panelRef.value?.clientHeight || VIRTUAL_FALLBACK_VIEW_HEIGHT
-          const start = Math.max(0, Math.floor(listScrollTop.value / itemHeight) - VIRTUAL_OVERSCAN)
-          const end = Math.min(
-            list.length,
-            Math.ceil((listScrollTop.value + viewHeight) / itemHeight) + VIRTUAL_OVERSCAN
-          )
-          return { list, itemHeight, total: list.length, start, end }
-        }
+        // ---- 特性扩展点（虚拟窗口等由特性注入，core 不感知具体算法）----
+        // 不开特性时 featureStates 里没有对应 hook，下面所有调用都会自然退化为 no-op，
+        // 虚拟渲染与 VirtualList 的代码也不会被打进产物。
+        let featureStates: UiFeatureState[] = []
 
-        function measureItemHeight() {
-          const option = panelRef.value?.querySelector('.ui-select__option')
-          if (option instanceof HTMLElement && option.offsetHeight > 0) {
-            measuredItemHeight.value = option.offsetHeight
-          }
-        }
-
-        function handleListScroll(event: Event) {
-          listScrollTop.value = (event.target as HTMLElement).scrollTop
-        }
-
-        function resetListScroll() {
-          listScrollTop.value = 0
-          if (panelRef.value) {
-            panelRef.value.scrollTop = 0
-          }
-        }
-
-        // 方向键把活动项移出可视区时，主动滚动面板让高亮始终可见
-        function scrollActiveIntoView() {
-          const win = virtualWindow()
-          if (!win || activeIndex.value < 0) {
-            return
-          }
-          const top = activeIndex.value * win.itemHeight
-          const viewHeight = panelRef.value?.clientHeight || VIRTUAL_FALLBACK_VIEW_HEIGHT
-          if (top < listScrollTop.value) {
-            listScrollTop.value = top
-          } else if (top + win.itemHeight > listScrollTop.value + viewHeight) {
-            listScrollTop.value = top + win.itemHeight - viewHeight
-          }
-          if (panelRef.value) {
-            panelRef.value.scrollTop = listScrollTop.value
-          }
+        function featureHook<T extends (...args: any[]) => any>(name: string): T | undefined {
+          return collectFeatureHooks(featureStates, name)[0] as T | undefined
         }
 
         function emitValue(value: any) {
@@ -397,7 +354,12 @@ export function createSelect(features: UiFeature[] = []) {
           const next =
             current < 0 ? (step > 0 ? 0 : indexes.length - 1) : (current + step + indexes.length) % indexes.length
           activeIndex.value = indexes[next]
-          scrollActiveIntoView()
+          // 方向键把活动项移出可视区时，由特性负责滚动跟随（未开特性时无此 hook）
+          featureHook('onActiveChange')?.({
+            index: activeIndex.value,
+            panel: panelRef.value,
+            list: visibleOptions.value
+          })
         }
 
         function handleKeydown(event: KeyboardEvent) {
@@ -447,8 +409,7 @@ export function createSelect(features: UiFeature[] = []) {
           emit('visible-change', true)
           nextTick(() => {
             refresh()
-            resetListScroll()
-            measureItemHeight()
+            featureHook('onListOpen')?.({ panel: panelRef.value, list: visibleOptions.value })
             if (props.filterable) {
               inputRef.value?.focus()
             }
@@ -463,7 +424,7 @@ export function createSelect(features: UiFeature[] = []) {
           query.value = ''
           searching.value = false
           activeIndex.value = -1
-          resetListScroll()
+          featureHook('onListClose')?.({ panel: panelRef.value })
           emit('visible-change', false)
         }
 
@@ -478,7 +439,7 @@ export function createSelect(features: UiFeature[] = []) {
         function handleFilterInput(event: Event) {
           query.value = (event.target as HTMLInputElement).value
           searching.value = true
-          resetListScroll()
+          featureHook('onListReset')?.({ panel: panelRef.value })
           emit('filter-change', query.value)
           if (!open.value) {
             open.value = true
@@ -621,12 +582,13 @@ export function createSelect(features: UiFeature[] = []) {
           )
         }
 
-        function renderPanel(): VNodeChild {
+        function renderPanel(states: UiFeatureState[] = []): VNodeChild {
+          featureStates = states
           if (!open.value && !props.persistent) {
             return null
           }
           const children: VNodeChild[] = []
-          const win = props.loading ? null : virtualWindow()
+          let virtualized = false
           if (props.loading) {
             children.push(
               h('div', { class: 'ui-loader', role: 'status' }, [
@@ -635,21 +597,21 @@ export function createSelect(features: UiFeature[] = []) {
               ])
             )
           } else if (visibleOptions.value.length) {
-            if (win) {
-              children.push(
-                h('div', { class: 'ui-select__virtual', style: { height: `${win.total * win.itemHeight}px` } }, [
-                  h(
-                    'div',
-                    {
-                      class: 'ui-select__virtual-window',
-                      style: { transform: `translateY(${win.start * win.itemHeight}px)` }
-                    },
-                    win.list
-                      .slice(win.start, win.end)
-                      .map((option, offset) => renderOptionRow(option, win.start + offset))
-                  )
-                ])
-              )
+            const renderList = featureHook<SelectOptionListRenderer>('renderOptionList')
+            // 特性返回 null 表示当前列表不该窗口化（未达阈值 / 含分组行），回退全量渲染
+            const custom: VNodeChild | null = renderList
+              ? (renderList({
+                  list: visibleOptions.value,
+                  activeIndex: activeIndex.value,
+                  viewport: panelRef.value?.clientHeight ?? 0,
+                  isSelected,
+                  renderOption: renderOptionRow,
+                  selectOption
+                }) ?? null)
+              : null
+            if (custom) {
+              virtualized = true
+              children.push(custom)
             } else {
               visibleOptions.value.forEach((option, index) => {
                 if (option.group) {
@@ -672,7 +634,7 @@ export function createSelect(features: UiFeature[] = []) {
               class: [
                 'ui-select__dropdown',
                 'ui-floating-panel',
-                win ? 'is-virtual' : '',
+                virtualized ? 'is-virtual' : '',
                 `is-${props.effect || 'light'}`,
                 `is-${actualSide.value}`,
                 props.popperClass
@@ -681,7 +643,7 @@ export function createSelect(features: UiFeature[] = []) {
               role: 'listbox',
               'aria-label': props.ariaLabel,
               onMousedown: (event: Event) => event.preventDefault(),
-              onScroll: handleListScroll,
+              onScroll: (event: Event) => featureHook('onListScroll')?.({ event, panel: panelRef.value }),
               onKeydown: handleKeydown
             },
             children
@@ -717,7 +679,7 @@ export function createSelect(features: UiFeature[] = []) {
         width: props.fitWidth ? 'fit-content' : undefined,
         maxWidth: sizeValue(props.maxWidth)
       }),
-      content: ({ props, state }) => {
+      content: ({ props, state, states }) => {
         const actions: VNodeChild[] = []
         if (props.clearable && state.hasValue && !props.disabled) {
           actions.push(
@@ -771,7 +733,7 @@ export function createSelect(features: UiFeature[] = []) {
             h('div', { class: 'ui-select__actions' }, actions)
           ]
         )
-        return [trigger, state.renderPanel()]
+        return [trigger, state.renderPanel(states)]
       }
     },
     features

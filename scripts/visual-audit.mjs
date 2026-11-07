@@ -569,10 +569,14 @@ async function main() {
       await consumerPage.waitForTimeout(400)
       const bigData = await consumerPage.evaluate(() => {
         const layer = document.querySelector('.ui-select__virtual')
+        // §25：窗口结构改由 VirtualList 承载，占位高度落在它的 spacer 上；
+        // 旧结构（特性自己撑一层）保留兼容，避免体检与具体实现绑死
+        const spacer = layer?.querySelector('.ui-virtual-list__spacer')
+        const height = Number.parseInt(spacer?.style.height ?? layer?.style.height ?? '0', 10) || 0
         return {
           virtual: Boolean(layer),
           options: document.querySelectorAll('.ui-select__option').length,
-          height: Number.parseInt(layer?.style.height ?? '0', 10) || 0
+          height
         }
       })
       if (

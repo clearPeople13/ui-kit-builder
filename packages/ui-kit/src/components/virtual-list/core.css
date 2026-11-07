@@ -16,3 +16,8 @@
 .ui-virtual-list__item.is-placeholder {
   color: var(--ui-text-color-placeholder);
 }
+
+/* 受控窗口模式（§25）：滚动交给外层容器（如 Select 的浮层面板），本层只输出窗口内容 */
+.ui-virtual-list.is-static {
+  overflow: visible;
+}

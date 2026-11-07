@@ -243,6 +243,41 @@ if (!read('examples/consumer/src/demo/meta.json').includes('select.select-virtua
 }
 notes.push(`Select 统一守卫：扫描 ${candidateFiles.length} 个跟踪文件，旧组件零残留`)
 
+// ---- 2.2 虚拟窗口统一守卫（§25）----
+// 第十一批把旧虚拟列表选择器合并进 Select 时，窗口算术留在了 select/core.ts 里：
+// 不开特性也照样打包（sizes.json 里该特性边际值只有 441B，只反映 props + 类名），
+// 同时 virtual-list 组件全仓无人引用，cascader / cascader-panel 各写一套 clamp。
+// 这里锁死三件事：Select 的虚拟实现必须在特性目录里、必须复用 VirtualList、边际体积不能是空壳。
+const selectCoreText = read(`${SRC}/components/select/core.ts`)
+// 只看 import：注释里提到 VirtualList 是说明性文字，不算把实现搬回 core
+const selectCoreImports = selectCoreText
+  .split('\n')
+  .filter((line) => /^\s*import\b/.test(line))
+  .join('\n')
+if (/virtual-window|virtual-list|VirtualList/.test(selectCoreImports)) {
+  fail('select/core.ts 又 import 了虚拟窗口实现，特性裁剪会失效（虚拟逻辑必须留在 features/select-virtualized）')
+}
+const selectVirtualFeature = read(`${SRC}/components/select/features/select-virtualized/index.ts`)
+if (!/virtual-list\/core/.test(selectVirtualFeature)) {
+  fail('select.select-virtualized 没有复用 VirtualList 组件，窗口渲染又退回自建实现')
+}
+const sizes = JSON.parse(read('sizes.json') || '{}')
+const virtualFeatureBytes = Number(sizes.features?.['select.select-virtualized']?.jsBytes ?? 0)
+if (virtualFeatureBytes && virtualFeatureBytes < 1500) {
+  fail(
+    `select.select-virtualized 边际值仅 ${virtualFeatureBytes}B，虚拟实现没有落在特性里（特性被架空，"开了才打包"是假的）`
+  )
+}
+// 仍是「只挂类名」的空壳虚拟特性必须逐个登记在 §25，新增空壳或删登记都会红
+const SHELL_VIRTUAL_FEATURES = ['cascader.virtualized', 'cascader-panel.virtualized', 'transfer.virtualized']
+const shellMissing = SHELL_VIRTUAL_FEATURES.filter((id) => !requirementsText.includes(id))
+if (shellMissing.length) {
+  fail(`空壳虚拟特性没有登记进 REQUIREMENTS §25 待统一清单：${shellMissing.join(', ')}`)
+}
+notes.push(
+  `虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），空壳特性 ${SHELL_VIRTUAL_FEATURES.length} 个已登记`
+)
+
 // ---- 3. 文档数字与产物对齐 ----
 const meta = JSON.parse(read('examples/consumer/src/demo/meta.json') || '{}')
 const componentCount = Array.isArray(meta.components) ? meta.components.length : 0
