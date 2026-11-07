@@ -56,6 +56,11 @@ const FOCUS_SCENES = ['floating', 'table', 'tree', 'color', 'a11y', 'time-picker
  * 第九批只体检了源码，结果源码修好了、调试台却因跨工作树软链仍在加载旧 CSS，
  * 用户看到的界面照样是双层边框。这里直接打开用户评审用的组件页做同一套契约。
  */
+/** 体检自带的两台 Vite 服务端口：避开 5173 段的 dev server 与工作树端口段 */
+function randomPort() {
+  return 36000 + Math.floor(Math.random() * 2000)
+}
+
 const CONSUMER_PAGES = ['time-picker', 'input', 'date-picker', 'autocomplete', 'input-number']
 
 /**
@@ -402,7 +407,7 @@ async function main() {
       __VUE_PROD_DEVTOOLS__: 'false',
       __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: 'false'
     },
-    server: { host: '127.0.0.1', port: 0, strictPort: false }
+    server: { host: '127.0.0.1', port: randomPort(), strictPort: false }
   })
   await server.listen()
   const address = server.httpServer?.address()
@@ -417,7 +422,7 @@ async function main() {
     root: path.join(repoRoot, 'examples/consumer'),
     configFile: path.join(repoRoot, 'examples/consumer/vite.config.mjs'),
     logLevel: 'silent',
-    server: { host: '127.0.0.1', port: 0, strictPort: false }
+    server: { host: '127.0.0.1', port: randomPort(), strictPort: false }
   })
   await consumerServer.listen()
   const consumerAddress = consumerServer.httpServer?.address()

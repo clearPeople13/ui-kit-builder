@@ -6,17 +6,6 @@ const IMAGE = SAMPLE_IMAGE_SRC
 const PHOTOS = SAMPLE_PHOTOS.map((photo) => photo.src)
 const CASCADER = CASCADER_OPTIONS
 
-const TABLE_ROWS = [
-  { id: 1, name: 'Button', city: '上海', status: '稳定' },
-  { id: 2, name: 'Input', city: '杭州', status: '内测' },
-  { id: 3, name: 'Table', city: '成都', status: '规划' },
-  { id: 4, name: 'Tree', city: '深圳', status: '稳定' },
-  { id: 5, name: 'Dialog', city: '北京', status: '内测' },
-  { id: 6, name: 'Select', city: '广州', status: '规划' },
-  { id: 7, name: 'Form', city: '南京', status: '稳定' },
-  { id: 8, name: 'Tabs', city: '武汉', status: '内测' }
-]
-
 const TREE_DATA = [
   {
     id: 'forms',
@@ -40,14 +29,6 @@ const TREE_DATA = [
       }
     ]
   }
-]
-
-const TRANSFER_DATA = [
-  { key: 'a', label: '选项 A' },
-  { key: 'b', label: '选项 B' },
-  { key: 'c', label: '选项 C' },
-  { key: 'd', label: '选项 D' },
-  { key: 'e', label: '选项 E' }
 ]
 
 const SEGMENTED_OPTIONS = [

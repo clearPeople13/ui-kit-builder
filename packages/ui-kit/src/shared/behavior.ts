@@ -496,7 +496,7 @@ export function checkboxConfig(options: { name: string; baseClass: string; props
         size: state.sizeValue(),
         disabled: state.isDisabled()
       }),
-    content: ({ props, emit, slots, state }) =>
+    content: ({ props, slots, state }) =>
       renderChoice(
         options.baseClass,
         renderChoiceControl({

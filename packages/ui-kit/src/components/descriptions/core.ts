@@ -2,7 +2,6 @@ import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { wrapperConfig } from '../../shared/behavior'
-import { descriptionsAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const descriptionsBaseProps = {

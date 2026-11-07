@@ -154,11 +154,11 @@ describe('特性接口与属性表', () => {
           expect(coreMembers).toEqual(item.coreProps.map((prop) => prop.name))
 
           for (const featureId of selected) {
-            const feature = item.features[featureId]
+            const feature = item.features?.[featureId]
             const name = featureInterfaceName(item.name, featureId)
             const members = interfaceMembers(bundle.types, name)
             expect(members, `${bundle.profile} 缺接口 ${name}`).toBeTruthy()
-            expect(members, `${name} 的属性表与 spec 不一致`).toEqual((feature.props ?? []).map((prop) => prop.name))
+            expect(members, `${name} 的属性表与 spec 不一致`).toEqual((feature?.props ?? []).map((prop) => prop.name))
           }
         }
       }
@@ -173,7 +173,7 @@ describe('特性接口与属性表', () => {
         const methods: Array<{ name: string; signature: string }> = []
         const seen = new Set<string>()
         for (const featureId of featureIds.filter((id) => id in (item.features ?? {}))) {
-          for (const method of item.features[featureId].methods ?? []) {
+          for (const method of item.features?.[featureId]?.methods ?? []) {
             if (seen.has(method.name)) {
               continue
             }
@@ -304,12 +304,13 @@ describe('类型文件与源码同批', () => {
   })
 
   it('dist 里没有 profile 目录之外的孤儿产物（构建目录改名要一起清理）', () => {
+    // dist/custom/ 是构建器 UI 的自定义包命名空间，不属于 profile，但必须保留（F-70 / F-74）
     const dirs = fs
       .readdirSync(path.join(repoRoot, 'dist'), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort()
-    expect(dirs).toEqual([...profileNames].sort())
+    expect(dirs).toEqual([...profileNames, 'custom'].sort())
     expect(readText('dist/full/package.json')).toContain('"module"')
   })
 })

@@ -1,5 +1,7 @@
 {
   "name": "chinese",
+  "label": "Chinese 中国风",
+  "order": 3,
   "components": "full",
   "prefix": "chinese",
   "theme": {

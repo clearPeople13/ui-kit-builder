@@ -1,5 +1,7 @@
 {
   "name": "ios",
+  "label": "iOS 苹果",
+  "order": 19,
   "components": "full",
   "prefix": "ios",
   "theme": {

@@ -3,12 +3,6 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, shall
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { useFloatingPanel } from '../../shared/panel'
-import { autocompleteClearableFeature } from './features/clearable/index'
-import { autocompletePasswordFeature } from './features/password/index'
-import { autocompleteWordLimitFeature } from './features/word-limit/index'
-import { autocompleteIconsFeature } from './features/icons/index'
-import { autocompleteFilterableFeature } from './features/filterable/index'
-import { autocompletePopperFeature } from './features/popper/index'
 import './core.css'
 
 const autocompleteBaseProps = {

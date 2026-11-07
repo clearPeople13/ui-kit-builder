@@ -7,9 +7,6 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { clamp } from '../../shared/utils'
-import { colorPickerClearableFeature } from './features/clearable/index'
-import { colorPickerPopperFeature } from './features/popper/index'
-import { colorPickerFormatFeature } from './features/format/index'
 import './core.css'
 
 const colorPickerBaseProps = {

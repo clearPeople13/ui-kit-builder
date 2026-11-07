@@ -226,6 +226,36 @@ describe('未选中组件的令牌裁剪', () => {
   })
 })
 
+describe('主题皮肤规则随前缀改写', () => {
+  const skins: Record<string, string[]> = {
+    branded: ['--acme-splitter-bar-grip:#64748b', '.acme-scrollbar-hidden'],
+    cute: ['.cute-tag--primary.cute-tag--light', '--cute-button-active-transform:translateY(0) scale(0.97)'],
+    chinese: [
+      '.chinese-tag--primary.chinese-tag--light',
+      '.chinese-menu-item.is-active .chinese-menu-item__inner:before',
+      '@keyframes chinese-seal-pop'
+    ],
+    antd: [
+      '.antd-menu{--antd-menu-active-color:#1677ff',
+      '.antd-tag--primary.antd-tag--light',
+      '.antd-scrollbar{--antd-scrollbar-thumb-color:rgba(0, 0, 0, 0.25)'
+    ]
+  }
+
+  it('皮肤选择器 / 动画与 JS 类名随前缀改写，且不残留 ui-', () => {
+    for (const [profile, needles] of Object.entries(skins)) {
+      const bundle = bundleOf(profile)
+      for (const needle of needles) {
+        expect(bundle.css, `${profile} CSS 缺 ${needle}`).toContain(needle)
+      }
+      expect(bundle.css, `${profile} CSS 残留 ui- 前缀`).not.toContain('--ui-')
+      expect(bundle.css, `${profile} CSS 残留 ui- 类名`).not.toContain('.ui-button')
+      expect(bundle.js, `${profile} JS 缺 ${bundle.prefix}-button`).toContain(`${bundle.prefix}-button`)
+      expect(bundle.js, `${profile} JS 残留 ui-button`).not.toContain('ui-button')
+    }
+  })
+})
+
 describe('令牌指纹', () => {
   it('20 份 profile 的生效令牌表指纹（core 与 full 同指纹）', () => {
     const fingerprints: Record<string, string> = {}

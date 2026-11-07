@@ -56,8 +56,6 @@ const META = metaJson as unknown as DemoMeta
 
 const INSTALLED_PACKAGES: DemoPackage[] = META.packages
 
-const INSTALLED_IDS = new Set(INSTALLED_PACKAGES.map((item) => item.id))
-
 export const PACKAGES = shallowRef<DemoPackage[]>([...INSTALLED_PACKAGES])
 
 export function mergeRuntimePackages(list: DemoPackage[]): void {

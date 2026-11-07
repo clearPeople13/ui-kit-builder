@@ -128,7 +128,7 @@ describe('Segmented', () => {
   })
 
   it('非数组选项按空列表处理不报错', () => {
-    const wrapper = mountSegmented({ options: 'oops' as any })
+    const wrapper = mountSegmented({ options: 'oops' as unknown as string[] })
     expect(items(wrapper)).toHaveLength(0)
   })
 

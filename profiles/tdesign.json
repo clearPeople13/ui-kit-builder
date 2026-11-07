@@ -1,5 +1,7 @@
 {
   "name": "tdesign",
+  "label": "TDesign 腾讯",
+  "order": 7,
   "components": "full",
   "prefix": "tdesign",
   "theme": {

@@ -1,8 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { wrapperConfig } from '../../shared/behavior'
-import { tagClosableFeature } from './features/closable/index'
-import { tagAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const tagBaseProps = {

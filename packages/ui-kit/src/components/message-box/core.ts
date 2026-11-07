@@ -6,7 +6,6 @@ import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { useScrollLock } from '../../shared/scroll-lock'
 import { nextZIndex } from '../../shared/z-index'
-import { messageBoxInputFeature } from './features/input/index'
 import './core.css'
 
 const messageBoxBaseProps = {

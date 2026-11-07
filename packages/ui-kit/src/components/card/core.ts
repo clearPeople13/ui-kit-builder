@@ -1,7 +1,6 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { cardAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const cardBaseProps = {

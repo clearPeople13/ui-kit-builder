@@ -5,13 +5,6 @@ import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
 import { wrapperConfig } from '../../shared/behavior'
-import { tourClosableFeature } from './features/closable/index'
-import { tourPopperFeature } from './features/popper/index'
-import { tourValidateFeature } from './features/validate/index'
-import { tourModalFeature } from './features/modal/index'
-import { tourStepClosableFeature } from './features/tour-step-closable/index'
-import { tourStepPopperFeature } from './features/tour-step-popper/index'
-import { tourStepValidateFeature } from './features/tour-step-validate/index'
 import './core.css'
 
 interface TourStepRecord {
@@ -488,7 +481,7 @@ export function createTourStep(features: UiFeature[] = []) {
         props: tourStepBaseProps,
         defaultTag: 'div'
       }),
-      setup(props, { slots, attrs }) {
+      setup(props, { slots, attrs: _attrs }) {
         const context = inject<TourContext | null>(TOUR_CONTEXT, null)
         const id = ++stepSeed
         onMounted(() => {

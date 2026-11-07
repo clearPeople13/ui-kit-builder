@@ -303,7 +303,7 @@ describe('Tour 漫游式引导', () => {
   it('scrollIntoView：缺省以居中选项调用目标，false 关闭调用', async () => {
     const target = addTarget('tour-scroll-target')
     const spy = vi.fn()
-    ;(target as any).scrollIntoView = spy
+    ;(target as unknown as { scrollIntoView: typeof spy }).scrollIntoView = spy
     await openKit({ steps: [{ props: { title: '甲', target: '#tour-scroll-target' } }] })
     expect(spy).toHaveBeenCalledWith({ block: 'center', inline: 'nearest' })
     while (mounted.length) {
@@ -312,7 +312,7 @@ describe('Tour 漫游式引导', () => {
     document.body.innerHTML = ''
     const silent = addTarget('tour-scroll-off')
     const silentSpy = vi.fn()
-    ;(silent as any).scrollIntoView = silentSpy
+    ;(silent as unknown as { scrollIntoView: typeof silentSpy }).scrollIntoView = silentSpy
     await openKit({
       props: { scrollIntoViewOptions: false },
       steps: [{ props: { title: '甲', target: '#tour-scroll-off' } }]
@@ -323,7 +323,7 @@ describe('Tour 漫游式引导', () => {
   it('scrollIntoViewOptions 对象与步骤级设置合并进调用参数', async () => {
     const target = addTarget('tour-scroll-merge')
     const spy = vi.fn()
-    ;(target as any).scrollIntoView = spy
+    ;(target as unknown as { scrollIntoView: typeof spy }).scrollIntoView = spy
     await openKit({
       props: { scrollIntoViewOptions: { behavior: 'smooth' } },
       steps: [{ props: { title: '甲', target: '#tour-scroll-merge' } }]

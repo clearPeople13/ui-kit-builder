@@ -1,11 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { overlayConfig } from '../../shared/behavior'
-import { dialogClosableFeature } from './features/closable/index'
-import { dialogPopperFeature } from './features/popper/index'
-import { dialogDraggableFeature } from './features/draggable/index'
-import { dialogModalFeature } from './features/modal/index'
-import { dialogFullscreenFeature } from './features/fullscreen/index'
 import './core.css'
 
 const dialogBaseProps = {

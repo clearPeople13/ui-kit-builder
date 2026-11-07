@@ -1,5 +1,7 @@
 {
   "name": "vant",
+  "label": "Vant 移动端",
+  "order": 10,
   "components": "full",
   "prefix": "vant",
   "theme": {

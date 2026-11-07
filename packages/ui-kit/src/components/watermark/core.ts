@@ -1,7 +1,6 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { watermarkPopperFeature } from './features/popper/index'
 import './core.css'
 
 const watermarkBaseProps = {
@@ -56,7 +55,7 @@ export function createWatermark(features: UiFeature[] = []) {
       name: 'UiWatermark',
       baseClass: 'ui-watermark',
       props: watermarkBaseProps,
-      styles: (props) => ({
+      styles: (_props) => ({
         position: 'relative',
         overflow: 'hidden'
       }),

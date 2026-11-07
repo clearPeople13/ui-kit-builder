@@ -96,7 +96,7 @@ describe('Card 卡片', () => {
 
   it('四段结构按规定顺序排列', () => {
     const wrapper = mountCard({ header: 'h', footer: 'f', cover: '/c.png' }, { default: () => 'b' })
-    const order = Array.from(wrapper.element.children).map((child: Element) => child.className.split(' ')[0])
+    const order = Array.from(wrapper.element.children).map((child) => (child as Element).className.split(' ')[0])
     expect(order).toEqual(['ui-card__cover-wrap', 'ui-card__header', 'ui-card__body', 'ui-card__footer'])
   })
 

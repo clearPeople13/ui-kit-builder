@@ -16,6 +16,7 @@
     "@demo/ui-kit-bootstrap": "file:../../dist/bootstrap",
     "@demo/ui-kit-branded": "file:../../dist/branded",
     "@demo/ui-kit-carbon": "file:../../dist/carbon",
+    "@demo/ui-kit-chinese": "file:../../dist/chinese",
     "@demo/ui-kit-core": "file:../../dist/core",
     "@demo/ui-kit-cute": "file:../../dist/cute",
     "@demo/ui-kit-fluent": "file:../../dist/fluent",

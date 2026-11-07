@@ -1,10 +1,6 @@
 import { h, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { datePickerPanelClearableFeature } from './features/clearable/index'
-import { datePickerPanelAppearanceFeature } from './features/appearance/index'
-import { datePickerPanelFormatFeature } from './features/format/index'
-import { datePickerPanelRangeFeature } from './features/range/index'
 import './core.css'
 
 type CalendarCell = {

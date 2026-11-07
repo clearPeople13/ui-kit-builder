@@ -1,11 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { overlayConfig } from '../../shared/behavior'
-import { drawerClosableFeature } from './features/closable/index'
-import { drawerPopperFeature } from './features/popper/index'
-import { drawerDraggableFeature } from './features/draggable/index'
-import { drawerModalFeature } from './features/modal/index'
-import { drawerFullscreenFeature } from './features/fullscreen/index'
 import './core.css'
 
 const drawerBaseProps = {

@@ -16,6 +16,9 @@ consumer-preview.png
 # 并行工作树的本地端口覆盖（每个工作树各一份，不进仓库）
 .env.workbuddy
 
+# WorkBuddy / IDE 的本地工作目录（换机器签出后不应出现在 git status）
+.workbuddy/
+
 # 门禁机读报告（本地/CI 每次生成，不进仓库）
 ci-report.json
 

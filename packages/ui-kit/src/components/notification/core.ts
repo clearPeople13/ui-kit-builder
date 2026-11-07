@@ -1,9 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { overlayConfig } from '../../shared/behavior'
-import { notificationIconsFeature } from './features/icons/index'
-import { notificationClosableFeature } from './features/closable/index'
-import { notificationPopperFeature } from './features/popper/index'
 import './core.css'
 
 const notificationBaseProps = {

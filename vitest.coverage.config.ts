@@ -32,17 +32,24 @@ export default mergeConfig(
         all: true,
         include: ['packages/ui-kit/src/**/*.ts'],
         exclude: ['packages/ui-kit/src/**/*.d.ts'],
-        reporter: ['text-summary', 'json-summary'],
+        reporter: ['text', 'json-summary'],
         reportsDirectory: 'coverage',
         // 阈值只允许往上走：新增没带用例的代码会把总比例拉下来，门禁当场变红。
         // 基线（2026-11-07 首次全量测量，1570 条用例全过）：
         //   statements 88.35% / branches 84.78% / functions 89.20% / lines 88.35%
-        // 取整后各留 1 个点余量，避免 V8 统计口径在不同 Node 小版本间的抖动误红。
+        // B4 起全局各 +1（88 / 84 / 89 / 88），仍贴着实测值，抖动余量 <1 点。
         thresholds: {
-          statements: 87,
-          branches: 83,
-          functions: 88,
-          lines: 87
+          statements: 88,
+          branches: 84,
+          functions: 89,
+          lines: 88,
+          // 组件级下限：取当前实测最小值向下取整（tree draggable 21.67% / time-select clearable 33.33%），
+          // 任一组件文件跌破就失败；等低覆盖清单逐项补齐后再抬线（B4）
+          'packages/ui-kit/src/components/**': {
+            statements: 21,
+            branches: 33,
+            lines: 21
+          }
         }
       }
     }

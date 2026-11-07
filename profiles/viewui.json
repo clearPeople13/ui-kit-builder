@@ -1,5 +1,7 @@
 {
   "name": "viewui",
+  "label": "View Design (iView)",
+  "order": 9,
   "components": "full",
   "prefix": "viewui",
   "theme": {

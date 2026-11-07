@@ -3,8 +3,6 @@ import { Teleport, computed, h, onBeforeUnmount, ref, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { useFloatingPanel } from '../../shared/panel'
-import { tooltipDelayFeature } from './features/delay/index'
-import { tooltipPopperFeature } from './features/popper/index'
 import './core.css'
 
 const tooltipBaseProps = {

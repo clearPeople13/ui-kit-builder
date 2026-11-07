@@ -73,7 +73,7 @@ describe('CascaderPanel 级联面板', () => {
   })
 
   it('受控 modelValue 按路径展开到对应层级并标出选中节点', async () => {
-    const wrapper = mountPanel({ options: tree, modelValue: ['zj'] })
+    mountPanel({ options: tree, modelValue: ['zj'] })
     await nextTick()
     expect(columns()).toHaveLength(2)
     expect(labelsOf()).toEqual(['浙江', '江苏', '杭州', '宁波'])
@@ -92,13 +92,13 @@ describe('CascaderPanel 级联面板', () => {
   })
 
   it('非数组 modelValue 视作单级路径，未知值只展开一层', async () => {
-    const wrapper = mountPanel({ options: tree, modelValue: 'zj' })
+    mountPanel({ options: tree, modelValue: 'zj' })
     await nextTick()
     expect(columns()).toHaveLength(2)
     expect(nodes()[0].className).toContain('is-selected')
 
     reset()
-    const unknown = mountPanel({ options: tree, modelValue: 'nope' })
+    mountPanel({ options: tree, modelValue: 'nope' })
     await nextTick()
     expect(columns()).toHaveLength(1)
     expect(nodes().every((node) => !node.className.includes('is-selected'))).toBe(true)
@@ -179,7 +179,7 @@ describe('CascaderPanel 级联面板', () => {
 
   it('props 字段映射同时支持嵌套 props 与顶层别名', async () => {
     const data = [{ id: 'p', name: '父', kids: [{ id: 'c', name: '子' }] }]
-    const nested = mountPanel({
+    mountPanel({
       options: data,
       modelValue: ['p', 'c'],
       props: { value: 'id', label: 'name', children: 'kids' }
@@ -189,7 +189,7 @@ describe('CascaderPanel 级联面板', () => {
     expect(nodes()[1].className).toContain('is-selected')
 
     reset()
-    const aliased = mountPanel({
+    mountPanel({
       options: data,
       modelValue: ['p', 'c'],
       value: 'id',
@@ -219,7 +219,7 @@ describe('CascaderPanel 级联面板', () => {
 
   it('itemSize 与列内超过 40 项才启用虚拟渲染', async () => {
     const many = Array.from({ length: 50 }, (_unused, index) => ({ value: 'v' + index, label: '选项' + index }))
-    const wrapper = mountPanel({ options: many, height: 120, itemSize: 30 })
+    mountPanel({ options: many, height: 120, itemSize: 30 })
     await nextTick()
     expect(columns()[0].className).toContain('is-virtual')
     const win = document.querySelector('.ui-cascader-panel__window') as HTMLElement
@@ -231,7 +231,7 @@ describe('CascaderPanel 级联面板', () => {
     expect((rows[0].firstElementChild as HTMLElement).getAttribute('style')).toBe('height: 30px;')
 
     reset()
-    const few = mountPanel({ options: many.slice(0, 20), height: 120, itemSize: 30 })
+    mountPanel({ options: many.slice(0, 20), height: 120, itemSize: 30 })
     await nextTick()
     expect(columns()[0].className).not.toContain('is-virtual')
     expect(nodes()).toHaveLength(20)
@@ -265,7 +265,7 @@ describe('CascaderPanel 级联面板', () => {
         resolveChild = resolve
       }
     })
-    const wrapper = mountPanel({ options: [], lazy: true, props: { lazyLoad } })
+    mountPanel({ options: [], lazy: true, props: { lazyLoad } })
     await nextTick()
     await click(nodes()[0])
     expect(lazyLoad).toHaveBeenCalledTimes(2)

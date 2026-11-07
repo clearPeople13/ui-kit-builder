@@ -4,7 +4,6 @@ import { CircleCheck, CircleX, Info, TriangleAlert } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { renderIcon } from '../../shared/icon'
-import { resultIconsFeature } from './features/icons/index'
 import './core.css'
 
 const resultBaseProps = {

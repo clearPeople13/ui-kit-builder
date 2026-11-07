@@ -10687,8 +10687,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 558382,
-          "gzipBytes": 134763
+          "bytes": 558373,
+          "gzipBytes": 134748
         },
         {
           "file": "ui-kit.css",
@@ -10697,10 +10697,10 @@
         }
       ],
       "sizes": {
-        "js": 558382,
+        "js": 558373,
         "css": 227086,
-        "total": 785468,
-        "gzip": 166288
+        "total": 785459,
+        "gzip": 166273
       }
     },
     {
@@ -11635,8 +11635,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 636564,
-          "gzipBytes": 153113
+          "bytes": 636555,
+          "gzipBytes": 153097
         },
         {
           "file": "ui-kit.css",
@@ -11645,10 +11645,10 @@
         }
       ],
       "sizes": {
-        "js": 636564,
+        "js": 636555,
         "css": 246938,
-        "total": 883502,
-        "gzip": 187078
+        "total": 883493,
+        "gzip": 187064
       }
     },
     {
@@ -12583,8 +12583,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153221
+          "bytes": 638351,
+          "gzipBytes": 153205
         },
         {
           "file": "ui-kit.css",
@@ -12593,10 +12593,958 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 258976,
-        "total": 897336,
-        "gzip": 188006
+        "total": 897327,
+        "gzip": 187993
+      }
+    },
+    {
+      "id": "chinese",
+      "label": "Chinese 中国风",
+      "npm": "@demo/ui-kit-chinese",
+      "prefix": "chinese",
+      "features": [
+        "alert.icons",
+        "alert.closable",
+        "anchor.popper",
+        "autocomplete.clearable",
+        "autocomplete.password",
+        "autocomplete.word-limit",
+        "autocomplete.icons",
+        "autocomplete.filterable",
+        "autocomplete.popper",
+        "avatar.icons",
+        "avatar.avatar-group-popper",
+        "badge.popper",
+        "button.appearance",
+        "button.icon",
+        "button.loading",
+        "button.auto-insert-space",
+        "button.bg-color",
+        "button.gradient",
+        "calendar.range",
+        "card.appearance",
+        "carousel.methods",
+        "cascader.clearable",
+        "cascader.multiple",
+        "cascader.select-all",
+        "cascader.filterable",
+        "cascader.popper",
+        "cascader.lazy",
+        "cascader.virtualized",
+        "cascader.format",
+        "cascader-panel.multiple",
+        "cascader-panel.lazy",
+        "cascader-panel.selection",
+        "cascader-panel.virtualized",
+        "cascader-panel.appearance",
+        "checkbox.appearance",
+        "col.popper",
+        "collapse.collapse-item-icons",
+        "color-picker.clearable",
+        "color-picker.popper",
+        "color-picker.format",
+        "color-picker-panel.appearance",
+        "date-picker.clearable",
+        "date-picker.icons",
+        "date-picker.popper",
+        "date-picker.editable",
+        "date-picker.format",
+        "date-picker.range",
+        "date-picker-panel.clearable",
+        "date-picker-panel.appearance",
+        "date-picker-panel.format",
+        "date-picker-panel.range",
+        "descriptions.appearance",
+        "dialog.closable",
+        "dialog.popper",
+        "dialog.draggable",
+        "dialog.modal",
+        "dialog.fullscreen",
+        "drawer.closable",
+        "drawer.popper",
+        "drawer.draggable",
+        "drawer.modal",
+        "drawer.fullscreen",
+        "dropdown.popper",
+        "dropdown.dropdown-item-icons",
+        "form.validate",
+        "form.form-item-validate",
+        "image.loading",
+        "image.lazy",
+        "image.preview",
+        "image-viewer.popper",
+        "image-viewer.modal",
+        "input.clearable",
+        "input.password",
+        "input.word-limit",
+        "input.icons",
+        "input.methods",
+        "input-number.methods",
+        "input-tag.clearable",
+        "input-tag.separator",
+        "input-tag.draggable",
+        "link.icons",
+        "link.appearance",
+        "mention.clearable",
+        "mention.password",
+        "mention.word-limit",
+        "mention.icons",
+        "mention.loading",
+        "mention.popper",
+        "menu.sub-menu-icons",
+        "message.icons",
+        "message.closable",
+        "message.popper",
+        "message.appearance",
+        "message-box.input",
+        "notification.icons",
+        "notification.closable",
+        "notification.popper",
+        "page-header.icons",
+        "pagination.icons",
+        "pagination.layout",
+        "popconfirm.icons",
+        "popconfirm.popper",
+        "popover.popper",
+        "radio.appearance",
+        "rate.clearable",
+        "result.icons",
+        "scrollbar.methods",
+        "select.select-clearable",
+        "select.select-icons",
+        "select.select-loading",
+        "select.select-multiple",
+        "select.select-filterable",
+        "select.select-popper",
+        "select.select-format",
+        "select.select-virtualized",
+        "select.methods",
+        "skeleton.loading",
+        "slider.popper",
+        "slider.format",
+        "slider.range",
+        "splitter.lazy",
+        "splitter.splitter-panel-draggable",
+        "statistic.format",
+        "steps.icons",
+        "switch.icons",
+        "switch.loading",
+        "table.sort",
+        "table.tree",
+        "table.resize",
+        "table.span",
+        "table.loading",
+        "table.summary",
+        "table.selection",
+        "table.methods",
+        "table.column-sort",
+        "tabs.closable",
+        "tabs.lazy",
+        "tabs.editable",
+        "tabs.tabs-closable",
+        "tabs.tabs-editable",
+        "tag.closable",
+        "tag.appearance",
+        "time-picker.clearable",
+        "time-picker.icons",
+        "time-picker.popper",
+        "time-picker.editable",
+        "time-picker.format",
+        "time-picker.range",
+        "time-select.clearable",
+        "time-select.icons",
+        "time-select.popper",
+        "time-select.editable",
+        "time-select.format",
+        "tooltip.delay",
+        "tooltip.popper",
+        "tour.closable",
+        "tour.popper",
+        "tour.validate",
+        "tour.modal",
+        "tour.tour-step-closable",
+        "tour.tour-step-popper",
+        "tour.tour-step-validate",
+        "transfer.filterable",
+        "transfer.virtualized",
+        "tree.icons",
+        "tree.draggable",
+        "tree.selection",
+        "tree.methods",
+        "tree-select.multiple",
+        "tree-select.filterable",
+        "tree-select.popper",
+        "tree-v2.check",
+        "upload.multiple",
+        "upload.methods",
+        "watermark.popper"
+      ],
+      "componentFeatures": {
+        "affix": [],
+        "alert": [
+          "alert.icons",
+          "alert.closable"
+        ],
+        "anchor": [
+          "anchor.popper"
+        ],
+        "autocomplete": [
+          "autocomplete.clearable",
+          "autocomplete.password",
+          "autocomplete.word-limit",
+          "autocomplete.icons",
+          "autocomplete.filterable",
+          "autocomplete.popper"
+        ],
+        "avatar": [
+          "avatar.icons",
+          "avatar.avatar-group-popper"
+        ],
+        "backtop": [],
+        "badge": [
+          "badge.popper"
+        ],
+        "breadcrumb": [],
+        "button": [
+          "button.appearance",
+          "button.icon",
+          "button.loading",
+          "button.auto-insert-space",
+          "button.bg-color",
+          "button.gradient"
+        ],
+        "calendar": [
+          "calendar.range"
+        ],
+        "card": [
+          "card.appearance"
+        ],
+        "carousel": [
+          "carousel.methods"
+        ],
+        "cascader": [
+          "cascader.clearable",
+          "cascader.multiple",
+          "cascader.select-all",
+          "cascader.filterable",
+          "cascader.popper",
+          "cascader.lazy",
+          "cascader.virtualized",
+          "cascader.format"
+        ],
+        "cascader-panel": [
+          "cascader-panel.multiple",
+          "cascader-panel.lazy",
+          "cascader-panel.selection",
+          "cascader-panel.virtualized",
+          "cascader-panel.appearance"
+        ],
+        "check-tag": [],
+        "checkbox": [
+          "checkbox.appearance"
+        ],
+        "col": [
+          "col.popper"
+        ],
+        "collapse": [
+          "collapse.collapse-item-icons"
+        ],
+        "collapse-transition": [],
+        "collection": [],
+        "color-picker": [
+          "color-picker.clearable",
+          "color-picker.popper",
+          "color-picker.format"
+        ],
+        "color-picker-panel": [
+          "color-picker-panel.appearance"
+        ],
+        "config-provider": [],
+        "container": [],
+        "countdown": [],
+        "date-picker": [
+          "date-picker.clearable",
+          "date-picker.icons",
+          "date-picker.popper",
+          "date-picker.editable",
+          "date-picker.format",
+          "date-picker.range"
+        ],
+        "date-picker-panel": [
+          "date-picker-panel.clearable",
+          "date-picker-panel.appearance",
+          "date-picker-panel.format",
+          "date-picker-panel.range"
+        ],
+        "descriptions": [
+          "descriptions.appearance"
+        ],
+        "dialog": [
+          "dialog.closable",
+          "dialog.popper",
+          "dialog.draggable",
+          "dialog.modal",
+          "dialog.fullscreen"
+        ],
+        "divider": [],
+        "drawer": [
+          "drawer.closable",
+          "drawer.popper",
+          "drawer.draggable",
+          "drawer.modal",
+          "drawer.fullscreen"
+        ],
+        "dropdown": [
+          "dropdown.popper",
+          "dropdown.dropdown-item-icons"
+        ],
+        "empty": [],
+        "focus-trap": [],
+        "form": [
+          "form.validate",
+          "form.form-item-validate"
+        ],
+        "icon": [],
+        "image": [
+          "image.loading",
+          "image.lazy",
+          "image.preview"
+        ],
+        "image-viewer": [
+          "image-viewer.popper",
+          "image-viewer.modal"
+        ],
+        "infinite-scroll": [],
+        "input": [
+          "input.clearable",
+          "input.password",
+          "input.word-limit",
+          "input.icons",
+          "input.methods"
+        ],
+        "input-number": [
+          "input-number.methods"
+        ],
+        "input-otp": [],
+        "input-tag": [
+          "input-tag.clearable",
+          "input-tag.separator",
+          "input-tag.draggable"
+        ],
+        "link": [
+          "link.icons",
+          "link.appearance"
+        ],
+        "loading": [],
+        "mention": [
+          "mention.clearable",
+          "mention.password",
+          "mention.word-limit",
+          "mention.icons",
+          "mention.loading",
+          "mention.popper"
+        ],
+        "menu": [
+          "menu.sub-menu-icons"
+        ],
+        "message": [
+          "message.icons",
+          "message.closable",
+          "message.popper",
+          "message.appearance"
+        ],
+        "message-box": [
+          "message-box.input"
+        ],
+        "notification": [
+          "notification.icons",
+          "notification.closable",
+          "notification.popper"
+        ],
+        "overlay": [],
+        "page-header": [
+          "page-header.icons"
+        ],
+        "pagination": [
+          "pagination.icons",
+          "pagination.layout"
+        ],
+        "popconfirm": [
+          "popconfirm.icons",
+          "popconfirm.popper"
+        ],
+        "popover": [
+          "popover.popper"
+        ],
+        "popper": [],
+        "progress": [],
+        "radio": [
+          "radio.appearance"
+        ],
+        "rate": [
+          "rate.clearable"
+        ],
+        "result": [
+          "result.icons"
+        ],
+        "roving-focus-group": [],
+        "row": [],
+        "scrollbar": [
+          "scrollbar.methods"
+        ],
+        "segmented": [],
+        "select": [
+          "select.select-clearable",
+          "select.select-icons",
+          "select.select-loading",
+          "select.select-multiple",
+          "select.select-filterable",
+          "select.select-popper",
+          "select.select-format",
+          "select.select-virtualized",
+          "select.methods"
+        ],
+        "skeleton": [
+          "skeleton.loading"
+        ],
+        "slider": [
+          "slider.popper",
+          "slider.format",
+          "slider.range"
+        ],
+        "slot": [],
+        "space": [],
+        "splitter": [
+          "splitter.lazy",
+          "splitter.splitter-panel-draggable"
+        ],
+        "statistic": [
+          "statistic.format"
+        ],
+        "steps": [
+          "steps.icons"
+        ],
+        "switch": [
+          "switch.icons",
+          "switch.loading"
+        ],
+        "table": [
+          "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
+          "table.summary",
+          "table.selection",
+          "table.methods",
+          "table.column-sort"
+        ],
+        "tabs": [
+          "tabs.closable",
+          "tabs.lazy",
+          "tabs.editable",
+          "tabs.tabs-closable",
+          "tabs.tabs-editable"
+        ],
+        "tag": [
+          "tag.closable",
+          "tag.appearance"
+        ],
+        "text": [],
+        "time-picker": [
+          "time-picker.clearable",
+          "time-picker.icons",
+          "time-picker.popper",
+          "time-picker.editable",
+          "time-picker.format",
+          "time-picker.range"
+        ],
+        "time-select": [
+          "time-select.clearable",
+          "time-select.icons",
+          "time-select.popper",
+          "time-select.editable",
+          "time-select.format"
+        ],
+        "timeline": [],
+        "tooltip": [
+          "tooltip.delay",
+          "tooltip.popper"
+        ],
+        "tour": [
+          "tour.closable",
+          "tour.popper",
+          "tour.validate",
+          "tour.modal",
+          "tour.tour-step-closable",
+          "tour.tour-step-popper",
+          "tour.tour-step-validate"
+        ],
+        "transfer": [
+          "transfer.filterable",
+          "transfer.virtualized"
+        ],
+        "tree": [
+          "tree.icons",
+          "tree.draggable",
+          "tree.selection",
+          "tree.methods"
+        ],
+        "tree-select": [
+          "tree-select.multiple",
+          "tree-select.filterable",
+          "tree-select.popper"
+        ],
+        "tree-v2": [
+          "tree-v2.check"
+        ],
+        "upload": [
+          "upload.multiple",
+          "upload.methods"
+        ],
+        "virtual-list": [],
+        "watermark": [
+          "watermark.popper"
+        ]
+      },
+      "components": [
+        "affix",
+        "alert",
+        "anchor",
+        "autocomplete",
+        "avatar",
+        "backtop",
+        "badge",
+        "breadcrumb",
+        "button",
+        "calendar",
+        "card",
+        "carousel",
+        "cascader",
+        "cascader-panel",
+        "check-tag",
+        "checkbox",
+        "col",
+        "collapse",
+        "collapse-transition",
+        "collection",
+        "color-picker",
+        "color-picker-panel",
+        "config-provider",
+        "container",
+        "countdown",
+        "date-picker",
+        "date-picker-panel",
+        "descriptions",
+        "dialog",
+        "divider",
+        "drawer",
+        "dropdown",
+        "empty",
+        "focus-trap",
+        "form",
+        "icon",
+        "image",
+        "image-viewer",
+        "infinite-scroll",
+        "input",
+        "input-number",
+        "input-otp",
+        "input-tag",
+        "link",
+        "loading",
+        "mention",
+        "menu",
+        "message",
+        "message-box",
+        "notification",
+        "overlay",
+        "page-header",
+        "pagination",
+        "popconfirm",
+        "popover",
+        "popper",
+        "progress",
+        "radio",
+        "rate",
+        "result",
+        "roving-focus-group",
+        "row",
+        "scrollbar",
+        "segmented",
+        "select",
+        "skeleton",
+        "slider",
+        "slot",
+        "space",
+        "splitter",
+        "statistic",
+        "steps",
+        "switch",
+        "table",
+        "tabs",
+        "tag",
+        "text",
+        "time-picker",
+        "time-select",
+        "timeline",
+        "tooltip",
+        "tour",
+        "transfer",
+        "tree",
+        "tree-select",
+        "tree-v2",
+        "upload",
+        "virtual-list",
+        "watermark"
+      ],
+      "selection": {
+        "affix": [],
+        "alert": [
+          "alert.icons",
+          "alert.closable"
+        ],
+        "anchor": [
+          "anchor.popper"
+        ],
+        "autocomplete": [
+          "autocomplete.clearable",
+          "autocomplete.password",
+          "autocomplete.word-limit",
+          "autocomplete.icons",
+          "autocomplete.filterable",
+          "autocomplete.popper"
+        ],
+        "avatar": [
+          "avatar.icons",
+          "avatar.avatar-group-popper"
+        ],
+        "backtop": [],
+        "badge": [
+          "badge.popper"
+        ],
+        "breadcrumb": [],
+        "button": [
+          "button.appearance",
+          "button.icon",
+          "button.loading",
+          "button.auto-insert-space",
+          "button.bg-color",
+          "button.gradient"
+        ],
+        "calendar": [
+          "calendar.range"
+        ],
+        "card": [
+          "card.appearance"
+        ],
+        "carousel": [
+          "carousel.methods"
+        ],
+        "cascader": [
+          "cascader.clearable",
+          "cascader.multiple",
+          "cascader.select-all",
+          "cascader.filterable",
+          "cascader.popper",
+          "cascader.lazy",
+          "cascader.virtualized",
+          "cascader.format"
+        ],
+        "cascader-panel": [
+          "cascader-panel.multiple",
+          "cascader-panel.lazy",
+          "cascader-panel.selection",
+          "cascader-panel.virtualized",
+          "cascader-panel.appearance"
+        ],
+        "check-tag": [],
+        "checkbox": [
+          "checkbox.appearance"
+        ],
+        "col": [
+          "col.popper"
+        ],
+        "collapse": [
+          "collapse.collapse-item-icons"
+        ],
+        "collapse-transition": [],
+        "collection": [],
+        "color-picker": [
+          "color-picker.clearable",
+          "color-picker.popper",
+          "color-picker.format"
+        ],
+        "color-picker-panel": [
+          "color-picker-panel.appearance"
+        ],
+        "config-provider": [],
+        "container": [],
+        "countdown": [],
+        "date-picker": [
+          "date-picker.clearable",
+          "date-picker.icons",
+          "date-picker.popper",
+          "date-picker.editable",
+          "date-picker.format",
+          "date-picker.range"
+        ],
+        "date-picker-panel": [
+          "date-picker-panel.clearable",
+          "date-picker-panel.appearance",
+          "date-picker-panel.format",
+          "date-picker-panel.range"
+        ],
+        "descriptions": [
+          "descriptions.appearance"
+        ],
+        "dialog": [
+          "dialog.closable",
+          "dialog.popper",
+          "dialog.draggable",
+          "dialog.modal",
+          "dialog.fullscreen"
+        ],
+        "divider": [],
+        "drawer": [
+          "drawer.closable",
+          "drawer.popper",
+          "drawer.draggable",
+          "drawer.modal",
+          "drawer.fullscreen"
+        ],
+        "dropdown": [
+          "dropdown.popper",
+          "dropdown.dropdown-item-icons"
+        ],
+        "empty": [],
+        "focus-trap": [],
+        "form": [
+          "form.validate",
+          "form.form-item-validate"
+        ],
+        "icon": [],
+        "image": [
+          "image.loading",
+          "image.lazy",
+          "image.preview"
+        ],
+        "image-viewer": [
+          "image-viewer.popper",
+          "image-viewer.modal"
+        ],
+        "infinite-scroll": [],
+        "input": [
+          "input.clearable",
+          "input.password",
+          "input.word-limit",
+          "input.icons",
+          "input.methods"
+        ],
+        "input-number": [
+          "input-number.methods"
+        ],
+        "input-otp": [],
+        "input-tag": [
+          "input-tag.clearable",
+          "input-tag.separator",
+          "input-tag.draggable"
+        ],
+        "link": [
+          "link.icons",
+          "link.appearance"
+        ],
+        "loading": [],
+        "mention": [
+          "mention.clearable",
+          "mention.password",
+          "mention.word-limit",
+          "mention.icons",
+          "mention.loading",
+          "mention.popper"
+        ],
+        "menu": [
+          "menu.sub-menu-icons"
+        ],
+        "message": [
+          "message.icons",
+          "message.closable",
+          "message.popper",
+          "message.appearance"
+        ],
+        "message-box": [
+          "message-box.input"
+        ],
+        "notification": [
+          "notification.icons",
+          "notification.closable",
+          "notification.popper"
+        ],
+        "overlay": [],
+        "page-header": [
+          "page-header.icons"
+        ],
+        "pagination": [
+          "pagination.icons",
+          "pagination.layout"
+        ],
+        "popconfirm": [
+          "popconfirm.icons",
+          "popconfirm.popper"
+        ],
+        "popover": [
+          "popover.popper"
+        ],
+        "popper": [],
+        "progress": [],
+        "radio": [
+          "radio.appearance"
+        ],
+        "rate": [
+          "rate.clearable"
+        ],
+        "result": [
+          "result.icons"
+        ],
+        "roving-focus-group": [],
+        "row": [],
+        "scrollbar": [
+          "scrollbar.methods"
+        ],
+        "segmented": [],
+        "select": [
+          "select.select-clearable",
+          "select.select-icons",
+          "select.select-loading",
+          "select.select-multiple",
+          "select.select-filterable",
+          "select.select-popper",
+          "select.select-format",
+          "select.select-virtualized",
+          "select.methods"
+        ],
+        "skeleton": [
+          "skeleton.loading"
+        ],
+        "slider": [
+          "slider.popper",
+          "slider.format",
+          "slider.range"
+        ],
+        "slot": [],
+        "space": [],
+        "splitter": [
+          "splitter.lazy",
+          "splitter.splitter-panel-draggable"
+        ],
+        "statistic": [
+          "statistic.format"
+        ],
+        "steps": [
+          "steps.icons"
+        ],
+        "switch": [
+          "switch.icons",
+          "switch.loading"
+        ],
+        "table": [
+          "table.sort",
+          "table.tree",
+          "table.resize",
+          "table.span",
+          "table.loading",
+          "table.summary",
+          "table.selection",
+          "table.methods",
+          "table.column-sort"
+        ],
+        "tabs": [
+          "tabs.closable",
+          "tabs.lazy",
+          "tabs.editable",
+          "tabs.tabs-closable",
+          "tabs.tabs-editable"
+        ],
+        "tag": [
+          "tag.closable",
+          "tag.appearance"
+        ],
+        "text": [],
+        "time-picker": [
+          "time-picker.clearable",
+          "time-picker.icons",
+          "time-picker.popper",
+          "time-picker.editable",
+          "time-picker.format",
+          "time-picker.range"
+        ],
+        "time-select": [
+          "time-select.clearable",
+          "time-select.icons",
+          "time-select.popper",
+          "time-select.editable",
+          "time-select.format"
+        ],
+        "timeline": [],
+        "tooltip": [
+          "tooltip.delay",
+          "tooltip.popper"
+        ],
+        "tour": [
+          "tour.closable",
+          "tour.popper",
+          "tour.validate",
+          "tour.modal",
+          "tour.tour-step-closable",
+          "tour.tour-step-popper",
+          "tour.tour-step-validate"
+        ],
+        "transfer": [
+          "transfer.filterable",
+          "transfer.virtualized"
+        ],
+        "tree": [
+          "tree.icons",
+          "tree.draggable",
+          "tree.selection",
+          "tree.methods"
+        ],
+        "tree-select": [
+          "tree-select.multiple",
+          "tree-select.filterable",
+          "tree-select.popper"
+        ],
+        "tree-v2": [
+          "tree-v2.check"
+        ],
+        "upload": [
+          "upload.multiple",
+          "upload.methods"
+        ],
+        "virtual-list": [],
+        "watermark": [
+          "watermark.popper"
+        ]
+      },
+      "files": [
+        {
+          "file": "ui-kit.js",
+          "bytes": 641045,
+          "gzipBytes": 153358
+        },
+        {
+          "file": "ui-kit.css",
+          "bytes": 294929,
+          "gzipBytes": 38626
+        }
+      ],
+      "sizes": {
+        "js": 641045,
+        "css": 294929,
+        "total": 935974,
+        "gzip": 191894
       }
     },
     {
@@ -13531,8 +14479,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153218
+          "bytes": 638351,
+          "gzipBytes": 153206
         },
         {
           "file": "ui-kit.css",
@@ -13541,10 +14489,10 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 274427,
-        "total": 912787,
-        "gzip": 191015
+        "total": 912778,
+        "gzip": 191004
       }
     },
     {
@@ -14479,8 +15427,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153220
+          "bytes": 638351,
+          "gzipBytes": 153204
         },
         {
           "file": "ui-kit.css",
@@ -14489,10 +15437,10 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 279183,
-        "total": 917543,
-        "gzip": 191165
+        "total": 917534,
+        "gzip": 191150
       }
     },
     {
@@ -15427,8 +16375,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153220
+          "bytes": 638351,
+          "gzipBytes": 153205
         },
         {
           "file": "ui-kit.css",
@@ -15437,10 +16385,10 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 259348,
-        "total": 897708,
-        "gzip": 188103
+        "total": 897699,
+        "gzip": 188090
       }
     },
     {
@@ -16375,8 +17323,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641054,
-          "gzipBytes": 153365
+          "bytes": 641045,
+          "gzipBytes": 153352
         },
         {
           "file": "ui-kit.css",
@@ -16385,10 +17333,10 @@
         }
       ],
       "sizes": {
-        "js": 641054,
+        "js": 641045,
         "css": 275635,
-        "total": 916689,
-        "gzip": 188704
+        "total": 916680,
+        "gzip": 188691
       }
     },
     {
@@ -17323,8 +18271,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 639258,
-          "gzipBytes": 153250
+          "bytes": 639249,
+          "gzipBytes": 153235
         },
         {
           "file": "ui-kit.css",
@@ -17333,10 +18281,10 @@
         }
       ],
       "sizes": {
-        "js": 639258,
+        "js": 639249,
         "css": 264652,
-        "total": 903910,
-        "gzip": 188196
+        "total": 903901,
+        "gzip": 188181
       }
     },
     {
@@ -18271,8 +19219,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640156,
-          "gzipBytes": 153288
+          "bytes": 640147,
+          "gzipBytes": 153275
         },
         {
           "file": "ui-kit.css",
@@ -18281,10 +19229,10 @@
         }
       ],
       "sizes": {
-        "js": 640156,
+        "js": 640147,
         "css": 270142,
-        "total": 910298,
-        "gzip": 188420
+        "total": 910289,
+        "gzip": 188407
       }
     },
     {
@@ -19219,8 +20167,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153217
+          "bytes": 638351,
+          "gzipBytes": 153205
         },
         {
           "file": "ui-kit.css",
@@ -19229,10 +20177,10 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 259488,
-        "total": 897848,
-        "gzip": 188111
+        "total": 897839,
+        "gzip": 188099
       }
     },
     {
@@ -20167,8 +21115,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640156,
-          "gzipBytes": 153297
+          "bytes": 640147,
+          "gzipBytes": 153284
         },
         {
           "file": "ui-kit.css",
@@ -20177,10 +21125,10 @@
         }
       ],
       "sizes": {
-        "js": 640156,
+        "js": 640147,
         "css": 270182,
-        "total": 910338,
-        "gzip": 188440
+        "total": 910329,
+        "gzip": 188427
       }
     },
     {
@@ -21115,8 +22063,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 638360,
-          "gzipBytes": 153224
+          "bytes": 638351,
+          "gzipBytes": 153208
         },
         {
           "file": "ui-kit.css",
@@ -21125,10 +22073,10 @@
         }
       ],
       "sizes": {
-        "js": 638360,
+        "js": 638351,
         "css": 259044,
-        "total": 897404,
-        "gzip": 187996
+        "total": 897395,
+        "gzip": 187981
       }
     },
     {
@@ -22063,8 +23011,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 642850,
-          "gzipBytes": 153480
+          "bytes": 642841,
+          "gzipBytes": 153468
         },
         {
           "file": "ui-kit.css",
@@ -22073,10 +23021,10 @@
         }
       ],
       "sizes": {
-        "js": 642850,
+        "js": 642841,
         "css": 287538,
-        "total": 930388,
-        "gzip": 189368
+        "total": 930379,
+        "gzip": 189356
       }
     },
     {
@@ -23011,8 +23959,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 642850,
-          "gzipBytes": 153480
+          "bytes": 642841,
+          "gzipBytes": 153467
         },
         {
           "file": "ui-kit.css",
@@ -23021,10 +23969,10 @@
         }
       ],
       "sizes": {
-        "js": 642850,
+        "js": 642841,
         "css": 286878,
-        "total": 929728,
-        "gzip": 189086
+        "total": 929719,
+        "gzip": 189075
       }
     },
     {
@@ -23959,8 +24907,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640156,
-          "gzipBytes": 153301
+          "bytes": 640147,
+          "gzipBytes": 153287
         },
         {
           "file": "ui-kit.css",
@@ -23969,10 +24917,10 @@
         }
       ],
       "sizes": {
-        "js": 640156,
+        "js": 640147,
         "css": 270547,
-        "total": 910703,
-        "gzip": 188530
+        "total": 910694,
+        "gzip": 188515
       }
     },
     {
@@ -24907,8 +25855,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640156,
-          "gzipBytes": 153292
+          "bytes": 640147,
+          "gzipBytes": 153277
         },
         {
           "file": "ui-kit.css",
@@ -24917,10 +25865,10 @@
         }
       ],
       "sizes": {
-        "js": 640156,
+        "js": 640147,
         "css": 270098,
-        "total": 910254,
-        "gzip": 188434
+        "total": 910245,
+        "gzip": 188422
       }
     },
     {
@@ -25855,8 +26803,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 640156,
-          "gzipBytes": 153297
+          "bytes": 640147,
+          "gzipBytes": 153283
         },
         {
           "file": "ui-kit.css",
@@ -25865,10 +26813,10 @@
         }
       ],
       "sizes": {
-        "js": 640156,
+        "js": 640147,
         "css": 270187,
-        "total": 910343,
-        "gzip": 188461
+        "total": 910334,
+        "gzip": 188447
       }
     },
     {
@@ -26803,8 +27751,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 641054,
-          "gzipBytes": 153373
+          "bytes": 641045,
+          "gzipBytes": 153359
         },
         {
           "file": "ui-kit.css",
@@ -26813,10 +27761,10 @@
         }
       ],
       "sizes": {
-        "js": 641054,
+        "js": 641045,
         "css": 276074,
-        "total": 917128,
-        "gzip": 188846
+        "total": 917119,
+        "gzip": 188832
       }
     },
     {
@@ -27751,8 +28699,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 637462,
-          "gzipBytes": 153165
+          "bytes": 637453,
+          "gzipBytes": 153152
         },
         {
           "file": "ui-kit.css",
@@ -27761,10 +28709,10 @@
         }
       ],
       "sizes": {
-        "js": 637462,
+        "js": 637453,
         "css": 253589,
-        "total": 891051,
-        "gzip": 187784
+        "total": 891042,
+        "gzip": 187771
       }
     }
   ]

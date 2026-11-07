@@ -1,7 +1,6 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
-import { badgePopperFeature } from './features/popper/index'
 import './core.css'
 
 const badgeBaseProps = {

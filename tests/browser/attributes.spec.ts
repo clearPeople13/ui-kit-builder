@@ -58,8 +58,8 @@ describe('浏览器层 · 属性落盘契约', () => {
     }
 
     const failures = await session.page.evaluate(async (list: { componentId: string; exportName: string }[]) => {
-      const { h, createApp } = window.__vue
-      const kit = window.__kit
+      const { h, createApp } = window.__vue!
+      const kit = window.__kit!
       const bad: string[] = []
       for (const item of list) {
         const component = kit[item.exportName]
@@ -90,8 +90,8 @@ describe('浏览器层 · 属性落盘契约', () => {
 
   it('字符串 style 不会让组件挂载失败，且原样落到根节点', async () => {
     const result = await session.page.evaluate(async () => {
-      const { h, createApp } = window.__vue
-      const kit = window.__kit
+      const { h, createApp } = window.__vue!
+      const kit = window.__kit!
       const names = Object.keys(kit).filter(
         (name) =>
           /^[A-Z]/.test(name) && !name.startsWith('DEFAULT_') && name !== 'UI_ICONS' && !name.startsWith('active')
@@ -102,7 +102,6 @@ describe('浏览器层 · 属性落盘契约', () => {
       //  - Popover：style/className 按文档路由到面板（面板才有宽度），触发器不拿样式
       const exceptions = ['Aside', 'CollectionItem', 'Popover']
       // 默认属性下根本不渲染元素的节点：只吐 slot 的抽象层与过渡壳，挂载它们没有内容
-      const rootless = ['CollapseTransition', 'Collection', 'OnlyChild']
       const bad: string[] = []
       const empty: string[] = []
       const skipped: string[] = []
@@ -138,8 +137,8 @@ describe('浏览器层 · 属性落盘契约', () => {
 
   it('Popover 的 style 按契约落到面板上，而不是触发器', async () => {
     const panel = await session.page.evaluate(async () => {
-      const { h, createApp } = window.__vue
-      const kit = window.__kit
+      const { h, createApp } = window.__vue!
+      const kit = window.__kit!
       const host = document.createElement('div')
       document.body.appendChild(host)
       const app = createApp({

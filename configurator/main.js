@@ -1,107 +1,6 @@
 import { createApp, h } from 'vue'
-
-const CATEGORIES = [
-  {
-    id: 'basic',
-    title: '基础元件',
-    hint: '图标、按钮、文字、标签',
-    ids: ['icon', 'button', 'link', 'text', 'space', 'divider', 'tag', 'badge', 'check-tag']
-  },
-  {
-    id: 'layout',
-    title: '布局与容器',
-    hint: '栅格、容器、滚动、虚拟列表',
-    ids: ['container', 'row', 'col', 'splitter', 'affix', 'backtop', 'scrollbar', 'virtual-list']
-  },
-  {
-    id: 'form',
-    title: '表单输入',
-    hint: '输入、选择、日期、上传',
-    ids: [
-      'autocomplete',
-      'cascader',
-      'cascader-panel',
-      'checkbox',
-      'color-picker',
-      'color-picker-panel',
-      'date-picker',
-      'date-picker-panel',
-      'form',
-      'input',
-      'input-number',
-      'input-otp',
-      'input-tag',
-      'mention',
-      'radio',
-      'rate',
-      'select',
-      'slider',
-      'switch',
-      'time-picker',
-      'time-select',
-      'transfer',
-      'tree-select',
-      'upload'
-    ]
-  },
-  {
-    id: 'data',
-    title: '数据展示',
-    hint: '表格、卡片、树、进度',
-    ids: [
-      'avatar',
-      'calendar',
-      'card',
-      'carousel',
-      'collapse',
-      'collection',
-      'descriptions',
-      'empty',
-      'image',
-      'image-viewer',
-      'pagination',
-      'progress',
-      'result',
-      'skeleton',
-      'statistic',
-      'table',
-      'timeline',
-      'tree',
-      'tree-v2',
-      'watermark',
-      'countdown'
-    ]
-  },
-  {
-    id: 'nav',
-    title: '导航',
-    hint: '菜单、标签页、步骤、面包屑',
-    ids: ['anchor', 'breadcrumb', 'dropdown', 'menu', 'page-header', 'segmented', 'steps', 'tabs']
-  },
-  {
-    id: 'feedback',
-    title: '反馈提示',
-    hint: '弹窗、消息、加载、引导',
-    ids: ['alert', 'dialog', 'drawer', 'loading', 'message', 'message-box', 'notification', 'overlay', 'tour']
-  },
-  {
-    id: 'overlay',
-    title: '浮层与内部工具',
-    hint: '气泡、下拉根、焦点管理',
-    ids: [
-      'popconfirm',
-      'popover',
-      'popper',
-      'tooltip',
-      'focus-trap',
-      'roving-focus-group',
-      'slot',
-      'config-provider',
-      'collapse-transition',
-      'infinite-scroll'
-    ]
-  }
-]
+// 分类清单与调试台同源（C5）：脚本侧生成 meta.json，构建器直接复用同一份 ids
+import { CATEGORY_GROUPS as CATEGORIES } from '../scripts/demo-categories.mjs'
 
 const MINIMAL_IDS = [
   'icon',
@@ -314,7 +213,7 @@ const state = {
   overrides: new Map(),
   // 变量名 → { token, scope, def, owners }，scope 为 global 或组件 id；owners 是消费该全局变量的组件
   varIndex: new Map(),
-  // 组件 id 按长度倒序，用于把令牌前缀匹配到最长组件名（tree-select 优先于 tree）
+  // 组件 id 按长度倒序，用于把令牌前缀匹配到最长组件名（cascader-panel 优先于 cascader）
   tokenPrefixes: [],
   // 变量名 → 行 DOM 引用，用于回写与状态同步；只包含当前可见变量
   themeRows: new Map(),
@@ -332,6 +231,7 @@ const state = {
 let isBuilding = false
 let estimateTimer = 0
 let estimateSeq = 0
+let estimateAbort = null
 let estimateLast = null
 
 const elements = {
@@ -1467,7 +1367,7 @@ function buildVarSample(token, kind) {
   return sample
 }
 
-function buildVarRow(token, scope) {
+function buildVarRow(token) {
   const row = createElement('div', 'var-row')
   row.dataset.var = token.var
 
@@ -1565,7 +1465,7 @@ function buildVarGroup({ key, scope, title, subtitle, tokens, open, showScope = 
 
   const list = createElement('div', 'var-list')
   for (const token of tokens) {
-    list.append(buildVarRow(token, scope))
+    list.append(buildVarRow(token))
   }
 
   details.append(summary, list)
@@ -2522,7 +2422,7 @@ function scheduleEstimate() {
     elements.estimateBadge.textContent = '已过期'
     elements.estimateNote.textContent = '选择已变化，正在重新试算…'
   }
-  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 700)
+  estimateTimer = window.setTimeout(() => runEstimate(estimateSeq), 300)
 }
 
 async function runEstimate(seq) {
@@ -2535,25 +2435,31 @@ async function runEstimate(seq) {
     return
   }
 
+  // 新一次试算开始时终止上一次请求：用户连续勾选时，旧请求不必等打包完再被丢弃（C11）
+  estimateAbort?.abort()
+  estimateAbort = new AbortController()
+  const signal = estimateAbort.signal
+
   setEstimateLoading()
   try {
     const response = await fetch('/api/estimate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
+      body: JSON.stringify(config),
+      signal
     })
     const payload = await response.json()
     if (!response.ok) {
       throw new Error(payload.error || `HTTP ${response.status}`)
     }
-    if (seq !== estimateSeq) {
+    if (seq !== estimateSeq || signal.aborted) {
       return
     }
     const previous = estimateLast
     estimateLast = payload
     renderEstimate(payload, previous)
   } catch (error) {
-    if (seq !== estimateSeq) {
+    if (seq !== estimateSeq || error.name === 'AbortError') {
       return
     }
     renderEstimateError(error.message)

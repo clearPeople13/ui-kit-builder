@@ -1,5 +1,7 @@
 {
   "name": "material3",
+  "label": "Material 3 谷歌",
+  "order": 13,
   "components": "full",
   "prefix": "material3",
   "theme": {

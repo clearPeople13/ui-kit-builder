@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import { computed, h, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { h, inject, onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import './core.css'
@@ -209,7 +209,7 @@ export function createAnchorLink(features: UiFeature[] = []) {
         ]
       },
       content: ({ props, slots }) => slots.default?.() ?? props.title ?? props.href ?? null,
-      setup(props) {
+      setup(_props) {
         return { anchor: inject<AnchorContext | null>(ANCHOR_CONTEXT, null) }
       }
     },

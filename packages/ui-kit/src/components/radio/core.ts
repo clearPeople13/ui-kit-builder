@@ -1,7 +1,6 @@
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
 import { radioButtonConfig, radioConfig, radioGroupConfig } from '../../shared/behavior'
-import { radioAppearanceFeature } from './features/appearance/index'
 import './core.css'
 
 const radioBaseProps = {
