@@ -98,12 +98,13 @@ describe('sizes.json 的成本表', () => {
     expect(Number.isNaN(Date.parse(sizes.generatedAt))).toBe(false)
   })
 
-  it('features 段恰好等于"能用现有 profile 对测出增量"的特性集合', () => {
-    // 增量靠两份只差一个特性的 profile 相减得到；当前 20 份 profile 里没有任何这样的成对关系，
-    // 所以这张表是空的（构建器里的单特性成本列没有数据，记为 F-27）。
-    // 这条用例把算法钉住：一旦有人补了成对 profile，表里就必须真的出现对应条目。
-    const measurable = measurableFeatureCosts()
-    expect(Object.keys(sizes.features).sort()).toEqual(measurable.sort())
+  it('features 段覆盖全部 178 个特性，且每项都是非负增量', () => {
+    // F-27 修复：build-all 对每个特性都构建「full 去掉该特性」的临时产物与 full 相减，
+    // 所以 178 个特性都有边际成本数据，不再恒空。
+    const all = featureEntries(registry)
+      .map((entry) => entry.id)
+      .sort()
+    expect(Object.keys(sizes.features).sort()).toEqual(all)
     for (const [id, delta] of Object.entries(sizes.features)) {
       expect(delta.component, id).toBeTruthy()
       expect(delta.jsBytes, `${id} js 增量`).toBeGreaterThanOrEqual(0)
@@ -111,20 +112,3 @@ describe('sizes.json 的成本表', () => {
     }
   })
 })
-
-/** 复算 build-all 的配对条件：存在两份 profile，特性集正好是 requires 与 requires+id */
-function measurableFeatureCosts() {
-  const profiles = profileNames.map((name) => bundleOf(name).meta)
-  const sameSet = (left: string[], right: string[]) =>
-    left.length === right.length && left.every((value) => right.includes(value))
-  const hits: string[] = []
-  for (const entry of featureEntries(registry)) {
-    const requires = entry.spec.requires ?? []
-    const base = profiles.find((profile) => sameSet(profile.features, requires))
-    const target = profiles.find((profile) => sameSet(profile.features, [...requires, entry.id]))
-    if (base && target) {
-      hits.push(entry.id)
-    }
-  }
-  return hits
-}

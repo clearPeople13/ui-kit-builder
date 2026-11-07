@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { buildProfile } from './build-lib.mjs'
+import { buildProfile, sanitizeName } from './build-lib.mjs'
 import { writeDemoMeta } from './generate-demo-meta.mjs'
 
 const rootDir = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
@@ -55,10 +55,11 @@ export async function buildAllProfiles() {
     )
   }
 
-  const { loadRegistry } = await import('../registry.mjs')
+  const { loadRegistry, fullSelection } = await import('../registry.mjs')
   const registry = await loadRegistry()
   const features = {}
 
+  // 先用现有 20 份 profile 里能配对的特性填一遍（requires 与 requires+[id] 恰好都存在的情况）
   for (const component of Object.values(registry.components)) {
     for (const [id, feature] of Object.entries(
       Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
@@ -74,6 +75,43 @@ export async function buildAllProfiles() {
         component: component.id,
         ...delta(baseProfile, targetProfile)
       }
+    }
+  }
+
+  // F-27 修复：剩下没有配对的特性，用「full 去掉该特性」的临时产物与 full 相减，
+  // 得到该特性在完整产物里的边际成本。这样 178 个特性都有真实体积数据，
+  // 不再因为 20 份 profile 都是全特性集而让 features 段恒空。
+  const fullResult = results.find((result) => result.name === 'full')
+  if (fullResult) {
+    const fullSel = fullSelection(registry)
+    const tempDirs = []
+    for (const component of Object.values(registry.components)) {
+      for (const [id, feature] of Object.entries(
+        Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
+      )) {
+        if (features[id]) {
+          continue
+        }
+        const minusSel = JSON.parse(JSON.stringify(fullSel))
+        minusSel[component.id] = (minusSel[component.id] ?? []).filter((fid) => fid !== id)
+        const tempName = `__feat_${id}`
+        tempDirs.push(tempName)
+        const minusResult = await buildProfile({
+          name: tempName,
+          prefix: 'ui',
+          components: minusSel
+        })
+        features[id] = {
+          title: feature.title,
+          component: component.id,
+          ...delta(minusResult, fullResult)
+        }
+      }
+    }
+    // 清理临时产物目录（buildProfile 会对 name 做 sanitize），避免污染 dist/
+    for (const name of tempDirs) {
+      const dir = path.join(rootDir, 'dist', sanitizeName(name))
+      fs.rmSync(dir, { recursive: true, force: true })
     }
   }
 

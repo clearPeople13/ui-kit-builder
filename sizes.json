@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T01:58:46.845Z",
+  "generatedAt": "2026-11-07T02:19:45.613Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -12102,5 +12102,1430 @@
       "gzipBytes": 188557
     }
   },
-  "features": {}
+  "features": {
+    "alert.icons": {
+      "title": "图标",
+      "component": "alert",
+      "jsBytes": 442,
+      "cssBytes": 0,
+      "totalBytes": 442,
+      "gzipBytes": 115
+    },
+    "alert.closable": {
+      "title": "可关闭",
+      "component": "alert",
+      "jsBytes": 620,
+      "cssBytes": 421,
+      "totalBytes": 1041,
+      "gzipBytes": 182
+    },
+    "anchor.popper": {
+      "title": "滚动偏移",
+      "component": "anchor",
+      "jsBytes": 151,
+      "cssBytes": 0,
+      "totalBytes": 151,
+      "gzipBytes": 33
+    },
+    "autocomplete.clearable": {
+      "title": "可清空",
+      "component": "autocomplete",
+      "jsBytes": 107,
+      "cssBytes": 0,
+      "totalBytes": 107,
+      "gzipBytes": 4
+    },
+    "autocomplete.password": {
+      "title": "密码可见切换",
+      "component": "autocomplete",
+      "jsBytes": 105,
+      "cssBytes": 0,
+      "totalBytes": 105,
+      "gzipBytes": 5
+    },
+    "autocomplete.word-limit": {
+      "title": "字数统计",
+      "component": "autocomplete",
+      "jsBytes": 109,
+      "cssBytes": 0,
+      "totalBytes": 109,
+      "gzipBytes": 0
+    },
+    "autocomplete.icons": {
+      "title": "图标",
+      "component": "autocomplete",
+      "jsBytes": 99,
+      "cssBytes": 0,
+      "totalBytes": 99,
+      "gzipBytes": 0
+    },
+    "autocomplete.filterable": {
+      "title": "筛选与远程搜索",
+      "component": "autocomplete",
+      "jsBytes": 225,
+      "cssBytes": 0,
+      "totalBytes": 225,
+      "gzipBytes": 40
+    },
+    "autocomplete.popper": {
+      "title": "浮层定位",
+      "component": "autocomplete",
+      "jsBytes": 550,
+      "cssBytes": 0,
+      "totalBytes": 550,
+      "gzipBytes": 76
+    },
+    "avatar.icons": {
+      "title": "图标",
+      "component": "avatar",
+      "jsBytes": 172,
+      "cssBytes": 0,
+      "totalBytes": 172,
+      "gzipBytes": 34
+    },
+    "avatar.avatar-group-popper": {
+      "title": "浮层定位",
+      "component": "avatar",
+      "jsBytes": 849,
+      "cssBytes": 0,
+      "totalBytes": 849,
+      "gzipBytes": 128
+    },
+    "badge.popper": {
+      "title": "徽章偏移",
+      "component": "badge",
+      "jsBytes": 154,
+      "cssBytes": 0,
+      "totalBytes": 154,
+      "gzipBytes": 32
+    },
+    "button.appearance": {
+      "title": "外观变体",
+      "component": "button",
+      "jsBytes": 795,
+      "cssBytes": 2209,
+      "totalBytes": 3004,
+      "gzipBytes": 486
+    },
+    "button.icon": {
+      "title": "图标",
+      "component": "button",
+      "jsBytes": 227,
+      "cssBytes": 156,
+      "totalBytes": 383,
+      "gzipBytes": 50
+    },
+    "button.loading": {
+      "title": "加载状态",
+      "component": "button",
+      "jsBytes": 389,
+      "cssBytes": 383,
+      "totalBytes": 772,
+      "gzipBytes": 119
+    },
+    "button.auto-insert-space": {
+      "title": "两字自动空格",
+      "component": "button",
+      "jsBytes": 545,
+      "cssBytes": 0,
+      "totalBytes": 545,
+      "gzipBytes": 162
+    },
+    "button.bg-color": {
+      "title": "背景色",
+      "component": "button",
+      "jsBytes": 0,
+      "cssBytes": 0,
+      "totalBytes": 0,
+      "gzipBytes": 0
+    },
+    "button.gradient": {
+      "title": "渐变背景",
+      "component": "button",
+      "jsBytes": 618,
+      "cssBytes": 133,
+      "totalBytes": 751,
+      "gzipBytes": 174
+    },
+    "calendar.range": {
+      "title": "范围选择",
+      "component": "calendar",
+      "jsBytes": 197,
+      "cssBytes": 0,
+      "totalBytes": 197,
+      "gzipBytes": 47
+    },
+    "card.appearance": {
+      "title": "外观变体",
+      "component": "card",
+      "jsBytes": 219,
+      "cssBytes": 269,
+      "totalBytes": 488,
+      "gzipBytes": 108
+    },
+    "carousel.methods": {
+      "title": "实例方法",
+      "component": "carousel",
+      "jsBytes": 179,
+      "cssBytes": 0,
+      "totalBytes": 179,
+      "gzipBytes": 66
+    },
+    "cascader.clearable": {
+      "title": "可清空",
+      "component": "cascader",
+      "jsBytes": 318,
+      "cssBytes": 0,
+      "totalBytes": 318,
+      "gzipBytes": 72
+    },
+    "cascader.multiple": {
+      "title": "多选",
+      "component": "cascader",
+      "jsBytes": 0,
+      "cssBytes": 0,
+      "totalBytes": 0,
+      "gzipBytes": 0
+    },
+    "cascader.select-all": {
+      "title": "全选",
+      "component": "cascader",
+      "jsBytes": 261,
+      "cssBytes": 921,
+      "totalBytes": 1182,
+      "gzipBytes": 144
+    },
+    "cascader.filterable": {
+      "title": "筛选与远程搜索",
+      "component": "cascader",
+      "jsBytes": 334,
+      "cssBytes": 0,
+      "totalBytes": 334,
+      "gzipBytes": 69
+    },
+    "cascader.popper": {
+      "title": "浮层定位",
+      "component": "cascader",
+      "jsBytes": 535,
+      "cssBytes": 0,
+      "totalBytes": 535,
+      "gzipBytes": 91
+    },
+    "cascader.lazy": {
+      "title": "懒加载与展开",
+      "component": "cascader",
+      "jsBytes": 193,
+      "cssBytes": 0,
+      "totalBytes": 193,
+      "gzipBytes": 35
+    },
+    "cascader.virtualized": {
+      "title": "虚拟滚动",
+      "component": "cascader",
+      "jsBytes": 240,
+      "cssBytes": 0,
+      "totalBytes": 240,
+      "gzipBytes": 24
+    },
+    "cascader.format": {
+      "title": "格式化",
+      "component": "cascader",
+      "jsBytes": 199,
+      "cssBytes": 0,
+      "totalBytes": 199,
+      "gzipBytes": 34
+    },
+    "cascader-panel.multiple": {
+      "title": "多选",
+      "component": "cascader-panel",
+      "jsBytes": 194,
+      "cssBytes": 0,
+      "totalBytes": 194,
+      "gzipBytes": 47
+    },
+    "cascader-panel.lazy": {
+      "title": "懒加载与展开",
+      "component": "cascader-panel",
+      "jsBytes": 174,
+      "cssBytes": 0,
+      "totalBytes": 174,
+      "gzipBytes": 45
+    },
+    "cascader-panel.selection": {
+      "title": "高亮与勾选",
+      "component": "cascader-panel",
+      "jsBytes": 311,
+      "cssBytes": 0,
+      "totalBytes": 311,
+      "gzipBytes": 92
+    },
+    "cascader-panel.virtualized": {
+      "title": "虚拟滚动",
+      "component": "cascader-panel",
+      "jsBytes": 258,
+      "cssBytes": 0,
+      "totalBytes": 258,
+      "gzipBytes": 41
+    },
+    "cascader-panel.appearance": {
+      "title": "外观变体",
+      "component": "cascader-panel",
+      "jsBytes": 228,
+      "cssBytes": 74,
+      "totalBytes": 302,
+      "gzipBytes": 40
+    },
+    "checkbox.appearance": {
+      "title": "外观变体",
+      "component": "checkbox",
+      "jsBytes": 175,
+      "cssBytes": 489,
+      "totalBytes": 664,
+      "gzipBytes": 119
+    },
+    "col.popper": {
+      "title": "栅格偏移",
+      "component": "col",
+      "jsBytes": 142,
+      "cssBytes": 0,
+      "totalBytes": 142,
+      "gzipBytes": 42
+    },
+    "collapse.collapse-item-icons": {
+      "title": "图标",
+      "component": "collapse",
+      "jsBytes": 211,
+      "cssBytes": 0,
+      "totalBytes": 211,
+      "gzipBytes": 65
+    },
+    "color-picker.clearable": {
+      "title": "可清空",
+      "component": "color-picker",
+      "jsBytes": 224,
+      "cssBytes": 0,
+      "totalBytes": 224,
+      "gzipBytes": 58
+    },
+    "color-picker.popper": {
+      "title": "浮层定位",
+      "component": "color-picker",
+      "jsBytes": 410,
+      "cssBytes": 0,
+      "totalBytes": 410,
+      "gzipBytes": 79
+    },
+    "color-picker.format": {
+      "title": "格式化",
+      "component": "color-picker",
+      "jsBytes": 211,
+      "cssBytes": 0,
+      "totalBytes": 211,
+      "gzipBytes": 40
+    },
+    "color-picker-panel.appearance": {
+      "title": "外观变体",
+      "component": "color-picker-panel",
+      "jsBytes": 222,
+      "cssBytes": 147,
+      "totalBytes": 369,
+      "gzipBytes": 39
+    },
+    "date-picker.clearable": {
+      "title": "可清空",
+      "component": "date-picker",
+      "jsBytes": 277,
+      "cssBytes": 0,
+      "totalBytes": 277,
+      "gzipBytes": 41
+    },
+    "date-picker.icons": {
+      "title": "图标",
+      "component": "date-picker",
+      "jsBytes": 198,
+      "cssBytes": 0,
+      "totalBytes": 198,
+      "gzipBytes": 34
+    },
+    "date-picker.popper": {
+      "title": "浮层定位",
+      "component": "date-picker",
+      "jsBytes": 413,
+      "cssBytes": 0,
+      "totalBytes": 413,
+      "gzipBytes": 55
+    },
+    "date-picker.editable": {
+      "title": "可编辑",
+      "component": "date-picker",
+      "jsBytes": 201,
+      "cssBytes": 0,
+      "totalBytes": 201,
+      "gzipBytes": 39
+    },
+    "date-picker.format": {
+      "title": "格式化",
+      "component": "date-picker",
+      "jsBytes": 243,
+      "cssBytes": 0,
+      "totalBytes": 243,
+      "gzipBytes": 43
+    },
+    "date-picker.range": {
+      "title": "范围选择",
+      "component": "date-picker",
+      "jsBytes": 397,
+      "cssBytes": 0,
+      "totalBytes": 397,
+      "gzipBytes": 69
+    },
+    "date-picker-panel.clearable": {
+      "title": "可清空",
+      "component": "date-picker-panel",
+      "jsBytes": 143,
+      "cssBytes": 0,
+      "totalBytes": 143,
+      "gzipBytes": 20
+    },
+    "date-picker-panel.appearance": {
+      "title": "外观变体",
+      "component": "date-picker-panel",
+      "jsBytes": 221,
+      "cssBytes": 146,
+      "totalBytes": 367,
+      "gzipBytes": 35
+    },
+    "date-picker-panel.format": {
+      "title": "格式化",
+      "component": "date-picker-panel",
+      "jsBytes": 125,
+      "cssBytes": 0,
+      "totalBytes": 125,
+      "gzipBytes": 17
+    },
+    "date-picker-panel.range": {
+      "title": "范围选择",
+      "component": "date-picker-panel",
+      "jsBytes": 164,
+      "cssBytes": 0,
+      "totalBytes": 164,
+      "gzipBytes": 21
+    },
+    "descriptions.appearance": {
+      "title": "外观变体",
+      "component": "descriptions",
+      "jsBytes": 175,
+      "cssBytes": 391,
+      "totalBytes": 566,
+      "gzipBytes": 88
+    },
+    "dialog.closable": {
+      "title": "可关闭",
+      "component": "dialog",
+      "jsBytes": 354,
+      "cssBytes": 0,
+      "totalBytes": 354,
+      "gzipBytes": 24
+    },
+    "dialog.popper": {
+      "title": "浮层定位",
+      "component": "dialog",
+      "jsBytes": 207,
+      "cssBytes": 0,
+      "totalBytes": 207,
+      "gzipBytes": 20
+    },
+    "dialog.draggable": {
+      "title": "拖拽与缩放",
+      "component": "dialog",
+      "jsBytes": 615,
+      "cssBytes": 120,
+      "totalBytes": 735,
+      "gzipBytes": 97
+    },
+    "dialog.modal": {
+      "title": "遮罩与关闭行为",
+      "component": "dialog",
+      "jsBytes": 504,
+      "cssBytes": 0,
+      "totalBytes": 504,
+      "gzipBytes": 202
+    },
+    "dialog.fullscreen": {
+      "title": "全屏",
+      "component": "dialog",
+      "jsBytes": 183,
+      "cssBytes": 130,
+      "totalBytes": 313,
+      "gzipBytes": 45
+    },
+    "drawer.closable": {
+      "title": "可关闭",
+      "component": "drawer",
+      "jsBytes": 354,
+      "cssBytes": 0,
+      "totalBytes": 354,
+      "gzipBytes": 24
+    },
+    "drawer.popper": {
+      "title": "浮层定位",
+      "component": "drawer",
+      "jsBytes": 207,
+      "cssBytes": 0,
+      "totalBytes": 207,
+      "gzipBytes": 20
+    },
+    "drawer.draggable": {
+      "title": "拖拽与缩放",
+      "component": "drawer",
+      "jsBytes": 2525,
+      "cssBytes": 603,
+      "totalBytes": 3128,
+      "gzipBytes": 608
+    },
+    "drawer.modal": {
+      "title": "遮罩与关闭行为",
+      "component": "drawer",
+      "jsBytes": 330,
+      "cssBytes": 0,
+      "totalBytes": 330,
+      "gzipBytes": 30
+    },
+    "drawer.fullscreen": {
+      "title": "全屏",
+      "component": "drawer",
+      "jsBytes": 183,
+      "cssBytes": 114,
+      "totalBytes": 297,
+      "gzipBytes": 46
+    },
+    "dropdown.popper": {
+      "title": "浮层定位",
+      "component": "dropdown",
+      "jsBytes": 566,
+      "cssBytes": 0,
+      "totalBytes": 566,
+      "gzipBytes": 61
+    },
+    "dropdown.dropdown-item-icons": {
+      "title": "图标",
+      "component": "dropdown",
+      "jsBytes": 211,
+      "cssBytes": 0,
+      "totalBytes": 211,
+      "gzipBytes": 30
+    },
+    "form.validate": {
+      "title": "表单校验",
+      "component": "form",
+      "jsBytes": 582,
+      "cssBytes": 0,
+      "totalBytes": 582,
+      "gzipBytes": 67
+    },
+    "form.form-item-validate": {
+      "title": "表单校验",
+      "component": "form",
+      "jsBytes": 276,
+      "cssBytes": 0,
+      "totalBytes": 276,
+      "gzipBytes": 42
+    },
+    "image.loading": {
+      "title": "加载状态",
+      "component": "image",
+      "jsBytes": 164,
+      "cssBytes": 0,
+      "totalBytes": 164,
+      "gzipBytes": 32
+    },
+    "image.lazy": {
+      "title": "懒加载与展开",
+      "component": "image",
+      "jsBytes": 150,
+      "cssBytes": 0,
+      "totalBytes": 150,
+      "gzipBytes": 32
+    },
+    "image.preview": {
+      "title": "图片预览",
+      "component": "image",
+      "jsBytes": 4180,
+      "cssBytes": 1902,
+      "totalBytes": 6082,
+      "gzipBytes": 1182
+    },
+    "image-viewer.popper": {
+      "title": "浮层传送",
+      "component": "image-viewer",
+      "jsBytes": 164,
+      "cssBytes": 0,
+      "totalBytes": 164,
+      "gzipBytes": 11
+    },
+    "image-viewer.modal": {
+      "title": "遮罩与关闭行为",
+      "component": "image-viewer",
+      "jsBytes": 230,
+      "cssBytes": 0,
+      "totalBytes": 230,
+      "gzipBytes": 26
+    },
+    "input.clearable": {
+      "title": "可清空",
+      "component": "input",
+      "jsBytes": 86,
+      "cssBytes": 0,
+      "totalBytes": 86,
+      "gzipBytes": 3
+    },
+    "input.password": {
+      "title": "密码可见切换",
+      "component": "input",
+      "jsBytes": 84,
+      "cssBytes": 0,
+      "totalBytes": 84,
+      "gzipBytes": 8
+    },
+    "input.word-limit": {
+      "title": "字数统计",
+      "component": "input",
+      "jsBytes": 88,
+      "cssBytes": 0,
+      "totalBytes": 88,
+      "gzipBytes": 9
+    },
+    "input.icons": {
+      "title": "图标",
+      "component": "input",
+      "jsBytes": 78,
+      "cssBytes": 0,
+      "totalBytes": 78,
+      "gzipBytes": 7
+    },
+    "input.methods": {
+      "title": "实例方法",
+      "component": "input",
+      "jsBytes": 293,
+      "cssBytes": 0,
+      "totalBytes": 293,
+      "gzipBytes": 12
+    },
+    "input-number.methods": {
+      "title": "实例方法",
+      "component": "input-number",
+      "jsBytes": 252,
+      "cssBytes": 0,
+      "totalBytes": 252,
+      "gzipBytes": 16
+    },
+    "input-tag.clearable": {
+      "title": "可清空",
+      "component": "input-tag",
+      "jsBytes": 1023,
+      "cssBytes": 650,
+      "totalBytes": 1673,
+      "gzipBytes": 287
+    },
+    "input-tag.separator": {
+      "title": "分隔符批量添加",
+      "component": "input-tag",
+      "jsBytes": 1920,
+      "cssBytes": 0,
+      "totalBytes": 1920,
+      "gzipBytes": 431
+    },
+    "input-tag.draggable": {
+      "title": "拖拽排序",
+      "component": "input-tag",
+      "jsBytes": 2366,
+      "cssBytes": 303,
+      "totalBytes": 2669,
+      "gzipBytes": 656
+    },
+    "link.icons": {
+      "title": "图标",
+      "component": "link",
+      "jsBytes": 229,
+      "cssBytes": 0,
+      "totalBytes": 229,
+      "gzipBytes": 39
+    },
+    "link.appearance": {
+      "title": "外观变体",
+      "component": "link",
+      "jsBytes": 354,
+      "cssBytes": 0,
+      "totalBytes": 354,
+      "gzipBytes": 80
+    },
+    "mention.clearable": {
+      "title": "可清空",
+      "component": "mention",
+      "jsBytes": 92,
+      "cssBytes": 0,
+      "totalBytes": 92,
+      "gzipBytes": 0
+    },
+    "mention.password": {
+      "title": "密码可见切换",
+      "component": "mention",
+      "jsBytes": 90,
+      "cssBytes": 0,
+      "totalBytes": 90,
+      "gzipBytes": 0
+    },
+    "mention.word-limit": {
+      "title": "字数统计",
+      "component": "mention",
+      "jsBytes": 94,
+      "cssBytes": 0,
+      "totalBytes": 94,
+      "gzipBytes": 0
+    },
+    "mention.icons": {
+      "title": "图标",
+      "component": "mention",
+      "jsBytes": 84,
+      "cssBytes": 0,
+      "totalBytes": 84,
+      "gzipBytes": 0
+    },
+    "mention.loading": {
+      "title": "加载状态",
+      "component": "mention",
+      "jsBytes": 188,
+      "cssBytes": 0,
+      "totalBytes": 188,
+      "gzipBytes": 31
+    },
+    "mention.popper": {
+      "title": "浮层定位",
+      "component": "mention",
+      "jsBytes": 535,
+      "cssBytes": 0,
+      "totalBytes": 535,
+      "gzipBytes": 34
+    },
+    "menu.sub-menu-icons": {
+      "title": "图标",
+      "component": "menu",
+      "jsBytes": 378,
+      "cssBytes": 0,
+      "totalBytes": 378,
+      "gzipBytes": 65
+    },
+    "message.icons": {
+      "title": "图标",
+      "component": "message",
+      "jsBytes": 177,
+      "cssBytes": 0,
+      "totalBytes": 177,
+      "gzipBytes": 9
+    },
+    "message.closable": {
+      "title": "可关闭",
+      "component": "message",
+      "jsBytes": 267,
+      "cssBytes": 0,
+      "totalBytes": 267,
+      "gzipBytes": 29
+    },
+    "message.popper": {
+      "title": "浮层定位",
+      "component": "message",
+      "jsBytes": 190,
+      "cssBytes": 0,
+      "totalBytes": 190,
+      "gzipBytes": 23
+    },
+    "message.appearance": {
+      "title": "外观变体",
+      "component": "message",
+      "jsBytes": 171,
+      "cssBytes": 90,
+      "totalBytes": 261,
+      "gzipBytes": 33
+    },
+    "message-box.input": {
+      "title": "输入框",
+      "component": "message-box",
+      "jsBytes": 391,
+      "cssBytes": 0,
+      "totalBytes": 391,
+      "gzipBytes": 79
+    },
+    "notification.icons": {
+      "title": "图标",
+      "component": "notification",
+      "jsBytes": 192,
+      "cssBytes": 0,
+      "totalBytes": 192,
+      "gzipBytes": 11
+    },
+    "notification.closable": {
+      "title": "可关闭",
+      "component": "notification",
+      "jsBytes": 388,
+      "cssBytes": 0,
+      "totalBytes": 388,
+      "gzipBytes": 49
+    },
+    "notification.popper": {
+      "title": "边缘偏移",
+      "component": "notification",
+      "jsBytes": 251,
+      "cssBytes": 416,
+      "totalBytes": 667,
+      "gzipBytes": 120
+    },
+    "page-header.icons": {
+      "title": "图标",
+      "component": "page-header",
+      "jsBytes": 209,
+      "cssBytes": 0,
+      "totalBytes": 209,
+      "gzipBytes": 38
+    },
+    "pagination.icons": {
+      "title": "图标",
+      "component": "pagination",
+      "jsBytes": 242,
+      "cssBytes": 0,
+      "totalBytes": 242,
+      "gzipBytes": 33
+    },
+    "pagination.layout": {
+      "title": "布局",
+      "component": "pagination",
+      "jsBytes": 210,
+      "cssBytes": 1285,
+      "totalBytes": 1495,
+      "gzipBytes": 224
+    },
+    "popconfirm.icons": {
+      "title": "图标",
+      "component": "popconfirm",
+      "jsBytes": 186,
+      "cssBytes": 0,
+      "totalBytes": 186,
+      "gzipBytes": 11
+    },
+    "popconfirm.popper": {
+      "title": "浮层定位",
+      "component": "popconfirm",
+      "jsBytes": 350,
+      "cssBytes": 0,
+      "totalBytes": 350,
+      "gzipBytes": 39
+    },
+    "popover.popper": {
+      "title": "浮层定位",
+      "component": "popover",
+      "jsBytes": 563,
+      "cssBytes": 0,
+      "totalBytes": 563,
+      "gzipBytes": 51
+    },
+    "radio.appearance": {
+      "title": "外观变体",
+      "component": "radio",
+      "jsBytes": 166,
+      "cssBytes": 699,
+      "totalBytes": 865,
+      "gzipBytes": 131
+    },
+    "rate.clearable": {
+      "title": "可清空",
+      "component": "rate",
+      "jsBytes": 185,
+      "cssBytes": 0,
+      "totalBytes": 185,
+      "gzipBytes": 18
+    },
+    "result.icons": {
+      "title": "图标",
+      "component": "result",
+      "jsBytes": 169,
+      "cssBytes": 0,
+      "totalBytes": 169,
+      "gzipBytes": 16
+    },
+    "scrollbar.methods": {
+      "title": "实例方法",
+      "component": "scrollbar",
+      "jsBytes": 242,
+      "cssBytes": 0,
+      "totalBytes": 242,
+      "gzipBytes": 50
+    },
+    "select.select-clearable": {
+      "title": "可清空",
+      "component": "select",
+      "jsBytes": 273,
+      "cssBytes": 620,
+      "totalBytes": 893,
+      "gzipBytes": 84
+    },
+    "select.select-icons": {
+      "title": "图标",
+      "component": "select",
+      "jsBytes": 207,
+      "cssBytes": 0,
+      "totalBytes": 207,
+      "gzipBytes": 27
+    },
+    "select.select-loading": {
+      "title": "加载状态",
+      "component": "select",
+      "jsBytes": 234,
+      "cssBytes": 0,
+      "totalBytes": 234,
+      "gzipBytes": 36
+    },
+    "select.select-multiple": {
+      "title": "多选",
+      "component": "select",
+      "jsBytes": 423,
+      "cssBytes": 0,
+      "totalBytes": 423,
+      "gzipBytes": 67
+    },
+    "select.select-filterable": {
+      "title": "筛选与远程搜索",
+      "component": "select",
+      "jsBytes": 419,
+      "cssBytes": 0,
+      "totalBytes": 419,
+      "gzipBytes": 78
+    },
+    "select.select-popper": {
+      "title": "浮层定位",
+      "component": "select",
+      "jsBytes": 671,
+      "cssBytes": 0,
+      "totalBytes": 671,
+      "gzipBytes": 100
+    },
+    "select.select-format": {
+      "title": "清空回填",
+      "component": "select",
+      "jsBytes": 207,
+      "cssBytes": 0,
+      "totalBytes": 207,
+      "gzipBytes": 36
+    },
+    "select.methods": {
+      "title": "实例方法",
+      "component": "select",
+      "jsBytes": 249,
+      "cssBytes": 0,
+      "totalBytes": 249,
+      "gzipBytes": 58
+    },
+    "select-v2.clearable": {
+      "title": "可清空",
+      "component": "select-v2",
+      "jsBytes": 166,
+      "cssBytes": 0,
+      "totalBytes": 166,
+      "gzipBytes": 30
+    },
+    "select-v2.multiple": {
+      "title": "多选",
+      "component": "select-v2",
+      "jsBytes": 239,
+      "cssBytes": 0,
+      "totalBytes": 239,
+      "gzipBytes": 39
+    },
+    "select-v2.filterable": {
+      "title": "可筛选",
+      "component": "select-v2",
+      "jsBytes": 446,
+      "cssBytes": 0,
+      "totalBytes": 446,
+      "gzipBytes": 81
+    },
+    "select-v2.popper": {
+      "title": "弹层配置",
+      "component": "select-v2",
+      "jsBytes": 458,
+      "cssBytes": 0,
+      "totalBytes": 458,
+      "gzipBytes": 56
+    },
+    "skeleton.loading": {
+      "title": "加载状态",
+      "component": "skeleton",
+      "jsBytes": 202,
+      "cssBytes": 0,
+      "totalBytes": 202,
+      "gzipBytes": 28
+    },
+    "slider.popper": {
+      "title": "浮层定位",
+      "component": "slider",
+      "jsBytes": 192,
+      "cssBytes": 0,
+      "totalBytes": 192,
+      "gzipBytes": 23
+    },
+    "slider.format": {
+      "title": "格式化",
+      "component": "slider",
+      "jsBytes": 150,
+      "cssBytes": 0,
+      "totalBytes": 150,
+      "gzipBytes": 26
+    },
+    "slider.range": {
+      "title": "范围选择",
+      "component": "slider",
+      "jsBytes": 158,
+      "cssBytes": 0,
+      "totalBytes": 158,
+      "gzipBytes": 33
+    },
+    "splitter.lazy": {
+      "title": "懒加载与展开",
+      "component": "splitter",
+      "jsBytes": 157,
+      "cssBytes": 0,
+      "totalBytes": 157,
+      "gzipBytes": 26
+    },
+    "splitter.splitter-panel-draggable": {
+      "title": "拖拽与缩放",
+      "component": "splitter",
+      "jsBytes": 276,
+      "cssBytes": 0,
+      "totalBytes": 276,
+      "gzipBytes": 51
+    },
+    "statistic.format": {
+      "title": "格式化",
+      "component": "statistic",
+      "jsBytes": 107,
+      "cssBytes": 0,
+      "totalBytes": 107,
+      "gzipBytes": 20
+    },
+    "steps.icons": {
+      "title": "图标",
+      "component": "steps",
+      "jsBytes": 169,
+      "cssBytes": 0,
+      "totalBytes": 169,
+      "gzipBytes": 14
+    },
+    "switch.icons": {
+      "title": "图标",
+      "component": "switch",
+      "jsBytes": 358,
+      "cssBytes": 0,
+      "totalBytes": 358,
+      "gzipBytes": 35
+    },
+    "switch.loading": {
+      "title": "加载状态",
+      "component": "switch",
+      "jsBytes": 168,
+      "cssBytes": 0,
+      "totalBytes": 168,
+      "gzipBytes": 10
+    },
+    "table.sort": {
+      "title": "排序",
+      "component": "table",
+      "jsBytes": 0,
+      "cssBytes": 0,
+      "totalBytes": 0,
+      "gzipBytes": 0
+    },
+    "table.tree": {
+      "title": "树形数据",
+      "component": "table",
+      "jsBytes": 3733,
+      "cssBytes": 761,
+      "totalBytes": 4494,
+      "gzipBytes": 998
+    },
+    "table.resize": {
+      "title": "列宽拖拽",
+      "component": "table",
+      "jsBytes": 2310,
+      "cssBytes": 428,
+      "totalBytes": 2738,
+      "gzipBytes": 637
+    },
+    "table.span": {
+      "title": "合并单元格",
+      "component": "table",
+      "jsBytes": 265,
+      "cssBytes": 0,
+      "totalBytes": 265,
+      "gzipBytes": 40
+    },
+    "table.loading": {
+      "title": "加载状态",
+      "component": "table",
+      "jsBytes": 544,
+      "cssBytes": 535,
+      "totalBytes": 1079,
+      "gzipBytes": 201
+    },
+    "table.summary": {
+      "title": "合计行",
+      "component": "table",
+      "jsBytes": 712,
+      "cssBytes": 0,
+      "totalBytes": 712,
+      "gzipBytes": 179
+    },
+    "table.selection": {
+      "title": "选择列配置",
+      "component": "table",
+      "jsBytes": 225,
+      "cssBytes": 0,
+      "totalBytes": 225,
+      "gzipBytes": 38
+    },
+    "table.methods": {
+      "title": "实例方法",
+      "component": "table",
+      "jsBytes": 2099,
+      "cssBytes": 0,
+      "totalBytes": 2099,
+      "gzipBytes": 531
+    },
+    "table.column-sort": {
+      "title": "列排序配置",
+      "component": "table",
+      "jsBytes": 251,
+      "cssBytes": 0,
+      "totalBytes": 251,
+      "gzipBytes": 43
+    },
+    "tabs.closable": {
+      "title": "可关闭",
+      "component": "tabs",
+      "jsBytes": 244,
+      "cssBytes": 0,
+      "totalBytes": 244,
+      "gzipBytes": 16
+    },
+    "tabs.lazy": {
+      "title": "面板懒渲染",
+      "component": "tabs",
+      "jsBytes": 102,
+      "cssBytes": 0,
+      "totalBytes": 102,
+      "gzipBytes": 22
+    },
+    "tabs.editable": {
+      "title": "编辑与新增",
+      "component": "tabs",
+      "jsBytes": 197,
+      "cssBytes": 0,
+      "totalBytes": 197,
+      "gzipBytes": 13
+    },
+    "tabs.tabs-closable": {
+      "title": "可关闭",
+      "component": "tabs",
+      "jsBytes": 254,
+      "cssBytes": 0,
+      "totalBytes": 254,
+      "gzipBytes": 15
+    },
+    "tabs.tabs-editable": {
+      "title": "编辑与新增",
+      "component": "tabs",
+      "jsBytes": 276,
+      "cssBytes": 0,
+      "totalBytes": 276,
+      "gzipBytes": 29
+    },
+    "tag.closable": {
+      "title": "可关闭",
+      "component": "tag",
+      "jsBytes": 241,
+      "cssBytes": 0,
+      "totalBytes": 241,
+      "gzipBytes": 16
+    },
+    "tag.appearance": {
+      "title": "外观变体",
+      "component": "tag",
+      "jsBytes": 239,
+      "cssBytes": 159,
+      "totalBytes": 398,
+      "gzipBytes": 102
+    },
+    "time-picker.clearable": {
+      "title": "可清空",
+      "component": "time-picker",
+      "jsBytes": 330,
+      "cssBytes": 0,
+      "totalBytes": 330,
+      "gzipBytes": 49
+    },
+    "time-picker.icons": {
+      "title": "图标",
+      "component": "time-picker",
+      "jsBytes": 198,
+      "cssBytes": 0,
+      "totalBytes": 198,
+      "gzipBytes": 22
+    },
+    "time-picker.popper": {
+      "title": "浮层定位",
+      "component": "time-picker",
+      "jsBytes": 413,
+      "cssBytes": 0,
+      "totalBytes": 413,
+      "gzipBytes": 50
+    },
+    "time-picker.editable": {
+      "title": "编辑与新增",
+      "component": "time-picker",
+      "jsBytes": 231,
+      "cssBytes": 0,
+      "totalBytes": 231,
+      "gzipBytes": 22
+    },
+    "time-picker.format": {
+      "title": "格式化",
+      "component": "time-picker",
+      "jsBytes": 243,
+      "cssBytes": 0,
+      "totalBytes": 243,
+      "gzipBytes": 26
+    },
+    "time-picker.range": {
+      "title": "范围选择",
+      "component": "time-picker",
+      "jsBytes": 316,
+      "cssBytes": 0,
+      "totalBytes": 316,
+      "gzipBytes": 50
+    },
+    "time-select.clearable": {
+      "title": "可清空",
+      "component": "time-select",
+      "jsBytes": 264,
+      "cssBytes": 0,
+      "totalBytes": 264,
+      "gzipBytes": 24
+    },
+    "time-select.icons": {
+      "title": "图标",
+      "component": "time-select",
+      "jsBytes": 198,
+      "cssBytes": 0,
+      "totalBytes": 198,
+      "gzipBytes": 16
+    },
+    "time-select.popper": {
+      "title": "浮层定位",
+      "component": "time-select",
+      "jsBytes": 282,
+      "cssBytes": 0,
+      "totalBytes": 282,
+      "gzipBytes": 28
+    },
+    "time-select.editable": {
+      "title": "编辑与新增",
+      "component": "time-select",
+      "jsBytes": 231,
+      "cssBytes": 0,
+      "totalBytes": 231,
+      "gzipBytes": 21
+    },
+    "time-select.format": {
+      "title": "格式化",
+      "component": "time-select",
+      "jsBytes": 208,
+      "cssBytes": 0,
+      "totalBytes": 208,
+      "gzipBytes": 23
+    },
+    "tooltip.delay": {
+      "title": "延迟显示",
+      "component": "tooltip",
+      "jsBytes": 281,
+      "cssBytes": 0,
+      "totalBytes": 281,
+      "gzipBytes": 55
+    },
+    "tooltip.popper": {
+      "title": "弹出层配置",
+      "component": "tooltip",
+      "jsBytes": 357,
+      "cssBytes": 0,
+      "totalBytes": 357,
+      "gzipBytes": 40
+    },
+    "tour.closable": {
+      "title": "可关闭",
+      "component": "tour",
+      "jsBytes": 311,
+      "cssBytes": 0,
+      "totalBytes": 311,
+      "gzipBytes": 20
+    },
+    "tour.popper": {
+      "title": "浮层定位",
+      "component": "tour",
+      "jsBytes": 306,
+      "cssBytes": 0,
+      "totalBytes": 306,
+      "gzipBytes": 23
+    },
+    "tour.validate": {
+      "title": "滚动定位",
+      "component": "tour",
+      "jsBytes": 188,
+      "cssBytes": 0,
+      "totalBytes": 188,
+      "gzipBytes": 22
+    },
+    "tour.modal": {
+      "title": "遮罩与关闭行为",
+      "component": "tour",
+      "jsBytes": 158,
+      "cssBytes": 0,
+      "totalBytes": 158,
+      "gzipBytes": 28
+    },
+    "tour.tour-step-closable": {
+      "title": "可关闭",
+      "component": "tour",
+      "jsBytes": 340,
+      "cssBytes": 0,
+      "totalBytes": 340,
+      "gzipBytes": 25
+    },
+    "tour.tour-step-popper": {
+      "title": "浮层定位",
+      "component": "tour",
+      "jsBytes": 231,
+      "cssBytes": 0,
+      "totalBytes": 231,
+      "gzipBytes": 27
+    },
+    "tour.tour-step-validate": {
+      "title": "滚动定位",
+      "component": "tour",
+      "jsBytes": 209,
+      "cssBytes": 0,
+      "totalBytes": 209,
+      "gzipBytes": 18
+    },
+    "transfer.filterable": {
+      "title": "筛选与远程搜索",
+      "component": "transfer",
+      "jsBytes": 189,
+      "cssBytes": 0,
+      "totalBytes": 189,
+      "gzipBytes": 30
+    },
+    "transfer.virtualized": {
+      "title": "虚拟滚动",
+      "component": "transfer",
+      "jsBytes": 240,
+      "cssBytes": 0,
+      "totalBytes": 240,
+      "gzipBytes": 49
+    },
+    "tree.icons": {
+      "title": "图标",
+      "component": "tree",
+      "jsBytes": 168,
+      "cssBytes": 0,
+      "totalBytes": 168,
+      "gzipBytes": 21
+    },
+    "tree.draggable": {
+      "title": "拖拽排序",
+      "component": "tree",
+      "jsBytes": 3769,
+      "cssBytes": 396,
+      "totalBytes": 4165,
+      "gzipBytes": 1158
+    },
+    "tree.selection": {
+      "title": "高亮与勾选",
+      "component": "tree",
+      "jsBytes": 300,
+      "cssBytes": 0,
+      "totalBytes": 300,
+      "gzipBytes": 63
+    },
+    "tree.methods": {
+      "title": "实例方法",
+      "component": "tree",
+      "jsBytes": 524,
+      "cssBytes": 0,
+      "totalBytes": 524,
+      "gzipBytes": 145
+    },
+    "tree-select.multiple": {
+      "title": "多选",
+      "component": "tree-select",
+      "jsBytes": 243,
+      "cssBytes": 0,
+      "totalBytes": 243,
+      "gzipBytes": 35
+    },
+    "tree-select.filterable": {
+      "title": "可筛选",
+      "component": "tree-select",
+      "jsBytes": 203,
+      "cssBytes": 0,
+      "totalBytes": 203,
+      "gzipBytes": 31
+    },
+    "tree-select.popper": {
+      "title": "弹层配置",
+      "component": "tree-select",
+      "jsBytes": 412,
+      "cssBytes": 0,
+      "totalBytes": 412,
+      "gzipBytes": 75
+    },
+    "tree-v2.check": {
+      "title": "复选框",
+      "component": "tree-v2",
+      "jsBytes": 277,
+      "cssBytes": 0,
+      "totalBytes": 277,
+      "gzipBytes": 48
+    },
+    "upload.multiple": {
+      "title": "多选",
+      "component": "upload",
+      "jsBytes": 173,
+      "cssBytes": 0,
+      "totalBytes": 173,
+      "gzipBytes": 27
+    },
+    "upload.methods": {
+      "title": "实例方法",
+      "component": "upload",
+      "jsBytes": 154,
+      "cssBytes": 0,
+      "totalBytes": 154,
+      "gzipBytes": 43
+    },
+    "watermark.popper": {
+      "title": "水印偏移",
+      "component": "watermark",
+      "jsBytes": 147,
+      "cssBytes": 0,
+      "totalBytes": 147,
+      "gzipBytes": 33
+    }
+  }
 }
