@@ -26,6 +26,8 @@ export interface FormContext {
   readonly requireAsteriskPosition: string
   readonly hideRequiredAsterisk: boolean
   readonly labelSuffix: string
+  /** 按 trigger 增量校验单个字段（change=值变化，blur=失焦），未命中该 trigger 的规则不动既有错误 */
+  readonly validateField: (path: string, trigger: 'change' | 'blur') => void
 }
 
 export const FORM_CONTEXT_KEY: InjectionKey<FormContext> = Symbol('ui-form-context')

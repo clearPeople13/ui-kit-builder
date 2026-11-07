@@ -199,6 +199,7 @@ export function createSelect(features: UiFeature[] = []) {
       name: 'UiSelect',
       baseClass: 'ui-select',
       props: selectBaseProps,
+      emits: ['update:modelValue', 'change', 'clear', 'remove-tag', 'visible-change', 'filter-change'],
       setup(props, { emit, slots }) {
         const open = ref(false)
         const query = ref('')

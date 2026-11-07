@@ -1552,6 +1552,11 @@ export function overlayConfig(options: {
       }
 
       function handleKeydown(event: KeyboardEvent) {
+        // Escape 分层：内层浮层（如 select 面板）已 preventDefault 接管本次按键时，
+        // 外层 overlay（dialog/drawer 等）不得再响应，否则一次 Escape 连关两层
+        if (event.defaultPrevented) {
+          return
+        }
         if (event.key !== 'Escape' || props.closeOnPressEscape !== true) {
           return
         }

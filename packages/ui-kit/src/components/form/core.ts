@@ -12,8 +12,10 @@ import {
   resolveRuleMessage,
   toRuleList,
   type FormContext,
+  type FormRule,
   type FormRules
 } from './context'
+import { sameValue } from '../../shared/value'
 import './core.css'
 
 const formBaseProps = {
@@ -74,6 +76,9 @@ export function createForm(features: UiFeature[] = []) {
           },
           get labelSuffix() {
             return String(props.labelSuffix || '')
+          },
+          validateField(path: string, trigger: 'change' | 'blur'): void {
+            validateField(path, trigger)
           }
         }
 
@@ -116,7 +121,107 @@ export function createForm(features: UiFeature[] = []) {
           }
         }
 
-        watch(() => props.model, validateFields, { deep: true, immediate: true })
+        // ---- 增量校验：按 trigger 只重校验"本次变更字段"的规则 ----
+        // 原实现 deep watch 每次按键全量校验所有字段：
+        // A 字段输入会把 B 字段的规则重跑一遍，validator 副作用（如远程查重）被无辜触发。
+        // 现按 path 快照比对找出变更字段，只重校验 trigger 含 change 的规则；
+        // blur 走 FormItem 冒泡上来的 focusout/blur 捕获，只重校验 trigger 含 blur 的规则。
+        const snapshots = new Map<string, unknown>()
+
+        function cloneSnapshot(value: unknown): unknown {
+          if (value instanceof Date) {
+            return new Date(value.getTime())
+          }
+          if (Array.isArray(value)) {
+            return value.map(cloneSnapshot)
+          }
+          if (value && typeof value === 'object') {
+            const copy: Record<string, unknown> = {}
+            for (const [key, item] of Object.entries(value)) {
+              copy[key] = cloneSnapshot(item)
+            }
+            return copy
+          }
+          return value
+        }
+
+        function ruleTriggers(rule: FormRule): string[] {
+          const trigger = rule.trigger ?? 'change'
+          return Array.isArray(trigger) ? trigger.map(String) : [String(trigger)]
+        }
+
+        function validateField(path: string, trigger: 'change' | 'blur'): void {
+          const rules = props.rules as FormRules | undefined
+          const model = props.model as Record<string, any> | undefined
+          if (!rules || !model || !path) {
+            return
+          }
+          const matched = toRuleList(rules[path]).filter((rule) => ruleTriggers(rule).includes(trigger))
+          if (!matched.length) {
+            return
+          }
+          const message = resolveRuleMessage(getFieldValue(model, path), matched)
+          const next = { ...errors.value }
+          if (message) {
+            next[path] = message
+          } else {
+            delete next[path]
+          }
+          errors.value = next
+        }
+
+        function captureSnapshots(): void {
+          snapshots.clear()
+          const rules = props.rules as FormRules | undefined
+          const model = props.model as Record<string, any> | undefined
+          if (!rules || !model) {
+            return
+          }
+          for (const path of Object.keys(rules)) {
+            snapshots.set(path, cloneSnapshot(getFieldValue(model, path)))
+          }
+        }
+
+        function validateChangedFields(): void {
+          const rules = props.rules as FormRules | undefined
+          const model = props.model as Record<string, any> | undefined
+          if (!rules || !model) {
+            snapshots.clear()
+            return
+          }
+          for (const path of Object.keys(rules)) {
+            const value = getFieldValue(model, path)
+            if (!snapshots.has(path)) {
+              snapshots.set(path, cloneSnapshot(value))
+              continue
+            }
+            if (!sameValue(snapshots.get(path), value)) {
+              snapshots.set(path, cloneSnapshot(value))
+              validateField(path, 'change')
+            }
+          }
+          for (const path of Array.from(snapshots.keys())) {
+            if (!(path in rules)) {
+              snapshots.delete(path)
+            }
+          }
+        }
+
+        let modelWatched = false
+        watch(
+          () => props.model,
+          () => {
+            if (!modelWatched) {
+              // 首次（含 immediate）保持整表校验，兼容"初始非法即报错"的既有行为
+              modelWatched = true
+              captureSnapshots()
+              validateFields()
+              return
+            }
+            validateChangedFields()
+          },
+          { deep: true, immediate: true }
+        )
         watch(
           () => props.rules,
           () => {
@@ -274,6 +379,11 @@ export function createFormItem(features: UiFeature[] = []) {
           },
           get formDisabled() {
             return Boolean(form?.disabled)
+          },
+          notifyBlur(): void {
+            if (form && path.value) {
+              form.validateField(path.value, 'blur')
+            }
           }
         }
       },
@@ -303,7 +413,9 @@ export function createFormItem(features: UiFeature[] = []) {
               ]
             )
           : null,
-        h('div', { class: 'ui-form-item__content' }, [
+        // blur 不冒泡、focusout 冒泡，两个都挂：真实浏览器走 focusout，
+        // 单测里 trigger('blur') 由捕获相位兜住，保证增量校验的 blur 通路可测
+        h('div', { class: 'ui-form-item__content', onFocusout: state.notifyBlur, onBlurCapture: state.notifyBlur }, [
           slots.default?.() ?? null,
           state.showStatusIcon
             ? h('span', { class: ['ui-form-item__status', `is-${state.effectiveStatus}`] }, [

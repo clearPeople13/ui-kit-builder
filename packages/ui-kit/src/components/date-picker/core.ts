@@ -9,6 +9,7 @@ import {
   addMonths,
   compareDate,
   formatDateValue,
+  hasSecondsToken,
   isoWeekNumber,
   monthCells,
   pad,
@@ -54,6 +55,7 @@ export function createDatePicker(features: UiFeature[] = []) {
       name: 'UiDatePicker',
       baseClass: 'ui-date-picker',
       props: datePickerBaseProps,
+      emits: ['update:modelValue', 'change', 'clear', 'visible-change'],
       setup(props, { emit }) {
         const open = ref(false)
         const view = ref<'date' | 'month' | 'year'>('date')
@@ -84,10 +86,9 @@ export function createDatePicker(features: UiFeature[] = []) {
           }
           return 'date'
         })
-        const showSeconds = computed(() => {
-          const pattern = String(props.timeFormat || props.format || 'HH:mm:ss')
-          return pattern.includes('s')
-        })
+        // 只认 s/ss token：格式串里带字面 s（如 '(summer)'）不得误开秒列，
+        // 与 time-picker 共用 shared/date 的判定，保持两处口径一致
+        const showSeconds = computed(() => hasSecondsToken(String(props.timeFormat || props.format || 'HH:mm:ss')))
 
         const { position, refresh } = useFloatingPanel({
           props,

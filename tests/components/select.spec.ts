@@ -1,7 +1,7 @@
 import { mount, type VueWrapper } from '@vue/test-utils'
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { Option, OptionGroup, Select } from '@ui-kit-full'
+import { Dialog, Option, OptionGroup, Select } from '@ui-kit-full'
 
 const options = [
   { value: 1, label: '选项一' },
@@ -341,5 +341,42 @@ describe('Select', () => {
       expect(virtual).not.toBeNull()
       expect(virtual?.querySelector('.ui-virtual-list__spacer')?.getAttribute('style')).toContain('height: 120px')
     })
+  })
+})
+
+describe('Select Escape 分层', () => {
+  // 原缺陷：overlay 每实例直挂 window keydown，Escape 时不判 defaultPrevented，
+  // 而 select 只 preventDefault 不 stopPropagation，dialog 里开 select 按一次 Esc 连关两层。
+  // 修复后 overlay 看到 defaultPrevented 直接放行，由内层浮层独占本次按键。
+  it('dialog 内开 select 面板，一次 Escape 只关 select、dialog 仍开着', async () => {
+    const wrapper = mount(Dialog, {
+      props: { modelValue: true, title: '设置' },
+      slots: { default: () => h(Select, { options, modelValue: undefined }) },
+      attachTo: document.body
+    })
+    wrappers.push(wrapper)
+    await nextTick()
+    expect(document.querySelector('.ui-dialog')).not.toBeNull()
+
+    const select = wrapper.findComponent(Select)
+    await select.find('.ui-select__trigger').trigger('click')
+    expect(select.find('.ui-select__trigger').attributes('aria-expanded')).toBe('true')
+
+    // 从 select 触发器派发 Escape：事件先过 select 的 keydown（preventDefault + 收面板），
+    // 再一路冒泡到 window 上 dialog 的全局监听
+    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true })
+    select.find('.ui-select__trigger').element.dispatchEvent(event)
+    await nextTick()
+
+    expect(event.defaultPrevented).toBe(true)
+    expect(select.find('.ui-select__trigger').attributes('aria-expanded')).toBe('false')
+    // dialog 未被牵连：没有发出关闭事件，面板仍在
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(document.querySelector('.ui-dialog')).not.toBeNull()
+
+    // select 已关，第二次 Escape 才轮到 dialog
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
   })
 })

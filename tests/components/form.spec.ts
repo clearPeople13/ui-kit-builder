@@ -262,6 +262,96 @@ describe('Form 校验', () => {
   })
 })
 
+describe('Form 增量校验', () => {
+  // 原缺陷：deep watch 每次按键全量校验所有字段，A 字段输入会把 B 字段的规则重跑一遍；
+  // 修复后按 trigger 增量校验，值变化只重校验"本次变更字段中 trigger 含 change"的规则
+  it('A 字段输入不触发 B 字段的规则重校验', async () => {
+    const mailChecks: string[] = []
+    class SpyPattern extends RegExp {
+      override test(value: string): boolean {
+        mailChecks.push(value)
+        return super.test(value)
+      }
+    }
+    const state = reactive({ name: 'x', mail: 'a@b' })
+    const wrapper = mount(
+      {
+        setup() {
+          return () =>
+            h(
+              Form,
+              {
+                model: state,
+                rules: { name: [{ required: true }], mail: [{ pattern: new SpyPattern('@'), message: '邮箱不对' }] }
+              },
+              () => [
+                h(FormItem, { prop: 'name', label: '名称' }, () => h(Input)),
+                h(FormItem, { prop: 'mail', label: '邮箱' }, () => h(Input))
+              ]
+            )
+        }
+      },
+      { attachTo: document.body }
+    )
+    await nextTick()
+    await nextTick()
+    // 挂载时的整表初始校验会跑一遍 mail 规则，之后改 name 不应再碰它
+    const afterMount = mailChecks.length
+    state.name = 'y'
+    await nextTick()
+    await nextTick()
+    expect(mailChecks.length).toBe(afterMount)
+    wrapper.unmount()
+  })
+
+  it('trigger 为 blur 的规则：值变化不校验，失焦才校验', async () => {
+    const state = reactive({ mail: 'a@b' })
+    const wrapper = mount(Form, {
+      props: {
+        model: state,
+        rules: { mail: [{ pattern: /^[^@\s]+@[^@\s]+$/, message: '邮箱不对', trigger: 'blur' }] }
+      },
+      slots: { default: () => [h(FormItem, { prop: 'mail', label: '邮箱' }, () => h(Input, { modelValue: state.mail }))] },
+      attachTo: document.body
+    })
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.ui-form-item__error').exists()).toBe(false)
+
+    // 模拟输入：值变化只触发 change 通路，blur 规则不校验
+    state.mail = 'not-mail'
+    await nextTick()
+    await nextTick()
+    expect(wrapper.find('.ui-form-item__error').exists()).toBe(false)
+
+    // 失焦后才按 blur 规则校验
+    await wrapper.find('input').trigger('blur')
+    await nextTick()
+    expect(wrapper.find('.ui-form-item__error').text()).toBe('邮箱不对')
+    wrapper.unmount()
+  })
+
+  it('blur 不触发 trigger 仅含 change 的规则', async () => {
+    const state = reactive({ name: '' })
+    const wrapper = mount(Form, {
+      props: {
+        model: state,
+        rules: { name: [{ required: true, message: '必填', trigger: 'change' }] }
+      },
+      slots: { default: () => [h(FormItem, { prop: 'name', label: '名称' }, () => h(Input, { modelValue: state.name }))] },
+      attachTo: document.body
+    })
+    await nextTick()
+    await nextTick()
+    // 初始整表校验报错（既有行为），blur 不应清掉 change 规则给出的错误
+    expect(wrapper.find('.ui-form-item__error').text()).toBe('必填')
+    await wrapper.find('input').trigger('blur')
+    await nextTick()
+    expect(wrapper.find('.ui-form-item__error').text()).toBe('必填')
+    wrapper.unmount()
+  })
+})
+
 describe('Form 组合辅助', () => {
   it('作用域插槽透出 model / size / labelWidth', () => {
     const wrapper = mount(Form, {

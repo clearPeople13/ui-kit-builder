@@ -234,6 +234,31 @@ describe('DatePicker 日期选择', () => {
     expect(value).toMatch(/^2026-11-06 \d{2}:\d{2}:\d{2}$/)
   })
 
+  // 原缺陷：showSeconds 用 pattern.includes('s') 判断，格式串里带字面 s（如 '(summer)'）会误开秒列；
+  // 修复后与 time-picker 共用 shared/date 的 hasSecondsToken，只认 s/ss 占位
+  it('格式串含字面 s（非秒占位）不渲染秒列', async () => {
+    const wrapper = mountPicker({
+      type: 'datetime',
+      modelValue: '2026-11-06 08:00',
+      format: 'YYYY-MM-DD HH:mm (summer)'
+    })
+    await open(wrapper)
+    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map(
+      (el) => el.textContent
+    )
+    expect(titles).toEqual(['时', '分'])
+    expect(titles).not.toContain('秒')
+  })
+
+  it('格式串含 ss 秒占位时渲染秒列', async () => {
+    const wrapper = mountPicker({ type: 'datetime', modelValue: '2026-11-06 08:00:00' })
+    await open(wrapper)
+    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map(
+      (el) => el.textContent
+    )
+    expect(titles).toEqual(['时', '分', '秒'])
+  })
+
   it('month 与 year 切换成对应粒度的选择表', async () => {
     const month = mountPicker({ type: 'month' })
     await open(month)
