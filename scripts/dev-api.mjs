@@ -138,6 +138,10 @@ function listBuiltPackages() {
     if (!entry.isDirectory()) {
       continue
     }
+    // 特性边际试算的历史残留（旧版 build:all 曾把 __feat_* 写进 dist/）不该出现在包列表里
+    if (entry.name.startsWith('feat-')) {
+      continue
+    }
     const dir = path.join(distDir, entry.name)
     const metaPath = path.join(dir, 'meta.json')
     const pkgPath = path.join(dir, 'package.json')

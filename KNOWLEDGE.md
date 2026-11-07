@@ -116,33 +116,34 @@ tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基
 npm test              # 先 build:full 再 vitest run（约 3s + 1.5s）
 npm run test:watch    # 增量
 npm run test:coverage # 同一批组件用例在源码入口上重放，卡 statements 87 / branches 83 / functions 88 / lines 87
-npm run test:build    # 先 build:all（20 份 profile）再跑 tests/build/**，约 15s + 5s
-npm run test:profiles # 先 build:all 再把 20 份产物逐个 import 挂载，约 20s
+npm run test:build    # 先 build:all（20 份 profile + 178 份特性试算）再跑 tests/build/**，约 60s + 5s
+npm run test:profiles # 先 build:all 再把 20 份产物逐个 import 挂载，约 60s + 20s
 npm run test:browser  # 先 build:full 再起 dev server + Chromium 跑 tests/browser/**，约 70s
 npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需执行）
 npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
 npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层 + 覆盖率一次跑完
-npm run quality       # 唯一门禁（十段）：格式 → 类型 → lint → 库级校验 → 五层用例 → 消费方校验
-npm run ci            # 同 quality，但逐段给结论与耗时，并落机读的 ci-report.json
-npm run ci:fast       # 只跑秒级四段（格式 / 类型 / lint / 库级校验）
-npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十段）钩子
+npm run quality       # 唯一门禁（十一段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 五层用例 → 消费方校验
+npm run ci            # 与 quality 同一条命令，逐段给结论与耗时，并落机读的 ci-report.json
+npm run ci:fast       # 只跑秒级四段（格式 / 类型 / lint / 库级校验），不触发构建
+npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十一段）钩子
 ```
 
 ## 7. 未覆盖 / 待办
 
-- 五层用例：组件侧 94 文件 1570 条、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 10 文件 58 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧 94 文件 1570 条、构建器侧 8 文件 95 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 10 文件 58 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
 - 第七批已交付（分支 `feature/20261107-coverage-pixel-baseline`）：源码入口覆盖率阈值（statement 88.35% 起步，阈值 87/83/88/87）与 6 个场景的像素基线（按平台分桶、忽略 AA、容差 0.1%），门禁从九段扩到十段，详见 `REQUIREMENTS.md` §12
 - 特性-属性归属已校正（分支 `fix/20261107-prop-attribution`）：把 `showClose` / `loading` / `icon` / `checkStrictly` 四条 core prop 从特性字典移回 `coreProps`，双向守卫的正向口径同步收紧为"coreProps + 已启用特性"，被关掉的特性不再能替 core prop 背书（F-53，详见 `REQUIREMENTS.md` §13）
+- 构建流水线已优化（分支 `perf/20261107-build-pipeline`）：`quality` 从"三次 198 份包"收敛为"一次统一构建 + 各层复用"，178 条特性边际值按源码 sha1 缓存，profile 与试算池 6 路并发，试算产物移出 `dist/` 并强制清理（F-54，详见 `REQUIREMENTS.md` §14）
 - 已知仍不可测的维度：整页与交互态像素（当前只截 6 个场景的首屏）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 共记录 53 条缺陷（F-1…F-53）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下导致特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- 共记录 54 条缺陷（F-1…F-54）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下导致特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-54 是门禁重复构建三次、试算产物污染 `dist/`（详见 `REQUIREMENTS.md` §14）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**基线已清零**：库工程与用例工程均无报错（第六批收口时修完 affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space 的最后 15 条 VTU 泛型与字面量推断问题）；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
 
-- **两份 vitest 配置不能合**：`tests/build/**` 只读文本、起 happy-dom 会让 89 条慢到分钟级；组件用例依赖 `dist/full`，构建器侧依赖全部 20 份产物，所以 `pretest` 走 `build:full`、`pretest:build` 走 `build:all`。改源码后只跑 `npm test` 不会刷新主题产物，`npm run test:build` 前的 `build:all` 才是唯一可靠前提
+- **两份 vitest 配置不能合**：`tests/build/**` 只读文本、起 happy-dom 会让 95 条慢到分钟级；组件用例依赖 `dist/full`，构建器侧依赖全部 20 份产物，所以 `pretest` 走 `build:full`、`pretest:build` 走 `build:all`。改源码后只跑 `npm test` 不会刷新主题产物，`npm run test:build` 前的 `build:all` 才是唯一可靠前提
 - **`meta.json` 是"上次构建"的事实，不是"当前源码"的事实**：`profile-contract.spec.ts` 里 `selection` 用例专门用当前 `registry.mjs` 重算一遍再比对，产物过期会直接红；同理 `sizes.json` 与 `dist/<profile>/meta.json` 逐字段对齐，只改一边会挂
 - **体积阈值按"带"不按"点"**：gzip 对拼接串不满足可加性（core 的 `js+css` 合并 gzip 反而比两文件 gzip 之和大 108 字节），所以自洽用例只能重算 `zlib.gzipSync(js+css, {level:9})` 再逐字节比，不能写成"合并值 ≤ 分量之和"
 - **前缀长度本身就是体积变量**：`rewritePrefix` 会把 `ui-` 换成 profile 前缀，`chinese`（7 字符）比 `antd`（4 字符）CSS 大近 4 kB，主题之间的差异只能按"前缀 + 皮肤"两个来源解释，不能假设同尺寸
@@ -168,7 +169,10 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量十
 
 ## 10. 统一门禁与布局基线
 
-- `npm run quality` 是唯一入口：`format:check → typecheck（库 + 用例两份 tsconfig）→ lint → verify → test → test:build → test:browser → verify:consumer`。任何一层红都直接失败，不产出"警告式"结论
+- `npm run quality` 是唯一入口，它就是 `node scripts/ci.mjs`：先跑一次 `build`，再依次 `format:check → typecheck（库 + 用例两份 tsconfig）→ lint → verify → test → test:build → test:profiles → test:browser → test:coverage → verify:consumer`。任何一层红都直接失败，不产出"警告式"结论
+- **一次门禁只构建一轮**：`build` 段跑完 `build:all` 后，`verify` 切到 `verify:reuse`（直接读 `sizes.json` 与 20 份 `dist/`，缺失才回退完整构建），四层用例切到不带 pretest 的 `test:*:run`。只有"全量模式且确实选中了 `build`"才走这些变体，`--fast` 与 `--stage xxx` 单跑时仍用各自会自行构建的原始脚本，避免吃到陈旧产物
+- **`sizes.json.features` 的 178 条边际值不便宜**：每条要构建一份「full 去掉该特性」，冷启动约 9 分钟；结果按 sha1 内容指纹缓存在 `.build/feature-size-cache.json`（指纹覆盖 `packages/ui-kit/src`、`profiles`、`registry.mjs`、`build-lib.mjs`、`package.json`、`package-lock.json` 与 node/平台），命中后整轮约 1 分钟。调试缓存逻辑用 `UIKIT_NO_BUILD_CACHE=1` 强制重算，别把缓存文件提交进仓库（`.build/` 已 gitignore）
+- **试算产物不许进 `dist/`**：它们写 `.build/feature-deltas/`，`try/finally` 连同 `.build/feat-*` 入口目录一起清理；旧版本的 `dist/feat-*` 残留在下次构建开头清掉。`tests/build/build-hygiene.spec.ts` 守住 dist 目录清单、清理结果与缓存一致性
 - 布局基线在 `tests/browser/__snapshots__/geometry.json`，按 `process.platform` 分桶，键是场景名、值是"锚点选择器 → 文档坐标矩形数组 + `<document>` 总高"。容差 1px；锚点表在 `tests/browser/_geometry.ts` 的 `ANCHORS`，新增场景必须同时登记锚点，否则用例会以"没有登记布局锚点"失败
 - 改样式或布局导致基线变红时，先读差异（谁从哪儿挪到哪儿），确认是预期变化再 `npm run snap:layout` 重录；把重录当成默认动作等于关掉这道门
 - 基线在别的机器上缺失时该用例自动跳过（`it.skipIf`），不会凭空报错；但录入模式下锚点找不到元素会当场失败，这是防"锚点写错却全绿"的保险

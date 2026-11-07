@@ -192,15 +192,15 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 §9.4 里排在第三位的缺口——"profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据"——本批补齐；同时把"靠本地自觉执行 `npm run quality`"换成机制。
 
-### 10.1 门禁清单（第五批时九段，第七批起十段）
+### 10.1 门禁清单（第五批时九段，第七批起十段，构建流水线优化后十一段）
 
-`npm run quality` 与 `npm run ci` 同序：格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。`node scripts/ci.mjs` 与 `npm run quality` 的区别是它给出逐段结论与耗时，并落一份机读的 `ci-report.json`（已 gitignore），任何 runner 都能只看退出码与 JSON 判定，不必 grep 终端输出。
+`npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
 
 | 段落     | 命令                                   | 说明                                                                     |
 | -------- | -------------------------------------- | ------------------------------------------------------------------------ |
 | 秒级四段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验，`.githooks/pre-commit` 就是它             |
-| 全量十段 | `npm run ci`                           | 含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
-| 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位                                             |
+| 全量十一段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
+| 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位（该段仍会自行构建）                         |
 | 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
 
 ### 10.2 profile 运行时用例（`tests/profiles/**`，142 条）
@@ -297,7 +297,7 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 | 第六批 | 63 个组件目录全量接入，94 文件 1576 条；属性字典双向回查 41 条 | `feature/20261107-tests-batch6`             | F-39…F-50                  |
 | 收口   | 15 条类型基线清零、格式与 lint 归零、全部合入 `main`            | `main`                                      | F-34…F-38（前批遗留）      |
 
-- 前六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。后续第七批与特性-属性修复新增的缺陷见 §12、§13。
+- 前六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。后续第七批、特性-属性修复与构建流水线优化新增的缺陷见 §12、§13、§14。
 - 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
 - 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1859 条用例；另有覆盖率层在同一批组件用例上重放并卡阈值（不重复计入条数，见 §12）。
 - 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
@@ -349,3 +349,22 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 | F-53 | message / skeleton / steps / tree 的 spec | 4 条 core prop 记在特性名下，特性关闭后 d.ts 缺声明而运行时仍有该 prop | `showClose`、`loading`、`icon`、`checkStrictly` 在 `core.ts` 已无条件声明，spec 却重复记在 `closable` / `loading` / `icons` / `selection` 上 | 四条移入对应 export 的 `coreProps`，特性 props 置空或只保留真正由特性提供的项 |
 
 守卫同步收紧：`tests/profiles/props-documented.spec.ts` 的正向检查从"coreProps 或任意 feature"改为"coreProps 加上本 profile 已启用的特性"，与反向完全同口径；原先为这四条开的后门注释一并删除。修复后 20 份 profile 的正反向守卫全绿，`index.d.ts` 与运行时 props 重新一一对应。
+
+## 14. 构建流水线优化（分支 `perf/20261107-build-pipeline`）
+
+第七批之后 `npm run quality` 一次要跑 22 分钟以上，其中绝大部分不是断言，而是重复构建：`build:all` 每次产出 20 份正式 profile + 178 份「full 去掉某特性」的试算产物（合计 198 份），而 `quality` 串行调用 `verify`、`test:build`、`test:profiles` 各自的前置钩子，把这一轮构建重复了三次（约 600 份包）；试算产物还曾写进 `dist/`，中断时会在构建器界面里留下上百个 `feat-*` 包。
+
+| 编号 | 位置 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-54 | `scripts/build-all.mjs` / `package.json` / `scripts/ci.mjs` | `quality` 一轮重复构建三次，单次 22 分钟以上；试算产物混入 `dist/` 且中断后不清理 | 各层用例用 `pretest` 各自触发 `build:all`/`build:full`；试算产物直接写到 `dist/<name>`；无缓存、无并发 | 门禁改为"先 build 一次，后续切 `verify:reuse` 与 `test:*:run`"；试算产物移入 `.build/feature-deltas/` 并在 `finally` 清理；178 条边际值按源码 sha1 缓存；20 份 profile 与试算池按 6 路并发 |
+
+四层改动：
+
+1. **单次构建**：`npm run quality` 改为 `node scripts/ci.mjs`；STAGES 增加 `fullOnly` 的 `build` 段，并给 `verify` / 四层用例配 `fullScript`（`verify:reuse`、`test:unit`、`test:build:run`、`test:profiles:run`、`test:browser:run`、`test:coverage:run`）。只有全量模式且确实选中 `build` 时才用这些变体；`--fast` 与 `--stage` 单跑保持自给自足。
+2. **内容哈希缓存**：`.build/feature-size-cache.json` 记录源码指纹（`packages/ui-kit/src`、`profiles`、`registry.mjs`、`build-lib.mjs`、`package.json`、`package-lock.json`、node/平台/架构）与 178 条边际值；指纹一致时跳过全部试算。`UIKIT_NO_BUILD_CACHE=1` 强制重算。
+3. **并行池**：`os.availableParallelism() - 1`，上限 6 路；结果按 profile 顺序返回，保证 `sizes.json` 字节稳定（本次构建后 `sizes.json` 无 diff）。
+4. **临时目录隔离**：试算产物写 `.build/feature-deltas/`，`try/finally` 连同 `.build/feat-*` 入口目录一起清理；构建开头清掉旧版本留在 `dist/` 与 `.build/` 的 `feat-*`；`dev-api` 的包列表防御性跳过 `feat-*`。
+
+实测（本机 Ryzen 9 7950X）：冷启动 `build:all` 10 分 17 秒（20 份 profile 65.0 s + 178 份试算 551.4 s），源码未变时命中缓存 57 s；`npm run quality` 从三次全量构建收敛为一次，`verify` 段从 70.5 s 降到复用后的秒级。
+
+新增守卫 `tests/build/build-hygiene.spec.ts`（6 条）：`dist/` 恰好是 20 份 profile、试算目录与 `.build/feat-*` 构建后为空、`sizes.json.features` 覆盖全部特性且为非负整数（正增量多于 100 条）、20 份 profile 元数据与 `sizes.json` 一一对应、缓存指纹是 40 位 sha1 且与本次 `sizes.json` 完全一致。构建器侧用例从 89 条增至 95 条。

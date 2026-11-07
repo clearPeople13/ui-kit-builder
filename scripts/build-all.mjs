@@ -1,4 +1,6 @@
+import crypto from 'node:crypto'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { buildProfile, sanitizeName } from './build-lib.mjs'
@@ -27,6 +29,11 @@ const profileNames = [
   'mantine',
   'ios'
 ]
+const sizesPath = path.join(rootDir, 'sizes.json')
+const distDir = path.join(rootDir, 'dist')
+// 特性边际试算不进 dist/：它只是体积测量脚手架，不该出现在包列表或产物目录里
+const tempRoot = path.join(rootDir, '.build', 'feature-deltas')
+const cachePath = path.join(rootDir, '.build', 'feature-size-cache.json')
 
 function delta(base, target) {
   return {
@@ -41,19 +48,140 @@ function sameFeatures(left, right) {
   return left.length === right.length && left.every((id) => right.includes(id))
 }
 
-export async function buildAllProfiles() {
-  const results = []
+/** 本机可用的构建并发度：留一个核给门禁自身与文件系统，最多 6 路 */
+function concurrency() {
+  const cpus = os.availableParallelism?.() ?? os.cpus().length
+  return Math.max(2, Math.min(6, cpus - 1))
+}
 
-  for (const profileName of profileNames) {
+/** 固定并发池：结果按输入顺序返回，任一任务失败则整轮失败 */
+async function mapPool(items, limit, worker) {
+  const results = new Array(items.length)
+  let cursor = 0
+  async function pull() {
+    while (cursor < items.length) {
+      const index = cursor
+      cursor += 1
+      results[index] = await worker(items[index], index)
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, pull))
+  return results
+}
+
+function walkFiles(dir, files) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) {
+      walkFiles(full, files)
+    } else {
+      files.push(full)
+    }
+  }
+}
+
+/**
+ * 特性边际缓存的输入指纹：某特性的边际体积只取决于组件源码、profile 配置与构建器本身。
+ * 三类内容都没变时，上次算出的边际值仍然成立；Node / 平台也进指纹，避免换环境后误复用。
+ */
+function sourceFingerprint() {
+  const hash = crypto.createHash('sha1')
+  hash.update(`node=${process.version}\nplatform=${process.platform}\narch=${process.arch}\n`)
+  const files = []
+  walkFiles(path.join(rootDir, 'packages/ui-kit/src'), files)
+  walkFiles(path.join(rootDir, 'profiles'), files)
+  for (const extra of ['registry.mjs', 'scripts/build-lib.mjs', 'package.json', 'package-lock.json']) {
+    files.push(path.join(rootDir, extra))
+  }
+  files.sort()
+  for (const file of files) {
+    hash.update(path.relative(rootDir, file))
+    hash.update('\0')
+    hash.update(fs.readFileSync(file))
+  }
+  return hash.digest('hex')
+}
+
+function readFeatureCache(fingerprint) {
+  try {
+    const cache = JSON.parse(fs.readFileSync(cachePath, 'utf8'))
+    return cache?.fingerprint === fingerprint && cache.features ? cache.features : null
+  } catch {
+    return null
+  }
+}
+
+function writeFeatureCache(fingerprint, features) {
+  fs.mkdirSync(path.dirname(cachePath), { recursive: true })
+  fs.writeFileSync(
+    cachePath,
+    `${JSON.stringify({ fingerprint, generatedAt: new Date().toISOString(), features }, null, 2)}\n`,
+    'utf8'
+  )
+}
+
+/** 清掉上次中断留下的试算产物；旧版本曾把它们写进 dist/ 与 .build/，一并迁移清理 */
+function cleanTempArtifacts() {
+  fs.rmSync(tempRoot, { recursive: true, force: true })
+  const buildRoot = path.join(rootDir, '.build')
+  if (fs.existsSync(buildRoot)) {
+    for (const entry of fs.readdirSync(buildRoot, { withFileTypes: true })) {
+      if (entry.isDirectory() && entry.name.startsWith('feat-')) {
+        fs.rmSync(path.join(buildRoot, entry.name), { recursive: true, force: true })
+      }
+    }
+  }
+  if (!fs.existsSync(distDir)) {
+    return
+  }
+  for (const entry of fs.readdirSync(distDir, { withFileTypes: true })) {
+    if (entry.isDirectory() && entry.name.startsWith('feat-')) {
+      fs.rmSync(path.join(distDir, entry.name), { recursive: true, force: true })
+    }
+  }
+}
+
+/** 门禁里已经构建过一次时，verify 直接复用 sizes.json 的记录，不再重复打 198 份包 */
+function loadBuiltResults() {
+  try {
+    const sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'))
+    const results = Object.values(sizes.profiles ?? {})
+    if (results.length !== profileNames.length) {
+      return null
+    }
+    for (const result of results) {
+      if (!fs.existsSync(path.join(rootDir, result.dir, 'ui-kit.js'))) {
+        return null
+      }
+    }
+    return { results, sizes, reused: true }
+  } catch {
+    return null
+  }
+}
+
+export async function buildAllProfiles({ reuse = false, cache = process.env.UIKIT_NO_BUILD_CACHE !== '1' } = {}) {
+  if (reuse) {
+    const built = loadBuiltResults()
+    if (built) {
+      console.log('[build] 复用本轮机禁产出的 sizes.json 与 20 份 profile，跳过重复构建')
+      return built
+    }
+    // 产物缺失或被删过就退回完整构建，--reuse 只承诺"能复用才复用"
+  }
+
+  cleanTempArtifacts()
+  const profileStarted = Date.now()
+  const results = await mapPool(profileNames, concurrency(), async (profileName) => {
     const configPath = path.join(rootDir, 'profiles', `${profileName}.json`)
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
-    results.push(
-      await buildProfile({
-        ...config,
-        name: config.name ?? profileName
-      })
-    )
-  }
+    return buildProfile({
+      ...config,
+      name: config.name ?? profileName
+    })
+  })
+  const profileSeconds = ((Date.now() - profileStarted) / 1000).toFixed(1)
+  console.log(`[build] ${profileNames.length} 份正式 profile 完成（${concurrency()} 路并发，${profileSeconds}s）`)
 
   const { loadRegistry, fullSelection } = await import('../registry.mjs')
   const registry = await loadRegistry()
@@ -81,10 +209,14 @@ export async function buildAllProfiles() {
   // F-27 修复：剩下没有配对的特性，用「full 去掉该特性」的临时产物与 full 相减，
   // 得到该特性在完整产物里的边际成本。这样 178 个特性都有真实体积数据，
   // 不再因为 20 份 profile 都是全特性集而让 features 段恒空。
+  // 临时产物写 .build/feature-deltas/，并在 try/finally 里清理，dist/ 永远只有 20 份正式包。
   const fullResult = results.find((result) => result.name === 'full')
   if (fullResult) {
+    const fingerprint = sourceFingerprint()
+    const cached = cache ? readFeatureCache(fingerprint) : null
     const fullSel = fullSelection(registry)
-    const tempDirs = []
+    const pending = []
+
     for (const component of Object.values(registry.components)) {
       for (const [id, feature] of Object.entries(
         Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
@@ -92,30 +224,53 @@ export async function buildAllProfiles() {
         if (features[id]) {
           continue
         }
-        const minusSel = JSON.parse(JSON.stringify(fullSel))
-        minusSel[component.id] = (minusSel[component.id] ?? []).filter((fid) => fid !== id)
-        const tempName = `__feat_${id}`
-        tempDirs.push(tempName)
-        const minusResult = await buildProfile({
-          name: tempName,
-          prefix: 'ui',
-          components: minusSel
-        })
-        features[id] = {
-          title: feature.title,
-          component: component.id,
-          ...delta(minusResult, fullResult)
+        if (cached?.[id]) {
+          features[id] = cached[id]
+          continue
         }
+        pending.push({ component, id, feature })
       }
     }
-    // 清理临时产物目录（buildProfile 会对 name 做 sanitize），避免污染 dist/
-    for (const name of tempDirs) {
-      const dir = path.join(rootDir, 'dist', sanitizeName(name))
-      fs.rmSync(dir, { recursive: true, force: true })
+
+    if (pending.length) {
+      const tempStarted = Date.now()
+      try {
+        const built = await mapPool(pending, concurrency(), async ({ component, id }) => {
+          const minusSel = JSON.parse(JSON.stringify(fullSel))
+          minusSel[component.id] = (minusSel[component.id] ?? []).filter((featureId) => featureId !== id)
+          const name = `__feat_${id}`
+          return buildProfile({
+            name,
+            prefix: 'ui',
+            components: minusSel,
+            outDir: path.relative(rootDir, path.join(tempRoot, sanitizeName(name)))
+          })
+        })
+        pending.forEach(({ component, id, feature }, index) => {
+          features[id] = {
+            title: feature.title,
+            component: component.id,
+            ...delta(built[index], fullResult)
+          }
+        })
+      } finally {
+        fs.rmSync(tempRoot, { recursive: true, force: true })
+        // 每个临时 profile 的入口 TS 落在 .build/<name>/，比产物目录更晚被遗忘
+        for (const { id } of pending) {
+          fs.rmSync(path.join(rootDir, '.build', sanitizeName(`__feat_${id}`)), { recursive: true, force: true })
+        }
+      }
+      const tempSeconds = ((Date.now() - tempStarted) / 1000).toFixed(1)
+      console.log(`[build] ${pending.length} 个特性边际临时产物完成（${concurrency()} 路并发，${tempSeconds}s）`)
+    } else if (cached) {
+      console.log(`[build] ${Object.keys(features).length} 个特性的边际体积命中内容哈希缓存，跳过临时构建`)
+    }
+
+    if (cache) {
+      writeFeatureCache(fingerprint, features)
     }
   }
 
-  const sizesPath = path.join(rootDir, 'sizes.json')
   const payload = {
     profiles: Object.fromEntries(results.map((result) => [result.name, result])),
     features
@@ -137,11 +292,15 @@ export async function buildAllProfiles() {
 
   fs.writeFileSync(sizesPath, `${JSON.stringify(sizes, null, 2)}\n`, 'utf8')
   await writeDemoMeta()
-  return { results, sizes }
+  return { results, sizes, reused: false }
 }
 
 async function main() {
-  const { results } = await buildAllProfiles()
+  const reuse = process.argv.includes('--reuse')
+  const { results, reused } = await buildAllProfiles({ reuse })
+  if (reused) {
+    return
+  }
   console.table(
     results.map((result) => ({
       profile: result.name,
