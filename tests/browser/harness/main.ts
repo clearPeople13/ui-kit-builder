@@ -1,4 +1,4 @@
-import { createApp, defineComponent, h, ref } from 'vue'
+import { createApp, defineComponent, h, reactive, ref } from 'vue'
 import * as kit from '../../../dist/full/ui-kit.js'
 import '../../../dist/full/ui-kit.css'
 
@@ -47,6 +47,8 @@ const {
   Upload,
   DatePicker,
   TimePicker,
+  Form,
+  FormItem,
   Pagination,
   Tree,
   Carousel,
@@ -569,8 +571,76 @@ function sceneTimePicker() {
     ])
 }
 
+/**
+ * Form 场景契约：F-93 之后 blur 通路由 focusout 冒泡承载，happy-dom 没有真实焦点链，
+ * "trigger 为 blur 的规则输入过程中不报错、失焦才报错"只有真浏览器能证。
+ * name 走 change（输入即校验），email 走 blur（失焦才校验），互相印证不牵连。
+ */
+function sceneForm() {
+  const model = reactive({ name: '', email: '' })
+  const emailRules = [
+    { required: true, message: '邮箱必填', trigger: 'blur' },
+    { pattern: /^[^@\s]+@[^@\s]+\.[^@\s]+$/, message: '邮箱格式不正确', trigger: 'blur' }
+  ]
+  return () =>
+    h('div', { class: 'form-scene' }, [
+      h(
+        Form,
+        {
+          model,
+          rules: {
+            name: [{ required: true, message: '姓名必填', trigger: 'change' }],
+            email: emailRules
+          }
+        },
+        {
+          default: () => [
+            h(
+              FormItem,
+              { prop: 'name', label: '姓名' },
+              {
+                default: () =>
+                  h(Input, {
+                    id: 'scene-form-name',
+                    modelValue: model.name,
+                    'onUpdate:modelValue': (value: string) => {
+                      model.name = value
+                    }
+                  })
+              }
+            ),
+            h(
+              FormItem,
+              { prop: 'email', label: '邮箱' },
+              {
+                default: () =>
+                  h(Input, {
+                    id: 'scene-form-email',
+                    modelValue: model.email,
+                    'onUpdate:modelValue': (value: string) => {
+                      model.email = value
+                    }
+                  })
+              }
+            )
+          ]
+        }
+      ),
+      h(
+        'button',
+        {
+          id: 'scene-form-outside',
+          type: 'button',
+          style: { position: 'fixed', top: '8px', right: '8px' }
+        },
+        '外部区域'
+      )
+    ])
+}
+
 const scenes: Record<string, () => any> = {
   'time-picker': sceneTimePicker(),
+  form: sceneForm(),
   floating: sceneFloating(),
   table: sceneTable(),
   tree: sceneTree(),

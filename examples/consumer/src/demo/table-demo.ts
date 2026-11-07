@@ -1,4 +1,14 @@
-import { computed, defineComponent, h, ref, shallowRef, watch, type Component, type PropType, type VNodeChild } from 'vue'
+import {
+  computed,
+  defineComponent,
+  h,
+  ref,
+  shallowRef,
+  watch,
+  type Component,
+  type PropType,
+  type VNodeChild
+} from 'vue'
 import {
   HEAVY_GROUP_SIZE,
   TABLE_DEMO_ROWS,
@@ -557,9 +567,7 @@ const TableSceneDemo = defineComponent({
     const tableApi = shallowRef<any>(null)
     const selectedCount = ref(0)
     const editableScene = props.sceneId === 'editable' || props.sceneId === 'editable-heavy'
-    const heavyCount = computed(() =>
-      typeof props.values.heavyRows === 'number' ? props.values.heavyRows : 2000
-    )
+    const heavyCount = computed(() => (typeof props.values.heavyRows === 'number' ? props.values.heavyRows : 2000))
     const editRows = ref<TableEditRow[]>([])
     const editSnapshot = new Map<number, TableEditRow>()
     function resetEditRows(rows: TableEditRow[]): void {

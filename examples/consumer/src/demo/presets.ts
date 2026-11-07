@@ -10,13 +10,7 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
-import {
-  TABLE_LONG_ROWS,
-  TABLE_SPAN_ROWS,
-  TABLE_TREE_ROWS,
-  lazyHeavyRows,
-  lazyHeavyTreeRows
-} from './table-data'
+import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, lazyHeavyRows, lazyHeavyTreeRows } from './table-data'
 
 export interface ScenePreset {
   id: string

@@ -57,7 +57,11 @@ function serveRawPackFile(request, response) {
   const filePath = path.resolve(packDir, fileName)
   // resolve 之后双重校验：既要在 dist/ 内，也要在目标 pack 目录内；
   // 命中即 404（不透露仓库里到底有没有这个文件），不给 path.join 拼接留任何余地。
-  if (!filePath.startsWith(packDir + path.sep) || !filePath.startsWith(packsRoot + path.sep) || !fs.existsSync(filePath)) {
+  if (
+    !filePath.startsWith(packDir + path.sep) ||
+    !filePath.startsWith(packsRoot + path.sep) ||
+    !fs.existsSync(filePath)
+  ) {
     response.statusCode = 404
     response.end('Not found')
     return true

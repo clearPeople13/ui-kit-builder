@@ -46,7 +46,9 @@ export const DERIVED_ARTIFACTS = [
 
 /** 路径标准化：去开头 ./ 与多余斜杠 */
 export function normalizePath(p) {
-  return String(p).replace(/^\.\//, '').replace(/\/{2,}/g, '/')
+  return String(p)
+    .replace(/^\.\//, '')
+    .replace(/\/{2,}/g, '/')
 }
 
 /** 是否为目录前缀（以 / 结尾） */
@@ -61,10 +63,16 @@ export function isDirPrefix(p) {
 export function pathsOverlap(a, b) {
   const x = normalizePath(a)
   const y = normalizePath(b)
-  if (x === y) return true
+  if (x === y) {
+    return true
+  }
   // 双向判定：目录前缀可以互为父子（dist/sub/ 与 dist/ 相交），文件只在相等时相交
-  if (isDirPrefix(x) && y.startsWith(x)) return true
-  if (isDirPrefix(y) && x.startsWith(y)) return true
+  if (isDirPrefix(x) && y.startsWith(x)) {
+    return true
+  }
+  if (isDirPrefix(y) && x.startsWith(y)) {
+    return true
+  }
   return false
 }
 
@@ -134,7 +142,9 @@ function intersectOwns(owns, otherOwns) {
   const hit = []
   for (const a of owns) {
     for (const b of otherOwns) {
-      if (pathsOverlap(a, b)) hit.push(`${a} ∩ ${b}`)
+      if (pathsOverlap(a, b)) {
+        hit.push(`${a} ∩ ${b}`)
+      }
     }
   }
   return hit
@@ -153,7 +163,9 @@ export function checkOverlap(options) {
   const ledger = readLedger(root)
   const conflicts = []
   for (const [id, task] of Object.entries(ledger.tasks)) {
-    if (id === options.excludeId) continue
+    if (id === options.excludeId) {
+      continue
+    }
     const intersect = intersectOwns(validated.owns, task.owns ?? [])
     if (intersect.length) {
       conflicts.push({ id, owner: task.owner, intersect })
@@ -165,7 +177,10 @@ export function checkOverlap(options) {
 /** 取当前 HEAD（不在 git 仓库时返回 null，不阻塞临时目录场景） */
 function resolveBaseCommit(root) {
   try {
-    return execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim()
+    return execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).trim()
   } catch {
     return null
   }
@@ -178,11 +193,17 @@ function resolveBaseCommit(root) {
 export function claim(options) {
   const root = options.root ?? DEFAULT_ROOT
   const id = String(options.id ?? '').trim()
-  if (!id) return { ok: false, error: '--id 不能为空' }
+  if (!id) {
+    return { ok: false, error: '--id 不能为空' }
+  }
   const owner = String(options.owner ?? '').trim()
-  if (!owner) return { ok: false, error: '--owner 不能为空' }
+  if (!owner) {
+    return { ok: false, error: '--owner 不能为空' }
+  }
   const branch = String(options.branch ?? '').trim()
-  if (!branch) return { ok: false, error: '--branch 不能为空' }
+  if (!branch) {
+    return { ok: false, error: '--branch 不能为空' }
+  }
 
   const ledger = readLedger(root)
   if (ledger.tasks[id]) {
@@ -190,10 +211,10 @@ export function claim(options) {
   }
   const check = checkOverlap({ root, owns: options.owns })
   if (!check.ok) {
-    if (check.error) return { ok: false, error: check.error }
-    const detail = check.conflicts
-      .map((c) => `${c.id}(${c.owner}): ${c.intersect.join(', ')}`)
-      .join('；')
+    if (check.error) {
+      return { ok: false, error: check.error }
+    }
+    const detail = check.conflicts.map((c) => `${c.id}(${c.owner}): ${c.intersect.join(', ')}`).join('；')
     return { ok: false, error: `所有权重叠：${detail}`, conflicts: check.conflicts }
   }
 
@@ -223,7 +244,9 @@ export function setStatus(options) {
   const root = options.root ?? DEFAULT_ROOT
   const ledger = readLedger(root)
   const task = ledger.tasks[options.id]
-  if (!task) return { ok: false, error: `任务不存在：${options.id}` }
+  if (!task) {
+    return { ok: false, error: `任务不存在：${options.id}` }
+  }
   if (!STATUSES.includes(options.status)) {
     return { ok: false, error: `--set 必须是 ${STATUSES.join('|')} 之一，收到：${options.status}` }
   }
@@ -243,7 +266,9 @@ export function release(options) {
   }
   const ledger = readLedger(root)
   const task = ledger.tasks[options.id]
-  if (!task) return { ok: false, error: `任务不存在：${options.id}` }
+  if (!task) {
+    return { ok: false, error: `任务不存在：${options.id}` }
+  }
   delete ledger.tasks[options.id]
   writeLedger(root, ledger)
   appendHistory(root, { event: 'release', id: options.id, status, owner: task.owner, branch: task.branch })
@@ -264,17 +289,34 @@ export function gc(options = {}) {
   const kept = []
   for (const [id, task] of Object.entries(ledger.tasks)) {
     const expiresAt = task.claimedAt + task.ttlMinutes * 60_000
-    if (now <= expiresAt) continue
+    if (now <= expiresAt) {
+      continue
+    }
     const clean = isWorktreeClean(root, task)
     if (clean) {
       delete ledger.tasks[id]
       released.push(id)
-      appendHistory(root, { event: 'release', id, status: 'aborted', via: 'gc', reason: 'ttl-expired', owner: task.owner })
+      appendHistory(root, {
+        event: 'release',
+        id,
+        status: 'aborted',
+        via: 'gc',
+        reason: 'ttl-expired',
+        owner: task.owner
+      })
     } else {
       const from = task.status
       task.status = 'aborted'
       kept.push(id)
-      appendHistory(root, { event: 'status', id, from, to: 'aborted', via: 'gc', reason: 'ttl-expired-dirty-worktree', owner: task.owner })
+      appendHistory(root, {
+        event: 'status',
+        id,
+        from,
+        to: 'aborted',
+        via: 'gc',
+        reason: 'ttl-expired-dirty-worktree',
+        owner: task.owner
+      })
     }
   }
   writeLedger(root, ledger)
@@ -283,9 +325,13 @@ export function gc(options = {}) {
 
 /** worktree 是否干净：无 worktree 视为干净（无可检查的工作区，直接回收） */
 function isWorktreeClean(root, task) {
-  if (!task.worktree) return true
+  if (!task.worktree) {
+    return true
+  }
   const dir = path.isAbsolute(task.worktree) ? task.worktree : path.join(root, task.worktree)
-  if (!existsSync(dir)) return true
+  if (!existsSync(dir)) {
+    return true
+  }
   try {
     const out = execFileSync('git', ['-C', dir, 'status', '--porcelain'], { encoding: 'utf8' })
     return out.trim() === ''
@@ -300,8 +346,12 @@ export function verifyBranch(options) {
   const root = options.root ?? DEFAULT_ROOT
   const ledger = readLedger(root)
   const task = ledger.tasks[options.id]
-  if (!task) return { ok: false, error: `任务不存在：${options.id}` }
-  if (!task.baseCommit) return { ok: false, error: `任务 ${options.id} 没有 baseCommit，无法判定 diff` }
+  if (!task) {
+    return { ok: false, error: `任务不存在：${options.id}` }
+  }
+  if (!task.baseCommit) {
+    return { ok: false, error: `任务 ${options.id} 没有 baseCommit，无法判定 diff` }
+  }
   const cwd = task.worktree && path.isAbsolute(task.worktree) ? task.worktree : root
   let files
   try {
@@ -375,7 +425,9 @@ function parseArgv(argv) {
 
 /** 逗号分隔的 owns 转数组 */
 function ownsFrom(value) {
-  if (Array.isArray(value)) return value
+  if (Array.isArray(value)) {
+    return value
+  }
   return String(value ?? '')
     .split(',')
     .map((s) => s.trim())
@@ -424,7 +476,9 @@ export function run(argv) {
         console.error(`claim 失败：${result.error}`)
         return 1
       }
-      console.log(`已认领：${result.task.id}（${result.task.owner} @ ${result.task.branch}）owns=${result.task.owns.join(' ')}`)
+      console.log(
+        `已认领：${result.task.id}（${result.task.owner} @ ${result.task.branch}）owns=${result.task.owns.join(' ')}`
+      )
       return 0
     }
     case 'status': {
@@ -460,7 +514,9 @@ export function run(argv) {
     }
     case 'gc': {
       const result = gc({ root })
-      console.log(`gc：回收 ${result.released.length} 个（${result.released.join(' ') || '无'}），保留 ${result.kept.length} 个（${result.kept.join(' ') || '无'}）`)
+      console.log(
+        `gc：回收 ${result.released.length} 个（${result.released.join(' ') || '无'}），保留 ${result.kept.length} 个（${result.kept.join(' ') || '无'}）`
+      )
       return 0
     }
     case 'verify-branch': {
@@ -471,7 +527,9 @@ export function run(argv) {
       }
       if (!result.ok) {
         console.error(`分支 diff 混入派生产物：`)
-        for (const v of result.violations) console.error(`  - ${v}`)
+        for (const v of result.violations) {
+          console.error(`  - ${v}`)
+        }
         return 1
       }
       console.log(`分支 diff 干净（${result.files.length} 个改动文件，无派生产物）`)

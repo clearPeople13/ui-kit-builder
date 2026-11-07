@@ -243,9 +243,7 @@ describe('DatePicker 日期选择', () => {
       format: 'YYYY-MM-DD HH:mm (summer)'
     })
     await open(wrapper)
-    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map(
-      (el) => el.textContent
-    )
+    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map((el) => el.textContent)
     expect(titles).toEqual(['时', '分'])
     expect(titles).not.toContain('秒')
   })
@@ -253,9 +251,7 @@ describe('DatePicker 日期选择', () => {
   it('格式串含 ss 秒占位时渲染秒列', async () => {
     const wrapper = mountPicker({ type: 'datetime', modelValue: '2026-11-06 08:00:00' })
     await open(wrapper)
-    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map(
-      (el) => el.textContent
-    )
+    const titles = Array.from(document.querySelectorAll('.ui-date-picker__time-title')).map((el) => el.textContent)
     expect(titles).toEqual(['时', '分', '秒'])
   })
 

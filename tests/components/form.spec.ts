@@ -311,7 +311,9 @@ describe('Form 增量校验', () => {
         model: state,
         rules: { mail: [{ pattern: /^[^@\s]+@[^@\s]+$/, message: '邮箱不对', trigger: 'blur' }] }
       },
-      slots: { default: () => [h(FormItem, { prop: 'mail', label: '邮箱' }, () => h(Input, { modelValue: state.mail }))] },
+      slots: {
+        default: () => [h(FormItem, { prop: 'mail', label: '邮箱' }, () => h(Input, { modelValue: state.mail }))]
+      },
       attachTo: document.body
     })
     await nextTick()
@@ -338,7 +340,9 @@ describe('Form 增量校验', () => {
         model: state,
         rules: { name: [{ required: true, message: '必填', trigger: 'change' }] }
       },
-      slots: { default: () => [h(FormItem, { prop: 'name', label: '名称' }, () => h(Input, { modelValue: state.name }))] },
+      slots: {
+        default: () => [h(FormItem, { prop: 'name', label: '名称' }, () => h(Input, { modelValue: state.name }))]
+      },
       attachTo: document.body
     })
     await nextTick()

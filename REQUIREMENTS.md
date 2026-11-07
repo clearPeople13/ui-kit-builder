@@ -1012,3 +1012,27 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 | ---- | ---- | ---- | ---- | ---- |
 | F-86 | `scripts/build-all.mjs` | 改一句构建日志文案，`build:all` 就要重算 175 个特性边际，实测 467s | 组件级与 profile 级缓存键都包含 `build-all.mjs` 全文，把"编排脚本"当成了"计量口径" | 缓存键改用 `SIZE_ALGO_VERSION` 表示计量口径；治理校验扫 diff，算法代码变了却没升版号即报红 |
 | F-87 | `scripts/verify.mjs` | 源码改动后 `git commit` 会卡在 pre-commit：`verify:reuse` 发现指纹不一致就重建 198 份包，钩子超时 | fast 模式沿用了"过期即重建"的复用策略，把重活留在了提交钩子里 | 新增 `--if-fresh`：产物过期时跳过库级校验并说明"pre-push 全量门禁会重建"，钩子回到 14s |
+
+## 27. 优化计划第一波：服务端安全、构建指纹、组件约定与调试台性能（分支 `fix/20261108-opt-wave-1`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` 全库评审的 A1 / A2 / A4 / A5 / A6 / A7 / A8 / A11–A14。按 worktree 隔离 + 路径归属台账并行开发（G0 治理工具同批交付），统一全量门禁后合入。
+
+### 27.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-88 | `scripts/dev-api.mjs` | `/packs/:packId/*` 的 `packId` 未校验，`GET /packs/../.git/config` 这类路径能读到仓库外文件 | `packId` / `fileName` 直接拼进 `path.resolve`，没有任何 `..` 与分隔符拦截 | 入参拒绝 `..` 与路径分隔符；resolve 后双重 `startsWith` 确认仍落在 `dist/<packId>/` 内，不存在返回 404 |
+| F-89 | `scripts/build-all.mjs` | 改了 `table` 里 import 的 `checkbox`，缓存指纹不识别，`build:all` 复用旧特性产物 | 组件指纹只含自身目录，漏掉跨组件 import 闭包；`builtinInputs` 也没含 `package.json` / `tsconfig.json` / `vite.config.mjs` | `siblingComponentDeps` 沿源码 import 收集跨组件目录并入指纹；`builtinInputs` 补三份根配置 |
+| F-90 | `registry.mjs` | `spec.mjs` 里 `requires` 成环时 `visit()` 无限递归，报 `RangeError: Maximum call stack size exceeded`，看不出是哪两个特性互相依赖 | 递归前没有 visiting 集合，只有事后 `seen` | 加 `visiting` 集合：入递归前登记、出递归摘除，撞环直接抛带 `status=400` 的错误并点明环上特性 |
+| F-91 | `packages/ui-kit/src/shared/behavior.ts` | dialog 里开 select，一次 Escape 把两层一起关掉 | overlay 公共层 Escape 处理不查 `defaultPrevented`；内层 select 只 `preventDefault` 不 `stopPropagation`，按键冒泡到外层 overlay | `handleKeydown` 前置 `defaultPrevented` 检查；内层浮层接管后外层不再响应。回归用例：dialog 内开 select，第一次 Escape 只关 select、第二次才关 dialog |
+| F-92 | `packages/ui-kit/src/components/date-picker/core.ts` | 格式串 `YYYY-MM-DD HH:mm (summer)` 这种含字面 `s` 的串会误渲染秒列 | `showSeconds` 用 `pattern.includes('s')` 判断，把字面量当占位符 | 改用 `shared/date` 的 `hasSecondsToken`（与 time-picker 同一判定口径），只认 `s` / `ss` token |
+| F-93 | `packages/ui-kit/src/components/form/core.ts` | A 字段每次输入都会把 B 字段的 validator 重跑一遍（远程查重等副作用被无辜触发）；`FormRule.trigger` 写了不生效 | `watch(model, validateFields, {deep, immediate})` 全量校验所有字段，trigger 字段无人读取 | 按 path 快照比对（Date / 数组 / 嵌套对象安全）找出变更字段，只重校验 trigger 含 `change` 的规则；FormItem 挂 `focusout` + `blurCapture` 冒泡失焦，只重校验 trigger 含 `blur` 的规则；首次 immediate 保持整表校验兼容既有行为 |
+| F-94 | `packages/ui-kit/src/shared/component.ts` 及 10 个组件 | input / checkbox / switch 等挂 `onChange` 后一次操作回调两次 | 事件未声明进 `emits` 时监听留在 `attrs` 被铺到根节点成原生监听，组件内 `emit()` 又回退调用 `attrs` 同名监听，原生冒泡 + emit 回退 = 双通道 | select / date-picker / input / checkbox / checkbox-button / checkbox-group / switch / input-number / cascader / autocomplete 按实际 `emit()` 补全 `emits` 声明（Vue 自动把对应监听从 attrs 剔除）；component.ts 补机制说明注释；每组件加「只触发一次」回归用例 |
+| F-95 | `packages/ui-kit/src/components/button/core.ts` | 连点按钮产生的 ripple `setTimeout` 在组件卸载后才回调，闭包持有已卸载实例 | 水波纹定时器没有登记与清理 | `waveTimers` 集合登记全部定时器，`onBeforeUnmount` 统一 `clearTimeout`；affix / infinite-scroll 同批补泄漏守卫用例 |
+| F-96 | `examples/consumer/src/demo/table-data.ts` / `scenes.ts` / `table-demo.ts` | 切到 Table 场景明显卡顿：预设的 10 万行数据在模块加载时 eager 生成约 175k 行；每次场景切换对所有 preset 值 `structuredClone`；`heavyRows` 非响应式导致重渲染失效 | presets.ts 顶层执行重计算；scenes.ts 无差别深拷贝；table-demo 直接暴露静态数组 | 重数据改惰性工厂（首次用到才生成，引用不变复用）；`presetValues` 按引用物化惰性值（小值仍 structuredClone）；`heavyRows` 改 `computed` + `watch`。10 万行场景切换 180–200ms → 0.12ms（同引用），配套 `scripts/bench-heavy.mjs` 基准 |
+
+### 27.2 验证
+
+- 组件层全量：95 文件 1597 用例通过（含本批新增回归：Escape 分层、秒列判定、form 增量校验、emits 单通道、泄漏守卫）。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`，连同 G0 治理工具与派生产物刷新一并验证。
+- 缺陷口径：F-1…F-96 全部修复，三处文档（README / KNOWLEDGE / REQUIREMENTS）同步为 96 条。

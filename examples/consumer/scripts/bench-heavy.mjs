@@ -68,7 +68,10 @@ assert(
 
 // 普通预设不受影响：仍是物化好的数组
 const spanPreset = tablePresets.find((item) => item.id === 'span')
-assert(Array.isArray(spanPreset.values.data) && spanPreset.values.data.length === 8, '普通预设（span）的 data 仍是物化数组')
+assert(
+  Array.isArray(spanPreset.values.data) && spanPreset.values.data.length === 8,
+  '普通预设（span）的 data 仍是物化数组'
+)
 
 // ---- 2. presetValues 成本对比（以 10 万行场景为例）----
 const entry = { name: 'Table', controls: [] }
@@ -102,8 +105,13 @@ assert(
 for (const preset of heavyPresets) {
   const value = presets.resolvePresetValue(preset.values.data)
   const length = Array.isArray(value) ? value.length : 0
-  const expect = { 'heavy-data': 5000, 'heavy-data-20k': 20000, 'heavy-data-100k': 100000, 'heavy-variable': 50000 }[preset.id]
-  assert(preset.id === 'heavy-tree' ? length === 20 : length === expect, `${preset.id} 首次解析行数正确（${length}${preset.id === 'heavy-tree' ? ' 根节点，展开后 5220 行' : ''}）`)
+  const expect = { 'heavy-data': 5000, 'heavy-data-20k': 20000, 'heavy-data-100k': 100000, 'heavy-variable': 50000 }[
+    preset.id
+  ]
+  assert(
+    preset.id === 'heavy-tree' ? length === 20 : length === expect,
+    `${preset.id} 首次解析行数正确（${length}${preset.id === 'heavy-tree' ? ' 根节点，展开后 5220 行' : ''}）`
+  )
   assert(presets.resolvePresetValue(preset.values.data) === value, `${preset.id} 重复解析返回缓存引用`)
 }
 

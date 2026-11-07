@@ -78,7 +78,7 @@ describe('路径边界重叠判定', () => {
 })
 
 describe('派生产物不可 own', () => {
-  it.each(DERIVED_ARTIFACTS)('owns 命中 %s 一律拒绝', (artifact) => {
+  it.each(DERIVED_ARTIFACTS)('owns 命中 %s 一律拒绝', (...[artifact]) => {
     expect(hitsDerivedArtifact(artifact)).toBe(true)
     const result = claim(claimArgs({ owns: [artifact] }))
     expect(result.ok).toBe(false)
@@ -110,7 +110,11 @@ describe('check 干跑校验', () => {
     const result = checkOverlap({ root, owns: ['packages/ui-kit/src/components/button/core.ts'] })
     expect(result.ok).toBe(false)
     expect(result.conflicts).toEqual([
-      { id: 't1', owner: 'alice', intersect: ['packages/ui-kit/src/components/button/core.ts ∩ packages/ui-kit/src/components/button/'] }
+      {
+        id: 't1',
+        owner: 'alice',
+        intersect: ['packages/ui-kit/src/components/button/core.ts ∩ packages/ui-kit/src/components/button/']
+      }
     ])
   })
 
@@ -254,7 +258,9 @@ describe('CLI', () => {
   })
 
   it('claim → list --json → release 全链路走 CLI', () => {
-    expect(() => cli(['claim', '--id', 'cli1', '--owner', 'bob', '--branch', 'feat/cli1', '--owns', 'registry.mjs,tests/build/'])).not.toThrow()
+    expect(() =>
+      cli(['claim', '--id', 'cli1', '--owner', 'bob', '--branch', 'feat/cli1', '--owns', 'registry.mjs,tests/build/'])
+    ).not.toThrow()
     const listed = JSON.parse(cli(['list', '--json']))
     expect(listed.cli1).toMatchObject({ owner: 'bob', owns: ['registry.mjs', 'tests/build/'], status: 'running' })
     expect(() => cli(['release', '--id', 'cli1'])).not.toThrow()
@@ -265,7 +271,10 @@ describe('CLI', () => {
     cli(['claim', '--id', 'c1', '--owner', 'a', '--branch', 'b/c1', '--owns', 'tests/'])
     let stderr = ''
     try {
-      execFileSync(process.execPath, [SCRIPT, '--root', root, 'check', '--owns', 'tests/build/'], { encoding: 'utf8', stdio: 'pipe' })
+      execFileSync(process.execPath, [SCRIPT, '--root', root, 'check', '--owns', 'tests/build/'], {
+        encoding: 'utf8',
+        stdio: 'pipe'
+      })
     } catch (err) {
       stderr = String((err as { stderr: string }).stderr)
     }

@@ -12,6 +12,9 @@ export default tseslint.config(
       '_scratch/**',
       '.tmp/**',
       '.trae-html-share-packages/**',
+      // 并行开发的 worktree：里面的 dist/ 构建产物与类型探针是开发期噪音，
+      // 与主树 dist/** 同理排除（gitignore 已排除，eslint 也要显式声明）
+      '.worktrees/**',
       // 类型探针：刻意使用 `{}` 作为 Vue 泛型占位，不属于产品代码
       'examples/consumer/.type-probe/**',
       '**/*.d.ts'
