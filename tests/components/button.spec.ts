@@ -136,6 +136,27 @@ describe('Button', () => {
     }
   })
 
+  it('卸载后清空未触发的 wave 兜底定时器，无定时器回调残留', async () => {
+    vi.useFakeTimers()
+    // 须在 useFakeTimers 之后打 spy，包裹的是 fake clearTimeout 且默认透传
+    const clearSpy = vi.spyOn(globalThis, 'clearTimeout')
+    try {
+      const wrapper = mountButton()
+      await wrapper.trigger('click')
+      expect(wrapper.findAll('.ui-button__wave').length).toBe(1)
+      clearSpy.mockClear()
+      wrapper.unmount()
+      // 未触发的兜底回收定时器必须被 clearTimeout 清掉
+      expect(clearSpy).toHaveBeenCalled()
+      // 卸载后推进时间：残留的回调若写 ripples 会触发已卸载实例的副作用，
+      // 这里不抛错、不再产生渲染即证明无残留回调在跑
+      await vi.advanceTimersByTimeAsync(5000)
+    } finally {
+      clearSpy.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
   it('禁用时点击不产生水波', async () => {
     const wrapper = mountButton({ disabled: true })
     await wrapper.trigger('click')

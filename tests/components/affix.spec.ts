@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { nextTick } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Affix } from '@ui-kit-full'
 
 // happy-dom 没有真实布局：getBoundingClientRect 恒为 0、滚动位置不可用，
@@ -68,6 +68,43 @@ describe('Affix 固钉', () => {
       window.dispatchEvent(new Event('scroll'))
       window.dispatchEvent(new Event('resize'))
     }).not.toThrow()
+  })
+
+  it('卸载时与挂载成对移除 scroll / resize 监听（同函数引用）并取消待处理的 rAF', () => {
+    const addSpy = vi.spyOn(window, 'addEventListener')
+    const removeSpy = vi.spyOn(window, 'removeEventListener')
+    const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame')
+    try {
+      const wrapper = mountAffix()
+      // 收集挂载期间绑定在 window 上的 scroll / resize 处理器
+      const bound = new Map<string, EventListener[]>()
+      for (const [type, listener] of addSpy.mock.calls) {
+        if ((type === 'scroll' || type === 'resize') && typeof listener === 'function') {
+          bound.set(type, [...(bound.get(type) ?? []), listener as EventListener])
+        }
+      }
+      expect(bound.get('scroll')?.length).toBeGreaterThan(0)
+      expect(bound.get('resize')?.length).toBeGreaterThan(0)
+      wrapper.unmount()
+      // 每个绑定过的处理器都必须以同引用出现在 removeEventListener 里
+      const removed = new Map<string, EventListener[]>()
+      for (const [type, listener] of removeSpy.mock.calls) {
+        if ((type === 'scroll' || type === 'resize') && typeof listener === 'function') {
+          removed.set(type, [...(removed.get(type) ?? []), listener as EventListener])
+        }
+      }
+      for (const [type, listeners] of bound) {
+        for (const listener of listeners) {
+          expect(removed.get(type) ?? []).toContain(listener)
+        }
+      }
+      // 挂载时 bind() 立即 schedule()，卸载须 cancel 掉这个待处理的 rAF
+      expect(cancelSpy).toHaveBeenCalled()
+    } finally {
+      addSpy.mockRestore()
+      removeSpy.mockRestore()
+      cancelSpy.mockRestore()
+    }
   })
 
   it('spec.mjs 未声明任何可选特性：产物根节点只带核心类名', () => {

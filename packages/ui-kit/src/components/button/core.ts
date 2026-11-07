@@ -1,5 +1,5 @@
 import type { Component, VNodeChild } from 'vue'
-import { defineComponent, h, inject, shallowRef } from 'vue'
+import { defineComponent, h, inject, onBeforeUnmount, shallowRef } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { UI_CONFIG_KEY } from '../../shared/config'
 import { mergeStyles } from '../../shared/utils'
@@ -113,10 +113,18 @@ export function createButton(features: UiFeature[] = []) {
       // （wave-animation token + theme.rawCss 注入的 @keyframes），未配置动画时节点不可见
       const ripples = shallowRef<WaveRipple[]>([])
       let waveSeq = 0
+      // 兜底回收定时器登记在册，卸载时统一清掉，避免卸载后回调写已死实例
+      const waveTimers = new Set<ReturnType<typeof setTimeout>>()
 
       function removeRipple(id: number) {
         ripples.value = ripples.value.filter((ripple) => ripple.id !== id)
       }
+
+      onBeforeUnmount(() => {
+        waveTimers.forEach((timer) => clearTimeout(timer))
+        waveTimers.clear()
+        ripples.value = []
+      })
 
       function handleWaveClick(event: MouseEvent) {
         if (resolved.disabled) {
@@ -138,7 +146,11 @@ export function createButton(features: UiFeature[] = []) {
           }
         ]
         // animationend 在动画被取消或隐藏视口下不触发，按淡出时长超时兜底回收
-        setTimeout(() => removeRipple(id), waveCleanupDelayMs(target))
+        const timer = setTimeout(() => {
+          waveTimers.delete(timer)
+          removeRipple(id)
+        }, waveCleanupDelayMs(target))
+        waveTimers.add(timer)
       }
 
       function renderWaveRipples(): VNodeChild {
