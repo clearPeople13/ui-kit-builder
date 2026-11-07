@@ -192,14 +192,14 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 §9.4 里排在第三位的缺口——"profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据"——本批补齐；同时把"靠本地自觉执行 `npm run quality`"换成机制。
 
-### 10.1 门禁清单（第五批时九段，第七批起十段，构建流水线优化后十一段，第八批起十二段）
+### 10.1 门禁清单（第五批时九段，第七批起十段，构建流水线优化后十一段，第八批起十二段，第九批起十三段）
 
-`npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 治理校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
+`npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 治理校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **视觉体检** → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
 
 | 段落     | 命令                                   | 说明                                                                     |
 | -------- | -------------------------------------- | ------------------------------------------------------------------------ |
 | 秒级五段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验 / 治理校验，`.githooks/pre-commit` 就是它 |
-| 全量十二段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
+| 全量十三段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、视觉体检、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
 | 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位（该段仍会自行构建）                         |
 | 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
 
@@ -442,3 +442,58 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 编号断档：第一次顺延后主线 F-53 尚未合入，守卫报 `缺陷编号断档：缺 F-53`；第二次顺延后构建流水线的 F-54 尚未合入，报 `缺 F-54`；两边都合入后转为「已登记 65 条，最大 F-65」且退出码 0。
 - **守卫自身盲点（已修）**：初版用 `git diff`（只看未暂存）取改动面，开发者只要先 `git add`，影响面清单就会打印"本次无源码改动"后静默跳过。改为 `git diff HEAD`（未暂存 + 已暂存）与 `git diff HEAD -- <components>`，并对未跟踪的新 `core.ts` 按全文补扫交互关键字。同一批已暂存改动的前后对照：修复前跳过，修复后重新报出「shared/date.ts 同族 3 个组件」「time-picker 浏览器层 1 个文件」。
 - **合并兼容性**：并行的构建流水线分支会把 `quality` 改成委托 `ci.mjs`、并新增统一 `build` 段。治理校验的段数判定同时认硬编码 `npm run` 链与委托形态；另外常驻一条「STAGES 必须含 `governance` 且 `package.json` 必须有 `verify:governance`」的守卫，避免合并 `ci.mjs` 时把治理段覆盖掉、让治理校验变成"没进门禁的脚本"。
+
+## 16. 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`）
+
+### 16.1 报障与定性
+
+外部用调试台截图指出：TimePicker 输入框里仍套着一个深灰矩形边框，与外层圆角容器构成"框中框"；而第八批结案时写的是"已修复、可避免"。**这个结论不合理，本批先认账再补机制。**
+
+根因不是用例数量不够，而是整条验证链路没有视觉维度：
+
+- 组件层 39 条 TimePicker 用例跑在 happy-dom，矩形恒为 0、没有 CSS 合成器，断言的是"抛了什么事件 / 改了什么草稿"；
+- 浏览器层 `time-picker.scene.spec.ts` 7 条断言焦点链与写回序列，同样不看样式；
+- 布局指纹只比矩形，像素基线把"录入那一刻的样子"当成真理——双层边框在基线录入前就存在，于是被固化成正确答案，之后永不报警；
+- 助手没有主动查看组件外观的入口，只能凭断言绿就宣布"可避免"。
+
+也就是说：前三层能防"逻辑回归"，防不住"本来就没画对"；补第 N 条用例也补不出视觉能力。用户问"还有什么要补"，补的是**能力**，不是用例。
+
+### 16.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ----------- |
+| F-66 | `time-picker/core.css`、`features/editable/style.css` | 触发区圆角外壳里套着原生 `<input>` 的 2px 深灰边框、白色不透明底、2px 内边距与 Arial 字体，形成双层边框；文本相对图标内缩、字体与外壳不一致 | F-16 把触发区从 `span` 换成真实 `<input>` 时，`.ui-time-picker__value` / `__placeholder` 只写了 flex / 省略号，漏掉 `border: 0`、`background: transparent`、`padding: 0`、`font: inherit`、`appearance: none` 等原生外观复位；`controls.css` 的 reset 只覆盖 `.ui-input__inner` 等类名，不含 TimePicker | `core.css` 补齐完整复位 + `::placeholder` 口径；`editable/style.css` 承载 `cursor: text`；由 `audit:visual` 的 `nested-border` 规则常驻阻断 |
+
+按约定做了全库同类扫描：视觉体检在真实 Chromium 里覆盖 **124 个导出组件 / 21 个可见原生控件**，逐条查计算样式与矩形；除 TimePicker 外没有第二处双层边框（`InputTag` 的 4px 内边距是标签间留白的设计，记为 warning 不阻断）。修复后复跑：**0 项阻断 / 1 项提示**，并逐张查看 `TimePicker` 元素图与 `?scene=time-picker` 首屏确认内框消失、图标 / 文本 / 箭头落回同一条容器。
+
+### 16.3 补上的能力：视觉体检（`scripts/visual-audit.mjs`，门禁第十段）
+
+不依赖任何基线，把"肉眼可见的丑"翻译成可计算契约：
+
+| 规则 | 判定 | 级别 |
+| ---- | ---- | ---- |
+| `nested-border` | 组件内部原生控件自己画了可见边框，且祖先容器也画了边框 | error（阻断） |
+| `opaque-fill` | 内层控件背景不透明，与外壳底色叠成色块 | warning |
+| `nested-padding` | 内层控件还有左右内边距，文本相对图标内缩 | warning |
+| `font-mismatch` | 内层控件字体与外壳不一致 | warning |
+| `clipped-text` | 输入值宽超出可见宽且未省略 | error（阻断） |
+| `render-gap` | 组件没渲染根节点 / 声明数与渲染数或截图数不符 / 重点场景缺失 | error（阻断） |
+
+同时产出**看得见的复核入口**（这是"视觉能力"的另一半）：`visual-report/shots/` 下 124 张逐组件元素截图 + 6 张重点场景首屏（`floating` / `table` / `tree` / `color` / `a11y` / `time-picker`），`visual-report/index.html` 是可直接打开的画廊，阻断项标红、写明命中规则与具体数值。截图前停掉动画 / 过渡 / 光标，整页只截一次再按文档坐标裁出逐组件图（初版逐元素截图 124 次要跑 278s，改后整段约十几秒），零尺寸组件写占位图并标注"默认态无内容"；画廊已 gitignore，每次体检重新生成。
+
+**流程约定（写进 `KNOWLEDGE.md` §5.1 第 5 道闸）**：涉及样式改动，除了门禁全绿，必须跑 `npm run audit:visual` 并**亲眼看画廊对应的 PNG** 才能宣告修复；不许只凭断言绿就写"可避免"。助手侧用图像查看能力打开截图复核，修复前后各一次。
+
+### 16.4 门禁与自守卫
+
+- `package.json` 新增 `audit:visual`；`scripts/ci.mjs` STAGES 在 `test:browser` 之后插入 `visual` 段，门禁由十二段扩到**十三段**；`quality` 委托形态不变，段数由治理校验统一核对。
+- `verify:governance` 新增视觉能力自守卫：STAGES 必须含 `visual` 且 `package.json` 有 `audit:visual`；`AUDIT_RULES` 不少于 6 条；`NON_VISUAL` 豁免清单必须覆盖 harness 的 `GALLERY_SKIP`；`FOCUS_SCENES` 每个场景都在 harness 的 `scenes` 登记；脚本必须按 error 数决定退出码。顺带修掉段数映射里 `十二段` 重复键（原本 `十一段` 写成了第二个 `十二段`）。
+- 体检器自身反向守卫：豁免清单里的辅助组件（`CollapseTransition` / `Collection` / `OnlyChild` / `CollectionItem`）若哪天渲染出可见根节点，立即报 `render-gap` error，要求移出白名单接受正常体检，白名单不会变成藏缺陷的后门。
+- 规则降噪：1×1 透明隐藏域（单选 / 复选的原生 input）不参与契约；默认态零尺寸不再算异常，只在画廊标注需到重点场景复核。
+
+### 16.5 产物与数字
+
+- 新增 `scripts/visual-audit.mjs`；改动 `package.json`、`scripts/ci.mjs`、`scripts/verify-governance.mjs`、`.gitignore`、三份文档与 TimePicker 两份 CSS。
+- 视觉体检基线：124 组件 / 21 可见原生控件 / 124 张组件图 / 6 张重点场景图 / 6 条规则；修复前 1 项阻断（F-66）+ 4 项样式提示，修复后 0 项阻断 + 1 项提示。
+- 门禁十三段，STAGES 与 `npm run quality` 段数一致；`KNOWLEDGE.md` 的「唯一门禁（十三段）」、README 与 pre-push 注释同步。
+- 缺陷 F-1…F-66 全部修复，守卫文件已删除，无 `it.fails` 长期挂账。
+- 用例数不变（组件层 95 文件 1582 条、构建器侧 8 文件 95 条、profile 2 文件 142 条、浏览器 11 文件 65 条）：本批交付的是门禁能力与复核入口，不是用例。

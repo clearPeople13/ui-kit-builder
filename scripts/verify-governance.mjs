@@ -215,7 +215,9 @@ const stageCount = (ciText.match(/\{\s*name:/g) ?? []).length
 // quality 既可能是硬编码 && 链，也可能委托给 ci.mjs（构建流水线优化后的形态）；两种都要校对段数
 const qualityScript = pkg.scripts.quality ?? ''
 const qualityCount = qualityScript.includes('ci.mjs') ? stageCount : (qualityScript.match(/npm run /g) ?? []).length
-const stated = { 十段: 10, 十二段: 11, 十二段: 12, 十三段: 13 }[read('KNOWLEDGE.md').match(/唯一门禁（([^）]+)）/)?.[1]]
+const stated = { 九段: 9, 十段: 10, 十一段: 11, 十二段: 12, 十三段: 13 }[
+  read('KNOWLEDGE.md').match(/唯一门禁（([^）]+)）/)?.[1]
+]
 if (qualityCount !== stageCount || stated !== stageCount) {
   fail(`门禁段数不一致：quality ${qualityCount} / ci STAGES ${stageCount} / KNOWLEDGE ${stated ?? '未标注'}`)
 }
@@ -224,6 +226,39 @@ if (!/name:\s*['"]governance['"]/.test(ciText) || !pkg.scripts['verify:governanc
   fail('门禁 STAGES 缺少 governance 段或 package.json 缺 verify:governance（并行合并易覆盖，必须补回）')
 }
 notes.push(`文档数字：组件 ${componentCount}、门禁 ${stageCount} 段（governance 已接入）`)
+
+// ---- 3.0 视觉体检能力的自守卫 ----
+// 像素基线的前提是"当前这版是对的"，只能防漂移、发现不了本来就有双层边框。
+// 视觉体检器是唯一能发现"现状就长歪了"的一层，因此它的存在、规则集、
+// 豁免名单与重点场景都要静态锁死，防止合并 ci.mjs / 改探针页时被悄悄架空。
+const visualText = read('scripts/visual-audit.mjs')
+const harnessText = read('tests/browser/harness/main.ts')
+if (!/name:\s*['"]visual['"]/.test(ciText) || !pkg.scripts['audit:visual']) {
+  fail('门禁 STAGES 缺少 visual 段或 package.json 缺 audit:visual（视觉体检能力被摘掉）')
+}
+const ruleBody = visualText.match(/export const AUDIT_RULES = \[([^\]]+)\]/)?.[1] ?? ''
+const ruleCount = (ruleBody.match(/'[^']+'/g) ?? []).length
+if (ruleCount < 6) {
+  fail(`视觉体检规则集只剩 ${ruleCount} 条（要求至少 6 条），规则被删空会让门禁空转`)
+}
+const skipBody = harnessText.match(/const GALLERY_SKIP = \[([^\]]*)\]/)?.[1] ?? ''
+const nonVisualBody = visualText.match(/export const NON_VISUAL = \[([^\]]*)\]/)?.[1] ?? ''
+for (const match of skipBody.matchAll(/'([^']+)'/g)) {
+  if (!nonVisualBody.includes(`'${match[1]}'`)) {
+    fail(`harness 跳过了 ${match[1]}，但视觉体检的 NON_VISUAL 豁免清单没有登记它`)
+  }
+}
+const focusBody = visualText.match(/const FOCUS_SCENES = \[([^\]]*)\]/)?.[1] ?? ''
+const focusScenes = [...focusBody.matchAll(/'([^']+)'/g)].map((match) => match[1])
+for (const scene of focusScenes) {
+  if (!harnessText.includes(`'${scene}':`) && !harnessText.includes(`${scene}: scene`)) {
+    fail(`视觉体检的重点场景 ${scene} 没有在 harness 的 scenes 里登记，画廊会拿到空白页`)
+  }
+}
+if (!visualText.includes('process.exit(errors.length ? 1 : 0)')) {
+  fail('视觉体检器没有按 error 数量决定退出码，门禁段会永远绿')
+}
+notes.push(`视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / 豁免清单与 harness 对齐`)
 
 // ---- 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径 ----
 // 两条并行分支各自按"开工时的最大编号 + 1"登记，合入后会出现同号不同缺陷；

@@ -1,3 +1,8 @@
 .ui-time-picker--editable {
-  /* 编辑与新增 */
+  /* 可键入时把光标准确交还给文本，其余外观仍由触发区外壳统一提供 */
+}
+
+.ui-time-picker--editable .ui-time-picker__value,
+.ui-time-picker--editable .ui-time-picker__placeholder {
+  cursor: text;
 }
