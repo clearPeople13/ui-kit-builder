@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T21:48:33.783Z",
+  "generatedAt": "2026-11-07T22:07:30.248Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -189,6 +189,76 @@
       },
       "features": [],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -196,6 +266,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -818,6 +924,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -825,6 +1001,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -1447,6 +1659,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -1454,6 +1736,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -2076,6 +2394,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -2083,6 +2471,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -2705,6 +3129,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -2712,6 +3206,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -3334,6 +3864,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -3341,6 +3941,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -3963,6 +4599,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -3970,6 +4676,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -4592,6 +5334,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -4599,6 +5411,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -5221,6 +6069,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -5228,6 +6146,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -5850,6 +6804,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -5857,6 +6881,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -6479,6 +7539,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -6486,6 +7616,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -7108,6 +8274,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -7115,6 +8351,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -7737,6 +9009,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -7744,6 +9086,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -8366,6 +9744,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -8373,6 +9821,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -8995,6 +10479,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -9002,6 +10556,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -9624,6 +11214,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -9631,6 +11291,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -10253,6 +11949,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -10260,6 +12026,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -10882,6 +12684,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -10889,6 +12761,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -11511,6 +13419,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -11518,6 +13496,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }
@@ -12140,6 +14154,76 @@
         "watermark.popper"
       ],
       "slots": {
+        "checkbox": {
+          "Checkbox": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "CheckboxGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
+            }
+          ]
+        },
+        "dialog": {
+          "Dialog": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "drawer": {
+          "Drawer": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
         "input": {
           "Input": [
             {
@@ -12147,6 +14231,42 @@
               "scope": null,
               "fallback": false,
               "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        },
+        "radio": {
+          "Radio": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioButton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
+          "RadioGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
+            }
+          ]
+        },
+        "upload": {
+          "Upload": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ]
         }

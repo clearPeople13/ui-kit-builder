@@ -1902,6 +1902,14 @@
               "description": "原生 aria-controls"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "复选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
           "features": [
             {
               "id": "checkbox.appearance",
@@ -1997,6 +2005,14 @@
               "description": "原生 aria-controls"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
           "features": [],
           "methods": []
         },
@@ -2055,6 +2071,14 @@
               "name": "ariaLabel",
               "type": "string",
               "description": "原生 aria-label 无障碍标签"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "复选组合内容，仅在未配置 options 时渲染包裹的 Checkbox/CheckboxButton（无默认内容）"
             }
           ],
           "features": [],
@@ -3244,6 +3268,26 @@
               "description": "初始 z-index"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "对话框主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ],
           "features": [
             {
               "id": "dialog.closable",
@@ -3451,6 +3495,26 @@
               "type": "string",
               "default": "rtl",
               "description": "排列方向"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+            },
+            {
+              "name": "header",
+              "scope": null,
+              "fallback": true,
+              "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+            },
+            {
+              "name": "footer",
+              "scope": null,
+              "fallback": false,
+              "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
             }
           ],
           "features": [
@@ -6515,6 +6579,14 @@
               "description": "原生 name 属性"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+            }
+          ],
           "features": [
             {
               "id": "radio.appearance",
@@ -6568,6 +6640,14 @@
               "type": "string",
               "default": null,
               "description": "原生 name 属性"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
             }
           ],
           "features": [],
@@ -6637,6 +6717,14 @@
               "name": "ariaLabel",
               "type": "string",
               "description": "原生 aria-label 无障碍标签"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
             }
           ],
           "features": [],
@@ -10253,6 +10341,14 @@
               "name": "beforeRemove",
               "type": "(...args: any[]) => any",
               "description": "移除前钩子，返回 false 阻止移除"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
             }
           ],
           "features": [
