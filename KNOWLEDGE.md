@@ -122,11 +122,24 @@ tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基
 2. **必须先见红**：重建 `tests/findings.spec.ts`，用 `it.fails` 断言"修复后应满足"的行为，在**未修代码**上必须全部见红（表现为守卫文件全绿），证明用例真的打到了缺陷上；修完后 `it.fails` 会反过来报 `Expect test to fail`，此时才允许降级。该路径常驻两份 vitest 配置的 include，否则根目录守卫永远不会被跑到。
 3. **影响面清单**：动手前跑治理校验。改了 `shared/*` → 引用它的同族组件必须各有组件层回归用例；改了 `core.ts` 里的点击 / 焦点 / 浮层代码 → 该组件必须有浏览器层场景契约用例（组件层证不了焦点链）。同时全库扫描"feature 提供的布尔 prop 被写成 `props.x !== false`"这一裁剪语义陷阱。改动面必须取 `git diff HEAD`：只看 `git diff` 会在 `git add` 之后静默跳过检查，未跟踪的新 `core.ts` 还要按全文补扫一遍。
 4. **基线零漂移**：改前录组件层行为快照与浏览器层 `snap:layout` / `snap:pixels`；改后只接受报障场景由红转绿，其余快照零漂移、覆盖率四维阈值不下降。任何额外变化自动判失败。
-5. **全链路归档**：`npm run quality` 十二段全绿 → 守卫改常规 `it` 搬进组件层 → 删 `tests/findings.spec.ts` → F-NN 写清根因、影响面、同族审计结论。
+5. **全链路归档**：`npm run quality` 十三段全绿 → 守卫改常规 `it` 搬进组件层 → 删 `tests/findings.spec.ts` → F-NN 写清根因、影响面、同族审计结论。样式类缺陷还要额外跑 `npm run audit:visual` 并**亲眼看画廊截图**再宣告修复，不能只信断言（见 §5.2）。
 
 **基线漂移归因口径**：`snap:layout` / `snap:pixels` 报漂移时按这个顺序排查，不许直接重录基线 —— ① 同一次运行连跑两遍是否都漂（环境抖动可复现）；② 差异图是否集中在字体 / AA / 动画（截图稳定化问题）；③ `git diff` 是否触及该场景的 CSS 令牌或组件结构（真回归）。只有 ③ 成立且确认是预期视觉变更才允许 `snap:*` 重录，并在提交信息里写明场景与原因。
 
 **同类缺陷满三次触发全库扫描**：确认"已审计但无害"的命中项也必须写进 `REQUIREMENTS.md`，并在守卫白名单里带上对应 A-NN 编号；白名单没登记会让门禁变红，不许变成绕过检查的后门。
+
+### 5.2 视觉能力：像素基线之外的体检层（第九批起强制执行）
+
+**像素基线不能发现问题，只能发现变化。** 它的隐含前提是"录入基线那一版是对的"：TimePicker 的双层边框（F-66）在基线录好之前就存在，于是被当成正确答案固化下来，之后无论怎么用 `snap:pixels` 都测不出来。组件层单测跑在 happy-dom 里（矩形恒为 0、没有合成器），浏览器层场景用例断言的是"点了以后抛什么事件"，三层都看不见"这个框长什么样"。外部报障靠人眼截图，助手自己没有视觉入口，就会得出"已修复、可避免"这种没有证据的结论。
+
+`npm run audit:visual`（`scripts/visual-audit.mjs`，门禁第十段）补的是**能力**，不是又一批用例：
+
+- **可计算的视觉契约**：真实 Chromium 加载 `?scene=gallery`，对 124 个导出组件、21 个可见原生控件逐条查 `getComputedStyle` 与矩形，把"肉眼可见的丑"翻译成客观事实——双层边框（`nested-border`，阻断）、内层不透明底色、内层额外内边距、字体与外壳错配、文本被裁切、渲染缺口。不读源码、不比快照，所以能发现"现在就错"，跨主题跨 profile 都成立。
+- **看得见的产物**：`visual-report/` 下每个组件一张元素截图、6 个重点场景一张首屏，`index.html` 是可直接打开的画廊，阻断项标红并写明命中规则。**改样式后必须亲眼看图**（助手用图像查看能力打开对应 PNG）再宣告修复；这一步写进 §5.1 第 5 道闸，防止"断言绿了但界面还是歪的"。
+- **自守卫**：`verify:governance` 静态核对门禁必须含 `visual` 段、规则集不少于 6 条、`NON_VISUAL` 豁免清单覆盖 harness 的 `GALLERY_SKIP`、重点场景都在 harness 登记、脚本按 error 数决定退出码。体检器自身还有反向守卫：豁免清单里的组件哪天渲染出可见根节点就报错，白名单不会变成藏缺陷的后门。
+- 截图前注入静止样式（停动画/过渡/光标），**整页只截一次再按文档坐标裁出 124 张组件图**（逐元素截图会让门禁多跑四分钟），零尺寸组件写占位图并在画廊标注"默认态无内容"；画廊不进版本库，每次体检重新生成。
+
+判定口径：`error` 非零退出，`warning` 只进画廊提示（例如 `InputTag` 输入框的 4px 内边距是设计如此）。**不要**为了让体检变绿而放宽规则或往豁免清单塞真组件。
 
 ## 6. 命令
 
@@ -141,10 +154,11 @@ npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需�
 npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
 npm run test:all      # 组件侧 + 构建器侧 + profile 运行时 + 浏览器层 + 覆盖率一次跑完
 npm run verify:governance # 治理校验：影响面清单 / 特性裁剪静态守卫 / 文档数字对齐（秒级）
-npm run quality       # 唯一门禁（十二段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 消费方校验
+npm run audit:visual # 视觉体检：124 组件计算样式契约 + 逐组件截图画廊（visual-report/index.html）
+npm run quality       # 唯一门禁（十三段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 视觉体检 → 消费方校验
 npm run ci            # 与 quality 同一条命令，逐段给结论与耗时，并落机读的 ci-report.json
 npm run ci:fast       # 只跑秒级五段（格式 / 类型 / lint / 库级校验 / 治理校验），不触发构建
-npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十二段）钩子
+npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十三段）钩子
 ```
 
 ## 7. 未覆盖 / 待办
@@ -157,8 +171,9 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - 特性-属性归属已校正（分支 `fix/20261107-prop-attribution`）：把 `showClose` / `loading` / `icon` / `checkStrictly` 四条 core prop 从特性字典移回 `coreProps`，双向守卫的正向口径同步收紧为"coreProps + 已启用特性"，被关掉的特性不再能替 core prop 背书（F-53，详见 `REQUIREMENTS.md` §13）
 - 构建流水线已优化（分支 `perf/20261107-build-pipeline`）：`quality` 从"三次 198 份包"收敛为"一次统一构建 + 各层复用"，178 条特性边际值按源码 sha1 缓存，profile 与试算池 6 路并发，试算产物移出 `dist/` 并强制清理（F-54，详见 `REQUIREMENTS.md` §14）
 - 第八批已交付（分支 `feature/20261107-scene-defect-closure`，WorkBuddy 专属工作树 `C:/WorkBench/ui-kit-builder-wb`）：场景缺陷闭环五道闸、治理校验门禁第六段（门禁从十二段扩到十二段）、TimePicker 交互链路修复与浏览器层场景契约，详见 `REQUIREMENTS.md` §15 与本文 §5.1
-- 已知仍不可测的维度：整页与交互态像素（当前只截 6 个场景的首屏）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 共记录 65 条缺陷（F-1…F-65）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下、特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-55…F-65 是第八批由场景缺陷闭环查出的 TimePicker 交互链路与全库特性裁剪语义（详见 `REQUIREMENTS.md` §15.2；另有 A-1…A-4 四条「已审计但无害」的结论在 §15.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- 第九批已交付（分支 `feature/20261107-visual-capability`）：视觉体检能力 + 逐组件截图画廊 + 治理自守卫，修复 F-66（TimePicker 触发区原生 input 未 reset 造成双层边框），门禁从十二段扩到十三段，详见 `REQUIREMENTS.md` §16 与本文 §5.2
+- 已知仍不可测的维度：交互态像素（体检截默认态与 6 个重点场景首屏，浮层展开 / 拖拽中途仍未逐帧比对）、跨主题逐组件视觉回归（体检跑在 full 产物上，20 份 profile 只做运行时挂载）、跨平台布局与像素一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
+- 共记录 66 条缺陷（F-1…F-66）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3），F-51 是 `test:coverage` 缺 provider、F-52 是 README 组件数量写错（详见 `REQUIREMENTS.md` §12.3），F-53 是四条 core prop 记在可裁剪特性名下、特性关闭后 d.ts 缺声明（详见 `REQUIREMENTS.md` §13），F-55…F-65 是第八批由场景缺陷闭环查出的 TimePicker 交互链路与全库特性裁剪语义（详见 `REQUIREMENTS.md` §15.2；另有 A-1…A-4 四条「已审计但无害」的结论在 §15.3），F-66 是第九批由视觉体检查出的 TimePicker 双层边框（详见 `REQUIREMENTS.md` §16 与本文 §5.2）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
 - **并行分支开新缺陷编号前必须先 `git fetch origin main` 取当前最大 F 编号**：两条分支同时从 F-53 起编号，合入后就会出现同号不同缺陷。本批（§15）在主线占掉 F-53 后整体顺延为 F-55…F-65、章节顺延为 §15；治理校验新增编号唯一性 / 连续性 / 三处文档口径一致性守卫，撞号或漏改会在门禁第六段直接报红
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**基线已清零**：库工程与用例工程均无报错（第六批收口时修完 affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space 的最后 15 条 VTU 泛型与字面量推断问题）；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 

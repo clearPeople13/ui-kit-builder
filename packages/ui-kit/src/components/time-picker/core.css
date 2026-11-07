@@ -81,13 +81,37 @@
   font-size: 14px;
 }
 
+/* 触发区里的原生 <input> 必须完全"消隐"：边框、底色、内边距、字体一律由
+   .ui-time-picker__trigger 统一提供。漏掉任何一条都会留下浏览器默认外观，
+   在圆角外壳里再套一个深灰矩形框（F-66：双层边框，单测与像素基线都看不见）。 */
 .ui-time-picker__value,
 .ui-time-picker__placeholder {
+  box-sizing: border-box;
   flex: 1;
   min-width: 0;
+  width: 100%;
+  height: calc(var(--ui-input-height, 32px) - 2px);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  appearance: none;
+  box-shadow: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-family: var(--ui-font-family);
+  line-height: normal;
+  cursor: inherit;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.ui-time-picker__value::placeholder,
+.ui-time-picker__placeholder::placeholder {
+  color: var(--ui-text-color-placeholder);
+  opacity: 1;
 }
 
 .ui-time-picker__placeholder {

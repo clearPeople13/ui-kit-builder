@@ -6,7 +6,7 @@
  * 不必去 grep 终端输出。
  *
  * 用法：
- *   node scripts/ci.mjs                 # 全量十二段（先 build 一次，后续各层复用产物）
+ *   node scripts/ci.mjs                 # 全量十三段（先 build 一次，后续各层复用产物）
  *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
  */
@@ -51,6 +51,11 @@ const STAGES = [
     script: 'test:browser',
     fullScript: 'test:browser:run',
     desc: '真实浏览器层（Playwright + Chromium + 布局 / 像素基线）'
+  },
+  {
+    name: 'visual',
+    script: 'audit:visual',
+    desc: '视觉体检（计算样式契约 + 逐组件截图画廊，拦双层边框这类纯视觉缺陷）'
   },
   {
     name: 'test:coverage',
