@@ -22,8 +22,11 @@ function sourceFiles(dir: string): string[] {
   const out: string[] = []
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry)
-    if (statSync(full).isDirectory()) {out.push(...sourceFiles(full))}
-    else if (/\.(ts|vue)$/.test(entry)) {out.push(full)}
+    if (statSync(full).isDirectory()) {
+      out.push(...sourceFiles(full))
+    } else if (/\.(ts|vue)$/.test(entry)) {
+      out.push(full)
+    }
   }
   return out
 }
@@ -32,12 +35,16 @@ function sourceFiles(dir: string): string[] {
 const inlineWrittenVars = new Set<string>()
 for (const file of sourceFiles(resolve(process.cwd(), 'packages/ui-kit/src'))) {
   const src = readFileSync(file, 'utf8')
-  for (const m of src.matchAll(/['"`](--[A-Za-z0-9_-]+)['"`]/g)) {inlineWrittenVars.add(m[1])}
+  for (const m of src.matchAll(/['"`](--[A-Za-z0-9_-]+)['"`]/g)) {
+    inlineWrittenVars.add(m[1])
+  }
 }
 
 function declarations(css: string): Set<string> {
   const defs = new Set<string>()
-  for (const m of css.matchAll(/(?:^|[{\s;])(--[A-Za-z0-9_-]+)\s*:/g)) {defs.add(m[1])}
+  for (const m of css.matchAll(/(?:^|[{\s;])(--[A-Za-z0-9_-]+)\s*:/g)) {
+    defs.add(m[1])
+  }
   return defs
 }
 
@@ -66,7 +73,9 @@ describe('产物 CSS 的自定义属性引用全部有出处', () => {
       const defs = declarations(css)
       const dangling = new Set<string>()
       for (const { name, hasFallback } of references(css)) {
-        if (defs.has(name) || hasFallback || inlineWrittenVars.has(name)) {continue}
+        if (defs.has(name) || hasFallback || inlineWrittenVars.has(name)) {
+          continue
+        }
         dangling.add(name)
       }
       expect([...dangling], `${profile} 存在无声明、无回退、也无内联写入出处的 var() 引用`).toEqual([])

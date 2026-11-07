@@ -4,7 +4,10 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Segmented } from '@ui-kit-full'
 
 function mountSegmented(props: Record<string, any> = {}) {
-  return mount(Segmented, { props: { options: ['日', '月', '年'], modelValue: '日', ...props }, attachTo: document.body })
+  return mount(Segmented, {
+    props: { options: ['日', '月', '年'], modelValue: '日', ...props },
+    attachTo: document.body
+  })
 }
 
 function items(wrapper: ReturnType<typeof mountSegmented>) {

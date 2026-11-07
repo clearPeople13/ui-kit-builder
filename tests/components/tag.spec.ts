@@ -89,9 +89,24 @@ describe('Tag', () => {
   })
 
   it('多个开关同时开启时各特性类名并存', () => {
-    const classes = mountTag({ type: 'danger', effect: 'dark', size: 'small', closable: true, round: true, hit: true }).classes()
+    const classes = mountTag({
+      type: 'danger',
+      effect: 'dark',
+      size: 'small',
+      closable: true,
+      round: true,
+      hit: true
+    }).classes()
     expect(classes).toEqual(
-      expect.arrayContaining(['ui-tag', 'ui-tag--danger', 'ui-tag--dark', 'ui-tag--size-small', 'ui-tag--closable', 'is-round', 'is-hit'])
+      expect.arrayContaining([
+        'ui-tag',
+        'ui-tag--danger',
+        'ui-tag--dark',
+        'ui-tag--size-small',
+        'ui-tag--closable',
+        'is-round',
+        'is-hit'
+      ])
     )
   })
 })

@@ -21,7 +21,7 @@ const tree = [
 
 let wrappers: any[] = []
 
-const mountCascader = (props: Record<string, unknown> = {}) => {
+const mountCascader = (props: Record<string, any> = {}) => {
   const wrapper = mount(Cascader, { props, attachTo: document.body })
   wrappers.push(wrapper)
   return wrapper
@@ -182,7 +182,10 @@ describe('Cascader', () => {
     const wrapper = mountCascader({
       options: tree,
       multiple: true,
-      modelValue: [['zj', 'hz'], ['js', 'nj']],
+      modelValue: [
+        ['zj', 'hz'],
+        ['js', 'nj']
+      ],
       tagType: 'success',
       tagEffect: 'dark'
     })
@@ -213,7 +216,11 @@ describe('Cascader', () => {
       collapseTags: true,
       collapseTagsTooltip: true,
       maxCollapseTags: 1,
-      modelValue: [['zj', 'hz'], ['zj', 'nb'], ['js', 'nj']]
+      modelValue: [
+        ['zj', 'hz'],
+        ['zj', 'nb'],
+        ['js', 'nj']
+      ]
     })
     expect(wrapper.findAll('.ui-cascader__tag')).toHaveLength(2)
     const more = wrapper.find('.ui-cascader__tag--more')
@@ -240,13 +247,23 @@ describe('Cascader', () => {
     const boxes = document.querySelectorAll('.ui-cascader__checkbox')
     expect(boxes).toHaveLength(2)
     await click(boxes[0])
-    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[['zj', 'hz'], ['zj', 'nb']]])
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([
+      [
+        ['zj', 'hz'],
+        ['zj', 'nb']
+      ]
+    ])
     // 行点击只负责下钻，不改值
     await click(nodesOf()[1])
     expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
     expect(columnsOf()).toHaveLength(2)
     // 回灌 v-model 后父级是全选态，再次点击取消
-    await wrapper.setProps({ modelValue: [['zj', 'hz'], ['zj', 'nb']] })
+    await wrapper.setProps({
+      modelValue: [
+        ['zj', 'hz'],
+        ['zj', 'nb']
+      ]
+    })
     expect(document.querySelectorAll('.ui-cascader__checkbox')[0].className).toContain('is-checked')
     await click(document.querySelectorAll('.ui-cascader__checkbox')[0])
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[]])
@@ -277,7 +294,11 @@ describe('Cascader', () => {
     expect(document.querySelector('.ui-cascader__select-all-count')?.textContent).toBe('0 / 3')
     await click(document.querySelector('.ui-cascader__select-all-box'))
     expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([
-      [['zj', 'hz'], ['zj', 'nb'], ['js', 'nj']]
+      [
+        ['zj', 'hz'],
+        ['zj', 'nb'],
+        ['js', 'nj']
+      ]
     ])
 
     reset()
@@ -285,7 +306,11 @@ describe('Cascader', () => {
       options: tree,
       multiple: true,
       selectAll: true,
-      modelValue: [['zj', 'hz'], ['zj', 'nb'], ['js', 'nj']]
+      modelValue: [
+        ['zj', 'hz'],
+        ['zj', 'nb'],
+        ['js', 'nj']
+      ]
     })
     await openByClick(all)
     expect(document.querySelector('.ui-cascader__select-all-label')?.textContent).toBe('清空')
@@ -414,7 +439,10 @@ describe('Cascader', () => {
 
   it('禁用节点不可选，原始字符串选项也可用', async () => {
     const wrapper = mountCascader({
-      options: [{ value: 'x', label: '禁用项', disabled: true }, { value: 'y', label: '可选项' }]
+      options: [
+        { value: 'x', label: '禁用项', disabled: true },
+        { value: 'y', label: '可选项' }
+      ]
     })
     await openByClick(wrapper)
     expect(nodesOf()[0].className).toContain('is-disabled')

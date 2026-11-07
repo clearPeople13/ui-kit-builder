@@ -6,13 +6,19 @@ import { RovingFocusGroup, RovingFocusItem } from '@ui-kit-full'
 function mountGroup(props: Record<string, any> = {}, ids: string[] = ['a', 'b'], itemProps: Record<string, any> = {}) {
   return mount(RovingFocusGroup, {
     props,
-    slots: { default: () => ids.map((id) => h(RovingFocusItem, { tabStopId: id, ...itemProps }, () => id.toUpperCase())) },
+    slots: {
+      default: () => ids.map((id) => h(RovingFocusItem, { tabStopId: id, ...itemProps }, () => id.toUpperCase()))
+    },
     attachTo: document.body
   })
 }
 
 function itemNodes(wrapper: ReturnType<typeof mountGroup>) {
   return wrapper.findAll('.ui-roving-focus-item')
+}
+
+function focusItem(wrapper: ReturnType<typeof mountGroup>, index: number) {
+  ;(itemNodes(wrapper)[index].element as HTMLElement).focus()
 }
 
 afterEach(() => {
@@ -47,13 +53,21 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
   })
 
   it('未声明 tabStopId 时自动生成标识', () => {
-    const wrapper = mount(RovingFocusGroup, { slots: { default: () => h(RovingFocusItem, {}, () => 'x') }, attachTo: document.body })
+    const wrapper = mount(RovingFocusGroup, {
+      slots: { default: () => h(RovingFocusItem, {}, () => 'x') },
+      attachTo: document.body
+    })
     expect(itemNodes(wrapper)[0].attributes('data-roving-focus-item')).toMatch(/^ui-roving-focus-item-\d+$/)
   })
 
   it('active 属性强制该项为当前停靠点', () => {
     const wrapper = mount(RovingFocusGroup, {
-      slots: { default: () => [h(RovingFocusItem, { tabStopId: 'a' }, () => 'A'), h(RovingFocusItem, { tabStopId: 'b', active: true }, () => 'B')] },
+      slots: {
+        default: () => [
+          h(RovingFocusItem, { tabStopId: 'a' }, () => 'A'),
+          h(RovingFocusItem, { tabStopId: 'b', active: true }, () => 'B')
+        ]
+      },
       attachTo: document.body
     })
     expect(itemNodes(wrapper)[1].attributes('tabindex')).toBe('0')
@@ -76,8 +90,7 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
 
   it('方向键在可聚焦项之间移动停靠点', async () => {
     const wrapper = mountGroup({}, ['a', 'b', 'c'])
-    const items = itemNodes(wrapper)
-    items[0].element.focus()
+    focusItem(wrapper, 0)
     await nextTick()
     await wrapper.trigger('keydown', { key: 'ArrowRight' })
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['b'])
@@ -86,7 +99,7 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
 
   it('loop 开启时末端向右回绕到首项', async () => {
     const wrapper = mountGroup({ loop: true }, ['a', 'b', 'c'])
-    itemNodes(wrapper)[2].element.focus()
+    focusItem(wrapper, 2)
     await nextTick()
     await wrapper.trigger('keydown', { key: 'ArrowRight' })
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['a'])
@@ -94,7 +107,7 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
 
   it('Home/End 直接跳到首尾', async () => {
     const wrapper = mountGroup({}, ['a', 'b', 'c'])
-    itemNodes(wrapper)[0].element.focus()
+    focusItem(wrapper, 0)
     await nextTick()
     await wrapper.trigger('keydown', { key: 'End' })
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['c'])
@@ -104,7 +117,7 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
 
   it('vertical 方向改用上下键', async () => {
     const wrapper = mountGroup({ orientation: 'vertical' }, ['a', 'b'])
-    itemNodes(wrapper)[0].element.focus()
+    focusItem(wrapper, 0)
     await nextTick()
     await wrapper.trigger('keydown', { key: 'ArrowDown' })
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['b'])
@@ -112,7 +125,7 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
 
   it('rtl 方向左右键语义互换', async () => {
     const wrapper = mountGroup({ dir: 'rtl' }, ['a', 'b'])
-    itemNodes(wrapper)[0].element.focus()
+    focusItem(wrapper, 0)
     await nextTick()
     await wrapper.trigger('keydown', { key: 'ArrowLeft' })
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['b'])

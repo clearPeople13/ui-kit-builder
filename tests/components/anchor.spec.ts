@@ -85,11 +85,7 @@ describe('Anchor 锚点导航', () => {
       {},
       {
         default: () =>
-          h(
-            AnchorLink,
-            { href: '#parent', title: '父' },
-            () => h(AnchorLink, { href: '#child', title: '子' })
-          )
+          h(AnchorLink, { href: '#parent', title: '父' }, () => h(AnchorLink, { href: '#child', title: '子' }))
       }
     )
     expect(links(wrapper)).toHaveLength(2)
@@ -103,11 +99,7 @@ describe('Anchor 锚点导航', () => {
       {},
       {
         default: () =>
-          h(
-            AnchorLink,
-            { href: '#parent', title: '父' },
-            () => h(AnchorLink, { href: '#gone', title: '子' })
-          )
+          h(AnchorLink, { href: '#parent', title: '父' }, () => h(AnchorLink, { href: '#gone', title: '子' }))
       }
     )
     expect(links(wrapper)[0].classes()).toContain('is-active')

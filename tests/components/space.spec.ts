@@ -7,7 +7,7 @@ function mountSpace(props: Record<string, any> = {}, children: any = [h('span', 
   return mount(Space, { props, slots: { default: () => children }, attachTo: document.body })
 }
 
-function style(wrapper: ReturnType<typeof mountSpace>) {
+function style(wrapper: { attributes(name: string): string | undefined }) {
   return wrapper.attributes('style') ?? ''
 }
 

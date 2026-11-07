@@ -48,17 +48,26 @@ describe('ConfigProvider', () => {
   })
 
   it('size 向下传递给 Tag', () => {
-    const wrapper = mountProvider({ size: 'large' }, h(Tag, {}, () => '标签'))
+    const wrapper = mountProvider(
+      { size: 'large' },
+      h(Tag, {}, () => '标签')
+    )
     expect(wrapper.find('.ui-tag').classes()).toContain('ui-tag--size-large')
   })
 
   it('size 向下传递给 Text（默认空串视为未设置）', () => {
-    const wrapper = mountProvider({ size: 'small' }, h(Text, {}, () => '文本'))
+    const wrapper = mountProvider(
+      { size: 'small' },
+      h(Text, {}, () => '文本')
+    )
     expect(wrapper.find('.ui-text').classes()).toContain('ui-text--size-small')
   })
 
   it('size 不传递给 Space（size 类型含 Number，不接受全局尺寸）', async () => {
-    const wrapper = mountProvider({ size: 'large' }, h(Space, {}, () => h('span', 'A')))
+    const wrapper = mountProvider(
+      { size: 'large' },
+      h(Space, {}, () => h('span', 'A'))
+    )
     await nextTick()
     // Space 仍走自身缺省 8px，而不是被 provider 改成 'large'
     expect(wrapper.find('.ui-space').attributes('style')).toContain('gap: 8px')
@@ -79,10 +88,7 @@ describe('ConfigProvider', () => {
   })
 
   it('内层 ConfigProvider 未设 size 时会屏蔽外层的全局尺寸', () => {
-    const wrapper = mountProvider(
-      { size: 'large' },
-      h(ConfigProvider, {}, { default: () => h(Tag, {}, () => '内层') })
-    )
+    const wrapper = mountProvider({ size: 'large' }, h(ConfigProvider, {}, { default: () => h(Tag, {}, () => '内层') }))
     // 内层 provider 重新 provide 了空配置，子组件不再继承外层
     expect(wrapper.find('.ui-tag').classes()).not.toContain('ui-tag--size-large')
   })
@@ -99,7 +105,10 @@ describe('ConfigProvider', () => {
   })
 
   it('字符串 style 原样落到根节点', () => {
-    const wrapper = mount(ConfigProvider, { props: { style: 'width: 220px' }, slots: { default: () => h('span', 'x') } })
+    const wrapper = mount(ConfigProvider, {
+      props: { style: 'width: 220px' },
+      slots: { default: () => h('span', 'x') }
+    })
     expect(wrapper.attributes('style') ?? '').toContain('width: 220px')
   })
 })

@@ -10,7 +10,7 @@ const panels = [
   { name: '3', title: '面板三', text: '内容三', disabled: true }
 ]
 
-async function mountCollapse(props: Record<string, any> = {}, list = panels) {
+async function mountCollapse(props: Record<string, any> = {}, list: Array<Record<string, any>> = panels) {
   const wrapper = mount(Collapse, {
     props,
     slots: { default: () => list.map((item) => h(CollapseItem, item, () => item.text)) }
@@ -56,7 +56,7 @@ describe('Collapse 折叠面板', () => {
 
   it('默认缺省 modelValue 收起全部', async () => {
     const wrapper = await mountCollapse({})
-    expect(items(wrapper).every((item: VueWrapper) => !item.classes().includes('is-active'))).toBe(true)
+    expect(items(wrapper).every((item) => !item.classes().includes('is-active'))).toBe(true)
     expect(wrapper.findAll('.ui-collapse-item__content')).toHaveLength(0)
   })
 

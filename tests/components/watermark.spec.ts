@@ -3,7 +3,10 @@ import { h } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Watermark } from '@ui-kit-full'
 
-function mountWatermark(props: Record<string, any> = {}, content: any = h('div', { class: 'inner' }, '被水印覆盖的内容')) {
+function mountWatermark(
+  props: Record<string, any> = {},
+  content: any = h('div', { class: 'inner' }, '被水印覆盖的内容')
+) {
   return mount(Watermark, { props, slots: { default: () => content }, attachTo: document.body })
 }
 
@@ -58,7 +61,9 @@ describe('Watermark', () => {
   })
 
   it('background-size 由 width/height 与 gap 累加得出', () => {
-    expect(layerStyle(mountWatermark({ width: 200, height: 100, gap: [20, 30] }))).toContain('background-size: 220px 130px')
+    expect(layerStyle(mountWatermark({ width: 200, height: 100, gap: [20, 30] }))).toContain(
+      'background-size: 220px 130px'
+    )
   })
 
   it('offset 存在时写入 background-position，缺省不写', () => {
@@ -75,11 +80,19 @@ describe('Watermark', () => {
   })
 
   it('content 数组多行仍渲染水印层', () => {
-    expect(mountWatermark({ content: ['第一行', '第二行'] }).find('.ui-watermark__layer').exists()).toBe(true)
+    expect(
+      mountWatermark({ content: ['第一行', '第二行'] })
+        .find('.ui-watermark__layer')
+        .exists()
+    ).toBe(true)
   })
 
   it('image 与 rotate、font 配置不改变可观察结构', () => {
-    const wrapper = mountWatermark({ image: 'https://example.com/logo.png', rotate: 30, font: { color: '#f00', fontSize: 24 } })
+    const wrapper = mountWatermark({
+      image: 'https://example.com/logo.png',
+      rotate: 30,
+      font: { color: '#f00', fontSize: 24 }
+    })
     expect(wrapper.find('.ui-watermark__layer').exists()).toBe(true)
     expect(wrapper.find('.ui-watermark__content').exists()).toBe(true)
   })

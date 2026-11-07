@@ -28,7 +28,6 @@ describe('Affix 固钉', () => {
   it('无默认插槽时内层容器仍然渲染且为空', () => {
     const wrapper = mountAffix()
     const inner = wrapper.get('.ui-affix__inner')
-    expect(inner.exists()).toBe(true)
     expect(inner.text()).toBe('')
   })
 

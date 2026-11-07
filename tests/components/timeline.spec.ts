@@ -3,7 +3,10 @@ import { h } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Timeline, TimelineItem } from '@ui-kit-full'
 
-function mountTimeline(props: Record<string, any> = {}, items: any = [h(TimelineItem, {}, () => 'A'), h(TimelineItem, {}, () => 'B')]) {
+function mountTimeline(
+  props: Record<string, any> = {},
+  items: any = [h(TimelineItem, {}, () => 'A'), h(TimelineItem, {}, () => 'B')]
+) {
   return mount(Timeline, { props, slots: { default: () => items }, attachTo: document.body })
 }
 
@@ -40,18 +43,26 @@ describe('Timeline / TimelineItem', () => {
   })
 
   it('item size 默认 normal，可切换', () => {
-    expect(itemNodes(mountTimeline({}, [h(TimelineItem, {}, () => 'x')]))[0].classes()).toContain('ui-timeline-item--size-normal')
-    expect(itemNodes(mountTimeline({}, [h(TimelineItem, { size: 'large' }, () => 'x')]))[0].classes()).toContain('ui-timeline-item--size-large')
+    expect(itemNodes(mountTimeline({}, [h(TimelineItem, {}, () => 'x')]))[0].classes()).toContain(
+      'ui-timeline-item--size-normal'
+    )
+    expect(itemNodes(mountTimeline({}, [h(TimelineItem, { size: 'large' }, () => 'x')]))[0].classes()).toContain(
+      'ui-timeline-item--size-large'
+    )
   })
 
   it('color 写入 --ui-timeline-dot-color 变量', () => {
     const wrapper = mountTimeline({}, [h(TimelineItem, { color: '#ff0000' }, () => 'x')])
     expect(itemNodes(wrapper)[0].attributes('style') ?? '').toContain('--ui-timeline-dot-color: #ff0000')
-    expect(itemNodes(mountTimeline({}, [h(TimelineItem, {}, () => 'x')]))[0].attributes('style') ?? '').not.toContain('--ui-timeline-dot-color')
+    expect(itemNodes(mountTimeline({}, [h(TimelineItem, {}, () => 'x')]))[0].attributes('style') ?? '').not.toContain(
+      '--ui-timeline-dot-color'
+    )
   })
 
   it('hollow 挂 is-hollow', () => {
-    expect(itemNodes(mountTimeline({}, [h(TimelineItem, { hollow: true }, () => 'x')]))[0].classes()).toContain('is-hollow')
+    expect(itemNodes(mountTimeline({}, [h(TimelineItem, { hollow: true }, () => 'x')]))[0].classes()).toContain(
+      'is-hollow'
+    )
   })
 
   it('有 timestamp 时渲染时间戳节点', () => {
@@ -65,7 +76,9 @@ describe('Timeline / TimelineItem', () => {
   })
 
   it('timestampPosition top 时时间戳排在内容之前', () => {
-    const item = itemNodes(mountTimeline({}, [h(TimelineItem, { timestamp: 'T', timestampPosition: 'top' }, () => 'C')]))[0]
+    const item = itemNodes(
+      mountTimeline({}, [h(TimelineItem, { timestamp: 'T', timestampPosition: 'top' }, () => 'C')])
+    )[0]
     expect(item.classes()).toContain('is-timestamp-top')
     expect(item.element.children[0].className).toContain('__timestamp')
     expect(item.element.children[1].className).toContain('__content')
@@ -83,7 +96,11 @@ describe('Timeline / TimelineItem', () => {
   })
 
   it('无 timestamp 时不渲染时间戳节点', () => {
-    expect(mountTimeline({}, [h(TimelineItem, {}, () => 'x')]).find('.ui-timeline-item__timestamp').exists()).toBe(false)
+    expect(
+      mountTimeline({}, [h(TimelineItem, {}, () => 'x')])
+        .find('.ui-timeline-item__timestamp')
+        .exists()
+    ).toBe(false)
   })
 
   it('无子项时容器为空', () => {

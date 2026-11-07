@@ -60,7 +60,13 @@ describe('Scrollbar', () => {
   })
 
   it('id/role/tabindex/aria-* 落到根节点', () => {
-    const wrapper = mountScrollbar({ id: 'sb1', role: 'region', tabindex: 0, ariaLabel: '滚动区', ariaOrientation: 'vertical' })
+    const wrapper = mountScrollbar({
+      id: 'sb1',
+      role: 'region',
+      tabindex: 0,
+      ariaLabel: '滚动区',
+      ariaOrientation: 'vertical'
+    })
     expect(wrapper.attributes('id')).toBe('sb1')
     expect(wrapper.attributes('role')).toBe('region')
     expect(wrapper.attributes('tabindex')).toBe('0')

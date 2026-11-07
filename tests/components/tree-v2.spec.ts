@@ -120,7 +120,11 @@ describe('TreeV2', () => {
   it('defaultCheckedKeys 初始化勾选', async () => {
     const wrapper = mountTreeV2({ defaultExpandAll: true, showCheckbox: true, defaultCheckedKeys: [2] })
     await nextTick()
-    expect(wrapper.findAll('.ui-tree-v2__checkbox input').map((item) => inputOf(item).checked)).toEqual([false, true, false])
+    expect(wrapper.findAll('.ui-tree-v2__checkbox input').map((item) => inputOf(item).checked)).toEqual([
+      false,
+      true,
+      false
+    ])
   })
 
   it('勾选节点抛出 check-change', async () => {

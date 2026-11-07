@@ -22,27 +22,49 @@ describe('VirtualList', () => {
   })
 
   it('只渲染可视窗口 + 缓冲内的行，而非全部数据', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 120, itemSize: 30, cache: 1 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 120, itemSize: 30, cache: 1 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     // 120/30=4 行 + 上下各 1 缓冲 → 5 行
     expect(rows(wrapper)).toHaveLength(5)
-    expect(wrapper.findAll('.ui-virtual-list__item span').map((node) => node.text())).toEqual(['L0', 'L1', 'L2', 'L3', 'L4'])
+    expect(wrapper.findAll('.ui-virtual-list__item span').map((node) => node.text())).toEqual([
+      'L0',
+      'L1',
+      'L2',
+      'L3',
+      'L4'
+    ])
   })
 
   it('cache 增大窗口行数', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 100, itemSize: 20, cache: 2 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 100, itemSize: 20, cache: 2 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     // ceil(100/20)=5 + 2 缓冲 = 7
     expect(rows(wrapper)).toHaveLength(7)
   })
 
   it('缺省 height 200 / itemSize 30 / cache 2', () => {
-    const wrapper = mount(VirtualList, { props: { data: big }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     // ceil(200/30)=7 + 2 = 9
     expect(rows(wrapper)).toHaveLength(9)
     expect(wrapper.attributes('style') ?? '').toContain('height: 200px')
   })
 
   it('每行按 index*itemSize 绝对定位', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 120, itemSize: 30, cache: 0 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 120, itemSize: 30, cache: 0 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     expect(rows(wrapper)[1].attributes('style') ?? '').toContain('top: 30px')
     expect(rows(wrapper)[1].attributes('style') ?? '').toContain('height: 30px')
   })
@@ -53,24 +75,37 @@ describe('VirtualList', () => {
   })
 
   it('itemKey 命中数据字段作为渲染键', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 100, itemSize: 20, itemKey: 'id', cache: 0 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 100, itemSize: 20, itemKey: 'id', cache: 0 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     expect(rows(wrapper).length).toBeGreaterThan(0)
     expect(wrapper.text()).toContain('L0')
   })
 
   it('无默认插槽时对象项按 label 渲染', () => {
-    const wrapper = mount(VirtualList, { props: { data: [{ label: '甲' }, { label: '乙' }], height: 100, itemSize: 30, cache: 0 }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: [{ label: '甲' }, { label: '乙' }], height: 100, itemSize: 30, cache: 0 },
+      attachTo: document.body
+    })
     expect(wrapper.text()).toContain('甲')
     expect(wrapper.text()).toContain('乙')
   })
 
   it('无默认插槽时原始值项按字符串渲染', () => {
-    const wrapper = mount(VirtualList, { props: { data: ['A', 'B'], height: 100, itemSize: 30, cache: 0 }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: ['A', 'B'], height: 100, itemSize: 30, cache: 0 },
+      attachTo: document.body
+    })
     expect(wrapper.text()).toContain('A')
   })
 
   it('total 超过 data 长度且无插槽时渲染加载占位行', () => {
-    const wrapper = mount(VirtualList, { props: { data: [], total: 50, height: 100, itemSize: 20, cache: 2 }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: [], total: 50, height: 100, itemSize: 20, cache: 2 },
+      attachTo: document.body
+    })
     expect(rows(wrapper)).toHaveLength(7)
     expect(wrapper.findAll('.is-placeholder')).toHaveLength(7)
     expect(wrapper.text()).toContain('加载中…')
@@ -83,30 +118,53 @@ describe('VirtualList', () => {
   })
 
   it('itemSize 为 0 时回退 estimatedItemSize', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 80, itemSize: 0, estimatedItemSize: 40, cache: 0 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 80, itemSize: 0, estimatedItemSize: 40, cache: 0 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     expect(rows(wrapper)).toHaveLength(2)
     expect(rows(wrapper)[1].attributes('style') ?? '').toContain('height: 40px')
   })
 
   it('itemSize 为 0 且无估算时回退 30', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 60, itemSize: 0, estimatedItemSize: 0, cache: 0 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 60, itemSize: 0, estimatedItemSize: 0, cache: 0 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     expect(rows(wrapper)).toHaveLength(2)
   })
 
   it('超长文本项在插槽内原样渲染', () => {
     const data = [{ id: 1, label: '数'.repeat(400) }]
-    const wrapper = mount(VirtualList, { props: { data, height: 100, itemSize: 30, cache: 0 }, slots: { default: ({ item }: any) => h('span', item.label) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data, height: 100, itemSize: 30, cache: 0 },
+      slots: { default: ({ item }: any) => h('span', item.label) },
+      attachTo: document.body
+    })
     expect(wrapper.text()).toContain('数'.repeat(400))
   })
 
   it('class 与字符串 style 合并到根节点', () => {
-    const wrapper = mount({ render: () => h(VirtualList, { class: 'my-list', style: 'width: 220px', data: big, height: 100 }, { default: ({ item }: any) => h('span', item.label) }) })
+    const wrapper = mount({
+      render: () =>
+        h(
+          VirtualList,
+          { class: 'my-list', style: 'width: 220px', data: big, height: 100 },
+          { default: ({ item }: any) => h('span', item.label) }
+        )
+    })
     expect(wrapper.classes()).toEqual(expect.arrayContaining(['ui-virtual-list', 'my-list']))
     expect(wrapper.attributes('style') ?? '').toContain('width: 220px')
   })
 
   it('插槽同时收到 item 与 index', () => {
-    const wrapper = mount(VirtualList, { props: { data: big, height: 100, itemSize: 30, cache: 0 }, slots: { default: ({ item, index }: any) => h('span', `${index}:${item.label}`) }, attachTo: document.body })
+    const wrapper = mount(VirtualList, {
+      props: { data: big, height: 100, itemSize: 30, cache: 0 },
+      slots: { default: ({ item, index }: any) => h('span', `${index}:${item.label}`) },
+      attachTo: document.body
+    })
     expect(wrapper.findAll('.ui-virtual-list__item span')[0].text()).toBe('0:L0')
   })
 })

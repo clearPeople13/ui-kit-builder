@@ -21,7 +21,7 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 ```
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1576 条，含 7 条浏览器层占位 it.skip）
+tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1576 条，含 6 条浏览器层占位 it.skip）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -126,16 +126,17 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九
 
 ## 7. 未覆盖 / 待办
 
-- 四层用例合计 1828 条全绿：组件侧 94 文件 1576 条（含 6 条浏览器层占位跳过）、构建器侧 6 文件 68 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例
+- 四层用例合计 1849 条全绿：组件侧 94 文件 1576 条（含 6 条浏览器层占位跳过）、构建器侧 7 文件 89 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
+- 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
 - 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
 - 六批共记录 50 条缺陷（F-1…F-50）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
-- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**已知基线**：库工程已清零，用例工程仍有 7 个老文件共 15 条报错（affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space），均为 VTU 泛型与字面量推断问题，与新增用例无关；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
+- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**基线已清零**：库工程与用例工程均无报错（第六批收口时修完 affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space 的最后 15 条 VTU 泛型与字面量推断问题）；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
 
-- **两份 vitest 配置不能合**：`tests/build/**` 只读文本、起 happy-dom 会让 68 条慢到分钟级；组件用例依赖 `dist/full`，构建器侧依赖全部 20 份产物，所以 `pretest` 走 `build:full`、`pretest:build` 走 `build:all`。改源码后只跑 `npm test` 不会刷新主题产物，`npm run test:build` 前的 `build:all` 才是唯一可靠前提
+- **两份 vitest 配置不能合**：`tests/build/**` 只读文本、起 happy-dom 会让 89 条慢到分钟级；组件用例依赖 `dist/full`，构建器侧依赖全部 20 份产物，所以 `pretest` 走 `build:full`、`pretest:build` 走 `build:all`。改源码后只跑 `npm test` 不会刷新主题产物，`npm run test:build` 前的 `build:all` 才是唯一可靠前提
 - **`meta.json` 是"上次构建"的事实，不是"当前源码"的事实**：`profile-contract.spec.ts` 里 `selection` 用例专门用当前 `registry.mjs` 重算一遍再比对，产物过期会直接红；同理 `sizes.json` 与 `dist/<profile>/meta.json` 逐字段对齐，只改一边会挂
 - **体积阈值按"带"不按"点"**：gzip 对拼接串不满足可加性（core 的 `js+css` 合并 gzip 反而比两文件 gzip 之和大 108 字节），所以自洽用例只能重算 `zlib.gzipSync(js+css, {level:9})` 再逐字节比，不能写成"合并值 ≤ 分量之和"
 - **前缀长度本身就是体积变量**：`rewritePrefix` 会把 `ui-` 换成 profile 前缀，`chinese`（7 字符）比 `antd`（4 字符）CSS 大近 4 kB，主题之间的差异只能按"前缀 + 皮肤"两个来源解释，不能假设同尺寸

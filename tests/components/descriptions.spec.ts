@@ -13,7 +13,9 @@ const rows = [
 function mountDescriptions(props: Record<string, any> = {}, list = rows) {
   return mount(Descriptions, {
     props,
-    slots: { default: () => list.map((item) => h(DescriptionsItem, { label: item.label, span: item.span }, () => item.content)) }
+    slots: {
+      default: () => list.map((item) => h(DescriptionsItem, { label: item.label, span: item.span }, () => item.content))
+    }
   })
 }
 
@@ -38,7 +40,11 @@ describe('Descriptions 描述列表', () => {
 
   it('size 落尺寸类名', () => {
     expect(mountDescriptions({ size: 'small' }).classes()).toContain('ui-descriptions--size-small')
-    expect(mountDescriptions({}).classes().filter((c: string) => c.startsWith('ui-descriptions--size'))).toEqual([])
+    expect(
+      mountDescriptions({})
+        .classes()
+        .filter((c: string) => c.startsWith('ui-descriptions--size'))
+    ).toEqual([])
   })
 
   it('border 追加 is-bordered', () => {
@@ -94,7 +100,10 @@ describe('Descriptions 描述列表', () => {
   it('条目 width/minWidth 数字转 px、字符串原样', () => {
     const wrapper = mount(Descriptions, {
       slots: {
-        default: () => [h(DescriptionsItem, { label: 'A', width: 100 }, () => 'a'), h(DescriptionsItem, { label: 'B', minWidth: '12rem' }, () => 'b')]
+        default: () => [
+          h(DescriptionsItem, { label: 'A', width: 100 }, () => 'a'),
+          h(DescriptionsItem, { label: 'B', minWidth: '12rem' }, () => 'b')
+        ]
       }
     })
     const items = wrapper.findAll('.ui-descriptions-item')
@@ -103,13 +112,17 @@ describe('Descriptions 描述列表', () => {
   })
 
   it('labelWidth 落到标签 span 宽度', () => {
-    const wrapper = mount(Descriptions, { slots: { default: () => h(DescriptionsItem, { label: 'L', labelWidth: 80 }, () => 'c') } })
+    const wrapper = mount(Descriptions, {
+      slots: { default: () => h(DescriptionsItem, { label: 'L', labelWidth: 80 }, () => 'c') }
+    })
     expect(wrapper.find('.ui-descriptions-item__label').attributes('style')).toContain('width: 80px')
   })
 
   it('className 与 labelClassName 追加自定义类名', () => {
     const wrapper = mount(Descriptions, {
-      slots: { default: () => h(DescriptionsItem, { label: 'L', className: 'row-x', labelClassName: 'label-x' }, () => 'c') }
+      slots: {
+        default: () => h(DescriptionsItem, { label: 'L', className: 'row-x', labelClassName: 'label-x' }, () => 'c')
+      }
     })
     expect(wrapper.find('.ui-descriptions-item').classes()).toContain('row-x')
     expect(wrapper.find('.ui-descriptions-item__label').classes()).toContain('label-x')

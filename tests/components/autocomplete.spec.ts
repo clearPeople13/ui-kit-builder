@@ -7,7 +7,7 @@ import { Autocomplete } from '@ui-kit-full'
  * Autocomplete 自动补全：面板 teleport 到 body，必须用 document.querySelector 断言。
  * 输入框抛出的 input / change 与原生同名事件混在一起，用 stringEvents() 过滤自定义事件。
  */
-const mountAutocomplete = (props: Record<string, unknown> = {}, options: Record<string, unknown> = {}) =>
+const mountAutocomplete = (props: Record<string, any> = {}, options: Record<string, any> = {}) =>
   mount(Autocomplete, { props, attachTo: document.body, ...options })
 
 /** 只保留自定义 emit（首参为字符串/对象）的记录，剔除冒泡上来的原生 Event */
@@ -386,7 +386,15 @@ describe('Autocomplete', () => {
   })
 
   it('containerRole 落在根节点，countGraphemes 可覆盖计数口径', async () => {
-    const wrapper = track(mountAutocomplete({ containerRole: 'group', modelValue: '中文', maxlength: 10, showWordLimit: true, countGraphemes: () => 9 }))
+    const wrapper = track(
+      mountAutocomplete({
+        containerRole: 'group',
+        modelValue: '中文',
+        maxlength: 10,
+        showWordLimit: true,
+        countGraphemes: () => 9
+      })
+    )
     expect(wrapper.attributes('role')).toBe('group')
     expect(wrapper.find('.ui-autocomplete__count').text()).toBe('9/10')
     const plain = track(mountAutocomplete())
@@ -398,7 +406,10 @@ describe('Autocomplete', () => {
     host.id = 'ac-host'
     document.body.appendChild(host)
     const wrapper = track(
-      mountAutocomplete({ modelValue: '菠', fetchSuggestions: ['菠萝包'], appendTo: '#ac-host' }, { slots: { append: () => '后缀' } })
+      mountAutocomplete(
+        { modelValue: '菠', fetchSuggestions: ['菠萝包'], appendTo: '#ac-host' },
+        { slots: { append: () => '后缀' } }
+      )
     )
     await wrapper.find('input').trigger('focus')
     await nextTick()

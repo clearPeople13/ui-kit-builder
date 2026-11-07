@@ -8,8 +8,7 @@ function mountRow(props: Record<string, any> = {}, cols = 1) {
   return mount(Row, {
     props,
     slots: {
-      default: () =>
-        Array.from({ length: cols }, (_, i) => h(Col, { span: Math.floor(24 / cols) }, () => `列${i + 1}`))
+      default: () => Array.from({ length: cols }, (_, i) => h(Col, { span: Math.floor(24 / cols) }, () => `列${i + 1}`))
     }
   })
 }

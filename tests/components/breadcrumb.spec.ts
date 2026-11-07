@@ -3,14 +3,10 @@ import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { Breadcrumb, BreadcrumbItem } from '@ui-kit-full'
 
-const items = [
-  { text: '首页', to: '/' },
-  { text: '列表页', to: '/list' },
-  { text: '当前页' }
-]
+const items = [{ text: '首页', to: '/' }, { text: '列表页', to: '/list' }, { text: '当前页' }]
 
 // 面包屑条目通过默认插槽注册，逐项渲染分隔符与内容
-function mountBreadcrumb(props: Record<string, any> = {}, list = items) {
+function mountBreadcrumb(props: Record<string, any> = {}, list: Array<Record<string, any>> = items) {
   return mount(Breadcrumb, {
     props,
     slots: { default: () => list.map((item) => h(BreadcrumbItem, { to: item.to }, () => item.text)) }
@@ -76,7 +72,10 @@ describe('Breadcrumb 面包屑', () => {
   })
 
   it('to 为对象时按 href 或 path 生成链接', () => {
-    const wrapper = mountBreadcrumb({}, [{ text: '对象A', to: { href: '/a' } }, { text: '对象B', to: { path: '/b' } }])
+    const wrapper = mountBreadcrumb({}, [
+      { text: '对象A', to: { href: '/a' } },
+      { text: '对象B', to: { path: '/b' } }
+    ])
     expect(itemWrappers(wrapper)[0].attributes('href')).toBe('/a')
     expect(itemWrappers(wrapper)[1].attributes('href')).toBe('/b')
   })

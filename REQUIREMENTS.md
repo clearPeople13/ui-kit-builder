@@ -148,7 +148,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                               |
 | 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                      |
 | 5    | `npm test`                | 94 文件 1576 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖）                     |
-| 6    | `npm run test:build`      | 6 文件 68 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
+| 6    | `npm run test:build`      | 7 文件 89 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
 | 7    | `npm run test:browser`    | 8 文件 42 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线       |
 | 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                            |
 
@@ -278,4 +278,22 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 - 探针清零：本批遗留的 12 个 `_probe_*.spec.ts` 全部删除，`tests/components/` 只保留正式用例。
 - 产物变化来自 F-39…F-50 的源码修复，`npm run build:all` 重新生成 20 份产物与 `sizes.json`；`examples/consumer/src/demo/meta.json` 随 `meta:demo` 同步。
-- 门禁：组件层 94 文件 1570 通过 + 6 条浏览器层占位跳过；构建器层 6 文件 68 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项全部通过。
+- 门禁：组件层 94 文件 1570 通过 + 6 条浏览器层占位跳过；构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项全部通过。
+- 用例工程 `tsconfig.tests.json` 的 15 条类型基线（affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space）已全部清零，`npm run typecheck` 两份工程均无输出。
+
+### 11.5 六批次与缺陷收口
+
+| 批次   | 交付内容                                                        | 分支                                        | 缺陷                      |
+| ------ | --------------------------------------------------------------- | ------------------------------------------- | ------------------------- |
+| 首批   | 13 个测试文件 258 条，核心组件行为与属性                        | `feature/20261106-component-tests`          | F-1…F-18，另开修复分支     |
+| 缺陷修 | `it.fails` 守卫全部降级为常规用例                               | `fix/20261106-component-defects`            | F-1…F-18 修复与回归       |
+| 第二批 | 15 个组件 319 条 + 守卫降级，28 文件 612 条                     | `feature/20261106-component-tests-batch2`   | F-19…F-25，修复分支并行    |
+| 第三批 | 构建器侧 6 文件 68 条：裁剪、令牌、体积、类型                   | `feature/20261107-tests-batch3`             | F-26、F-28 修复；F-27 记录 |
+| 第四批 | 真实浏览器层 8 文件 42 条 + 统一门禁 `quality`                  | `feature/20261107-quality-gate`             | F-29…F-33                  |
+| 第五批 | 20 份 profile 运行时 2 文件 142 条 + 阶段化 runner 与钩子       | `feature/20261107-every-profile-runtime`    | —                         |
+| 第六批 | 63 个组件目录全量接入，94 文件 1576 条；属性字典双向回查 41 条 | `feature/20261107-tests-batch6`             | F-39…F-50                  |
+| 收口   | 15 条类型基线清零、格式与 lint 归零、全部合入 `main`            | `main`                                      | F-34…F-38（前批遗留）      |
+
+- 六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。
+- 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
+- 收口后的门禁基线：组件层 94 文件 1576 条（1570 通过 + 6 条浏览器层占位跳过）、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1849 条用例。

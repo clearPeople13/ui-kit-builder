@@ -3,7 +3,10 @@ import { h } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Step, Steps } from '@ui-kit-full'
 
-function mountSteps(props: Record<string, any> = {}, steps: any = [h(Step, { title: '甲', description: '说明甲' }), h(Step, { title: '乙' }), h(Step, { title: '丙' })]) {
+function mountSteps(
+  props: Record<string, any> = {},
+  steps: any = [h(Step, { title: '甲', description: '说明甲' }), h(Step, { title: '乙' }), h(Step, { title: '丙' })]
+) {
   return mount(Steps, { props, slots: { default: () => steps }, attachTo: document.body })
 }
 
@@ -47,7 +50,9 @@ describe('Steps / Step', () => {
   })
 
   it('finishStatus / processStatus 覆盖状态类名', () => {
-    const classes = stepNodes(mountSteps({ active: 1, finishStatus: 'success', processStatus: 'warning' })).map((node) => node.classes())
+    const classes = stepNodes(mountSteps({ active: 1, finishStatus: 'success', processStatus: 'warning' })).map(
+      (node) => node.classes()
+    )
     expect(classes[0]).toContain('is-success')
     expect(classes[1]).toContain('is-warning')
   })

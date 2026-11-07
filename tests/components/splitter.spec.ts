@@ -3,7 +3,10 @@ import { h } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Splitter, SplitterPanel } from '@ui-kit-full'
 
-function mountSplitter(props: Record<string, any> = {}, panels: any = [h(SplitterPanel, {}, () => 'A'), h(SplitterPanel, {}, () => 'B')]) {
+function mountSplitter(
+  props: Record<string, any> = {},
+  panels: any = [h(SplitterPanel, {}, () => 'A'), h(SplitterPanel, {}, () => 'B')]
+) {
   return mount(Splitter, { props, slots: { default: () => panels }, attachTo: document.body })
 }
 
@@ -32,7 +35,9 @@ describe('Splitter / SplitterPanel', () => {
 
   it('水平布局的分隔条 aria-orientation 为 vertical，垂直布局为 horizontal', () => {
     expect(mountSplitter().find('.ui-splitter__bar').attributes('aria-orientation')).toBe('vertical')
-    expect(mountSplitter({ layout: 'vertical' }).find('.ui-splitter__bar').attributes('aria-orientation')).toBe('horizontal')
+    expect(mountSplitter({ layout: 'vertical' }).find('.ui-splitter__bar').attributes('aria-orientation')).toBe(
+      'horizontal'
+    )
   })
 
   it('两块面板只有一个分隔条，单块面板没有', () => {
@@ -42,12 +47,17 @@ describe('Splitter / SplitterPanel', () => {
   })
 
   it('panel size 落成固定 flex-basis', () => {
-    const panel = mountSplitter({}, [h(SplitterPanel, { size: 100 }, () => 'A'), h(SplitterPanel, {}, () => 'B')]).find('.ui-splitter-panel')
+    const panel = mountSplitter({}, [h(SplitterPanel, { size: 100 }, () => 'A'), h(SplitterPanel, {}, () => 'B')]).find(
+      '.ui-splitter-panel'
+    )
     expect(panel.attributes('style') ?? '').toContain('flex-basis: 100px')
   })
 
   it('panel 字符串百分比 size 原样写入 flex', () => {
-    const panel = mountSplitter({}, [h(SplitterPanel, { size: '30%' }, () => 'A'), h(SplitterPanel, {}, () => 'B')]).find('.ui-splitter-panel')
+    const panel = mountSplitter({}, [
+      h(SplitterPanel, { size: '30%' }, () => 'A'),
+      h(SplitterPanel, {}, () => 'B')
+    ]).find('.ui-splitter-panel')
     expect(panel.attributes('style') ?? '').toContain('30%')
   })
 
@@ -61,7 +71,10 @@ describe('Splitter / SplitterPanel', () => {
   })
 
   it('resizable 为假时移除 draggable 类名', () => {
-    const wrapper = mountSplitter({}, [h(SplitterPanel, { resizable: false }, () => 'A'), h(SplitterPanel, {}, () => 'B')])
+    const wrapper = mountSplitter({}, [
+      h(SplitterPanel, { resizable: false }, () => 'A'),
+      h(SplitterPanel, {}, () => 'B')
+    ])
     expect(wrapper.findAll('.ui-splitter-panel')[0].classes()).not.toContain('ui-splitter-panel--draggable')
   })
 
@@ -77,7 +90,10 @@ describe('Splitter / SplitterPanel', () => {
   })
 
   it('面板内容通过默认插槽渲染', () => {
-    const wrapper = mountSplitter({}, [h(SplitterPanel, {}, () => h('b', { class: 'in-a' }, '甲')), h(SplitterPanel, {}, () => '乙')])
+    const wrapper = mountSplitter({}, [
+      h(SplitterPanel, {}, () => h('b', { class: 'in-a' }, '甲')),
+      h(SplitterPanel, {}, () => '乙')
+    ])
     expect(wrapper.find('.in-a').text()).toBe('甲')
   })
 

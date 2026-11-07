@@ -69,12 +69,8 @@ describe('Alert 警告提示', () => {
   })
 
   it('不同 type 命中不同图标', () => {
-    expect(
-      mountAlert({ title: 'a', type: 'error', showIcon: true }).find('svg').classes()
-    ).toContain('lucide-circle-x')
-    expect(
-      mountAlert({ title: 'a', type: 'info', showIcon: true }).find('svg').classes()
-    ).toContain('lucide-info')
+    expect(mountAlert({ title: 'a', type: 'error', showIcon: true }).find('svg').classes()).toContain('lucide-circle-x')
+    expect(mountAlert({ title: 'a', type: 'info', showIcon: true }).find('svg').classes()).toContain('lucide-info')
   })
 
   it('缺省不显示图标也不挂特性类名', () => {

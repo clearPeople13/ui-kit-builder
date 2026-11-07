@@ -82,8 +82,16 @@ describe('Card 卡片', () => {
   })
 
   it('shadow 缺省或不识别时不挂阴影类名', () => {
-    expect(mountCard({}).classes().filter((c: string) => c.endsWith('-shadow'))).toEqual([])
-    expect(mountCard({ shadow: 'never' }).classes().filter((c: string) => c.endsWith('-shadow'))).toEqual([])
+    expect(
+      mountCard({})
+        .classes()
+        .filter((c: string) => c.endsWith('-shadow'))
+    ).toEqual([])
+    expect(
+      mountCard({ shadow: 'never' })
+        .classes()
+        .filter((c: string) => c.endsWith('-shadow'))
+    ).toEqual([])
   })
 
   it('四段结构按规定顺序排列', () => {
