@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ComponentPage from './components/ComponentPage.vue'
 import OverviewPage from './components/OverviewPage.vue'
+import PageAnchor from './components/PageAnchor.vue'
 import { activatePackageStyle, startPackageDiscovery } from './dynamic-packages'
 import {
   COMPONENT_COUNT,
@@ -190,5 +191,9 @@ onBeforeUnmount(() => {
         <a :href="configuratorHref" target="_blank" rel="noreferrer">打开构建器，勾选特性并生成新包 →</a>
       </footer>
     </div>
+
+    <aside class="app-toc">
+      <PageAnchor />
+    </aside>
   </div>
 </template>

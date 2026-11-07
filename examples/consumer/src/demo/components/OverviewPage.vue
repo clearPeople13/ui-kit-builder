@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import {
   ALL_FEATURE_COUNT,
   COMPONENT_COUNT,
@@ -12,6 +12,7 @@ import {
   gzipShare,
   type DemoPackage
 } from '../packages'
+import { setToc, type TocItem } from '../toc'
 
 defineOptions({ name: 'OverviewPage' })
 
@@ -73,11 +74,23 @@ function matrixHeaderClass(item: DemoPackage): string {
 function coveredComponents(item: DemoPackage): number {
   return Object.values(item.componentFeatures).filter((features) => features.length > 0).length
 }
+
+const overviewTocItems: TocItem[] = [
+  { id: 'ov-hero', title: '概览' },
+  { id: 'ov-sec-packages', title: '产物体积与特性数' },
+  { id: 'ov-sec-matrix', title: '组件 × 包 特性分布' }
+]
+
+watch(
+  () => props.packageId,
+  () => setToc('总览导航', overviewTocItems),
+  { immediate: true }
+)
 </script>
 
 <template>
   <article class="ov">
-    <header class="ov-hero">
+    <header id="ov-hero" class="ov-hero">
       <p class="ov-eyebrow">build-time feature elimination</p>
       <h1 class="ov-title">按需特性包 <em>打包对比</em></h1>
       <p class="ov-text">
@@ -104,7 +117,7 @@ function coveredComponents(item: DemoPackage): number {
       </dl>
     </header>
 
-    <section class="ov-section">
+    <section id="ov-sec-packages" class="ov-section">
       <div class="ov-section__head">
         <h2 class="ov-section__title">产物体积与特性数</h2>
         <p class="ov-section__hint">字节数来自各包 meta.json，差值相对 Core 包</p>
@@ -163,7 +176,7 @@ function coveredComponents(item: DemoPackage): number {
       </p>
     </section>
 
-    <section class="ov-section">
+    <section id="ov-sec-matrix" class="ov-section">
       <div class="ov-section__head">
         <h2 class="ov-section__title">组件 × 包 特性分布</h2>
         <p class="ov-section__hint">只列出至少在一个包中启用特性的组件，点击行进入示例页</p>
