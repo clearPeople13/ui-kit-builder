@@ -1,19 +1,10 @@
-import type { Component, VNodeChild } from 'vue'
-import { defineComponent, h, inject, onBeforeUnmount, shallowRef } from 'vue'
-import type { UiFeature } from '../../shared/feature'
+import type { Component } from 'vue'
+import { h, inject, onBeforeUnmount, shallowRef } from 'vue'
+import type { UiFeature, UiFeatureState } from '../../shared/feature'
+import { collectFeatureHooks } from '../../shared/feature'
 import { UI_CONFIG_KEY } from '../../shared/config'
-import { mergeStyles } from '../../shared/utils'
+import { createUiComponent } from '../../shared/component'
 import { BUTTON_GROUP_CONTEXT, type ButtonGroupContext } from './button-group/core'
-import {
-  collectFeatureClasses,
-  collectFeatureFragments,
-  collectFeatureHooks,
-  collectFeatureStyles,
-  isFeatureDisabled,
-  mergeFeatureProps,
-  resolveFeatureStates,
-  transformFeatureContent
-} from '../../shared/feature'
 import './core.css'
 import './wave.css'
 
@@ -98,116 +89,100 @@ function waveCleanupDelayMs(target: HTMLElement): number {
 }
 
 export function createButton(features: UiFeature[] = []) {
-  return defineComponent({
-    name: 'UiButton',
-    inheritAttrs: false,
-    props: { ...baseProps, ...mergeFeatureProps(features) },
-    setup(props, { attrs, slots }) {
-      const resolved = props as Record<string, any>
-      const globalConfig = inject(UI_CONFIG_KEY, undefined)
-      const groupContext = inject(BUTTON_GROUP_CONTEXT, null) as ButtonGroupContext | null
-      const states = resolveFeatureStates(features, resolved)
-      const clickHooks = collectFeatureHooks(states, 'click')
+  return createUiComponent(
+    {
+      name: 'UiButton',
+      baseClass: 'ui-button ui-button--wave',
+      props: baseProps,
+      // size 继承链是 属性 → 按钮组 → 全局配置 → default，不能被基座的全局 size 注入截胡
+      globalSize: false,
+      tag: (props) => (props.tag ?? 'button') as string | Component,
+      disabled: (props) => Boolean(props.disabled),
+      setup(props, { attrs }) {
+        const globalConfig = inject(UI_CONFIG_KEY, undefined)
+        const groupContext = inject(BUTTON_GROUP_CONTEXT, null) as ButtonGroupContext | null
 
-      // 点击效果机制：每次点击铺一层效果节点，圆心=点击坐标，动画由皮肤 theme 配置
-      // （wave-animation token + theme.rawCss 注入的 @keyframes），未配置动画时节点不可见
-      const ripples = shallowRef<WaveRipple[]>([])
-      let waveSeq = 0
-      // 兜底回收定时器登记在册，卸载时统一清掉，避免卸载后回调写已死实例
-      const waveTimers = new Set<ReturnType<typeof setTimeout>>()
+        // 点击效果机制：每次点击铺一层效果节点，圆心=点击坐标，动画由皮肤 theme 配置
+        // （wave-animation token + theme.rawCss 注入的 @keyframes），未配置动画时节点不可见
+        const ripples = shallowRef<WaveRipple[]>([])
+        let waveSeq = 0
+        // 兜底回收定时器登记在册，卸载时统一清掉，避免卸载后回调写已死实例
+        const waveTimers = new Set<ReturnType<typeof setTimeout>>()
 
-      function removeRipple(id: number) {
-        ripples.value = ripples.value.filter((ripple) => ripple.id !== id)
-      }
-
-      onBeforeUnmount(() => {
-        waveTimers.forEach((timer) => clearTimeout(timer))
-        waveTimers.clear()
-        ripples.value = []
-      })
-
-      function handleWaveClick(event: MouseEvent) {
-        if (resolved.disabled) {
-          return
+        function removeRipple(id: number) {
+          ripples.value = ripples.value.filter((ripple) => ripple.id !== id)
         }
-        const target = event.currentTarget
-        if (!(target instanceof HTMLElement)) {
-          return
-        }
-        const rect = target.getBoundingClientRect()
-        const id = ++waveSeq
-        ripples.value = [
-          ...ripples.value,
-          {
-            id,
-            color: resolveWaveColor(target),
-            originX: `${Math.round(event.clientX - rect.left)}px`,
-            originY: `${Math.round(event.clientY - rect.top)}px`
+
+        onBeforeUnmount(() => {
+          waveTimers.forEach((timer) => clearTimeout(timer))
+          waveTimers.clear()
+          ripples.value = []
+        })
+
+        function handleWaveClick(event: MouseEvent) {
+          if (props.disabled) {
+            return
           }
-        ]
-        // animationend 在动画被取消或隐藏视口下不触发，按淡出时长超时兜底回收
-        const timer = setTimeout(() => {
-          waveTimers.delete(timer)
-          removeRipple(id)
-        }, waveCleanupDelayMs(target))
-        waveTimers.add(timer)
-      }
-
-      function renderWaveRipples(): VNodeChild {
-        return ripples.value.map((ripple) =>
-          h('span', {
-            key: ripple.id,
-            class: 'ui-button__wave',
-            style: {
-              '--ui-button-wave-origin-x': ripple.originX,
-              '--ui-button-wave-origin-y': ripple.originY,
-              ...(ripple.color ? { '--ui-button-wave-color': ripple.color } : {})
+          const target = event.currentTarget
+          if (!(target instanceof HTMLElement)) {
+            return
+          }
+          const rect = target.getBoundingClientRect()
+          const id = ++waveSeq
+          ripples.value = [
+            ...ripples.value,
+            {
+              id,
+              color: resolveWaveColor(target),
+              originX: `${Math.round(event.clientX - rect.left)}px`,
+              originY: `${Math.round(event.clientY - rect.top)}px`
             }
-          })
-        )
-      }
+          ]
+          // animationend 在动画被取消或隐藏视口下不触发，按淡出时长超时兜底回收
+          const timer = setTimeout(() => {
+            waveTimers.delete(timer)
+            removeRipple(id)
+          }, waveCleanupDelayMs(target))
+          waveTimers.add(timer)
+        }
 
-      return function render() {
-        const tag = (resolved.tag ?? 'button') as string | Component
-        const size = resolved.size || groupContext?.size() || globalConfig?.value.size || 'default'
-        // 全局配置（ConfigProvider）目前只治理 size，类型默认值只走"属性 → 按钮组"两级
-        const type = resolved.type || groupContext?.type() || 'default'
-        const prefix = collectFeatureFragments(states, 'prefix')
-        const suffix = collectFeatureFragments(states, 'suffix')
-        const content = transformFeatureContent(states, slots.default?.() ?? null)
+        return { ripples, globalConfig, groupContext, handleWaveClick, rawAttrs: attrs }
+      },
+      attrs: (props, state, states: UiFeatureState[] = []) => {
+        const clickHooks = collectFeatureHooks(states, 'click')
         // 用户 onClick、点击效果、特性 click hooks 都保留：用户处理器先执行
         const onClick = (event: MouseEvent) => {
-          invokeClickHandler(attrs.onClick, event)
-          handleWaveClick(event)
+          invokeClickHandler(state.rawAttrs.onClick, event)
+          state.handleWaveClick(event)
           clickHooks.forEach((hook) => hook(event))
         }
+        const tag = (props.tag ?? 'button') as string | Component
+        return {
+          onClick,
+          type: tag === 'button' ? props.nativeType : undefined,
+          autofocus: props.autofocus || undefined
+        }
+      },
+      classes: (props, state) => {
+        const size = props.size || state.groupContext?.size() || state.globalConfig?.value.size || 'default'
+        // 全局配置（ConfigProvider）目前只治理 size，类型默认值只走"属性 → 按钮组"两级
+        const type = props.type || state.groupContext?.type() || 'default'
+        return [`ui-button--${type}`, `ui-button--size-${size}`]
+      },
+      append: ({ state }) => state.ripples.value.map((ripple: WaveRipple) => rippleVNode(ripple))
+    },
+    features
+  )
+}
 
-        return h(
-          tag,
-          {
-            ...attrs,
-            onClick,
-            type: tag === 'button' ? resolved.nativeType : undefined,
-            class: [
-              attrs.class,
-              'ui-button',
-              'ui-button--wave',
-              `ui-button--${type}`,
-              `ui-button--size-${size}`,
-              ...collectFeatureClasses(states)
-            ],
-            style: mergeStyles(attrs.style, collectFeatureStyles(states)),
-            disabled: Boolean(resolved.disabled) || isFeatureDisabled(states) || undefined,
-            autofocus: resolved.autofocus || undefined
-          },
-          [
-            ...prefix.map((renderFragment) => renderFragment()),
-            content,
-            ...suffix.map((renderFragment) => renderFragment()),
-            renderWaveRipples()
-          ]
-        )
-      }
+function rippleVNode(ripple: WaveRipple) {
+  return h('span', {
+    key: ripple.id,
+    class: 'ui-button__wave',
+    style: {
+      '--ui-button-wave-origin-x': ripple.originX,
+      '--ui-button-wave-origin-y': ripple.originY,
+      ...(ripple.color ? { '--ui-button-wave-color': ripple.color } : {})
     }
   })
 }

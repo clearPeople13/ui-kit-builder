@@ -1,4 +1,4 @@
-import type { Component, CSSProperties, VNodeChild } from 'vue'
+import type { Component, CSSProperties, ShallowRef, VNodeChild } from 'vue'
 import { Teleport, defineComponent, h, inject, provide, shallowRef } from 'vue'
 import type { UiFeature, UiFeatureState } from './feature'
 import { UI_CONFIG_KEY } from './config'
@@ -30,28 +30,42 @@ export interface UiComponentContext {
   tag: string | Component
 }
 
+export interface UiComponentSetupContext {
+  attrs: Record<string, any>
+  slots: Record<string, ((...args: any[]) => VNodeChild) | undefined>
+  emit: (event: string, ...args: any[]) => void
+  provide: (key: string | symbol, value: any) => void
+  inject: (key: string | symbol, defaultValue?: any) => any
+  /** 根节点 ref（渲染前创建，setup 内即可挂事件/读布局） */
+  root: ShallowRef<any>
+}
+
 export interface UiComponentConfig {
   name: string
   baseClass: string
   props?: Record<string, any>
   emits?: string[]
-  setup?: (
-    props: Record<string, any>,
-    context: {
-      attrs: Record<string, any>
-      slots: Record<string, ((...args: any[]) => VNodeChild) | undefined>
-      emit: (event: string, ...args: any[]) => void
-      provide: (key: string | symbol, value: any) => void
-      inject: (key: string | symbol, defaultValue?: any) => any
-    }
-  ) => Record<string, any>
+  setup?: (props: Record<string, any>, context: UiComponentSetupContext) => Record<string, any>
   tag?: (props: Record<string, any>, state: Record<string, any>) => string | Component
   classes?: (props: Record<string, any>, state: Record<string, any>) => (string | false | null | undefined)[]
   styles?: (props: Record<string, any>, state: Record<string, any>) => CSSProperties
-  attrs?: (props: Record<string, any>, state: Record<string, any>) => Record<string, any>
+  attrs?: (props: Record<string, any>, state: Record<string, any>, states?: UiFeatureState[]) => Record<string, any>
   disabled?: (props: Record<string, any>, state: Record<string, any>) => boolean
   teleport?: (props: Record<string, any>, state: Record<string, any>) => string | Element | null | undefined
   content?: (context: UiComponentContext) => VNodeChild
+  /** 渲染覆盖点：内容区之后的追加节点（如 button 的水波动画层），缺省时子节点结构不变 */
+  append?: (context: UiComponentContext) => VNodeChild
+  /** 组件级 expose，与特性 expose 合并（特性同名键优先）；缺省时不影响现有 expose 行为 */
+  expose?: (runtime: {
+    props: Record<string, any>
+    attrs: Record<string, any>
+    slots: Record<string, ((...args: any[]) => VNodeChild) | undefined>
+    emit: (event: string, ...args: any[]) => void
+    root: ShallowRef<any>
+    state: Record<string, any>
+  }) => Record<string, any> | void
+  /** false 时关闭全局 size 注入（如 button 的 size 继承链是 属性→按钮组→全局，不能被基座截胡） */
+  globalSize?: boolean
 }
 
 export function renderSlot(
@@ -72,7 +86,7 @@ function acceptsGlobalSize(sizeProp: Record<string, any> | undefined): boolean {
 
 export function createUiComponent(config: UiComponentConfig, features: UiFeature[] = []) {
   const baseProps = config.props ?? {}
-  const sizeFromGlobal = acceptsGlobalSize(baseProps.size)
+  const sizeFromGlobal = config.globalSize !== false && acceptsGlobalSize(baseProps.size)
 
   return defineComponent({
     name: config.name,
@@ -87,9 +101,12 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
       const resolved = props as Record<string, any>
       const root = shallowRef<any>(null)
       const globalConfig = inject(UI_CONFIG_KEY, undefined)
-      const state = config.setup?.(resolved, { attrs, slots, emit, provide, inject }) ?? {}
+      const state = config.setup?.(resolved, { attrs, slots, emit, provide, inject, root }) ?? {}
       const states = resolveFeatureStates(features, resolved, { attrs, slots, emit, root, state })
-      const exposed = collectFeatureExposed(features, { props: resolved, attrs, slots, emit, root, state })
+      const exposed = {
+        ...config.expose?.({ props: resolved, attrs, slots, emit, root, state }),
+        ...collectFeatureExposed(features, { props: resolved, attrs, slots, emit, root, state })
+      }
       if (Object.keys(exposed).length) {
         expose(exposed)
       }
@@ -113,6 +130,7 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
           ? config.content(context)
           : (slots.default?.() ?? renderProps.label ?? renderProps.content ?? renderProps.title ?? null)
         const content = transformFeatureContent(states, baseContent)
+        const appended = config.append?.(context)
         const disabled = Boolean(config.disabled?.(renderProps, state)) || isFeatureDisabled(states)
 
         const node = h(
@@ -122,7 +140,7 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
             // 会与 emit() 构成双通道；补全各组件 config.emits 是消除双绑的正确方式。
             ...attrs,
             ref: root,
-            ...(config.attrs?.(renderProps, state) ?? {}),
+            ...(config.attrs?.(renderProps, state, states) ?? {}),
             ...collectFeatureAttrs(states),
             class: [
               attrs.class,
@@ -140,7 +158,8 @@ export function createUiComponent(config: UiComponentConfig, features: UiFeature
           [
             ...prefix.map((renderFragment) => renderFragment()),
             content,
-            ...suffix.map((renderFragment) => renderFragment())
+            ...suffix.map((renderFragment) => renderFragment()),
+            ...(appended === undefined ? [] : [appended])
           ]
         )
         const teleportTarget = config.teleport?.(renderProps, state)

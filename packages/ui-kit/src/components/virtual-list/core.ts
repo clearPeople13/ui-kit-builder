@@ -1,8 +1,7 @@
 import type { CSSProperties, VNodeChild } from 'vue'
-import { computed, defineComponent, h, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
-import { mergeFeatureProps } from '../../shared/feature'
-import { mergeStyles } from '../../shared/utils'
+import { createUiComponent } from '../../shared/component'
 import { alignVirtualScrollTop, computeVirtualRange, resolveVirtualViewport } from '../../shared/virtual-window'
 import './core.css'
 
@@ -40,65 +39,86 @@ function renderItemContent(
 }
 
 export function createVirtualList(features: UiFeature[] = []) {
-  return defineComponent({
-    name: 'UiVirtualList',
-    inheritAttrs: false,
-    props: { ...virtualListBaseProps, ...mergeFeatureProps(features) },
-    setup(props, { attrs, slots, expose }) {
-      const rootRef = ref<HTMLElement>()
-      const innerScrollTop = ref(0)
+  return createUiComponent(
+    {
+      name: 'UiVirtualList',
+      baseClass: 'ui-virtual-list',
+      props: virtualListBaseProps,
+      setup(props, { root }) {
+        const rootRef = root
+        const innerScrollTop = ref(0)
 
-      // 受控优先：调用方的 scrollTop 存在时以它为准，避免两份状态互相覆盖
-      const controlled = computed(() => typeof props.scrollTop === 'number')
-      const effectiveScrollTop = computed(() => (controlled.value ? Number(props.scrollTop) : innerScrollTop.value))
-      const itemCount = computed(() => (props.total > 0 ? props.total : props.data.length))
-      const viewport = computed(() =>
-        props.viewportHeight > 0 ? resolveVirtualViewport(props.viewportHeight) : resolveVirtualViewport(props.height)
-      )
-      const range = computed(() =>
-        computeVirtualRange({
-          scrollTop: effectiveScrollTop.value,
-          viewport: viewport.value,
-          itemSize: props.itemSize,
-          total: itemCount.value,
-          overscan: props.cache,
-          fallbackItemSize: props.estimatedItemSize
-        })
-      )
+        // 受控优先：调用方的 scrollTop 存在时以它为准，避免两份状态互相覆盖
+        const controlled = computed(() => typeof props.scrollTop === 'number')
+        const effectiveScrollTop = computed(() => (controlled.value ? Number(props.scrollTop) : innerScrollTop.value))
+        const itemCount = computed(() => (props.total > 0 ? props.total : props.data.length))
+        const viewport = computed(() =>
+          props.viewportHeight > 0 ? resolveVirtualViewport(props.viewportHeight) : resolveVirtualViewport(props.height)
+        )
+        const range = computed(() =>
+          computeVirtualRange({
+            scrollTop: effectiveScrollTop.value,
+            viewport: viewport.value,
+            itemSize: props.itemSize,
+            total: itemCount.value,
+            overscan: props.cache,
+            fallbackItemSize: props.estimatedItemSize
+          })
+        )
 
-      function applyScroll(top: number) {
-        const next = Math.max(0, Number(top) || 0)
-        if (rootRef.value) {
-          rootRef.value.scrollTop = next
+        function applyScroll(top: number) {
+          const next = Math.max(0, Number(top) || 0)
+          if (rootRef.value) {
+            rootRef.value.scrollTop = next
+          }
+          if (!controlled.value) {
+            innerScrollTop.value = next
+          }
         }
-        if (!controlled.value) {
-          innerScrollTop.value = next
+
+        function handleScroll(event: Event) {
+          // 受控模式下滚动位置由调用方写入，这里不回写自己的状态
+          if (!controlled.value) {
+            innerScrollTop.value = (event.target as HTMLElement).scrollTop
+          }
         }
-      }
 
-      function handleScroll(event: Event) {
-        // 受控模式下滚动位置由调用方写入，这里不回写自己的状态
-        if (!controlled.value) {
-          innerScrollTop.value = (event.target as HTMLElement).scrollTop
+        return {
+          range,
+          handleScroll,
+          api: {
+            scrollToTop: () => applyScroll(0),
+            scrollToIndex: (index: number) =>
+              applyScroll(
+                alignVirtualScrollTop(
+                  index,
+                  effectiveScrollTop.value,
+                  range.value.itemSize,
+                  viewport.value,
+                  itemCount.value
+                )
+              )
+          }
         }
-      }
-
-      expose({
-        scrollToTop: () => applyScroll(0),
-        scrollToIndex: (index: number) =>
-          applyScroll(
-            alignVirtualScrollTop(
-              index,
-              effectiveScrollTop.value,
-              range.value.itemSize,
-              viewport.value,
-              itemCount.value
-            )
-          )
-      })
-
-      return () => {
-        const { start, end, itemSize, totalSize } = range.value
+      },
+      attrs: (props, state) => ({ onScroll: props.scrollable ? state.handleScroll : undefined }),
+      classes: (props) => [props.scrollable ? '' : 'is-static'],
+      styles: (props) =>
+        props.scrollable
+          ? ({
+              height: `${props.height}px`,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              position: 'relative'
+            } as CSSProperties)
+          : ({ position: 'relative' } as CSSProperties),
+      content: ({ props, slots, state }) => {
+        const { start, end, itemSize, totalSize } = state.range.value as {
+          start: number
+          end: number
+          itemSize: number
+          totalSize: number
+        }
         const items: VNodeChild[] = []
         for (let index = start; index < end; index++) {
           const item = props.data[index]
@@ -125,38 +145,17 @@ export function createVirtualList(features: UiFeature[] = []) {
           )
         }
 
-        const ownScroll = props.scrollable
         return h(
           'div',
           {
-            ...attrs,
-            ref: rootRef,
-            class: [attrs.class, 'ui-virtual-list', ownScroll ? '' : 'is-static'],
-            style: mergeStyles(
-              attrs.style,
-              ownScroll
-                ? {
-                    height: `${props.height}px`,
-                    overflowY: 'auto',
-                    overflowX: 'hidden',
-                    position: 'relative'
-                  }
-                : { position: 'relative' }
-            ),
-            onScroll: ownScroll ? handleScroll : undefined
+            class: 'ui-virtual-list__spacer',
+            style: { height: `${totalSize}px`, position: 'relative' }
           },
-          [
-            h(
-              'div',
-              {
-                class: 'ui-virtual-list__spacer',
-                style: { height: `${totalSize}px`, position: 'relative' }
-              },
-              items
-            )
-          ]
+          items
         )
-      }
-    }
-  })
+      },
+      expose: ({ state }) => state.api
+    },
+    features
+  )
 }
