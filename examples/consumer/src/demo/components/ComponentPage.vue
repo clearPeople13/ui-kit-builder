@@ -10,6 +10,7 @@ import { PLAYGROUND_GROUPS, buildBaseValues, type PlaygroundControl, type Playgr
 import { componentById, componentFeaturesOf, featureAvailable, packageById, type DemoPackage } from '../packages'
 import { dropGroupValues, groupDefaults, presetValues, requiredFeatures, sceneViews, type SceneView } from '../scenes'
 import { lazyLoadCascader } from '../cascader-data'
+import { setToc, type TocItem } from '../toc'
 
 defineOptions({ name: 'ComponentPage' })
 
@@ -317,6 +318,21 @@ const lockedFeatures = computed(() => {
   return featureGroups.value.filter((group) => !group.available)
 })
 
+const tocItems = computed<TocItem[]>(() => {
+  const items: TocItem[] = [{ id: 'cp-sec-demo', title: '代码演示' }]
+  items.push({ id: 'cp-sec-features', title: '特性开关' })
+  if (component.value?.id === 'icon') {
+    items.push({ id: 'cp-sec-icons', title: '图标库' })
+  }
+  items.push({ id: 'cp-sec-api', title: 'API' })
+  if (lockedFeatures.value.length) {
+    items.push({ id: 'cp-sec-locked', title: '本包裁剪的特性' })
+  }
+  return items
+})
+
+watch(tocItems, (items) => setToc('本页目录', items), { immediate: true })
+
 const needsTrigger = computed(() => {
   return activeEntry.value ? TRIGGER_EXPORTS.has(activeEntry.value.name) : false
 })
@@ -537,7 +553,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       </button>
     </div>
 
-    <section class="cp-block">
+    <section id="cp-sec-demo" class="cp-block">
       <div class="cp-block__head">
         <h2 class="cp-block__title">代码演示</h2>
         <button class="cp-link-btn" type="button" @click="resetScene">重置</button>
@@ -659,7 +675,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       </div>
     </section>
 
-    <section class="cp-block">
+    <section id="cp-sec-features" class="cp-block">
       <div class="cp-block__head">
         <h2 class="cp-block__title">特性开关</h2>
         <p class="cp-block__hint">可见性由 {{ target.label }} 的构建配置决定，未启用的特性不会出现在运行时</p>
@@ -686,7 +702,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       <p v-else class="cp-muted">该导出没有可切换的特性属性，直接选择上面的场景即可。</p>
     </section>
 
-    <section v-if="component.id === 'icon' && activeEntry.name === 'Icon'" class="cp-block">
+    <section v-if="component.id === 'icon' && activeEntry.name === 'Icon'" id="cp-sec-icons" class="cp-block">
       <div class="cp-block__head">
         <h2 class="cp-block__title">图标库</h2>
         <p class="cp-block__hint">搜索或按分类筛选，点击图标即可把 name 应用到上方预览</p>
@@ -694,7 +710,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       <IconLibrary :package-id="target.id" :active-name="activeIconName" @select="handleIconSelect" />
     </section>
 
-    <section class="cp-block">
+    <section id="cp-sec-api" class="cp-block">
       <div class="cp-block__head">
         <h2 class="cp-block__title">API</h2>
         <p class="cp-block__hint">灰显区块表示 {{ target.label }} 未启用该特性，对应属性不在构建产物中</p>
@@ -751,7 +767,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
       </div>
     </section>
 
-    <section v-if="lockedFeatures.length" class="cp-locked">
+    <section v-if="lockedFeatures.length" id="cp-sec-locked" class="cp-locked">
       <h3 class="cp-locked__title">本包裁剪的特性</h3>
       <div class="cp-locked__list">
         <span v-for="group in lockedFeatures" :key="group.id" class="cp-locked__item">
