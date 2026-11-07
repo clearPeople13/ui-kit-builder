@@ -1036,3 +1036,20 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 组件层全量：95 文件 1597 用例通过（含本批新增回归：Escape 分层、秒列判定、form 增量校验、emits 单通道、泄漏守卫）。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`，连同 G0 治理工具与派生产物刷新一并验证。
 - 缺陷口径：F-1…F-96 全部修复，三处文档（README / KNOWLEDGE / REQUIREMENTS）同步为 96 条。
+
+## 28. 优化计划第二波：键盘可达性（Tabs / TreeV2）（分支 `fix/20261108-a11y-keyboard`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` 评审结论 A9 / A10（G3）。worktree 隔离开发，统一全量门禁后合入。
+
+### 28.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-97 | `packages/ui-kit/src/components/tabs/core.ts` | 所有页签 tabindex 相同，方向键不能在页签间移动焦点，不符合 WAI-ARIA Tabs 模式 | 从未实现 roving tabindex 与键盘导航 | 激活页签 `tabindex=0`、其余 `-1`，补 `aria-selected`；tablist 容器内联 `onKeydown`：ArrowLeft/ArrowRight 循环移动焦点并自动激活（复用 `setActive` 出口，跳过禁用），Home/End 跳首/尾可用页签 |
+| F-98 | `packages/ui-kit/src/components/tree-v2/core.ts` | 树无 `role`/`aria-*`，键盘完全不可操作 | 未实现 ARIA 与键盘导航 | 容器 `role="tree"`、节点 `role="treeitem"`，`aria-expanded`/`aria-selected` 与状态同步；容器内联 `onKeydown` 实现 WAI-ARIA Tree View 模式：ArrowUp/Down 在可见节点循环移动焦点、ArrowRight 展开/下钻、ArrowLeft 收起/回父级、Enter 选中（复用 `handleNodeClick` 出口）；无 window 级监听，不涉及卸载清理 |
+
+### 28.2 验证
+
+- 组件层：tabs + tree-v2 共 53/53 用例通过（含新增键盘导航与 ARIA 契约用例）。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-98 全部修复，三处文档同步为 98 条。
