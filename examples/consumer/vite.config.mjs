@@ -9,6 +9,10 @@ import { consumerPort } from '../../scripts/worktree-ports.mjs'
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const repoDir = path.resolve(rootDir, '../..')
 const configuratorDir = path.join(repoDir, 'configurator')
+// F-67：node_modules/@demo 是 npm install 时生成的软链，在并行工作树里可能指向
+// 另一棵工作树（主工作树）的 dist。调试台必须始终消费当前工作树刚构建的产物，
+// 否则源码改完、界面依旧是旧版，单测与源码体检测不出来。
+const distDir = path.join(repoDir, 'dist').replace(/\\/g, '/')
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -69,7 +73,13 @@ function configuratorPlugin() {
 export default defineConfig({
   plugins: [vue(), configuratorPlugin(), apiPlugin()],
   resolve: {
-    dedupe: ['vue']
+    dedupe: ['vue'],
+    // 软链可能跨工作树，这里把 20 份 profile 的 JS 与样式显式钉到本工作树 dist。
+    // 治理校验会静态核对这两条 alias，合并时别把它们覆盖掉。
+    alias: [
+      { find: /^@demo\/ui-kit-([a-z0-9-]+)\/style\.css$/, replacement: `${distDir}/$1/ui-kit.css` },
+      { find: /^@demo\/ui-kit-([a-z0-9-]+)$/, replacement: `${distDir}/$1/ui-kit.js` }
+    ]
   },
   server: {
     port: consumerPort,

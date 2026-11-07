@@ -258,7 +258,34 @@ for (const scene of focusScenes) {
 if (!visualText.includes('process.exit(errors.length ? 1 : 0)')) {
   fail('视觉体检器没有按 error 数量决定退出码，门禁段会永远绿')
 }
-notes.push(`视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / 豁免清单与 harness 对齐`)
+// F-67：只体检源码 harness 会漏掉「构建产物 / 加载路径」这条链路。调试台必须
+// 通过 alias 消费本工作树 dist，体检器必须真的打开调试台页面，两者都要静态锁死。
+const consumerConfigText = read('examples/consumer/vite.config.mjs')
+if (
+  !consumerConfigText.includes('distDir') ||
+  !/\$1\/ui-kit\.css/.test(consumerConfigText) ||
+  !/\$1\/ui-kit\.js/.test(consumerConfigText)
+) {
+  fail('调试台 Vite 配置的 @demo 软链隔离 alias 被删（F-67）：会重新加载另一棵工作树的旧 dist')
+}
+const consumerPagesBody = visualText.match(/const CONSUMER_PAGES = \[([^\]]*)\]/)?.[1] ?? ''
+const consumerPages = [...consumerPagesBody.matchAll(/'([^']+)'/g)].map((match) => match[1])
+if (
+  consumerPages.length < 3 ||
+  !visualText.includes('inspectConsumerInPage') ||
+  !visualText.includes('consumerServer')
+) {
+  fail('视觉体检没有覆盖调试台真实页面（F-67）：只看源码 harness 发现不了产物路径上的旧样式')
+}
+const demoMeta = read('examples/consumer/src/demo/meta.json')
+for (const id of consumerPages) {
+  if (!demoMeta.includes(`"id": "${id}"`)) {
+    fail(`视觉体检的调试台页面 ${id} 没在 demo/meta.json 登记，画廊会拿到空白页`)
+  }
+}
+notes.push(
+  `视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / ${consumerPages.length} 个调试台页面 / 豁免清单与 harness 对齐`
+)
 
 // ---- 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径 ----
 // 两条并行分支各自按"开工时的最大编号 + 1"登记，合入后会出现同号不同缺陷；

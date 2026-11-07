@@ -51,6 +51,13 @@ export const NON_VISUAL = ['CollapseTransition', 'Collection', 'CollectionItem',
 /** 重点场景：默认态画廊里很多组件没有内容，这几页才是人眼复核的主战场 */
 const FOCUS_SCENES = ['floating', 'table', 'tree', 'color', 'a11y', 'time-picker']
 
+/**
+ * 消费方真实界面（F-67）：harness 走源码，调试台走 dist 产物，两条路径缺一不可。
+ * 第九批只体检了源码，结果源码修好了、调试台却因跨工作树软链仍在加载旧 CSS，
+ * 用户看到的界面照样是双层边框。这里直接打开用户评审用的组件页做同一套契约。
+ */
+const CONSUMER_PAGES = ['time-picker', 'input', 'date-picker', 'autocomplete', 'input-number']
+
 const esc = (value) =>
   String(value).replace(
     /[&<>"']/g,
@@ -192,7 +199,99 @@ function inspectInPage({ nonVisual }) {
   return { components, findings, galleryNames: window.__probe?.galleryNames ?? [] }
 }
 
+/**
+ * 消费方页面内体检：规则与 inspectInPage 完全一致，区别只在组件根的找法——
+ * 调试台没有 [data-gallery] 宿主，改为向上找最近的类名形如 ui-xxx（不含 __）的根节点。
+ * 外壳自己的搜索框等控件没有这样的祖先，会自动跳过，不算进体检。
+ */
+function inspectConsumerInPage({ pageId }) {
+  const px = (value) => Number.parseFloat(value) || 0
+  const frameWidth = (style) =>
+    Math.max(
+      px(style.borderTopWidth),
+      px(style.borderRightWidth),
+      px(style.borderBottomWidth),
+      px(style.borderLeftWidth)
+    )
+  const isTransparent = (color) => color === 'transparent' || /^rgba\([^)]*,\s*0\)$/.test(color)
+  const findings = []
+  const push = (rule, severity, detail) => findings.push({ component: `consumer/${pageId}`, rule, severity, detail })
+  let controls = 0
+
+  for (const control of document.querySelectorAll('input, textarea, select')) {
+    const style = getComputedStyle(control)
+    const box = control.getBoundingClientRect()
+    if (
+      style.display === 'none' ||
+      style.visibility === 'hidden' ||
+      Number(style.opacity) === 0 ||
+      box.width < 2 ||
+      box.height < 2
+    ) {
+      continue
+    }
+    let root = null
+    for (let parent = control.parentElement; parent; parent = parent.parentElement) {
+      if (
+        String(parent.className || '')
+          .split(' ')
+          .some((name) => /^ui-[a-z0-9-]+$/.test(name) && !name.includes('__'))
+      ) {
+        root = parent
+        break
+      }
+    }
+    if (!root) {
+      continue
+    }
+    controls += 1
+
+    const shellStyle = getComputedStyle(root)
+    let framedAncestor = null
+    for (let parent = control.parentElement; parent && parent !== root.parentElement; parent = parent.parentElement) {
+      if (frameWidth(getComputedStyle(parent)) > 0.5) {
+        framedAncestor = parent
+        break
+      }
+    }
+    const label = `${control.tagName.toLowerCase()}.${String(control.className || '').split(' ')[0] || '(无类名)'}`
+
+    if (framedAncestor && frameWidth(style) > 0.5) {
+      push(
+        'nested-border',
+        'error',
+        `${label} 自己有 ${frameWidth(style)}px 边框，祖先 .${String(framedAncestor.className).trim().split(' ')[0]} 也有边框；消费方页面加载的产物与源码不一致`
+      )
+    }
+    if (framedAncestor && !isTransparent(style.backgroundColor)) {
+      push('opaque-fill', 'warning', `${label} 背景 ${style.backgroundColor} 不透明，与外壳底色叠成色块`)
+    }
+    if (framedAncestor && (px(style.paddingLeft) > 0 || px(style.paddingRight) > 0)) {
+      push('nested-padding', 'warning', `${label} 左右内边距 ${style.paddingLeft}/${style.paddingRight}`)
+    }
+    if (framedAncestor && style.fontFamily.split(',')[0].trim() !== shellStyle.fontFamily.split(',')[0].trim()) {
+      push('font-mismatch', 'warning', `${label} 字体 ${style.fontFamily.split(',')[0]} 与外壳不一致`)
+    }
+    if (
+      control.tagName === 'INPUT' &&
+      control.value &&
+      box.width > 0 &&
+      control.scrollWidth > control.clientWidth + 1 &&
+      style.textOverflow !== 'ellipsis'
+    ) {
+      push(
+        'clipped-text',
+        'error',
+        `${label} 文本宽 ${control.scrollWidth}px 超出可见宽 ${control.clientWidth}px 且未省略`
+      )
+    }
+  }
+
+  return { controls, findings }
+}
+
 function renderGallery(report) {
+  const consumerFindings = report.findings.filter((entry) => entry.component.startsWith('consumer/'))
   const cards = report.componentsDetail
     .map((item) => {
       const errors = item.findings.filter((entry) => entry.severity === 'error')
@@ -253,8 +352,17 @@ code{background:#eef1f7;padding:1px 5px;border-radius:4px}
   <div class="stat ${report.errors ? 'bad' : 'ok'}"><b>${report.errors}</b><span>阻断项（error）</span></div>
   <div class="stat"><b>${report.warnings}</b><span>提示项（warning）</span></div>
   <div class="stat"><b>${report.shots}</b><span>组件截图</span></div>
+  <div class="stat ${consumerFindings.some((item) => item.severity === 'error') ? 'bad' : 'ok'}"><b>${report.consumerControls ?? 0}</b><span>调试台控件</span></div>
 </div>
-<p class="legend">规则：${AUDIT_RULES.map((rule) => `<code>${esc(RULE_LABEL[rule])}</code>`).join(' ')}。阻断项会令 <code>npm run audit:visual</code> 非零退出；画廊不进版本库，每次体检重新生成。</p>
+<p class="legend">规则：${AUDIT_RULES.map((rule) => `<code>${esc(RULE_LABEL[rule] ?? rule)}</code>`).join(' ')}。阻断项会令 <code>npm run audit:visual</code> 非零退出；画廊不进版本库，每次体检重新生成。</p>
+<h2>消费方真实界面（dist 产物驱动）</h2>
+<p class="legend">调试台组件页加载 <code>dist/&lt;profile&gt;/ui-kit.css</code>，与逐组件的源码画廊互补；这里才能发现「源码修好了、构建产物或加载路径没跟上」的偏差。体检 ${esc((report.consumerPages ?? []).length)} 页 / ${esc(report.consumerControls ?? 0)} 个控件，异常 ${consumerFindings.length} 项${consumerFindings.length ? `：${consumerFindings.map((item) => `<code>${esc(item.component)} ${esc(RULE_LABEL[item.rule] ?? item.rule)}</code>`).join(' ')}` : ''}</p>
+<div class="focus">${(report.consumerPages ?? [])
+    .map(
+      (name) =>
+        `<figure><figcaption>${esc(name)}</figcaption><a href="shots/consumer-${encodeURIComponent(name)}.png" target="_blank"><img src="shots/consumer-${encodeURIComponent(name)}.png" alt="${esc(name)} 调试台页面" loading="lazy"></a></figure>`
+    )
+    .join('')}</div>
 <h2>重点场景（真实交互态首屏）</h2>
 <div class="focus">${report.focusScenes
     .map(
@@ -290,9 +398,27 @@ async function main() {
   }
   const base = `http://127.0.0.1:${address.port}/tests/browser/harness/index.html`
 
+  // 第二台服务：用户评审用的组件调试台，走自己的 vite 配置与 dist 产物（F-67）
+  const consumerServer = await createServer({
+    root: path.join(repoRoot, 'examples/consumer'),
+    configFile: path.join(repoRoot, 'examples/consumer/vite.config.mjs'),
+    logLevel: 'silent',
+    server: { host: '127.0.0.1', port: 0, strictPort: false }
+  })
+  await consumerServer.listen()
+  const consumerAddress = consumerServer.httpServer?.address()
+  if (!consumerAddress || typeof consumerAddress === 'string') {
+    await consumerServer.close()
+    await server.close()
+    throw new Error('视觉体检的调试台服务未能监听端口')
+  }
+  const consumerBase = `http://127.0.0.1:${consumerAddress.port}/`
+
   const browser = await chromium.launch()
   let result
   let shots = 0
+  let consumerControls = 0
+  const consumerPages = []
   try {
     const page = await browser.newPage({ viewport: { width: 1280, height: 720 } })
     await page.goto(`${base}?scene=gallery`, { waitUntil: 'load' })
@@ -380,8 +506,44 @@ async function main() {
       })
     }
     await page.close()
+
+    // 消费方真实界面：同一个 Chromium 另起一页，逐页跑同一套计算样式契约。
+    // 这一层专门抓「源码修了但 dist 产物 / 加载路径没跟上」——第九批的盲区。
+    const consumerPage = await browser.newPage({ viewport: { width: 1280, height: 720 } })
+    for (const id of CONSUMER_PAGES) {
+      await consumerPage.goto(`${consumerBase}#/c/${id}`, { waitUntil: 'load', timeout: 30_000 })
+      await consumerPage.waitForTimeout(800)
+      await consumerPage.addStyleTag({
+        content:
+          '*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}'
+      })
+      const checked = await consumerPage.evaluate(inspectConsumerInPage, { pageId: id })
+      result.findings.push(...checked.findings)
+      consumerControls += checked.controls
+      await consumerPage.screenshot({ path: path.join(shotDir, `consumer-${id}.png`), timeout: 15_000 })
+      consumerPages.push(id)
+    }
+    await consumerPage.close()
+
+    if (consumerPages.length !== CONSUMER_PAGES.length) {
+      result.findings.push({
+        component: '<consumer>',
+        rule: 'render-gap',
+        severity: 'error',
+        detail: `调试台体检只覆盖 ${consumerPages.length}/${CONSUMER_PAGES.length} 页，产物路径没有真正被体检`
+      })
+    }
+    if (consumerControls < CONSUMER_PAGES.length) {
+      result.findings.push({
+        component: '<consumer>',
+        rule: 'render-gap',
+        severity: 'error',
+        detail: `${consumerPages.length} 个调试台页面只量到 ${consumerControls} 个组件控件，页面可能没渲染出来`
+      })
+    }
   } finally {
     await browser.close()
+    await consumerServer.close()
     await server.close()
   }
 
@@ -395,6 +557,8 @@ async function main() {
     controls: result.components.reduce((sum, item) => sum + (item.controls ?? 0), 0),
     shots,
     focusScenes: result.focusShots,
+    consumerPages,
+    consumerControls,
     errors: errors.length,
     warnings: warnings.length,
     findings: result.findings,
@@ -405,6 +569,7 @@ async function main() {
 
   process.stdout.write(
     `视觉体检：${report.components} 个组件 / ${report.controls} 个原生控件 / ${shots} 张截图 / ` +
+      `${report.consumerPages.length} 个调试台页面 ${report.consumerControls} 控件 / ` +
       `${report.errors} 项阻断 / ${report.warnings} 项提示\n`
   )
   for (const item of errors.slice(0, 20)) {

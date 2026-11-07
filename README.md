@@ -82,10 +82,10 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约，共 95 条。
 浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
 布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"，加上 `time-picker.scene.spec.ts` 的 7 条真实操作序列，共 65 条。
-另有 `npm run audit:visual` 的视觉体检：它在真实 Chromium 里对 124 个导出的组件做计算样式契约扫描（双层边框、原生外观残留、字体错配、文本裁切、渲染缺口），并产出 124 张逐组件截图 + 6 个重点场景首屏的可视画廊 `visual-report/index.html`。像素基线只能防"以后变"，这一层专治"现在就长歪了"；有阻断项即非零退出，是门禁第十段。
+另有 `npm run audit:visual` 的视觉体检：它在真实 Chromium 里对 124 个导出的组件做计算样式契约扫描（双层边框、原生外观残留、字体错配、文本裁切、渲染缺口），另开调试台服务对 5 个含原生控件的组件页做同一套检查（防止「源码修好、dist 产物或加载路径没跟上」），并产出 124 张逐组件截图 + 6 个重点场景首屏 + 5 张调试台页面的可视画廊 `visual-report/index.html`。像素基线只能防"以后变"，这一层专治"现在就长歪了"；有阻断项即非零退出，是门禁第十段。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 142 条。
 覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，按 statements / branches / functions / lines 卡阈值，低于基线即红。
-用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 66 条缺陷（F-1…F-66），全部已修复。
+用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 67 条缺陷（F-1…F-67），全部已修复。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## License
