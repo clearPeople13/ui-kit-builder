@@ -69,7 +69,7 @@ describe('浏览器层 · 写法收敛（A24）', () => {
     expect(clicks).toBe(2)
   })
 
-  it('focus-trap trapped 时 Tab 留在容器内，松开后恢复', async () => {
+  it('focus-trap trapped+loop 时 Tab 在容器内圈禁', async () => {
     const result = await session.page.evaluate(async () => {
       const { h, createApp } = window.__vue!
       const kit = window.__kit!
@@ -79,7 +79,7 @@ describe('浏览器层 · 写法收敛（A24）', () => {
         render: () =>
           h(
             kit.FocusTrap,
-            { trapped: true, focusStartEl: 'first' },
+            { trapped: true, loop: true, focusStartEl: 'first' },
             {
               default: () => [h('button', { id: 'trap-a' }, 'A'), h('button', { id: 'trap-b' }, 'B')]
             }
