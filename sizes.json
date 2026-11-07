@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T19:25:30.920Z",
+  "generatedAt": "2026-11-07T21:48:33.783Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -188,6 +188,18 @@
         "watermark": []
       },
       "features": [],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -805,6 +817,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -1422,6 +1446,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -2039,6 +2075,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -2656,6 +2704,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -3273,6 +3333,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -3890,6 +3962,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -4507,6 +4591,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -5124,6 +5220,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -5741,6 +5849,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -6358,6 +6478,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -6975,6 +7107,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -7592,6 +7736,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -8209,6 +8365,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -8826,6 +8994,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -9443,6 +9623,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -10060,6 +10252,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -10677,6 +10881,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -11294,6 +11510,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",
@@ -11911,6 +12139,18 @@
         "upload.methods",
         "watermark.popper"
       ],
+      "slots": {
+        "input": {
+          "Input": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ]
+        }
+      },
       "files": [
         {
           "file": "ui-kit.js",

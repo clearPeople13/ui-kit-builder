@@ -4346,6 +4346,14 @@
               "description": "原生 name 属性"
             }
           ],
+          "slots": [
+            {
+              "name": "append",
+              "scope": null,
+              "fallback": false,
+              "description": "输入框后置内容，渲染在 input/textarea 元素之后（无默认内容）"
+            }
+          ],
           "features": [
             {
               "id": "input.clearable",
