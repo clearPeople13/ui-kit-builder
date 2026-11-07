@@ -84,9 +84,7 @@ describe('PageHeader 页头', () => {
 
   it('各区域可组合出现且顺序稳定', () => {
     const wrapper = mountPageHeader({ title: 'T', content: 'C' }, { extra: () => 'E', default: () => 'B' })
-    const classes = wrapper
-      .findAll('.ui-page-header__main > *, .ui-page-header__body')
-      .map((node) => node.classes()[0])
+    const classes = wrapper.findAll('.ui-page-header__main > *, .ui-page-header__body').map((node) => node.classes()[0])
     expect(classes).toEqual([
       'ui-page-header__back',
       'ui-page-header__heading',

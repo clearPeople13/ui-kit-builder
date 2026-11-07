@@ -52,7 +52,10 @@ describe('浏览器层 · 属性落盘契约', () => {
 
   it('声明了 id 属性的组件，挂载后 document.getElementById 必须命中', async () => {
     const targets = componentsDeclaring('id')
-    expect(targets.length).toBeGreaterThanOrEqual(20)
+    // 钉住确知声明了 id 的组件，而不是写死总数：目录增删时不会误红，正则失效时又能立刻发现
+    for (const required of ['select', 'message', 'input', 'dropdown', 'input-number']) {
+      expect(targets.some((item) => item.componentId === required)).toBe(true)
+    }
 
     const failures = await session.page.evaluate(async (list: { componentId: string; exportName: string }[]) => {
       const { h, createApp } = window.__vue

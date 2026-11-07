@@ -5,7 +5,7 @@ export const sliderPopperFeature = createClassFeature({
   id: 'slider.popper',
   props: {
     persistent: { type: Boolean, default: true },
-    placement: { type: String, default: 'top' }
+    placement: { type: String }
   },
   className: () => 'ui-slider--popper'
 })

@@ -158,7 +158,15 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
         }
 
         function outputFormat(): string {
-          return String(props.valueFormat ?? props.dateFormat ?? 'YYYY-MM-DD')
+          if (props.valueFormat) {
+            return String(props.valueFormat)
+          }
+          if (props.dateFormat) {
+            return String(props.dateFormat)
+          }
+          // 粒度决定缺省输出：月只到 YYYY-MM、年只到 YYYY，否则会补出并不存在的 01 日
+          const type = gridType()
+          return type === 'month' ? 'YYYY-MM' : type === 'year' ? 'YYYY' : 'YYYY-MM-DD'
         }
 
         function selectionStart(): Date | null {

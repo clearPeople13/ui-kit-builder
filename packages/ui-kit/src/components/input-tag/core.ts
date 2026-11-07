@@ -55,7 +55,9 @@ export function createInputTag(features: UiFeature[] = []) {
         const tags = () => (Array.isArray(props.modelValue) ? props.modelValue : [])
 
         function isTriggerKey(key: string): boolean {
-          const expected = TRIGGER_KEY_MAP[props.trigger || 'Enter'] ?? 'Enter'
+          const trigger = String(props.trigger || 'Enter')
+          // Both 在映射表里的值是 null，不能用 ?? 兜底，否则 null 会被当成缺省 'Enter'
+          const expected = trigger in TRIGGER_KEY_MAP ? TRIGGER_KEY_MAP[trigger] : 'Enter'
           if (expected === null) {
             return key === 'Enter' || key === ' '
           }

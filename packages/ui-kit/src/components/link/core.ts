@@ -9,7 +9,8 @@ const linkBaseProps = {
   type: { type: String },
   disabled: { type: Boolean },
   href: { type: String, default: '' },
-  target: { type: String, default: '_self' }
+  target: { type: String, default: '_self' },
+  tag: { type: String }
 }
 
 export function createLink(features: UiFeature[] = []) {

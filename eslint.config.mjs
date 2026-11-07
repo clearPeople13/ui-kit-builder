@@ -10,25 +10,26 @@ export default tseslint.config(
       'examples/consumer/dist/**',
       // 本地临时探针与草稿：不进仓库，也不参与质量门禁
       '_scratch/**',
+      '.tmp/**',
       '.trae-html-share-packages/**',
-      '**/*.d.ts',
-    ],
+      '**/*.d.ts'
+    ]
   },
   {
     files: ['**/*.ts', '**/*.mjs', '**/*.js'],
     languageOptions: {
       parser: tseslint.parser,
       ecmaVersion: 'latest',
-      sourceType: 'module',
+      sourceType: 'module'
     },
     plugins: {
-      '@typescript-eslint': tseslint.plugin,
+      '@typescript-eslint': tseslint.plugin
     },
     rules: {
       curly: ['error', 'all'],
       eqeqeq: ['error', 'smart'],
       'prefer-const': 'error',
-      'no-var': 'error',
-    },
-  },
+      'no-var': 'error'
+    }
+  }
 )

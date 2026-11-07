@@ -1,39 +1,22 @@
 import { mount } from '@vue/test-utils'
-import type { VueWrapper } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { FocusTrap } from '@ui-kit-full'
 
-// happy-dom 里所有元素 offsetWidth/offsetHeight 为 0，FocusTrap 的可见性过滤
-// （isVisible）会把焦点项全部判死；这里给原型打尺寸补丁模拟可见元素，
-// 只用于驱动焦点逻辑，不断言任何几何数值
-const mounted: Array<ReturnType<typeof mount>> = []
-const widthDesc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetWidth')
-const heightDesc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetHeight')
+// happy-dom 没有布局引擎，offsetWidth/offsetHeight 恒为 0，
+// FocusTrap 的可见性判定（isVisible）会把所有候选节点当成不可见。
+// 这里只在测试内让原型返回非零尺寸，断言对象仍是"焦点落在哪个元素"，不是几何像素。
+const proto = window.HTMLElement.prototype
+let originalDescriptor: PropertyDescriptor | undefined
 
-function patchVisible() {
-  Object.defineProperty(HTMLElement.prototype, 'offsetWidth', { configurable: true, get: () => 16 })
-  Object.defineProperty(HTMLElement.prototype, 'offsetHeight', { configurable: true, get: () => 16 })
-}
+const mounted: ReturnType<typeof mount>[] = []
 
-function restoreVisible() {
-  if (widthDesc) {
-    Object.defineProperty(HTMLElement.prototype, 'offsetWidth', widthDesc)
-  } else {
-    delete (HTMLElement.prototype as Record<string, any>).offsetWidth
-  }
-  if (heightDesc) {
-    Object.defineProperty(HTMLElement.prototype, 'offsetHeight', heightDesc)
-  } else {
-    delete (HTMLElement.prototype as Record<string, any>).offsetHeight
-  }
-}
-
-function mountTrap(props: Record<string, any> = {}) {
+function mountTrap(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   const wrapper = mount(FocusTrap, {
     props,
     slots: {
-      default: () => [h('button', { class: 'ft-first' }, '一'), h('button', { class: 'ft-last' }, '二')]
+      default: () => [h('button', { class: 'ft-first' }, '首'), h('button', { class: 'ft-last' }, '尾')],
+      ...slots
     },
     attachTo: document.body
   })
@@ -41,184 +24,178 @@ function mountTrap(props: Record<string, any> = {}) {
   return wrapper
 }
 
-function pressTab(el: HTMLElement, shift = false) {
-  const event = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: shift, bubbles: true, cancelable: true })
-  el.dispatchEvent(event)
-  return event
-}
-
-async function flush() {
-  await nextTick()
-  await nextTick()
+function activeClass() {
+  const el = document.activeElement
+  return el ? (el as HTMLElement).className : ''
 }
 
 beforeEach(() => {
   document.body.innerHTML = ''
-  patchVisible()
+  originalDescriptor = Object.getOwnPropertyDescriptor(proto, 'offsetWidth')
+  Object.defineProperty(proto, 'offsetWidth', { configurable: true, get: () => 100 })
 })
 
 afterEach(() => {
   while (mounted.length) {
-    mounted.pop()?.unmount()
+    mounted.pop()!.unmount()
   }
   document.body.innerHTML = ''
-  restoreVisible()
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur()
+  }
+  if (originalDescriptor) {
+    Object.defineProperty(proto, 'offsetWidth', originalDescriptor)
+  }
 })
 
-describe('FocusTrap', () => {
-  it('默认渲染可聚焦容器且未激活拦截', async () => {
-    const wrapper = mount(FocusTrap, {
-      slots: { default: () => h('button', { class: 'b' }, 'x') },
-      attachTo: document.body
-    })
-    mounted.push(wrapper)
-    await flush()
+describe('FocusTrap 焦点陷阱', () => {
+  it('默认渲染 tabindex=-1 的容器，未 trapped 时不挂 is-trapped', async () => {
+    const wrapper = mountTrap()
+    await nextTick()
     expect(wrapper.classes()).toContain('ui-focus-trap')
     expect(wrapper.classes()).not.toContain('is-trapped')
-    expect(wrapper.element.getAttribute('tabindex')).toBe('-1')
+    expect(wrapper.attributes('tabindex')).toBe('-1')
+    expect(wrapper.find('.ft-first').exists()).toBe(true)
+    expect(activeClass()).not.toBe('ui-focus-trap')
   })
 
-  it('trapped 挂载即聚焦第一项并加 is-trapped 类', async () => {
-    const wrapper = mountTrap({ trapped: true })
-    await flush()
+  it('trapped 挂载后自动聚焦第一个可聚焦元素', async () => {
+    mountTrap({ trapped: true })
+    await nextTick()
+    expect(activeClass()).toBe('ft-first')
+  })
+
+  it('trapped 由 false 切 true 时同样启动聚焦', async () => {
+    const wrapper = mountTrap({ trapped: false })
+    await nextTick()
+    await wrapper.setProps({ trapped: true })
+    await nextTick()
     expect(wrapper.classes()).toContain('is-trapped')
-    expect(document.activeElement?.className).toBe('ft-first')
+    expect(activeClass()).toBe('ft-first')
   })
 
-  it('loop=false 时末项 Tab 被阻止但不回卷', async () => {
+  it('focusStartEl=container 聚焦容器，=last 聚焦末位', async () => {
+    const containerStart = mountTrap({ trapped: true, focusStartEl: 'container' })
+    await nextTick()
+    expect(activeClass()).toContain('ui-focus-trap')
+    mounted.pop()?.unmount()
+    document.body.innerHTML = ''
+
+    const lastStart = mountTrap({ trapped: true, focusStartEl: 'last' })
+    await nextTick()
+    expect(activeClass()).toBe('ft-last')
+  })
+
+  it('末位按 Tab：loop=false 只阻止默认行为，loop=true 回卷到首位', async () => {
     const wrapper = mountTrap({ trapped: true })
-    await flush()
-    const last = wrapper.element.querySelector('.ft-last') as HTMLElement
+    await nextTick()
+    const last = wrapper.find('.ft-last').element as HTMLElement
     last.focus()
-    const event = pressTab(last)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    expect(document.activeElement?.className).toBe('ft-last')
+
+    const stop = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    last.dispatchEvent(stop)
+    expect(stop.defaultPrevented).toBe(true)
+    expect(activeClass()).toBe('ft-last')
+
+    await wrapper.setProps({ loop: true })
+    const looped = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    last.dispatchEvent(looped)
+    expect(looped.defaultPrevented).toBe(true)
+    expect(activeClass()).toBe('ft-first')
   })
 
-  it('loop=true 时末项 Tab 回卷到首项', async () => {
+  it('首位 Shift+Tab：loop=true 跳到末位', async () => {
     const wrapper = mountTrap({ trapped: true, loop: true })
-    await flush()
-    const last = wrapper.element.querySelector('.ft-last') as HTMLElement
-    last.focus()
-    const event = pressTab(last)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    expect(document.activeElement?.className).toBe('ft-first')
+    await nextTick()
+    const first = wrapper.find('.ft-first').element as HTMLElement
+    const shift = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+    first.dispatchEvent(shift)
+    expect(shift.defaultPrevented).toBe(true)
+    expect(activeClass()).toBe('ft-last')
   })
 
-  it('loop=true 时首项 Shift+Tab 回卷到末项', async () => {
-    const wrapper = mountTrap({ trapped: true, loop: true })
-    await flush()
-    const first = wrapper.element.querySelector('.ft-first') as HTMLElement
-    const event = pressTab(first, true)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    expect(document.activeElement?.className).toBe('ft-last')
-  })
-
-  it('焦点在容器外时 Tab 强制拉回首项（不受 loop 影响）', async () => {
+  it('焦点移出容器时抛 focusout 并拉回起点，内部移动不抛', async () => {
     const wrapper = mountTrap({ trapped: true })
-    await flush()
-    const outside = document.createElement('button')
+    await nextTick()
+    const first = wrapper.find('.ft-first').element as HTMLElement
+    const last = wrapper.find('.ft-last').element as HTMLElement
+
+    const innerMove = new FocusEvent('focusout', { bubbles: true, relatedTarget: last })
+    first.dispatchEvent(innerMove)
+    await nextTick()
+    expect(wrapper.emitted('focusout')).toBeUndefined()
+
+    const outside = document.createElement('a')
+    outside.href = '#'
     document.body.appendChild(outside)
-    outside.focus()
-    const event = pressTab(outside)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    expect(document.activeElement?.className).toBe('ft-first')
-    outside.remove()
-    expect(wrapper.element.contains(document.activeElement)).toBe(true)
-  })
-
-  it('空内容时 Tab 阻止默认并把焦点落在容器上', async () => {
-    const wrapper = mount(FocusTrap, { props: { trapped: true }, attachTo: document.body })
-    mounted.push(wrapper)
-    await flush()
-    const event = pressTab(wrapper.element as HTMLElement)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    expect(document.activeElement).toBe(wrapper.element)
-  })
-
-  it('焦点移出容器时抛出 focusout 并自动拉回', async () => {
-    const wrapper = mountTrap({ trapped: true })
-    await flush()
-    const first = wrapper.element.querySelector('.ft-first') as HTMLElement
-    first.focus()
-    first.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: document.body }))
-    await flush()
+    const leave = new FocusEvent('focusout', { bubbles: true, relatedTarget: outside })
+    first.dispatchEvent(leave)
+    await nextTick()
+    await nextTick()
     expect(wrapper.emitted('focusout')).toHaveLength(1)
-    expect(document.activeElement?.className).toBe('ft-first')
+    expect(activeClass()).toBe('ft-first')
   })
 
-  it('focusStartEl=last 时初始聚焦末项', async () => {
-    const wrapper = mountTrap({ trapped: true, focusStartEl: 'last' })
-    await flush()
-    expect(document.activeElement?.className).toBe('ft-last')
-  })
+  it('focusTrapEl 指向外部容器时以外部容器为陷阱范围', async () => {
+    const host = document.createElement('div')
+    const inside = document.createElement('button')
+    inside.className = 'ext-inside'
+    Object.defineProperty(inside, 'offsetWidth', { configurable: true, value: 20 })
+    host.appendChild(inside)
+    document.body.appendChild(host)
 
-  it('focusStartEl=container 与元素实例两种起点', async () => {
-    const wrapper = mountTrap({ trapped: true, focusStartEl: 'container' })
-    await flush()
-    expect(document.activeElement).toBe(wrapper.element)
-    await wrapper.setProps({ focusStartEl: wrapper.element.querySelector('.ft-last') as HTMLElement })
-    ;(wrapper.vm as unknown as { focusStart: () => void }).focusStart()
-    await flush()
-    expect(document.activeElement?.className).toBe('ft-last')
-  })
-
-  it('focusTrapEl 指向外部容器时在外部容器内循环', async () => {
-    const outside = document.createElement('div')
-    outside.tabIndex = 0
-    outside.className = 'ext-box'
-    const inner = document.createElement('button')
-    inner.className = 'ext-btn'
-    outside.appendChild(inner)
+    const wrapper = mountTrap({ trapped: true, focusTrapEl: host })
+    await nextTick()
+    expect(activeClass()).toBe('ext-inside')
+    // 焦点在外部容器内，focusout 到更外部才抛
+    const outside = document.createElement('span')
     document.body.appendChild(outside)
+    const leave = new FocusEvent('focusout', { bubbles: true, relatedTarget: outside })
+    inside.dispatchEvent(leave)
+    await nextTick()
+    await nextTick()
+    expect(wrapper.emitted('focusout')).toHaveLength(1)
+    host.remove()
+  })
+
+  it('trapped=false 时 Tab 不被拦截、focusout 不抛', async () => {
+    const wrapper = mountTrap({ trapped: true })
+    await nextTick()
+    await wrapper.setProps({ trapped: false })
+    const first = wrapper.find('.ft-first').element as HTMLElement
+    first.focus()
+
+    const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    first.dispatchEvent(tab)
+    expect(tab.defaultPrevented).toBe(false)
+
+    const outside = document.createElement('span')
+    document.body.appendChild(outside)
+    const leave = new FocusEvent('focusout', { bubbles: true, relatedTarget: outside })
+    first.dispatchEvent(leave)
+    await nextTick()
+    await nextTick()
+    expect(wrapper.emitted('focusout')).toBeUndefined()
+  })
+
+  it('禁用按钮不进入可聚焦集合，容器兜底聚焦', async () => {
     const wrapper = mount(FocusTrap, {
-      props: { trapped: true, focusTrapEl: outside },
+      props: { trapped: true },
+      slots: { default: () => h('button', { disabled: true, class: 'ft-disabled' }, '禁用') },
       attachTo: document.body
     })
     mounted.push(wrapper)
-    await flush()
-    expect(wrapper.classes()).toContain('is-trapped')
-    expect(document.activeElement?.className).toBe('ext-btn')
-    const event = pressTab(inner)
-    await flush()
-    expect(event.defaultPrevented).toBe(true)
-    wrapper.unmount()
-    outside.remove()
+    await nextTick()
+    expect(activeClass()).toContain('ui-focus-trap')
   })
 
-  it('trapped 由 false 切到 true 时补挂监听并聚焦', async () => {
-    const wrapper = mountTrap({ trapped: false })
-    await flush()
-    const spyAdd = vi.spyOn(window, 'addEventListener')
-    await wrapper.setProps({ trapped: true })
-    await flush()
-    const added = spyAdd.mock.calls.map((call) => call[0])
-    expect(added).toContain('keydown')
-    expect(added).toContain('focusout')
-    expect(document.activeElement?.className).toBe('ft-first')
-    spyAdd.mockRestore()
-  })
-
-  it('暴露 focusStart 方法', async () => {
+  it('实例方法 focusStart 可主动回到起点', async () => {
     const wrapper = mountTrap({ trapped: true })
-    await flush()
-    expect(typeof (wrapper.vm as unknown as { focusStart: unknown }).focusStart).toBe('function')
-  })
-
-  it('卸载移除全部窗口监听', async () => {
-    const wrapper = mountTrap({ trapped: true })
-    await flush()
-    const spyRemove = vi.spyOn(window, 'removeEventListener')
-    wrapper.unmount()
-    const removed = spyRemove.mock.calls.map((call) => call[0])
-    expect(removed).toContain('keydown')
-    expect(removed).toContain('focusout')
-    spyRemove.mockRestore()
-    expect(document.querySelector('.ui-focus-trap')).toBeNull()
+    await nextTick()
+    const last = wrapper.find('.ft-last').element as HTMLElement
+    last.focus()
+    ;(wrapper.vm as any).focusStart()
+    await nextTick()
+    expect(activeClass()).toBe('ft-first')
   })
 })

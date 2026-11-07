@@ -63,11 +63,33 @@ const popperContentBaseProps = {
   id: { type: String },
   style: { type: [String, Array, Object, Boolean] },
   className: { type: [String, Array, Object, Boolean] },
+  content: { type: [String, Number, Object, Function] },
+  label: { type: [String, Number, Object, Function] },
+  title: { type: [String, Number, Object, Function] },
+  description: { type: [String, Number, Object, Function] },
+  value: { type: [String, Number, Object, Function] },
   effect: { type: String, default: 'dark' },
   visible: { type: Boolean, default: true },
   virtualTriggering: { type: Boolean },
   zIndex: { type: Number },
   ariaLabel: { type: String }
+}
+
+/** className 走 classes 合并：component.ts 会用宿主 attrs.class 重建 class 数组，写在 attrs 里会被覆盖 */
+function popperContentClass(props: Record<string, any>): string | false | null {
+  const className = props.className
+  if (typeof className === 'string') {
+    return className
+  }
+  if (Array.isArray(className)) {
+    return className.filter(Boolean).join(' ')
+  }
+  if (className && typeof className === 'object') {
+    return Object.keys(className)
+      .filter((key) => className[key])
+      .join(' ')
+  }
+  return null
 }
 
 export function createPopperContent(features: UiFeature[] = []) {
@@ -78,6 +100,7 @@ export function createPopperContent(features: UiFeature[] = []) {
       props: popperContentBaseProps,
       tag: () => 'div',
       classes: (props) => [
+        popperContentClass(props),
         props.effect ? `is-${props.effect}` : '',
         props.visible === false ? 'is-hidden' : '',
         props.virtualTriggering ? 'is-virtual' : ''
@@ -96,8 +119,7 @@ export function createPopperContent(features: UiFeature[] = []) {
         id: props.id,
         role: 'tooltip',
         'aria-label': props.ariaLabel,
-        'aria-hidden': props.visible === false ? 'true' : undefined,
-        class: props.className
+        'aria-hidden': props.visible === false ? 'true' : undefined
       }),
       content: ({ slots, props }) =>
         (slots.default?.() ??

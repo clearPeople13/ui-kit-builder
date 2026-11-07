@@ -7,6 +7,7 @@ import { notificationPopperFeature } from './features/popper/index'
 import './core.css'
 
 const notificationBaseProps = {
+  modelValue: { type: Boolean, default: true },
   type: { type: String, default: '' },
   id: { type: String, default: '' },
   message: { type: [String, Object, Function], default: '' },

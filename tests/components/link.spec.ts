@@ -96,4 +96,15 @@ describe('Link 链接', () => {
     const long = '链接文字'.repeat(30)
     expect(mountLink({}, { default: () => long }).text()).toBe(long)
   })
+
+  it('tag 属性切换根节点标签且不漏成属性', () => {
+    const wrapper = mountLink({ tag: 'span' }, { default: () => '点我' })
+    expect(wrapper.element.tagName).toBe('SPAN')
+    expect(wrapper.classes()).toContain('ui-link')
+    expect(wrapper.attributes('tag')).toBeUndefined()
+  })
+
+  it('不传 tag 时根节点仍是 a', () => {
+    expect(mountLink({ href: '/x' }).element.tagName).toBe('A')
+  })
 })

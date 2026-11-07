@@ -36,10 +36,10 @@ describe('Empty 空状态', () => {
   it('imageSize 在图标形态换算宽高与字号（size*26/64）', () => {
     const wrapper = mountEmpty({ imageSize: 128 })
     const style = wrapper.find('.ui-empty__icon').attributes('style') ?? ''
-    expect(style).toContain('width:128px')
-    expect(style).toContain('height:128px')
+    expect(style).toContain('width: 128px')
+    expect(style).toContain('height: 128px')
     // 128 * 26 / 64 = 52
-    expect(style).toContain('font-size:52px')
+    expect(style).toContain('font-size: 52px')
   })
 
   it('description 覆盖默认文案', () => {
