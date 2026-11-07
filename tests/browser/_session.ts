@@ -1,5 +1,5 @@
 import type { Browser, ConsoleMessage, Page } from 'playwright'
-import { chromium } from 'playwright'
+import { chromium, firefox } from 'playwright'
 
 export type Session = {
   browser: Browser
@@ -13,17 +13,29 @@ export type Session = {
 /**
  * 打开一个场景页并等它真正绘制完（探针页在两帧之后把 __probe.ready 置真）。
  * viewport 固定 1280×720，让"贴边翻转"这类断言有确定的坐标系。
+ * engine=firefox 只用于跨引擎子集（布局 / 定位 / 键盘），Chromium 仍是默认。
  */
 export async function openScene(
   scene: string,
-  options: { viewport?: { width: number; height: number }; fixedTime?: Date } = {}
+  options: {
+    viewport?: { width: number; height: number }
+    fixedTime?: Date
+    query?: Record<string, string>
+    engine?: 'chromium' | 'firefox'
+  } = {}
 ): Promise<Session> {
   const base = process.env.UIKIT_HARNESS_BASE
   if (!base) {
     throw new Error('浏览器层缺少 UIKIT_HARNESS_BASE，请通过 vitest.browser.config.ts 的 globalSetup 运行')
   }
 
-  const browser = await chromium.launch()
+  const url = new URL(base)
+  url.searchParams.set('scene', scene)
+  for (const [key, value] of Object.entries(options.query ?? {})) {
+    url.searchParams.set(key, value)
+  }
+
+  const browser = await (options.engine === 'firefox' ? firefox : chromium).launch()
   const context = await browser.newContext({ viewport: options.viewport ?? { width: 1280, height: 720 } })
   const page = await context.newPage()
   const messages: string[] = []
@@ -43,14 +55,22 @@ export async function openScene(
     await page.clock.setFixedTime(options.fixedTime)
   }
 
-  await page.goto(`${base}?scene=${scene}`, { waitUntil: 'load' })
+  await page.goto(url.toString(), { waitUntil: 'load' })
   await page.waitForFunction(
-    () => (window as unknown as { __probe?: { ready?: boolean } }).__probe?.ready === true,
+    () => {
+      const state = (window as unknown as { __probe?: { ready?: boolean; error?: string } }).__probe
+      return state?.ready === true || typeof state?.error === 'string'
+    },
     undefined,
     {
       timeout: 30_000
     }
   )
+
+  const bootError = await probeValue<string>(page, 'error')
+  if (bootError) {
+    throw new Error(`场景 ${scene} 启动失败：${bootError}`)
+  }
 
   return {
     browser,

@@ -70,6 +70,7 @@
     "vue": "3.5.44"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@types/chroma-js": "3.1.3",
     "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.5",

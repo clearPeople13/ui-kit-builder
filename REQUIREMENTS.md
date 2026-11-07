@@ -520,3 +520,48 @@ B3a 给仓库里两块没有安全网的代码补用例（计划书 §3 的 B1�
 - `node scripts/verify.mjs --reuse` 断言数 2239 → **44 项**，执行内容收敛为产物存在性、`activeComponents` 导出冒烟、类型测试与 SSR 渲染冒烟。
 - 门禁仍为十二段（B10 只导出纯函数，不改 `STAGES` 条目）；`ci.mjs` 顶层执行加了入口守卫，被测试 import 时不会真的跑门禁。
 - 缺陷 F-1…F-81 全部修复；三处文档口径同步为 81 条。
+
+## 19. 第九批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍）
+
+### 19.1 背景与范围
+
+B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"大盘达标"变成"单组件也有底线"（计划书 §3 的 B2、B3、B4、B7）：core / antd / chinese 各加一个冒烟场景；浏览器层补 Firefox 子集与 375×812 窄屏断言；覆盖率开启 per-file 文本报告、全局阈值各 +1、`src/components/**` 设组件级下限；接入 `@axe-core/playwright` 对 6 个场景跑 wcag2a/aa。
+
+### 19.2 交付与数字
+
+- 浏览器层用例 70 → **83 条**（16 个文件）：`profile-smoke.spec.ts` 3 条（core / antd / chinese 各挂 3 个代表组件 + 贴底浮层 + 控制台静默）、`firefox.spec.ts` 3 条（布局 / 定位 / 键盘）、`narrow.spec.ts` 1 条（375×812 无横向溢出且浮层夹在视口内）、`axe.spec.ts` 6 条（`it.each` 六个场景）。
+- 消费方依赖仍为 20/20（`chinese` 在 B2 已由 `sync:consumer-deps` 纳入），profile 冒烟与 `consumer-deps.spec.ts` 互相印证。
+- 覆盖率阈值 87/83/88/87 → **88/84/89/88**（仍贴着实测 88.31 / 84.81 / 89.27 / 88.31）；`src/components/**` 增设组件级下限 **statements 21 / branches 33 / lines 21**（按当前实测最小值向下取整）；报告器增加 `text`，每次 `test:coverage` 输出逐文件表格。
+- 新增 devDependency `@axe-core/playwright`；6 个场景只把 serious / critical 计为失败，白名单逐条带理由（§19.4）。
+- 本批未新增缺陷编号：Firefox、窄屏与 axe 首轮发现的样式 / 无障碍项均为已知限制或测试脚手架占位，按白名单与专项跟踪，不混入"已修复"统计。
+
+### 19.3 top-10 低覆盖清单与组件级下限
+
+| 文件 | lines | branches |
+| ---- | ---- | ---- |
+| `tree/features/draggable/index.ts` | 21.67 | 50.00 |
+| `drawer/features/draggable/resize.ts` | 34.42 | 66.66 |
+| `collapse-transition/core.ts` | 37.66 | 100.00 |
+| `table/features/resize/index.ts` | 46.93 | 44.44 |
+| `splitter/core.ts` | 48.22 | 77.27 |
+| `button/features/bg-color/index.ts` | 59.52 | 60.00 |
+| `scrollbar/core.ts` | 67.06 | 73.07 |
+| `anchor/core.ts` | 69.84 | 76.47 |
+| `table/core.ts` | 72.82 | 74.10 |
+| `input-number/features/methods/index.ts` | 75.00 | 100.00 |
+
+这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑（低于 21 / 33 / 21 直接红），后续补完拖拽类单测再抬线。
+
+### 19.4 axe 白名单（按场景 × 规则）
+
+| 规则 | 涉及场景 | 理由 / 归属 |
+| ---- | ---- | ---- |
+| `aria-allowed-attr` | gallery / floating / a11y | 浮层触发器把 `aria-expanded` 加在 role 不匹配的元素上，待统一 role 方案 |
+| `aria-command-name` / `aria-input-field-name` | gallery / floating / color | 触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名 |
+| `aria-required-children` / `aria-tooltip-name` | gallery | 空数据级联面板与通用 popper 内容区缺语义 role，属对应组件专项 |
+| `button-name` | gallery / a11y | 仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 `aria-label` |
+| `color-contrast` | gallery | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题 |
+| `image-alt` / `label` / `listitem` | gallery / a11y | 探针场景用空 props 渲染，没有 alt / label；列表 role 语义待统一 |
+| `scrollable-region-focusable` | table | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项 |
+
+白名单按「场景 + 规则」登记，新增未登记的 serious / critical 会直接报红。

@@ -38,7 +38,7 @@ tests/browser/harness/        探针页：?scene=<名字> 选场景，window.__p
 tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect/moveToCenter/setScrollTop/expectSilent 等
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
 tests/browser/_pixels.ts      像素基线：截图稳定化、按平台分桶的 PNG 存取、pixelmatch 逐像素比对
-tests/browser/*.spec.ts       浏览器层用例（12 个文件 70 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、像素基线、固钉 / 回顶 / 引导、TimePicker 场景契约（焦点链 / teleport / 输入未回车就点列项）、构建器 UI（入口 / 组件数 / 试算 / 构建产物 / 配置下载）
+tests/browser/*.spec.ts       浏览器层用例（16 个文件 83 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线、像素基线、固钉 / 回顶 / 引导、TimePicker 场景契约（焦点链 / teleport / 输入未回车就点列项）、构建器 UI（入口 / 组件数 / 试算 / 构建产物 / 配置下载）、裁剪产物冒烟（core / antd / chinese）、Firefox 布局 / 定位 / 键盘子集、375×812 窄屏、axe 无障碍审计（6 场景）
 tests/browser/time-picker.scene.spec.ts  第八批新增：7 条真实操作序列，专门证组件层证不了的焦点与合成指针行为
 tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
 tests/profiles/props-documented.spec.ts 属性字典双向守卫：运行时真实 props ↔ spec.mjs 的 coreProps / 已启用 feature props 互相回查

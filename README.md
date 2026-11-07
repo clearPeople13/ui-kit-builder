@@ -60,7 +60,7 @@ npm test               # 组件单元测试（Vitest + @vue/test-utils，跑前�
 npm run test:watch     # 单元测试增量模式
 npm run test:coverage  # 单元测试覆盖率
 npm run test:build     # 构建器侧契约测试（跑前先构建全部 20 份 profile）
-npm run test:browser   # 真实浏览器层（Playwright + Chromium，跑前先构建 full 产物）
+npm run test:browser   # 真实浏览器层（Playwright + Chromium，Firefox 跑布局/定位/键盘子集，跑前先构建 full 产物）
 npm run snap:layout    # 重新录入布局基线（改动样式/布局后按需执行）
 npm run test:profiles  # 20 份 profile 的运行时挂载校验（跑前先构建全部 profile）
 npm run test:coverage  # 同一批组件用例在源码入口上重放并卡覆盖率阈值
@@ -79,10 +79,10 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 当前覆盖 95 个文件、1582 条用例（含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归），90 个组件目录无一遗漏。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
 特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约、dev-api 接口分支、demo meta 新鲜度、门禁选择器，共 131 条。
-浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
-布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"、`time-picker.scene.spec.ts` 的 7 条真实操作序列与构建器 UI（入口跳转 / 组件数 / 试算 / 构建产物 / 配置下载），共 70 条。
+浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口；Firefox 只跑布局 / 定位 / 键盘子集），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
+布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"、`time-picker.scene.spec.ts` 的 7 条真实操作序列、构建器 UI（入口跳转 / 组件数 / 试算 / 构建产物 / 配置下载）、`core` / `antd` / `chinese` 裁剪产物冒烟、375×812 窄屏，以及 6 个场景的 axe wcag2a/aa 审计（serious / critical 白名单带理由），共 83 条。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 142 条。
-覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，按 statements / branches / functions / lines 卡阈值，低于基线即红。
+覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，报告输出逐文件表格，全局阈值 88 / 84 / 89 / 88，并对 `src/components/**` 设 21 / 33 / 21 的组件级下限，低于下限即红。
 用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 81 条缺陷（F-1…F-81），全部已修复。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
