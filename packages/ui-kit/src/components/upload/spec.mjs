@@ -69,6 +69,14 @@ export default {
           "description": "移除前钩子，返回 false 阻止移除"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
+        }
+      ],
       "features": {
         "upload.multiple": {
           "title": "多选",

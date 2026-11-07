@@ -65,6 +65,26 @@ export default {
           "description": "direction"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "抽屉主体内容，渲染在面板 body 区域，缺省回退到 message 属性（两者都无为空）"
+        },
+        {
+          "name": "header",
+          "scope": null,
+          "fallback": true,
+          "description": "标题栏内容，渲染在面板 header 的标题位置，缺省回退到 title 属性"
+        },
+        {
+          "name": "footer",
+          "scope": null,
+          "fallback": false,
+          "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+        }
+      ],
       "features": {
         "drawer.closable": {
           "title": "可关闭",

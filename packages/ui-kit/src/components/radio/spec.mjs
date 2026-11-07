@@ -45,6 +45,14 @@ export default {
           "description": "name"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "单选框文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
+        }
+      ],
       "features": {
         "radio.appearance": {
           "title": "外观变体",
@@ -100,6 +108,14 @@ export default {
           "type": "string",
           "default": null,
           "description": "name"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "按钮文本内容，渲染在控件之后的 label 区域，缺省回退到 label 属性"
         }
       ],
       "features": {}
@@ -170,6 +186,14 @@ export default {
           "name": "ariaLabel",
           "type": "string",
           "description": "ariaLabel"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "单选组合内容，仅在未配置 options 时渲染包裹的 Radio/RadioButton（无默认内容）"
         }
       ],
       "features": {}
