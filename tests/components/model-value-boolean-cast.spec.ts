@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { SelectV2 } from '@ui-kit-full'
+import { Select } from '@ui-kit-full'
 
 /**
  * 受控值通道的布尔归一守卫。
@@ -10,7 +10,7 @@ import { SelectV2 } from '@ui-kit-full'
  * Vue 的 prop 布尔转换有个副作用：只要 `type` 数组里出现 Boolean 且没写 default，
  * "父组件没传" 就会被归一成 `false`，而不是 `undefined`。对 `modelValue` 来说这是
  * 行为缺陷——组件会把 false 当成一个真实选中值：占位符被吃掉、`value: false` 的选项
- * 自动高亮。F-2 / F-4 / F-13 / F-14（选项值类）与 F-37（Segmented）、F-38（SelectV2）
+ * 自动高亮。F-2 / F-4 / F-13 / F-14（选项值类）与 F-37（Segmented）、F-38（原虚拟列表选择器）
  * 是同一个坑的第 5、6 次出现，所以这里把它固化成一条静态扫描 + 一条真实渲染断言。
  */
 
@@ -72,14 +72,14 @@ describe('modelValue 布尔联合类型必须显式声明 default', () => {
     expect(offenders).toEqual([])
   })
 
-  it('dist 产物里的 SelectV2 也带着这条 default（构建没有把它抹掉）', () => {
-    const props = (SelectV2 as any).props
+  it('dist 产物里的 Select 也带着这条 default（构建没有把它抹掉）', () => {
+    const props = (Select as any).props
     expect('default' in props.modelValue).toBe(true)
     expect(props.modelValue.default).toBeUndefined()
   })
 })
 
-describe('SelectV2 未受控时的布尔选项（F-38 回归）', () => {
+describe('Select 未受控时的布尔选项（F-38 同类回归）', () => {
   afterEach(() => {
     document.body.innerHTML = ''
   })
@@ -90,22 +90,22 @@ describe('SelectV2 未受控时的布尔选项（F-38 回归）', () => {
   ]
 
   it('未传 modelValue 时显示占位符，而不是把 false 当选中值', () => {
-    const wrapper = mount(SelectV2, { props: { options, placeholder: '请选择' }, attachTo: document.body })
-    expect(wrapper.find('.ui-select-v2__placeholder').exists()).toBe(true)
-    expect(wrapper.find('.ui-select-v2__selected').exists()).toBe(false)
+    const wrapper = mount(Select, { props: { options, placeholder: '请选择' }, attachTo: document.body })
+    expect(wrapper.find('.ui-select__placeholder').exists()).toBe(true)
+    expect(wrapper.find('.ui-select__selected').exists()).toBe(false)
   })
 
   it('显式传 modelValue=false 时仍然正确回显 false 对应的选项', () => {
-    const wrapper = mount(SelectV2, { props: { options, modelValue: false }, attachTo: document.body })
-    expect(wrapper.find('.ui-select-v2__selected').text()).toBe('否')
-    expect(wrapper.find('.ui-select-v2__placeholder').exists()).toBe(false)
+    const wrapper = mount(Select, { props: { options, modelValue: false }, attachTo: document.body })
+    expect(wrapper.find('.ui-select__selected').text()).toBe('否')
+    expect(wrapper.find('.ui-select__placeholder').exists()).toBe(false)
   })
 
   it('受控切到 true 时高亮跟随，未受控实例不受影响', async () => {
-    const wrapper = mount(SelectV2, { props: { options, modelValue: false }, attachTo: document.body })
+    const wrapper = mount(Select, { props: { options, modelValue: false }, attachTo: document.body })
     await wrapper.setProps({ modelValue: true })
-    expect(wrapper.find('.ui-select-v2__selected').text()).toBe('是')
+    expect(wrapper.find('.ui-select__selected').text()).toBe('是')
     await wrapper.setProps({ modelValue: undefined })
-    expect(wrapper.find('.ui-select-v2__placeholder').exists()).toBe(true)
+    expect(wrapper.find('.ui-select__placeholder').exists()).toBe(true)
   })
 })

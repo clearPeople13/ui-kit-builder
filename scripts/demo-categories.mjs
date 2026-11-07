@@ -14,7 +14,6 @@ const GROUPED = {
     'autocomplete',
     'mention',
     'select',
-    'select-v2',
     'cascader',
     'cascader-panel',
     'checkbox',

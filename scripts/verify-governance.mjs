@@ -122,7 +122,9 @@ const interactiveTouched = new Set()
 for (const block of componentDiff.split(/^diff --git /m).slice(1)) {
   const path = block.split('\n')[0].match(/^a\/(\S+)\s+b\//)?.[1]
   const id = path?.match(/^packages\/ui-kit\/src\/components\/([^/]+)\//)?.[1]
-  if (!id || !path?.endsWith('core.ts')) {
+  // 已删除的组件（例如第十一批把虚拟列表选择器并进 Select）不在 componentIds 里，
+  // 它的 core.ts 只会以"整文件删除"出现在 diff 中，不需要再为它补浏览器场景
+  if (!id || !path?.endsWith('core.ts') || !componentIds.includes(id)) {
     continue
   }
   const lines = block
@@ -140,7 +142,11 @@ for (const file of changed) {
     continue
   }
   const id = file.match(/^packages\/ui-kit\/src\/components\/([^/]+)\//)?.[1]
-  if (id && /onClick|onBlur|onFocus|pointerdown|Teleport|useFloatingPanel|h\('input'|keydown/.test(read(file))) {
+  if (
+    id &&
+    componentIds.includes(id) &&
+    /onClick|onBlur|onFocus|pointerdown|Teleport|useFloatingPanel|h\('input'|keydown/.test(read(file))
+  ) {
     interactiveTouched.add(id)
   }
 }
@@ -201,6 +207,41 @@ for (const id of componentIds) {
   }
 }
 notes.push(`特性裁剪静态守卫：扫描 ${componentIds.length} 个组件目录`)
+
+// ---- 2.1 Select 统一守卫（第十一批 §22）----
+// 只保留一个选择器：源码、profile、配置、示例与测试里不许再出现旧虚拟列表选择器的名字。
+// 历史缺陷登记（REQUIREMENTS.md / KNOWLEDGE.md 的 F-38、F-47）与第三方参考目录不在扫描范围内。
+const LEGACY_NAME = /select-v2|SelectV2/i
+const LEGACY_SCAN_PREFIXES = [
+  'packages/ui-kit/src/',
+  'profiles/',
+  'configurator/',
+  'scripts/',
+  'examples/consumer/src/',
+  'tests/',
+  'sizes.json'
+]
+const LEGACY_TEXT = /\.(ts|mjs|js|json|css|vue|md|yml|yaml|html|snap)$/
+const candidateFiles = git(['ls-files']).filter(
+  (file) =>
+    file !== 'scripts/verify-governance.mjs' &&
+    LEGACY_SCAN_PREFIXES.some((prefix) => file.startsWith(prefix)) &&
+    LEGACY_TEXT.test(file)
+)
+const legacyHits = candidateFiles.filter((file) => LEGACY_NAME.test(read(file)))
+if (legacyHits.length) {
+  fail(`旧虚拟列表选择器被重新引入（第十一批已统一为 Select）：${legacyHits.join(', ')}`)
+}
+if (componentIds.includes('select-v2')) {
+  fail('组件目录里又出现了 select-v2，Select 统一改造被回退')
+}
+if (!read(`${SRC}/components/select/spec.mjs`).includes('select.select-virtualized')) {
+  fail('Select 缺少 select.select-virtualized 特性，大数据能力没有被保留')
+}
+if (!read('examples/consumer/src/demo/meta.json').includes('select.select-virtualized')) {
+  fail('demo/meta.json 没有登记新特性，请先重跑 build:all / meta:demo')
+}
+notes.push(`Select 统一守卫：扫描 ${candidateFiles.length} 个跟踪文件，旧组件零残留`)
 
 // ---- 3. 文档数字与产物对齐 ----
 const meta = JSON.parse(read('examples/consumer/src/demo/meta.json') || '{}')
@@ -283,8 +324,17 @@ for (const id of consumerPages) {
     fail(`视觉体检的调试台页面 ${id} 没在 demo/meta.json 登记，画廊会拿到空白页`)
   }
 }
+// 第十一批：Select 统一后，大数据示例必须进入「消费方真实界面」体检，
+// 否则又会出现「源码 / 画廊绿了，用户评审的大数据场景其实没窗口化」的盲区。
+if (
+  !visualText.includes('BIG_DATA_SCENE') ||
+  !visualText.includes('consumer-select-virtual.png') ||
+  !visualText.includes('bigDataShot')
+) {
+  fail('视觉体检丢了大数据场景的现场检查：Select 合并后 1 万条示例没有进门禁')
+}
 notes.push(
-  `视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / ${consumerPages.length} 个调试台页面 / 豁免清单与 harness 对齐`
+  `视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / ${consumerPages.length} 个调试台页面 / 1 个大数据场景 / 豁免清单与 harness 对齐`
 )
 
 // ---- 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径 ----

@@ -14,6 +14,7 @@ import { selectMultipleFeature } from './features/select-multiple/index'
 import { selectFilterableFeature } from './features/select-filterable/index'
 import { selectPopperFeature } from './features/select-popper/index'
 import { selectFormatFeature } from './features/select-format/index'
+import { selectVirtualizedFeature } from './features/select-virtualized/index'
 import './core.css'
 
 const optionBaseProps = {
@@ -34,6 +35,18 @@ const optionFields = {
   value: 'value',
   disabled: 'disabled',
   options: 'options'
+}
+
+const VIRTUAL_OVERSCAN = 5
+const VIRTUAL_FALLBACK_ITEM_HEIGHT = 34
+const VIRTUAL_FALLBACK_VIEW_HEIGHT = 274
+
+interface VirtualWindow {
+  list: SelectOption[]
+  itemHeight: number
+  total: number
+  start: number
+  end: number
 }
 
 const optionGroupBaseProps = {
@@ -198,6 +211,9 @@ export function createSelect(features: UiFeature[] = []) {
         const triggerRef = ref<HTMLElement>()
         const panelRef = ref<HTMLElement>()
         const inputRef = ref<HTMLInputElement>()
+        // 虚拟窗口：滚动位置与实测行高（主题令牌决定 option 高度，运行时量最准）
+        const listScrollTop = ref(0)
+        const measuredItemHeight = ref(0)
         let remoteTimer: ReturnType<typeof setTimeout> | null = null
 
         const slotOptions = computed(() => {
@@ -256,6 +272,60 @@ export function createSelect(features: UiFeature[] = []) {
           matchWidth: () => true,
           fallbackPlacements: () => props.fallbackPlacements as string[] | undefined
         })
+
+        // ---- 大数据虚拟窗口（由原虚拟列表选择器合并而来）----
+        // 分组行高不一，回退全量渲染；仅扁平大列表且开启特性时走窗口化
+        function virtualWindow(): VirtualWindow | null {
+          const list = visibleOptions.value
+          const threshold = Number(props.virtualThreshold ?? 100)
+          if (props.virtualized !== true || list.length <= threshold || list.some((option) => option.group)) {
+            return null
+          }
+          const itemHeight = measuredItemHeight.value || Number(props.itemSize) || VIRTUAL_FALLBACK_ITEM_HEIGHT
+          const viewHeight = panelRef.value?.clientHeight || VIRTUAL_FALLBACK_VIEW_HEIGHT
+          const start = Math.max(0, Math.floor(listScrollTop.value / itemHeight) - VIRTUAL_OVERSCAN)
+          const end = Math.min(
+            list.length,
+            Math.ceil((listScrollTop.value + viewHeight) / itemHeight) + VIRTUAL_OVERSCAN
+          )
+          return { list, itemHeight, total: list.length, start, end }
+        }
+
+        function measureItemHeight() {
+          const option = panelRef.value?.querySelector('.ui-select__option')
+          if (option instanceof HTMLElement && option.offsetHeight > 0) {
+            measuredItemHeight.value = option.offsetHeight
+          }
+        }
+
+        function handleListScroll(event: Event) {
+          listScrollTop.value = (event.target as HTMLElement).scrollTop
+        }
+
+        function resetListScroll() {
+          listScrollTop.value = 0
+          if (panelRef.value) {
+            panelRef.value.scrollTop = 0
+          }
+        }
+
+        // 方向键把活动项移出可视区时，主动滚动面板让高亮始终可见
+        function scrollActiveIntoView() {
+          const win = virtualWindow()
+          if (!win || activeIndex.value < 0) {
+            return
+          }
+          const top = activeIndex.value * win.itemHeight
+          const viewHeight = panelRef.value?.clientHeight || VIRTUAL_FALLBACK_VIEW_HEIGHT
+          if (top < listScrollTop.value) {
+            listScrollTop.value = top
+          } else if (top + win.itemHeight > listScrollTop.value + viewHeight) {
+            listScrollTop.value = top + win.itemHeight - viewHeight
+          }
+          if (panelRef.value) {
+            panelRef.value.scrollTop = listScrollTop.value
+          }
+        }
 
         function emitValue(value: any) {
           emit('update:modelValue', value)
@@ -335,6 +405,7 @@ export function createSelect(features: UiFeature[] = []) {
           const next =
             current < 0 ? (step > 0 ? 0 : indexes.length - 1) : (current + step + indexes.length) % indexes.length
           activeIndex.value = indexes[next]
+          scrollActiveIntoView()
         }
 
         function handleKeydown(event: KeyboardEvent) {
@@ -384,6 +455,8 @@ export function createSelect(features: UiFeature[] = []) {
           emit('visible-change', true)
           nextTick(() => {
             refresh()
+            resetListScroll()
+            measureItemHeight()
             if (props.filterable) {
               inputRef.value?.focus()
             }
@@ -398,6 +471,7 @@ export function createSelect(features: UiFeature[] = []) {
           query.value = ''
           searching.value = false
           activeIndex.value = -1
+          resetListScroll()
           emit('visible-change', false)
         }
 
@@ -412,6 +486,7 @@ export function createSelect(features: UiFeature[] = []) {
         function handleFilterInput(event: Event) {
           query.value = (event.target as HTMLInputElement).value
           searching.value = true
+          resetListScroll()
           emit('filter-change', query.value)
           if (!open.value) {
             open.value = true
@@ -559,6 +634,7 @@ export function createSelect(features: UiFeature[] = []) {
             return null
           }
           const children: VNodeChild[] = []
+          const win = props.loading ? null : virtualWindow()
           if (props.loading) {
             children.push(
               h('div', { class: 'ui-loader', role: 'status' }, [
@@ -567,13 +643,30 @@ export function createSelect(features: UiFeature[] = []) {
               ])
             )
           } else if (visibleOptions.value.length) {
-            visibleOptions.value.forEach((option, index) => {
-              if (option.group) {
-                children.push(h('div', { key: `group-${index}`, class: 'ui-select__group' }, option.label))
-                return
-              }
-              children.push(renderOptionRow(option, index))
-            })
+            if (win) {
+              children.push(
+                h('div', { class: 'ui-select__virtual', style: { height: `${win.total * win.itemHeight}px` } }, [
+                  h(
+                    'div',
+                    {
+                      class: 'ui-select__virtual-window',
+                      style: { transform: `translateY(${win.start * win.itemHeight}px)` }
+                    },
+                    win.list
+                      .slice(win.start, win.end)
+                      .map((option, offset) => renderOptionRow(option, win.start + offset))
+                  )
+                ])
+              )
+            } else {
+              visibleOptions.value.forEach((option, index) => {
+                if (option.group) {
+                  children.push(h('div', { key: `group-${index}`, class: 'ui-select__group' }, option.label))
+                  return
+                }
+                children.push(renderOptionRow(option, index))
+              })
+            }
           } else {
             children.push(h('div', { class: 'ui-floating-panel__empty' }, emptyText.value))
           }
@@ -587,6 +680,7 @@ export function createSelect(features: UiFeature[] = []) {
               class: [
                 'ui-select__dropdown',
                 'ui-floating-panel',
+                win ? 'is-virtual' : '',
                 `is-${props.effect || 'light'}`,
                 `is-${actualSide.value}`,
                 props.popperClass
@@ -595,6 +689,7 @@ export function createSelect(features: UiFeature[] = []) {
               role: 'listbox',
               'aria-label': props.ariaLabel,
               onMousedown: (event: Event) => event.preventDefault(),
+              onScroll: handleListScroll,
               onKeydown: handleKeydown
             },
             children

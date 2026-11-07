@@ -16,6 +16,11 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
 
+/** 大数据选项在示例代码里只输出生成器调用，不内联近 MB 级字面量（与 Table 的 heavy 场景同一口径） */
+function makeSelectOptions(count: number) {
+  return Array.from({ length: count }, (_, index) => ({ label: `选项 ${index + 1}`, value: index + 1 }))
+}
+
 function toJsLiteral(value: unknown): string {
   if (value === undefined) {
     return 'undefined'
@@ -571,7 +576,11 @@ export function sceneSourceCode(entry: PlaygroundEntry, scene: SceneView | undef
         continue
       }
       const refName = uniqueName(name, taken)
-      hoisted.push(`const ${refName} = ref(${toJsLiteral(value)})`)
+      const literal =
+        entry.name === 'Select' && name === 'options' && Array.isArray(value) && value.length > 500
+          ? `(${makeSelectOptions.toString()})(${value.length})`
+          : toJsLiteral(value)
+      hoisted.push(`const ${refName} = ref(${literal})`)
       attrs.push(`:${kebabCase(name)}="${refName}"`)
       continue
     }

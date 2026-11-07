@@ -130,7 +130,6 @@
   /* 面板（Teleport 到 body，必须全局声明） */
   --ui-select-option-padding: 0 10px;
   --ui-select-option-selected-font-weight: var(--ui-font-weight-strong);
-  --ui-select-v2-option-padding: 7px 10px;
   --ui-tree-select-option-padding: 7px 10px;
   --ui-time-select-option-padding: 0 10px;
   --ui-autocomplete-option-padding: 7px 10px;
@@ -571,7 +570,6 @@
 .ui-input-tag,
 .ui-input-otp,
 .ui-select,
-.ui-select-v2,
 .ui-cascader,
 .ui-cascader-panel,
 .ui-date-picker,
@@ -711,4 +709,3 @@
 }
 
 /* ===== 组件级令牌默认值 ===== */
-

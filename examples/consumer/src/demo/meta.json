@@ -7458,6 +7458,31 @@
               ]
             },
             {
+              "id": "select.select-virtualized",
+              "title": "大数据虚拟列表",
+              "description": "大数据虚拟列表：virtualized、itemSize、virtualThreshold；超过阈值的扁平列表只渲染可视区，分组列表与未开启时回退全量",
+              "props": [
+                {
+                  "name": "virtualized",
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否启用窗口化渲染，默认开启"
+                },
+                {
+                  "name": "itemSize",
+                  "type": "number",
+                  "default": 34,
+                  "description": "单行高度 px；主题令牌影响行高时以运行时实测为准"
+                },
+                {
+                  "name": "virtualThreshold",
+                  "type": "number",
+                  "default": 100,
+                  "description": "超过该条数才启用窗口化"
+                }
+              ]
+            },
+            {
               "id": "select.methods",
               "title": "实例方法",
               "description": "通过 ref 调用选择器方法：focus、blur。",
@@ -7468,194 +7493,6 @@
             "focus",
             "blur"
           ]
-        }
-      ]
-    },
-    {
-      "id": "select-v2",
-      "title": "SelectV2 虚拟列表选择器",
-      "description": "对齐主流组件库的 SelectV2，基础 props 与可选特性拆分。",
-      "order": 10,
-      "category": "表单",
-      "exports": [
-        {
-          "name": "SelectV2",
-          "coreProps": [
-            {
-              "name": "modelValue",
-              "type": "any",
-              "description": "绑定值"
-            },
-            {
-              "name": "options",
-              "type": "any[]",
-              "description": "选项数据"
-            },
-            {
-              "name": "placeholder",
-              "type": "string",
-              "default": "请选择",
-              "description": "输入占位文本"
-            },
-            {
-              "name": "disabled",
-              "type": "boolean",
-              "description": "是否禁用"
-            },
-            {
-              "name": "size",
-              "type": "string",
-              "default": "",
-              "description": "尺寸大小"
-            },
-            {
-              "name": "fitWidth",
-              "type": "boolean",
-              "description": "自适应内容宽度：宽度跟随选中标签/占位文本"
-            },
-            {
-              "name": "maxWidth",
-              "type": "string | number",
-              "description": "最大宽度：超出后文本省略"
-            }
-          ],
-          "features": [
-            {
-              "id": "select-v2.clearable",
-              "title": "可清空",
-              "description": "可清空：clearable",
-              "props": [
-                {
-                  "name": "clearable",
-                  "type": "boolean",
-                  "description": "是否可清空"
-                }
-              ]
-            },
-            {
-              "id": "select-v2.multiple",
-              "title": "多选",
-              "description": "多选：multiple、collapseTags、maxCollapseTags、reserveKeyword",
-              "props": [
-                {
-                  "name": "multiple",
-                  "type": "boolean",
-                  "description": "是否多选"
-                },
-                {
-                  "name": "collapseTags",
-                  "type": "boolean",
-                  "description": "多选时是否折叠选中标签"
-                },
-                {
-                  "name": "maxCollapseTags",
-                  "type": "number",
-                  "default": 1,
-                  "description": "最多折叠多少个标签"
-                }
-              ]
-            },
-            {
-              "id": "select-v2.filterable",
-              "title": "可筛选",
-              "description": "可筛选：filterable、filterMethod、remote、remoteMethod、loading、loadingText、noMatchText、noDataText",
-              "props": [
-                {
-                  "name": "filterable",
-                  "type": "boolean",
-                  "description": "是否可搜索过滤"
-                },
-                {
-                  "name": "filterMethod",
-                  "type": "(query: string, option: any) => boolean",
-                  "description": "自定义过滤方法"
-                },
-                {
-                  "name": "remote",
-                  "type": "boolean",
-                  "description": "是否远程搜索"
-                },
-                {
-                  "name": "remoteMethod",
-                  "type": "(query: string) => void",
-                  "description": "远程搜索方法"
-                },
-                {
-                  "name": "loading",
-                  "type": "boolean",
-                  "description": "是否加载中"
-                },
-                {
-                  "name": "loadingText",
-                  "type": "string",
-                  "default": "加载中",
-                  "description": "加载提示文本"
-                },
-                {
-                  "name": "noMatchText",
-                  "type": "string",
-                  "default": "无匹配数据",
-                  "description": "无匹配项提示文本"
-                },
-                {
-                  "name": "noDataText",
-                  "type": "string",
-                  "default": "无数据",
-                  "description": "无数据提示文本"
-                }
-              ]
-            },
-            {
-              "id": "select-v2.popper",
-              "title": "弹层配置",
-              "description": "弹层配置：teleported、popperClass、popperStyle、placement、effect、valueKey、props、emptyValues、panelScroll",
-              "props": [
-                {
-                  "name": "teleported",
-                  "type": "boolean",
-                  "default": true,
-                  "description": "是否挂载到 body"
-                },
-                {
-                  "name": "popperClass",
-                  "type": "string | string[] | Record<string, any>",
-                  "default": "",
-                  "description": "弹出层自定义类名"
-                },
-                {
-                  "name": "popperStyle",
-                  "type": "string | Record<string, any> | any[]",
-                  "default": "",
-                  "description": "弹出层自定义内联样式"
-                },
-                {
-                  "name": "placement",
-                  "type": "string",
-                  "default": "bottom-start",
-                  "description": "弹出层出现位置"
-                },
-                {
-                  "name": "effect",
-                  "type": "string",
-                  "default": "light",
-                  "description": "浮层主题效果（light/dark）"
-                },
-                {
-                  "name": "props",
-                  "type": "Record<string, any>",
-                  "default": {},
-                  "description": "配置选项字段映射"
-                },
-                {
-                  "name": "panelScroll",
-                  "type": "string",
-                  "default": "follow",
-                  "description": "滚动策略：follow 跟随 / close 关闭"
-                }
-              ]
-            }
-          ],
-          "methods": []
         }
       ]
     },
@@ -10640,7 +10477,6 @@
         "scrollbar": [],
         "segmented": [],
         "select": [],
-        "select-v2": [],
         "skeleton": [],
         "slider": [],
         "slot": [],
@@ -10732,7 +10568,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -10824,7 +10659,6 @@
         "scrollbar": [],
         "segmented": [],
         "select": [],
-        "select-v2": [],
         "skeleton": [],
         "slider": [],
         "slot": [],
@@ -10853,20 +10687,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 567890,
-          "gzipBytes": 136464
+          "bytes": 558382,
+          "gzipBytes": 134763
         },
         {
           "file": "ui-kit.css",
-          "bytes": 231685,
-          "gzipBytes": 31983
+          "bytes": 227086,
+          "gzipBytes": 31439
         }
       ],
       "sizes": {
-        "js": 567890,
-        "css": 231685,
-        "total": 799575,
-        "gzip": 168483
+        "js": 558382,
+        "css": 227086,
+        "total": 785468,
+        "gzip": 166288
       }
     },
     {
@@ -10989,11 +10823,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -11276,13 +11107,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -11453,7 +11279,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -11701,13 +11526,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -11815,20 +11635,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 646942,
-          "gzipBytes": 154662
+          "bytes": 636564,
+          "gzipBytes": 153113
         },
         {
           "file": "ui-kit.css",
-          "bytes": 251227,
-          "gzipBytes": 34672
+          "bytes": 246938,
+          "gzipBytes": 34158
         }
       ],
       "sizes": {
-        "js": 646942,
-        "css": 251227,
-        "total": 898169,
-        "gzip": 189133
+        "js": 636564,
+        "css": 246938,
+        "total": 883502,
+        "gzip": 187078
       }
     },
     {
@@ -11951,11 +11771,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -12238,13 +12055,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -12415,7 +12227,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -12663,13 +12474,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -12777,20 +12583,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154783
+          "bytes": 638360,
+          "gzipBytes": 153221
         },
         {
           "file": "ui-kit.css",
-          "bytes": 263453,
-          "gzipBytes": 35408
+          "bytes": 258976,
+          "gzipBytes": 34945
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 263453,
-        "total": 912239,
-        "gzip": 190034
+        "js": 638360,
+        "css": 258976,
+        "total": 897336,
+        "gzip": 188006
       }
     },
     {
@@ -12913,11 +12719,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -13200,13 +13003,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -13377,7 +13175,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -13625,13 +13422,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -13739,20 +13531,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154781
+          "bytes": 638360,
+          "gzipBytes": 153218
         },
         {
           "file": "ui-kit.css",
-          "bytes": 278904,
-          "gzipBytes": 38364
+          "bytes": 274427,
+          "gzipBytes": 37901
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 278904,
-        "total": 927690,
-        "gzip": 193004
+        "js": 638360,
+        "css": 274427,
+        "total": 912787,
+        "gzip": 191015
       }
     },
     {
@@ -13875,11 +13667,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -14162,13 +13951,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -14339,7 +14123,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -14587,13 +14370,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -14701,20 +14479,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154781
+          "bytes": 638360,
+          "gzipBytes": 153220
         },
         {
           "file": "ui-kit.css",
-          "bytes": 283701,
-          "gzipBytes": 38526
+          "bytes": 279183,
+          "gzipBytes": 38057
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 283701,
-        "total": 932487,
-        "gzip": 193154
+        "js": 638360,
+        "css": 279183,
+        "total": 917543,
+        "gzip": 191165
       }
     },
     {
@@ -14837,11 +14615,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -15124,13 +14899,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -15301,7 +15071,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -15549,13 +15318,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -15663,20 +15427,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154781
+          "bytes": 638360,
+          "gzipBytes": 153220
         },
         {
           "file": "ui-kit.css",
-          "bytes": 263825,
-          "gzipBytes": 35503
+          "bytes": 259348,
+          "gzipBytes": 35042
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 263825,
-        "total": 912611,
-        "gzip": 190131
+        "js": 638360,
+        "css": 259348,
+        "total": 897708,
+        "gzip": 188103
       }
     },
     {
@@ -15799,11 +15563,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -16086,13 +15847,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -16263,7 +16019,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -16511,13 +16266,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -16625,20 +16375,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 651552,
-          "gzipBytes": 154916
+          "bytes": 641054,
+          "gzipBytes": 153365
         },
         {
           "file": "ui-kit.css",
-          "bytes": 280394,
-          "gzipBytes": 35882
+          "bytes": 275635,
+          "gzipBytes": 35462
         }
       ],
       "sizes": {
-        "js": 651552,
-        "css": 280394,
-        "total": 931946,
-        "gzip": 190670
+        "js": 641054,
+        "css": 275635,
+        "total": 916689,
+        "gzip": 188704
       }
     },
     {
@@ -16761,11 +16511,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -17048,13 +16795,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -17225,7 +16967,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -17473,13 +17214,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -17587,20 +17323,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 649708,
-          "gzipBytes": 154809
+          "bytes": 639258,
+          "gzipBytes": 153250
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269223,
-          "gzipBytes": 35560
+          "bytes": 264652,
+          "gzipBytes": 35098
         }
       ],
       "sizes": {
-        "js": 649708,
-        "css": 269223,
-        "total": 918931,
-        "gzip": 190223
+        "js": 639258,
+        "css": 264652,
+        "total": 903910,
+        "gzip": 188196
       }
     },
     {
@@ -17723,11 +17459,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -18010,13 +17743,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -18187,7 +17915,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -18435,13 +18162,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -18549,20 +18271,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 650630,
-          "gzipBytes": 154849
+          "bytes": 640156,
+          "gzipBytes": 153288
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274807,
-          "gzipBytes": 35693
+          "bytes": 270142,
+          "gzipBytes": 35265
         }
       ],
       "sizes": {
-        "js": 650630,
-        "css": 274807,
-        "total": 925437,
-        "gzip": 190410
+        "js": 640156,
+        "css": 270142,
+        "total": 910298,
+        "gzip": 188420
       }
     },
     {
@@ -18685,11 +18407,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -18972,13 +18691,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -19149,7 +18863,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -19397,13 +19110,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -19511,20 +19219,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154782
+          "bytes": 638360,
+          "gzipBytes": 153217
         },
         {
           "file": "ui-kit.css",
-          "bytes": 263965,
-          "gzipBytes": 35512
+          "bytes": 259488,
+          "gzipBytes": 35048
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 263965,
-        "total": 912751,
-        "gzip": 190141
+        "js": 638360,
+        "css": 259488,
+        "total": 897848,
+        "gzip": 188111
       }
     },
     {
@@ -19647,11 +19355,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -19934,13 +19639,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -20111,7 +19811,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -20359,13 +20058,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -20473,20 +20167,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 650630,
-          "gzipBytes": 154855
+          "bytes": 640156,
+          "gzipBytes": 153297
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274847,
-          "gzipBytes": 35708
+          "bytes": 270182,
+          "gzipBytes": 35280
         }
       ],
       "sizes": {
-        "js": 650630,
-        "css": 274847,
-        "total": 925477,
-        "gzip": 190428
+        "js": 640156,
+        "css": 270182,
+        "total": 910338,
+        "gzip": 188440
       }
     },
     {
@@ -20609,11 +20303,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -20896,13 +20587,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -21073,7 +20759,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -21321,13 +21006,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -21435,20 +21115,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 648786,
-          "gzipBytes": 154786
+          "bytes": 638360,
+          "gzipBytes": 153224
         },
         {
           "file": "ui-kit.css",
-          "bytes": 263521,
-          "gzipBytes": 35396
+          "bytes": 259044,
+          "gzipBytes": 34933
         }
       ],
       "sizes": {
-        "js": 648786,
-        "css": 263521,
-        "total": 912307,
-        "gzip": 190025
+        "js": 638360,
+        "css": 259044,
+        "total": 897404,
+        "gzip": 187996
       }
     },
     {
@@ -21571,11 +21251,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -21858,13 +21535,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -22035,7 +21707,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -22283,13 +21954,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -22397,20 +22063,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 653396,
-          "gzipBytes": 155029
+          "bytes": 642850,
+          "gzipBytes": 153480
         },
         {
           "file": "ui-kit.css",
-          "bytes": 292485,
-          "gzipBytes": 36430
+          "bytes": 287538,
+          "gzipBytes": 36003
         }
       ],
       "sizes": {
-        "js": 653396,
-        "css": 292485,
-        "total": 945881,
-        "gzip": 191354
+        "js": 642850,
+        "css": 287538,
+        "total": 930388,
+        "gzip": 189368
       }
     },
     {
@@ -22533,11 +22199,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -22820,13 +22483,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -22997,7 +22655,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -23245,13 +22902,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -23359,20 +23011,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 653396,
-          "gzipBytes": 155030
+          "bytes": 642850,
+          "gzipBytes": 153480
         },
         {
           "file": "ui-kit.css",
-          "bytes": 291825,
-          "gzipBytes": 36158
+          "bytes": 286878,
+          "gzipBytes": 35730
         }
       ],
       "sizes": {
-        "js": 653396,
-        "css": 291825,
-        "total": 945221,
-        "gzip": 191082
+        "js": 642850,
+        "css": 286878,
+        "total": 929728,
+        "gzip": 189086
       }
     },
     {
@@ -23495,11 +23147,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -23782,13 +23431,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -23959,7 +23603,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -24207,13 +23850,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -24321,20 +23959,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 650630,
-          "gzipBytes": 154858
+          "bytes": 640156,
+          "gzipBytes": 153301
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275212,
-          "gzipBytes": 35795
+          "bytes": 270547,
+          "gzipBytes": 35362
         }
       ],
       "sizes": {
-        "js": 650630,
-        "css": 275212,
-        "total": 925842,
-        "gzip": 190515
+        "js": 640156,
+        "css": 270547,
+        "total": 910703,
+        "gzip": 188530
       }
     },
     {
@@ -24457,11 +24095,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -24744,13 +24379,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -24921,7 +24551,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -25169,13 +24798,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -25283,20 +24907,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 650630,
-          "gzipBytes": 154851
+          "bytes": 640156,
+          "gzipBytes": 153292
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274763,
-          "gzipBytes": 35704
+          "bytes": 270098,
+          "gzipBytes": 35277
         }
       ],
       "sizes": {
-        "js": 650630,
-        "css": 274763,
-        "total": 925393,
-        "gzip": 190424
+        "js": 640156,
+        "css": 270098,
+        "total": 910254,
+        "gzip": 188434
       }
     },
     {
@@ -25419,11 +25043,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -25706,13 +25327,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -25883,7 +25499,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -26131,13 +25746,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -26245,20 +25855,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 650630,
-          "gzipBytes": 154855
+          "bytes": 640156,
+          "gzipBytes": 153297
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274852,
-          "gzipBytes": 35729
+          "bytes": 270187,
+          "gzipBytes": 35299
         }
       ],
       "sizes": {
-        "js": 650630,
-        "css": 274852,
-        "total": 925482,
-        "gzip": 190449
+        "js": 640156,
+        "css": 270187,
+        "total": 910343,
+        "gzip": 188461
       }
     },
     {
@@ -26381,11 +25991,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -26668,13 +26275,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -26845,7 +26447,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -27093,13 +26694,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -27207,20 +26803,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 651552,
-          "gzipBytes": 154921
+          "bytes": 641054,
+          "gzipBytes": 153373
         },
         {
           "file": "ui-kit.css",
-          "bytes": 280833,
-          "gzipBytes": 36014
+          "bytes": 276074,
+          "gzipBytes": 35593
         }
       ],
       "sizes": {
-        "js": 651552,
-        "css": 280833,
-        "total": 932385,
-        "gzip": 190809
+        "js": 641054,
+        "css": 276074,
+        "total": 917128,
+        "gzip": 188846
       }
     },
     {
@@ -27343,11 +26939,8 @@
         "select.select-filterable",
         "select.select-popper",
         "select.select-format",
+        "select.select-virtualized",
         "select.methods",
-        "select-v2.clearable",
-        "select-v2.multiple",
-        "select-v2.filterable",
-        "select-v2.popper",
         "skeleton.loading",
         "slider.popper",
         "slider.format",
@@ -27630,13 +27223,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -27807,7 +27395,6 @@
         "scrollbar",
         "segmented",
         "select",
-        "select-v2",
         "skeleton",
         "slider",
         "slot",
@@ -28055,13 +27642,8 @@
           "select.select-filterable",
           "select.select-popper",
           "select.select-format",
+          "select.select-virtualized",
           "select.methods"
-        ],
-        "select-v2": [
-          "select-v2.clearable",
-          "select-v2.multiple",
-          "select-v2.filterable",
-          "select-v2.popper"
         ],
         "skeleton": [
           "skeleton.loading"
@@ -28169,20 +27751,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 647864,
-          "gzipBytes": 154714
+          "bytes": 637462,
+          "gzipBytes": 153165
         },
         {
           "file": "ui-kit.css",
-          "bytes": 257972,
-          "gzipBytes": 35253
+          "bytes": 253589,
+          "gzipBytes": 34795
         }
       ],
       "sizes": {
-        "js": 647864,
-        "css": 257972,
-        "total": 905836,
-        "gzip": 189786
+        "js": 637462,
+        "css": 253589,
+        "total": 891051,
+        "gzip": 187784
       }
     }
   ]
