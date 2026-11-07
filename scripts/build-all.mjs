@@ -139,10 +139,15 @@ function fingerprintFiles(files, salt = '') {
 function builtinInputs() {
   // build-all.mjs 全文不进键：它是编排与计量脚本，改日志文案不该让 175 个特性重算。
   // 计量口径由 SIZE_ALGO_VERSION 代表，改算法时显式 +1（治理校验会盯这条）。
+  // tsconfig.json / vite.config.mjs 会被 esbuild / vite 读取（target、alias、插件都会进产物），
+  // package.json 是产物版本号来源，缺一都会让"配置变了但缓存没失效"（A2）。
   return [
     path.join(rootDir, 'registry.mjs'),
     path.join(rootDir, 'scripts/build-lib.mjs'),
-    path.join(rootDir, 'package-lock.json')
+    path.join(rootDir, 'package.json'),
+    path.join(rootDir, 'package-lock.json'),
+    path.join(rootDir, 'tsconfig.json'),
+    path.join(rootDir, 'vite.config.mjs')
   ]
 }
 
@@ -156,9 +161,59 @@ function sourceFiles(files) {
   return files
 }
 
+const RELATIVE_SPEC_RE = /['"](\.{1,2}\/[^'"]+)['"]/g
+
 /**
- * 组件级缓存键：只包含该组件自己的源码 + shared + 注册表 + 构建器口径（A10）。
- * 改一个组件只让这个组件重算，不用把 175 个特性全部重打一遍。
+ * 组件目录里的相对 import 引用到哪些兄弟组件目录。
+ * table / tree / tree-v2 / transfer 都 `import { createCheckbox } from '../checkbox/core'`：
+ * 指纹只算"选中目录 + shared"时，改 checkbox 不会让含 table 的 profile / table 组件缓存失效，
+ * 门禁会复用到陈旧产物（A2）。
+ */
+function siblingComponentDeps(componentDir) {
+  const deps = new Set()
+  const files = []
+  walkFiles(componentDir, files)
+  for (const file of files) {
+    if (!/\.(?:ts|js|mjs|css)$/.test(file)) {
+      continue
+    }
+    const text = fs.readFileSync(file, 'utf8')
+    for (const match of text.matchAll(RELATIVE_SPEC_RE)) {
+      const relative = path.relative(componentSrcDir, path.resolve(componentDir, match[1]))
+      // ../shared / ../../... 之类的目标由 shared 与其它机制覆盖，这里只管兄弟组件
+      if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        continue
+      }
+      const sibling = relative.split(path.sep)[0]
+      if (sibling && sibling !== path.basename(componentDir) && fs.existsSync(path.join(componentSrcDir, sibling))) {
+        deps.add(sibling)
+      }
+    }
+  }
+  return deps
+}
+
+/** 选中组件集合 + 相对 import 闭包引用的兄弟组件（含传递依赖），去重后用于指纹 */
+function componentClosure(ids) {
+  const closure = new Set(ids.filter((id) => fs.existsSync(path.join(componentSrcDir, id))))
+  const queue = [...closure]
+  while (queue.length) {
+    const id = queue.shift()
+    for (const dep of siblingComponentDeps(path.join(componentSrcDir, id))) {
+      if (!closure.has(dep)) {
+        closure.add(dep)
+        queue.push(dep)
+      }
+    }
+  }
+  return closure
+}
+
+/**
+ * 组件级缓存键：该组件自己 + 相对 import 闭包引用的兄弟组件源码 + shared
+ * + 注册表 + 构建器口径（A10 / A2）。闭包必须进来：table 引用 checkbox/core，
+ * 漏掉的话改 checkbox 不会让 table 的组件级缓存失效。
+ * 改一个组件（含它的依赖闭包）只让相关组件重算，不用把 175 个特性全部重打一遍。
  */
 export function componentFingerprint(componentId) {
   const dir = path.join(componentSrcDir, componentId)
@@ -166,7 +221,9 @@ export function componentFingerprint(componentId) {
     return null
   }
   const files = [...builtinInputs(), path.join(rootDir, 'profiles/full.json')]
-  walkFiles(dir, files)
+  for (const id of componentClosure([componentId])) {
+    walkFiles(path.join(componentSrcDir, id), files)
+  }
   sourceFiles(files)
   return fingerprintFiles(files, algoSalt())
 }
@@ -178,7 +235,9 @@ function profileInputFiles(entry) {
     components && typeof components === 'object' && !Array.isArray(components)
       ? Object.keys(components)
       : fs.readdirSync(componentSrcDir).filter((name) => fs.existsSync(path.join(componentSrcDir, name)))
-  for (const id of ids) {
+  // 选中组件的相对 import 闭包一并进指纹（A2）：table 没勾选 checkbox 时，
+  // 产物里仍打包了 checkbox/core，闭包外的源码变化同样必须让缓存失效。
+  for (const id of componentClosure(ids)) {
     const dir = path.join(componentSrcDir, id)
     if (fs.existsSync(dir)) {
       walkFiles(dir, files)

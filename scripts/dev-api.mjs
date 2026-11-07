@@ -44,14 +44,20 @@ function serveRawPackFile(request, response) {
   const segments = relative.split('/').filter(Boolean)
   const [packId, ...fileParts] = segments
   const fileName = fileParts.join('/')
-  if (!packId || !fileName || fileName.includes('..')) {
+  // packId 是纯目录名（custom/<name> 的两级命名空间由 fileName 承载），不得含 ..
+  // 或路径分隔符（%5C 解码后的反斜杠在 Windows 上同样是分隔符）；fileName 允许子目录
+  // 但不允许 ..。任一命中都视为穿越尝试，直接 400，不走到文件系统。
+  if (!packId || !fileName || packId.includes('..') || /[\\/]/.test(packId) || fileName.includes('..')) {
     response.statusCode = 400
     response.end('Bad request')
     return true
   }
-  const filePath = path.join(rootDir, 'dist', packId, fileName)
-  const packDir = path.join(rootDir, 'dist', packId)
-  if (!filePath.startsWith(packDir + path.sep) || !fs.existsSync(filePath)) {
+  const packsRoot = path.resolve(rootDir, 'dist')
+  const packDir = path.resolve(packsRoot, packId)
+  const filePath = path.resolve(packDir, fileName)
+  // resolve 之后双重校验：既要在 dist/ 内，也要在目标 pack 目录内；
+  // 命中即 404（不透露仓库里到底有没有这个文件），不给 path.join 拼接留任何余地。
+  if (!filePath.startsWith(packDir + path.sep) || !filePath.startsWith(packsRoot + path.sep) || !fs.existsSync(filePath)) {
     response.statusCode = 404
     response.end('Not found')
     return true

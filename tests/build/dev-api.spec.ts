@@ -234,6 +234,42 @@ describe('dev-api 接口契约', () => {
     }
   })
 
+  it('packId 未校验时的路径穿越（A1）：/packs/../ 系列一律 400/404，正常文件仍可读', async () => {
+    const routes = createHarness()
+    // 探针文件自带 fixture：安全断言不依赖完整构建产物（build:all 跑过之前也能红绿）
+    const probeDir = path.join(repoRoot, 'dist', 'full')
+    const probeFile = path.join(probeDir, '__packs_probe__.js')
+    fs.mkdirSync(probeDir, { recursive: true })
+    fs.writeFileSync(probeFile, 'window.__packsProbe = 1\n', 'utf8')
+    const rootPackage = fs.readFileSync(path.join(repoRoot, 'package.json'), 'utf8')
+    try {
+      const ok = createResponse()
+      await routes.get('/packs')!(createRequest('GET', '/packs/full/__packs_probe__.js'), ok)
+      expect(ok.statusCode).toBe(200)
+      expect(ok.headers['Content-Type']).toContain('text/javascript')
+      expect(String(ok.body)).toContain('__packsProbe')
+
+      // packId 是 ..（含编码变体）：旧实现只查 fileName，能读出仓库根的 package.json / .git/config
+      const attacks = [
+        '/packs/../package.json',
+        '/packs/..%2Fpackage.json',
+        '/packs/%2e%2e/package.json',
+        '/packs/../.git/config',
+        '/packs/..%2F.git%2Fconfig',
+        '/packs/..%5Cpackage.json',
+        '/packs/full/..%2F..%2Fpackage.json'
+      ]
+      for (const url of attacks) {
+        const response = createResponse()
+        await routes.get('/packs')!(createRequest('GET', url), response)
+        expect([400, 404], `${url} 应被拒`).toContain(response.statusCode)
+        expect(String(response.body), `${url} 不得带出仓库根文件内容`).not.toBe(rootPackage)
+      }
+    } finally {
+      fs.rmSync(probeFile, { force: true, maxRetries: 3, retryDelay: 50 })
+    }
+  })
+
   it('/packs 直出包文件并带正确 MIME，路径穿越与缺失文件分别 400 / 404', async () => {
     const routes = createHarness()
     const jsResponse = createResponse()

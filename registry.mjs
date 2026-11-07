@@ -76,6 +76,10 @@ export function resolveSelection(registry, requested = {}) {
     const available = Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
     const resolved = []
     const seen = new Set()
+    // 递归进行中的特性：进入 visit 立即标记，A↔B 互 requires 的旧实现
+    // 要到递归返回后才入 seen，会无限展开直到 RangeError 爆栈（A4）；
+    // 撞见进行中的特性说明 requires 成环，是注册表编写错误，抛 400 而不是默默吞掉。
+    const visiting = new Set()
 
     function visit(featureId) {
       if (seen.has(featureId)) {
@@ -87,9 +91,16 @@ export function resolveSelection(registry, requested = {}) {
         error.status = 400
         throw error
       }
+      if (visiting.has(featureId)) {
+        const error = new Error(`特性 requires 存在循环依赖: ${featureId}`)
+        error.status = 400
+        throw error
+      }
+      visiting.add(featureId)
       for (const dependency of feature.requires ?? []) {
         visit(dependency)
       }
+      visiting.delete(featureId)
       seen.add(featureId)
       resolved.push(featureId)
     }
