@@ -1074,3 +1074,20 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - profiles 9/9、browser touch+narrow 4/4、build ssr 3/3 全绿；typecheck 零错误。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`（profiles/build 层用例要求 20 份产物齐备，由门禁 build 段保证）。
 - 缺陷口径：F-1…F-99（F-99 登记未修复，属已知豁免），三处文档同步为 99 条。
+
+## 30. 优化计划第三波：同类逻辑单源与命名公约（G7 A23/A25 第一刀）（分支 `refactor/20261108-normalize-options` / `refactor/20261108-naming-convention`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G7。按 §3 拆所有权不相交子任务并行（A23 改组件与 shared、A25 只建文档与守卫），共享面零交叉。
+
+### 30.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-100 | `packages/ui-kit/src/shared/behavior.ts` / `segmented/core.ts` / `select/core.ts` | normalizeOptions 三份实现并存，字段回退链各自漂移（「自定义字段名+缺字段」场景两版各有盲区） | 同类逻辑从未收拢出口，各组件各造一份 | 收拢为 `shared/options.ts` 唯一出口（回退链取并集，注释写明取舍；groups 开关默认关防误吞带 `options` 字段的普通对象）；segmented/behavior/select 迁移，守卫 `options-normalizer-exit.spec` 锁定组件侧零定义 |
+| F-101 | 全库 props/events 命名 | 同语义多词并存：受控显示 modelValue(6 组件)/visible(5)/open(1) 三套，布尔 prop 出现动词原形 4 处，事件 focusout 外泄、双 update: 写口等 | 无命名公约、无漂移守卫 | 第一刀已落地：`NAMING.md` 公约（受控显示=modelValue、布尔=形容词/分词、事件=动词原形或 `xxx-change`）+ `naming-guard.spec` 6 模式守卫（存量白名单 10 文件双向校验）。**存量违规改名（visible/open 收敛等）为第二刀**，迁移清单见 NAMING.md |
+
+### 30.2 验证
+
+- 组件层 95 文件 1609 用例全绿（去重后 bundle 缩小约 1.15 kB，产物合并后统一刷新）；naming-guard 6/6、options 守卫正反验证。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-101（F-99/F-101 含已登记的存量待改项），三处文档同步为 101 条。
