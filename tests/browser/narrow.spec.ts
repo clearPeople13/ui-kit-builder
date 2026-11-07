@@ -27,4 +27,38 @@ describe('浏览器层 · 375×812 窄屏', () => {
       await session.close()
     }
   })
+
+  it('表格场景在窄屏下出现横向滚动容器，列宽保持配置不被挤压', async () => {
+    const session = await openScene('table', { viewport: { width: 375, height: 812 } })
+    try {
+      // 场景容器 720px、六列配置宽合计 840px（minWidth 也计入），窄屏装不下：
+      // 溢出应由表格自身的滚动容器承接，列不许被压到配置宽之下
+      const layout = await session.page.evaluate(() => {
+        const wrapper = document.querySelector('.ui-table__wrapper') as HTMLElement | null
+        const headerCells = [...document.querySelectorAll('.ui-table__header-view th')].map(
+          (cell) => (cell as HTMLElement).getBoundingClientRect().width
+        )
+        return {
+          clientWidth: wrapper?.clientWidth ?? 0,
+          scrollWidth: wrapper?.scrollWidth ?? 0,
+          headerCells
+        }
+      })
+      expect(layout.clientWidth).toBeGreaterThan(0)
+      expect(layout.scrollWidth, '窄屏下表格应出现横向滚动').toBeGreaterThan(layout.clientWidth + 50)
+      expect(layout.headerCells, '表头应仍是六个列').toHaveLength(6)
+
+      // 配置宽：编号 90 / 负责人 120 / 金额 120 / 右冻结 110；minWidth：名称 160 / 备注 240
+      const [idColumn, nameColumn, ownerColumn, amountColumn, noteColumn, fixedColumn] = layout.headerCells
+      expect(idColumn, '编号列保持 width=90').toBeGreaterThanOrEqual(89)
+      expect(nameColumn, '名称列不得压到 minWidth=160 之下').toBeGreaterThanOrEqual(159)
+      expect(ownerColumn, '负责人列保持 width=120').toBeGreaterThanOrEqual(119)
+      expect(amountColumn, '金额列保持 width=120').toBeGreaterThanOrEqual(119)
+      expect(noteColumn, '备注列不得压到 minWidth=240 之下').toBeGreaterThanOrEqual(239)
+      expect(fixedColumn, '右冻结列保持 width=110').toBeGreaterThanOrEqual(109)
+      expectSilent(session.messages, '窄屏表格')
+    } finally {
+      await session.close()
+    }
+  })
 })
