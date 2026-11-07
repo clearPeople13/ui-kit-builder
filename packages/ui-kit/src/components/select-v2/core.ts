@@ -426,6 +426,7 @@ export function createSelectV2(features: UiFeature[] = []) {
             return selectedLabels.value
           },
           toggleDropdown,
+          hideDropdown,
           clearValue,
           renderTags,
           renderDropdown
@@ -480,6 +481,12 @@ export function createSelectV2(features: UiFeature[] = []) {
               if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault()
                 state.toggleDropdown()
+                return
+              }
+              // 面板是触发器的兄弟节点，面板上的 Escape 收不到焦点，触发器自己也要能收起
+              if (event.key === 'Escape' && state.isOpen) {
+                event.preventDefault()
+                state.hideDropdown()
               }
             }
           },

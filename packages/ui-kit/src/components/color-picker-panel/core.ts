@@ -1,5 +1,6 @@
 import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
+import chroma from 'chroma-js'
 import { createUiComponent } from '../../shared/component'
 import { colorPickerPanelAppearanceFeature } from './features/appearance/index'
 import './core.css'
@@ -79,6 +80,15 @@ function parseColor(input: unknown): Rgba {
       g: Math.round((g + fallback) * 255),
       b: Math.round((b + fallback) * 255),
       a: clampRange(Math.round((Number.isFinite(alpha) ? alpha : 1) * 255), 0, 255)
+    }
+  }
+  if (chroma.valid(input)) {
+    const [r, g, b, alpha] = chroma(input).rgba()
+    return {
+      r: clampRange(Math.round(r), 0, 255),
+      g: clampRange(Math.round(g), 0, 255),
+      b: clampRange(Math.round(b), 0, 255),
+      a: clampRange(Math.round(alpha * 255), 0, 255)
     }
   }
   return { r: 64, g: 158, b: 255, a: 255 }

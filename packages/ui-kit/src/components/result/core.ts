@@ -9,7 +9,8 @@ import './core.css'
 
 const resultBaseProps = {
   title: { type: String, default: '' },
-  subTitle: { type: String, default: '' }
+  subTitle: { type: String, default: '' },
+  tag: { type: String }
 }
 
 const RESULT_ICONS: Record<string, Component> = {

@@ -321,6 +321,7 @@ export function createTreeSelect(features: UiFeature[] = []) {
             return selectedLabels.value
           },
           toggleDropdown,
+          hideDropdown,
           clearValue,
           renderTags,
           renderDropdown
@@ -371,7 +372,18 @@ export function createTreeSelect(features: UiFeature[] = []) {
               ref: state.triggerRef,
               class: ['ui-tree-select__trigger', { 'is-open': state.isOpen, 'is-disabled': props.disabled }],
               tabindex: props.disabled ? undefined : 0,
-              onClick: state.toggleDropdown
+              onClick: state.toggleDropdown,
+              onKeydown: (event: KeyboardEvent) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  state.toggleDropdown()
+                  return
+                }
+                if (event.key === 'Escape' && state.isOpen) {
+                  event.preventDefault()
+                  state.hideDropdown()
+                }
+              }
             },
             [
               h('div', { class: 'ui-tree-select__value' }, valueNodes),

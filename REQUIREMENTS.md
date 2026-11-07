@@ -147,7 +147,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | 2    | `npm run typecheck`       | 库 + 用例两份工程            | 组件属性表与用例的拼写错误；新增 `tsconfig.tests.json` 把 `tests/**` 纳入检查 |
 | 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                               |
 | 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                      |
-| 5    | `npm test`                | 30 文件 629 条               | 组件行为、属性、事件、边界（happy-dom）                                       |
+| 5    | `npm test`                | 94 文件 1576 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖）                     |
 | 6    | `npm run test:build`      | 6 文件 68 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
 | 7    | `npm run test:browser`    | 8 文件 42 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线       |
 | 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                            |
@@ -202,7 +202,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位                                             |
 | 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
 
-### 10.2 profile 运行时用例（`tests/profiles/**`，101 条）
+### 10.2 profile 运行时用例（`tests/profiles/**`，142 条）
 
 | 断言                                                       | 抓的是什么                                                                             |
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -230,11 +230,11 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 仍存在的缺口：布局基线仍只比几何矩形不比像素；覆盖率仍未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入；`ci.mjs` 目前只在本机与钩子里生效，仓库还没有服务端 runner——Gitee 上这两个 Issue 的评论功能处于关闭状态，`PATCH /repos/.../issues/{number}` 对这类 Issue 返回 404，结案的评论需要开 Issue 评论权限或改用 Web 界面补。
 
-## 11. 第六批交付（63 个组件目录全量接入用例，进行中）
+## 11. 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`）
 
-§7 里"剩余未接入单元用例的组件"这类欠账，本批一次性抹平：`packages/ui-kit/src/components/` 下 90 个组件目录，此前 27 个有专属用例，本批补齐其余 63 个（含内部件 Slot、OnlyChild 一类无根节点的特殊件）。四路并行产出，逐文件跑绿后汇总。
+§7 里"剩余未接入单元用例的组件"这类欠账，本批一次性抹平：`packages/ui-kit/src/components/` 下 90 个组件目录，此前 27 个有专属用例，本批补齐其余 63 个（含内部件 Slot、OnlyChild 一类无根节点的特殊件）。四路并行产出，逐文件跑绿后汇总。组件层用例从 30 文件 629 条扩到 94 文件 1576 条（其中 6 条是浏览器层覆盖的占位 `it.skip`），90 个组件目录全部有专属 spec。同批新增 `tests/profiles/props-documented.spec.ts`：把「运行时真实生效的 props 必须能在 spec.mjs 的 coreProps / feature props 里找到，字典里声明的 props 运行时也必须存在」做成贯穿 20 份产物的双向守卫。
 
-### 11.1 第六批缺陷清单
+### 11.1 第六批前期缺陷清单（F-37 / F-38）
 
 | 编号 | 位置                   | 现象                                                                                           | 根因                                                                                                                                                                                                                                                      | 修复                                                    | 回归用例                                                                                                                                                                     |
 | ---- | ---------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -252,3 +252,30 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 | 选项值通道（`Option.value`）                                                                                                                                                                                                                   | 1    | 无害：`props.value ?? props.label` 名义上会被 `false` 短路，但选中匹配与点击 emit 都走 label 回退路径，实测 `modelValue=甲` 能高亮、点击只给 `label` 的选项 emit 的是「甲」而不是 `false` |
 
 判定同时固化成会红的用例：`tests/components/model-value-boolean-cast.spec.ts` 的静态扫描要求任何 `modelValue` 声明只要类型联合里含 Boolean 就必须显式写 `default`，新组件再踩同一坑会在组件层直接失败。
+
+### 11.3 第六批收尾缺陷清单（12 条，已全部修复）
+
+新接入的 63 个组件在写用例的过程中又暴露了一批"声明与实现脱钩"的问题，全部按同一约定处理：先用 `it.fails` 守卫记录 → 修源码 → 守卫降级为常规用例。
+
+| 编号 | 位置                         | 现象                                                                                   | 根因                                                                                                                  | 修复                                                                                                   | 回归用例                      |
+| ---- | ---------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------- |
+| F-39 | Link、Result                 | 传 `tag="span"` / `tag="section"` 不换标签，只把无效属性漏到 DOM 上                     | 两处 `tag` 读取都写在 `tag: (props) => …` 里，但 props 表从未声明 `tag`，值只进 attrs                               | 两处 core props 补 `tag: { type: String }`（无 default，保住"没传就用默认标签"），spec.mjs 同步             | link.spec / result.spec       |
+| F-40 | DatePickerPanel              | `type: 'month'` 提交 `2026-03-01`、`type: 'year'` 提交 `2022-01-01`                     | `outputFormat()` 只读 `valueFormat / dateFormat`，缺省恒为 `YYYY-MM-DD`，没按粒度收敛                                  | 缺省输出按 `gridType()` 分支：月 `YYYY-MM`、年 `YYYY`、日 `YYYY-MM-DD`                                  | date-picker-panel.spec        |
+| F-41 | Slider popper 特性           | 垂直滑块的气泡仍贴顶部（`is-top`），而不是右侧                                         | 特性声明给 `placement` 设了 `default: 'top'`，`behavior.ts` 里 `vertical ? 'right' : 'top'` 的兜底永远走不到           | 去掉 default，改为缺省 `undefined`；spec.mjs 的 default 同步为 `null`                                   | slider.spec                   |
+| F-42 | `shared/behavior.ts` range   | 低位从 20 拖到 30 后，`change` 仍回吐 `[20, 60]`                                        | `onChange` 读的是 props 派生的 `rangeLow / rangeHigh`，父层尚未回写时落后一拍                                           | `onChange` 改读原生输入框当前值并做 min/max 归一                                                         | slider.spec                   |
+| F-43 | ColorPickerPanel             | `predefine: ['red']` 点选得到兜底蓝 `#409eff`                                           | `parseColor` 只认 `#` / `rgb()` / `hsl()`，颜色名直接落兜底                                                           | 兜底前加 `chroma.valid` 分支（与 ColorPicker 同源依赖），颜色名归一为 RGBA                              | color-picker-panel.spec       |
+| F-44 | InputTag                     | `trigger: 'Both'` 按空格不提交，退化成只认 Enter                                       | `Both` 在映射表里是 `null`，`TRIGGER_KEY_MAP[...] ?? 'Enter'` 把 null 当成缺省值，`null` 分支永不可达                  | 改为 `in` 判键存在，null 分支按 "Enter 与空格都提交" 处理                                                | input-tag.spec                |
+| F-45 | PopperContent                | `className` 完全丢失                                                                   | `attrs` 返回的 `class` 被 `component.ts` 用宿主 `attrs.class` 重建的 class 数组覆盖                                    | `className` 改走 `classes` 合并（字符串 / 数组 / 对象 / 布尔四档归一）                                  | popper.spec                   |
+| F-46 | PopperContent                | `content / label / title` 只落到 HTML 属性，面板内无文本                               | props 表未声明这五个内容位，`content()` 的回退链读到的全是 `undefined`                                                | props 表补 `content / label / title / description / value`，spec.mjs 同步                                | popper.spec                   |
+| F-47 | SelectV2                     | 非过滤态下焦点在触发器按 Escape 不收起面板                                             | Escape 只绑在面板上，面板是触发器的兄弟节点，键盘事件到不了                                                            | 触发器 `onKeydown` 补 Escape → `hideDropdown()`                                                         | select-v2.spec                |
+| F-48 | TreeSelect                   | 触发器 `tabindex=0` 可聚焦，但 Enter / Space 无任何反应                                 | 触发器只挂了 `onClick`，没有键盘通路                                                                                  | 触发器补 `onKeydown`：Enter / Space 开合、Escape 收起                                                   | tree-select.spec              |
+| F-49 | CheckTag                     | `type` 声明了 primary / success / info / warning / danger，但任意值都不产生修饰类名     | `classes` 只拼了 `is-checked` / `is-disabled`，从未消费 `type`                                                        | 四个有独立配色规则的变体发 `ui-check-tag--{type}`；primary 走基础规则，不造无样式规则的死类名             | check-tag.spec                |
+| F-50 | Notification                 | 传 `modelValue=false` 不会隐藏，值只漏成属性                                           | `overlayConfig` 以 `modelValue` 为可见性通道，但组件 props 表没声明它，`resolveVisible` 永远取缺省 `true`               | props 表补 `modelValue: { type: Boolean, default: true }`，spec.mjs 同步                                | notification.spec             |
+
+另有一条复核后判定"不是缺陷"：Popconfirm 的 `hideAfter` 只在触发器 `mouseleave` 后延迟收起，确认 / 取消按钮点击立即关闭——与 Element Plus 口径一致，`spec.mjs` 的描述没写清作用范围。守卫已改为契约用例，明确"按钮路径不受 `hideAfter` 影响"。
+
+### 11.4 交付说明
+
+- 探针清零：本批遗留的 12 个 `_probe_*.spec.ts` 全部删除，`tests/components/` 只保留正式用例。
+- 产物变化来自 F-39…F-50 的源码修复，`npm run build:all` 重新生成 20 份产物与 `sizes.json`；`examples/consumer/src/demo/meta.json` 随 `meta:demo` 同步。
+- 门禁：组件层 94 文件 1570 通过 + 6 条浏览器层占位跳过；构建器层 6 文件 68 条、profile 运行时 2 文件 142 条、浏览器层 8 文件 42 条、`verify` 2239 项全部通过。

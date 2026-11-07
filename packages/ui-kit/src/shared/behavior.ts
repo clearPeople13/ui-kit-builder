@@ -1037,7 +1037,11 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
                 : undefined,
               onInput: (event: Event) =>
                 commitRange(Number((event.target as HTMLInputElement).value), rangeHigh, 'drag'),
-              onChange: () => emit('change', [rangeLow, rangeHigh])
+              // change 必须带本次原生输入值：props 还没回写时 rangeLow 是上一拍的值
+              onChange: (event: Event) => {
+                const next = Number((event.target as HTMLInputElement).value)
+                emit('change', [clamp(Math.min(next, rangeHigh), min, max), clamp(Math.max(next, rangeHigh), min, max)])
+              }
             }),
             h('input', {
               class: [`${baseClass}__input`, 'is-high'],
@@ -1053,7 +1057,10 @@ export function sliderConfig(options: { name: string; baseClass: string; props: 
                 : undefined,
               onInput: (event: Event) =>
                 commitRange(rangeLow, Number((event.target as HTMLInputElement).value), 'drag'),
-              onChange: () => emit('change', [rangeLow, rangeHigh])
+              onChange: (event: Event) => {
+                const next = Number((event.target as HTMLInputElement).value)
+                emit('change', [clamp(Math.min(next, rangeLow), min, max), clamp(Math.max(next, rangeLow), min, max)])
+              }
             }),
             marks
           ]

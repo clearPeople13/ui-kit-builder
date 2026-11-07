@@ -41,7 +41,12 @@ export function createCheckTag(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props, state) => [state.checked ? 'is-checked' : '', props.disabled ? 'is-disabled' : ''],
+      classes: (props, state) => [
+        state.checked ? 'is-checked' : '',
+        props.disabled ? 'is-disabled' : '',
+        // primary 走基础规则（.is-checked 已是主色），其余四个变体各自有独立配色规则
+        ['success', 'warning', 'danger', 'info'].includes(props.type) ? `ui-check-tag--${props.type}` : ''
+      ],
       attrs: (_props, state) => ({ onClick: () => state.toggle() }),
       content: ({ slots }) => slots.default?.() ?? null
     },

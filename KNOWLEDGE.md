@@ -21,7 +21,7 @@ import { Button } from '@ui-kit-full' // vitest.config.ts 里的 alias → dist/
 ```
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts，alias @ui-kit-full
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（每个文件对应一个组件；首批 12 个 + 第二批 15 个 + 特性开关/样式合并/键盘通路专项 3 个，共 30 个文件 629 条）
+tests/components/<id>.spec.ts 组件用例（90 个组件目录各一份；累计 94 个文件 1576 条，含 7 条浏览器层占位 it.skip）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -35,10 +35,11 @@ tests/browser/_session.ts     浏览器会话与断言工具箱：openScene/rect
 tests/browser/_geometry.ts    布局指纹：锚点选择器表 + 文档坐标矩形采集 + 逐锚点差异报告
 tests/browser/*.spec.ts       浏览器层用例（8 个文件 42 条）：定位、表格、树性能、拖拽、键盘、属性落盘、控制台归零、布局基线
 tests/profiles/<id>.spec.ts profile 运行时用例（把 dist/<profile>/ui-kit.js 逐个 import 后真挂载）
+tests/profiles/props-documented.spec.ts 属性字典双向守卫：运行时真实 props ↔ spec.mjs 的 coreProps / 已启用 feature props 互相回查
 tests/browser/__snapshots__/geometry.json  按平台分桶的布局基线，`npm run snap:layout` 录入
 ```
 
-缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：四批共 33 条缺陷（F-1…F-33）全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
+缺陷守卫文件 `tests/findings.spec.ts` 已按约定退役：六批共 50 条缺陷（F-1…F-50）全部修复后，守卫降级进各组件文件，该文件删除。以后再发现缺陷仍按同一约定重建它。
 
 约定：
 
@@ -125,12 +126,12 @@ npm run hooks:install # 装 pre-commit（秒级四段）与 pre-push（全量九
 
 ## 7. 未覆盖 / 待办
 
-- 四层用例合计 840 条全绿：组件侧 30 文件 629 条、构建器侧 6 文件 68 条、profile 运行时 1 文件 101 条（20 份产物 × 5 项 + 总数守卫）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；剩余未接入单元用例的组件由 `console-clean.spec.ts`、`attributes.spec.ts` 在全家桶层兜底，并正在按第六批逐个补齐
+- 四层用例合计 1828 条全绿：组件侧 94 文件 1576 条（含 6 条浏览器层占位跳过）、构建器侧 6 文件 68 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 8 文件 42 条（其中 6 条是布局基线）；90 个组件目录已全部有专属单元用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 已知仍不可测的维度：真实像素与字体渲染（布局基线只比几何矩形，不比像素）、跨平台布局一致性（基线按平台分桶，非本机平台自动跳过）、真实设备的触摸 / 输入法行为、服务端 runner（`ci.mjs` 目前只在本机与钩子里跑）
-- 五批共记录 36 条缺陷：F-1…F-33 已全部修复，F-34（换机器签出即 CRLF、门禁第一段报 144 个文件）以 `.gitattributes` 修掉，F-35 / F-36（`countdown__time`、`watermark__layer` 曾是发出但无规则的死类名）已补样式并清空 `tests/profiles/every-profile.spec.ts` 的 `DEAD_CLASS_NAMES`——这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
-- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
+- 六批共记录 50 条缺陷（F-1…F-50）全部修复：F-1…F-33 见前几批，F-34 是换机器签出即 CRLF（`.gitattributes` 修掉），F-35 / F-36 是 `countdown__time`、`watermark__layer` 死类名（补样式并清空 `DEAD_CLASS_NAMES`），F-37 / F-38 见 §11 的分批缺陷清单，F-39…F-50 是第六批全量接入用例时暴露的"声明与实现脱钩"（详见 `REQUIREMENTS.md` §11.3）。这份清单为空是约定，不许留着东西让用例退化；再发现缺陷时按"单独分支修复 → 守卫降级为常规用例 → 删除文件"的约定收尾
+- `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查（`strict: false` + `noImplicitAny: false` 的宽松档，先把"拼错属性名、缺全局声明、DOM 类型当 HTMLElement"这类真错误拦在门禁里）；harness 探针页只跑在 Vite 里、不参与检查。**已知基线**：库工程已清零，用例工程仍有 7 个老文件共 15 条报错（affix / autocomplete / breadcrumb / cascader / collapse / roving-focus-group / space），均为 VTU 泛型与字面量推断问题，与新增用例无关；新增用例必须保持零报错。要把用例提回 strict，需要先把 VTU 的 `VueWrapper` 泛型逐个补全
 
 ## 8. 构建器侧用例的坑（写 tests/build/\*\* 前先读）
 
