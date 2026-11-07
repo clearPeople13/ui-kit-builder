@@ -1,4 +1,4 @@
-import { SCENE_PRESETS, type ScenePreset } from './presets'
+import { SCENE_PRESETS, resolvePresetValue, type ScenePreset } from './presets'
 import { featureAvailable, type DemoPackage } from './packages'
 import type { PlaygroundEntry } from './playground'
 
@@ -68,7 +68,9 @@ export function presetValues(
     if (control && control.featureId !== 'core' && !enabledGroups.has(control.featureId)) {
       continue
     }
-    values[name] = cloneValue(value)
+    // 惰性工厂：取值时才物化（工厂内部缓存），重数据按引用共享（表格只读），
+    // 不再 structuredClone 整个大数组；其余小/可变值保留深拷贝，维持属性面板隔离
+    values[name] = typeof value === 'function' ? resolvePresetValue(value) : cloneValue(value)
   }
   return values
 }

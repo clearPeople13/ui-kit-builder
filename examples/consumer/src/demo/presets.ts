@@ -10,14 +10,26 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
-import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, makeHeavyRows, makeHeavyTreeRows } from './table-data'
+import {
+  TABLE_LONG_ROWS,
+  TABLE_SPAN_ROWS,
+  TABLE_TREE_ROWS,
+  lazyHeavyRows,
+  lazyHeavyTreeRows
+} from './table-data'
 
 export interface ScenePreset {
   id: string
   label: string
   hint?: string
   requires?: string | string[]
+  /** 值为函数时是惰性数据工厂：首次取值才物化（大数据场景用，避免导入模块即生成全部重数据） */
   values: Record<string, unknown>
+}
+
+/** 解析惰性预设值：函数视为数据工厂并调用（内部带缓存），其余值原样返回 */
+export function resolvePresetValue(value: unknown): unknown {
+  return typeof value === 'function' ? (value as () => unknown)() : value
 }
 
 const SELECT_CLEAR_OPTIONS = [{ label: '全部', value: 'all' }, ...SELECT_CITY_OPTIONS]
@@ -1162,21 +1174,21 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       label: '大数据：5 千行',
       hint: '确定性生成的 5000 行压测数据，行字段全部由行号推导；开启 virtual 只渲染可视窗口行',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(5000), height: 420, stripe: true, resizable: true, virtual: true }
+      values: { data: lazyHeavyRows(5000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'heavy-data-20k',
       label: '大数据：2 万行',
       hint: '20000 行同口径压测数据，virtual 窗口化渲染，滚动只重绘可视区',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(20000), height: 420, stripe: true, resizable: true, virtual: true }
+      values: { data: lazyHeavyRows(20000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'heavy-data-100k',
       label: '大数据：10 万行',
       hint: '100000 行同口径压测数据，virtual 窗口化渲染的极限档位，进场景与滚动都保持流畅',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(100000), height: 420, stripe: true, resizable: true, virtual: true }
+      values: { data: lazyHeavyRows(100000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'editable-heavy',
@@ -1200,7 +1212,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       label: '大数据：5 万行 · 行高不一',
       hint: '50000 行压测数据，说明列 1-4 行不等导致行高不一致，virtual 按实测行高定位，滚动不跳行',
       requires: 'table.resize',
-      values: { data: makeHeavyRows(50000), height: 420, stripe: true, resizable: true, virtual: true }
+      values: { data: lazyHeavyRows(50000), height: 420, stripe: true, resizable: true, virtual: true }
     },
     {
       id: 'heavy-tree',
@@ -1208,7 +1220,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       hint: '三层树全展开 5220 行，说明列 4~48 行不等（行高约 100~1000px），virtual 按实测行高定位，展开收起照常工作',
       requires: 'table.tree',
       values: {
-        data: makeHeavyTreeRows(),
+        data: lazyHeavyTreeRows(),
         rowKey: 'id',
         defaultExpandAll: true,
         height: 420,

@@ -183,6 +183,18 @@ export function makeHeavyRows(count: number): TableHeavyRow[] {
   })
 }
 
+// 惰性大表数据工厂：导入模块时不物化，首次取值才生成并缓存；
+// 调试台切场景按引用共享（重数据场景均为只读表格），避免每次切换都重新生成或深拷贝
+export function lazyHeavyRows(count: number): () => TableHeavyRow[] {
+  let cached: TableHeavyRow[] | undefined
+  return () => (cached ??= makeHeavyRows(count))
+}
+
+export function lazyHeavyTreeRows(): () => TableTreeRow[] {
+  let cached: TableTreeRow[] | undefined
+  return () => (cached ??= makeHeavyTreeRows())
+}
+
 // 树形虚拟滚动压测数据：三层结构（20 组 × 10 项 × 25 叶子）全展开 5220 行，
 // desc 行数 5~50 行不等（行高约 100~1000px），全部由行号推导的确定性生成
 export function makeHeavyTreeRows(): TableTreeRow[] {

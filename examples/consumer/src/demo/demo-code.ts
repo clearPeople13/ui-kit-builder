@@ -1,4 +1,5 @@
 import type { PlaygroundControl, PlaygroundEntry } from './playground'
+import { resolvePresetValue } from './presets'
 import type { SceneView } from './scenes'
 import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS, makeHeavyRows, makeHeavyTreeRows } from './table-data'
 import { tableSceneBlueprint, type TableColumnSpec } from './table-demo'
@@ -287,8 +288,11 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
   const sceneId = scene?.id ?? 'base'
   const values: Record<string, unknown> = { ...(scene?.values ?? {}) }
   const heavyRows = sceneId === 'editable-heavy' ? (typeof values.heavyRows === 'number' ? values.heavyRows : 2000) : 0
+  // data 可能是惰性工厂（heavy 场景）：解析出真实数组，工厂带缓存，与渲染共享同一份
+  const resolvedData = resolvePresetValue(values.data)
   const rows =
-    values.data ?? (sceneId === 'editable' ? TABLE_EDIT_ROWS : sceneId === 'editable-heavy' ? [] : TABLE_DEMO_ROWS)
+    (Array.isArray(resolvedData) ? resolvedData : undefined) ??
+    (sceneId === 'editable' ? TABLE_EDIT_ROWS : sceneId === 'editable-heavy' ? [] : TABLE_DEMO_ROWS)
   delete values.data
   delete values.heavyRows
   const rowKey = typeof values.rowKey === 'string' ? values.rowKey : 'id'

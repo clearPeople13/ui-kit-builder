@@ -1,4 +1,4 @@
-import { defineComponent, h, ref, shallowRef, type Component, type PropType, type VNodeChild } from 'vue'
+import { computed, defineComponent, h, ref, shallowRef, watch, type Component, type PropType, type VNodeChild } from 'vue'
 import {
   HEAVY_GROUP_SIZE,
   TABLE_DEMO_ROWS,
@@ -557,18 +557,32 @@ const TableSceneDemo = defineComponent({
     const tableApi = shallowRef<any>(null)
     const selectedCount = ref(0)
     const editableScene = props.sceneId === 'editable' || props.sceneId === 'editable-heavy'
-    const heavyCount = typeof props.values.heavyRows === 'number' ? props.values.heavyRows : 2000
-    const editRows = ref<TableEditRow[]>(
-      props.sceneId === 'editable'
-        ? TABLE_EDIT_ROWS.map((row) => ({ ...row }))
-        : props.sceneId === 'editable-heavy'
-          ? makeHeavyRows(heavyCount).map((row) => ({ ...row, dirty: false }))
-          : []
+    const heavyCount = computed(() =>
+      typeof props.values.heavyRows === 'number' ? props.values.heavyRows : 2000
     )
+    const editRows = ref<TableEditRow[]>([])
     const editSnapshot = new Map<number, TableEditRow>()
-    for (const row of editRows.value) {
-      editSnapshot.set(row.id, { ...row })
+    function resetEditRows(rows: TableEditRow[]): void {
+      editRows.value = rows
+      editSnapshot.clear()
+      for (const row of rows) {
+        editSnapshot.set(row.id, { ...row })
+      }
     }
+    if (props.sceneId === 'editable') {
+      resetEditRows(TABLE_EDIT_ROWS.map((row) => ({ ...row })))
+    }
+    // 属性面板改 heavyRows 行数时重建大表编辑数据（含重置快照），不再只在挂载时生成一次
+    watch(
+      heavyCount,
+      (count) => {
+        if (props.sceneId !== 'editable-heavy') {
+          return
+        }
+        resetEditRows(makeHeavyRows(count).map((row) => ({ ...row, dirty: false })))
+      },
+      { immediate: true }
+    )
     const editState: TableEditState = {
       update(row, field, value) {
         const record = row as unknown as Record<string, unknown>
