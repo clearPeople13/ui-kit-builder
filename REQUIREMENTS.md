@@ -442,3 +442,29 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 编号断档：第一次顺延后主线 F-53 尚未合入，守卫报 `缺陷编号断档：缺 F-53`；第二次顺延后构建流水线的 F-54 尚未合入，报 `缺 F-54`；两边都合入后转为「已登记 65 条，最大 F-65」且退出码 0。
 - **守卫自身盲点（已修）**：初版用 `git diff`（只看未暂存）取改动面，开发者只要先 `git add`，影响面清单就会打印"本次无源码改动"后静默跳过。改为 `git diff HEAD`（未暂存 + 已暂存）与 `git diff HEAD -- <components>`，并对未跟踪的新 `core.ts` 按全文补扫交互关键字。同一批已暂存改动的前后对照：修复前跳过，修复后重新报出「shared/date.ts 同族 3 个组件」「time-picker 浏览器层 1 个文件」。
 - **合并兼容性**：并行的构建流水线分支会把 `quality` 改成委托 `ci.mjs`、并新增统一 `build` 段。治理校验的段数判定同时认硬编码 `npm run` 链与委托形态；另外常驻一条「STAGES 必须含 `governance` 且 `package.json` 必须有 `verify:governance`」的守卫，避免合并 `ci.mjs` 时把治理段覆盖掉、让治理校验变成"没进门禁的脚本"。
+
+## 16. 第九批交付（工程与测试优化 · B1：门禁短路与产物安全，分支 `feature/20261107-optimization-plan`）
+
+### 16.1 背景与范围
+
+`OPTIMIZATION_PLAN.md` 把 2026-11-07 全量审计的 37 项工程 / 测试 / 文档问题分成五批，B1 只做"会静默出错或被覆盖"的一类（计划书 §3 的 A1–A7、A9）。本批的判定标准不是"改完能跑"，而是三类故障都能在门禁里直接报红：人为制造构建失败、覆盖正式包、复用旧产物。
+
+### 16.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-66 | `scripts/dev-api.mjs` | `/api/build` 传 `name=full` 可直接覆盖 `dist/full` 这类正式产物 | 自定义构建直接写 `dist/<name>`，没有校验保留名 | 保留名来自 `profiles/*.json`，命中返回 409；自定义包统一写 `dist/custom/<name>`，返回体新增 `dir` |
+| F-67 | `scripts/build-all.mjs` | 特性负边际被夹成 `0`，与"真的没变"无法区分 | `delta()` 对四项差值取 `Math.max(0, …)` | `delta()` 返回带符号差值，负值原样写入 `sizes.json`，构建日志给出负值提示 |
+| F-68 | `scripts/build-all.mjs` | 删掉 profile JSON 后旧 `dist/<name>` 仍在，继续被 `/api/packages` 当成可安装包 | 构建前没有清理陈旧目录 | 构建前清理"不在 `profiles/` 且不在 `dist/custom/`"的目录，先打印再删除 |
+| F-69 | `scripts/build-all.mjs` | 改了边际算法后仍命中旧缓存，负边际继续被旧值覆盖 | 特性缓存指纹没有包含 `scripts/build-all.mjs` | 指纹输入补 `scripts/build-all.mjs`，改算法即全量重算 |
+| F-70 | `scripts/verify.mjs` / `scripts/build-all.mjs` | `verify:reuse` 只看 `ui-kit.js` 是否存在，改一行源码后仍复用旧产物 | 复用凭据只有文件存在性与 `sizes.json` | `build:all` 落盘 `.build/build-fingerprint.json`；`loadBuiltResults` 校验源码指纹，不符返回 `null` 触发重建 |
+| F-71 | `scripts/ci.mjs` | build 失败后仍继续跑后续阶段，二次报错掩盖真正的失败点 | 循环只累计 `failed`，没有短路 | `build` / `verify` 失败立即中断（`--keep-going` 可改为继续）；汇总与 `ci-report.json` 标记未执行阶段 |
+| F-72 | `dist/` 自定义包 | 自定义包名以 `feat-` 开头会被下一次构建当作试算残留删除 | 清理逻辑按 `feat-*` 前缀扫描 `dist/` | 自定义包进入 `dist/custom/` 命名空间，清理只针对 `dist/` 顶层目录且保留 `custom/` |
+
+计划书 A7（`sameFeatures` 配对的死代码分支）属于构建口径收敛，不是缺陷：本批直接删除该分支，特性边际统一走"full 减去特性"的试算路径，`sizes.json` 全部 178 条都由同一套口径产出。
+
+### 16.3 交付与数字
+
+- 构建器层新增 `tests/build/dev-api.spec.ts` 4 条（保留名 409、非法 JSON 400、空选择试算、自定义包落盘与包列表回读）与 `tests/build/build-hygiene.spec.ts` 3 条（A4 指纹、A5 陈旧目录判定、A6 有符号 delta）。
+- 门禁仍为十二段；`ci-report.json` 新增 `abortedBy` 与 `skipped` 字段，短路时汇总用 `· 未执行` 标记后续阶段。
+- 缺陷 F-1…F-72 全部修复；`REQUIREMENTS.md` / `README.md` / `KNOWLEDGE.md` 三处口径同步为 72 条。

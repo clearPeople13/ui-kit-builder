@@ -9,6 +9,7 @@
  *   node scripts/ci.mjs                 # 全量十二段（先 build 一次，后续各层复用产物）
  *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
+ *   node scripts/ci.mjs --keep-going    # build / verify 失败后仍继续跑后续阶段（默认立即短路）
  */
 import { spawnSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
@@ -63,8 +64,13 @@ const STAGES = [
 
 const argv = process.argv.slice(2)
 const fast = argv.includes('--fast')
+const keepGoing = argv.includes('--keep-going')
 const stageFlag = argv.indexOf('--stage')
 const only = stageFlag >= 0 ? argv[stageFlag + 1] : null
+
+// build 是后续各层的产物来源，verify 是产物 / API 一致性的第一道关；
+// 这两段失败后继续跑只会拿到一串二次报错，掩盖真正原因，所以默认立即短路。
+const CRITICAL_STAGES = new Set(['build', 'verify'])
 
 const selected = STAGES.filter(
   (stage) =>
@@ -81,13 +87,14 @@ const singleBuild = !fast && selected.some((stage) => stage.name === 'build')
 
 const results = []
 let failed = false
+let abortedBy = null
 
 // 在 npm 里跑时复用同一个 npm-cli.js（跨平台、不依赖 PATH 上的 shim）；
 // 直接被 node/钩子调起时才退回可执行文件名，Windows 上 .cmd 必须经 shell 才能起来
 const npmCli = process.env.npm_execpath
 const command = npmCli ? process.execPath : process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
-for (const stage of selected) {
+for (const [index, stage] of selected.entries()) {
   const started = Date.now()
   const script = singleBuild && stage.fullScript ? stage.fullScript : stage.script
   process.stdout.write(`\n── ${stage.name} · ${stage.desc}\n`)
@@ -103,12 +110,22 @@ for (const stage of selected) {
   process.stdout.write(
     `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
   )
+  if (!ok && !keepGoing && CRITICAL_STAGES.has(stage.name)) {
+    abortedBy = stage.name
+    selected.slice(index + 1).forEach((skipped) => {
+      results.push({ stage: skipped.name, script: skipped.script, ok: false, skipped: true, durationMs: 0 })
+    })
+    process.stdout.write(`\n${stage.name} 失败，后续阶段不再执行（--keep-going 可继续）\n`)
+    break
+  }
 }
 
 const report = {
   generatedAt: new Date().toISOString(),
   mode: fast ? 'fast' : only ? `stage:${only}` : 'full',
   ok: !failed,
+  abortedBy,
+  skipped: results.filter((item) => item.skipped).map((item) => item.stage),
   totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
   stages: results
 }
@@ -116,7 +133,9 @@ writeFileSync(new URL('../ci-report.json', import.meta.url), `${JSON.stringify(r
 
 process.stdout.write('\n阶段汇总\n')
 for (const item of results) {
-  process.stdout.write(`  ${item.ok ? '✓' : '✗'} ${item.stage.padEnd(16)} ${(item.durationMs / 1000).toFixed(1)}s\n`)
+  const mark = item.skipped ? '·' : item.ok ? '✓' : '✗'
+  const detail = item.skipped ? '未执行' : `${(item.durationMs / 1000).toFixed(1)}s`
+  process.stdout.write(`  ${mark} ${item.stage.padEnd(16)} ${detail}\n`)
 }
 process.stdout.write(`\n${report.ok ? '门禁通过' : '门禁失败'}，明细见 ci-report.json\n`)
 process.exit(report.ok ? 0 : 1)

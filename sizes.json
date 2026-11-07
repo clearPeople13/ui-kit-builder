@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-07T04:43:07.803Z",
+  "generatedAt": "2026-11-07T07:03:09.379Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -12149,7 +12149,7 @@
       "jsBytes": 109,
       "cssBytes": 0,
       "totalBytes": 109,
-      "gzipBytes": 0
+      "gzipBytes": -51
     },
     "autocomplete.icons": {
       "title": "图标",
@@ -12157,7 +12157,7 @@
       "jsBytes": 99,
       "cssBytes": 0,
       "totalBytes": 99,
-      "gzipBytes": 0
+      "gzipBytes": -23
     },
     "autocomplete.filterable": {
       "title": "筛选与远程搜索",

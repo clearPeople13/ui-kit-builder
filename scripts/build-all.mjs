@@ -34,18 +34,24 @@ const distDir = path.join(rootDir, 'dist')
 // 特性边际试算不进 dist/：它只是体积测量脚手架，不该出现在包列表或产物目录里
 const tempRoot = path.join(rootDir, '.build', 'feature-deltas')
 const cachePath = path.join(rootDir, '.build', 'feature-size-cache.json')
+const fingerprintPath = path.join(rootDir, '.build', 'build-fingerprint.json')
+const SIZE_KEYS = ['jsBytes', 'cssBytes', 'totalBytes', 'gzipBytes']
 
-function delta(base, target) {
-  return {
-    jsBytes: Math.max(0, target.jsBytes - base.jsBytes),
-    cssBytes: Math.max(0, target.cssBytes - base.cssBytes),
-    totalBytes: Math.max(0, target.totalBytes - base.totalBytes),
-    gzipBytes: Math.max(0, target.gzipBytes - base.gzipBytes)
+/**
+ * 特性边际必须有符号：0 既可能是"真的没变"，也可能是"负数被夹平"，
+ * 后者会让体积预算与裁剪决策同时失真（F-67）。负值原样落盘并打一条日志。
+ */
+export function delta(base, target) {
+  const result = {}
+  for (const key of SIZE_KEYS) {
+    result[key] = target[key] - base[key]
   }
+  return result
 }
 
-function sameFeatures(left, right) {
-  return left.length === right.length && left.every((id) => right.includes(id))
+/** dist 下不属于当前 profile 清单、也不在自定义包命名空间的目录（F-68） */
+export function staleDistDirs(existingDirs, reservedNames) {
+  return existingDirs.filter((name) => name !== 'custom' && !reservedNames.has(name))
 }
 
 /** 本机可用的构建并发度：留一个核给门禁自身与文件系统，最多 6 路 */
@@ -81,16 +87,23 @@ function walkFiles(dir, files) {
 }
 
 /**
- * 特性边际缓存的输入指纹：某特性的边际体积只取决于组件源码、profile 配置与构建器本身。
- * 三类内容都没变时，上次算出的边际值仍然成立；Node / 平台也进指纹，避免换环境后误复用。
+ * 构建输入的指纹：产物与特性边际只取决于组件源码、profile 配置、注册表与构建器本身。
+ * 这些内容都没变时，上次算出的边际值与已构建产物仍然成立；Node / 平台也进指纹，避免换环境后误复用。
+ * 构建脚本自身（build-all.mjs）也算输入：改了边际算法就必须重算，否则缓存会把旧口径钉死（F-69）。
  */
-function sourceFingerprint() {
+export function sourceFingerprint() {
   const hash = crypto.createHash('sha1')
   hash.update(`node=${process.version}\nplatform=${process.platform}\narch=${process.arch}\n`)
   const files = []
   walkFiles(path.join(rootDir, 'packages/ui-kit/src'), files)
   walkFiles(path.join(rootDir, 'profiles'), files)
-  for (const extra of ['registry.mjs', 'scripts/build-lib.mjs', 'package.json', 'package-lock.json']) {
+  for (const extra of [
+    'registry.mjs',
+    'scripts/build-lib.mjs',
+    'scripts/build-all.mjs',
+    'package.json',
+    'package-lock.json'
+  ]) {
     files.push(path.join(rootDir, extra))
   }
   files.sort()
@@ -141,9 +154,54 @@ function cleanTempArtifacts() {
   }
 }
 
+/** 删掉不再是当前 profile 清单成员的 dist 目录；先打印再删除，custom/ 永远保留 */
+export function cleanStaleProfiles(reservedNames) {
+  if (!fs.existsSync(distDir)) {
+    return []
+  }
+  const existing = fs
+    .readdirSync(distDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+  const stale = staleDistDirs(existing, reservedNames)
+  for (const name of stale) {
+    console.log(`[build] 清理陈旧产物 dist/${name}`)
+    fs.rmSync(path.join(distDir, name), { recursive: true, force: true })
+  }
+  return stale
+}
+
+function readBuildFingerprint() {
+  try {
+    const record = JSON.parse(fs.readFileSync(fingerprintPath, 'utf8'))
+    return typeof record.fingerprint === 'string' ? record : null
+  } catch {
+    return null
+  }
+}
+
+function writeBuildFingerprint(fingerprint) {
+  fs.mkdirSync(path.dirname(fingerprintPath), { recursive: true })
+  fs.writeFileSync(
+    fingerprintPath,
+    `${JSON.stringify({ fingerprint, generatedAt: new Date().toISOString() }, null, 2)}\n`,
+    'utf8'
+  )
+}
+
 /** 门禁里已经构建过一次时，verify 直接复用 sizes.json 的记录，不再重复打 198 份包 */
 function loadBuiltResults() {
   try {
+    // 产物是否可信不取决于"文件还在"，而取决于构建它的源码是否还是当前源码（F-70）
+    const recorded = readBuildFingerprint()
+    if (!recorded) {
+      console.log('[build] 缺少 .build/build-fingerprint.json，重新构建')
+      return null
+    }
+    if (recorded.fingerprint !== sourceFingerprint()) {
+      console.log('[build] 源码指纹与上次构建不一致，重新构建')
+      return null
+    }
     const sizes = JSON.parse(fs.readFileSync(sizesPath, 'utf8'))
     const results = Object.values(sizes.profiles ?? {})
     if (results.length !== profileNames.length) {
@@ -171,15 +229,22 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
   }
 
   cleanTempArtifacts()
-  const profileStarted = Date.now()
-  const results = await mapPool(profileNames, concurrency(), async (profileName) => {
+  const fingerprint = sourceFingerprint()
+  const profileConfigs = profileNames.map((profileName) => {
     const configPath = path.join(rootDir, 'profiles', `${profileName}.json`)
     const config = JSON.parse(fs.readFileSync(configPath, 'utf8'))
-    return buildProfile({
+    return { profileName, dirName: sanitizeName(config.name ?? profileName), config }
+  })
+  // 删掉清单里已经不存在的历史 profile，避免它们继续被 /api/packages 当成可安装产物（F-68）
+  cleanStaleProfiles(new Set(profileConfigs.map((item) => item.dirName)))
+
+  const profileStarted = Date.now()
+  const results = await mapPool(profileConfigs, concurrency(), ({ profileName, config }) =>
+    buildProfile({
       ...config,
       name: config.name ?? profileName
     })
-  })
+  )
   const profileSeconds = ((Date.now() - profileStarted) / 1000).toFixed(1)
   console.log(`[build] ${profileNames.length} 份正式 profile 完成（${concurrency()} 路并发，${profileSeconds}s）`)
 
@@ -187,32 +252,12 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
   const registry = await loadRegistry()
   const features = {}
 
-  // 先用现有 20 份 profile 里能配对的特性填一遍（requires 与 requires+[id] 恰好都存在的情况）
-  for (const component of Object.values(registry.components)) {
-    for (const [id, feature] of Object.entries(
-      Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
-    )) {
-      const requires = feature.requires ?? []
-      const baseProfile = results.find((result) => sameFeatures(result.features, requires))
-      const targetProfile = results.find((result) => sameFeatures(result.features, [...requires, id]))
-      if (!baseProfile || !targetProfile) {
-        continue
-      }
-      features[id] = {
-        title: feature.title,
-        component: component.id,
-        ...delta(baseProfile, targetProfile)
-      }
-    }
-  }
-
-  // F-27 修复：剩下没有配对的特性，用「full 去掉该特性」的临时产物与 full 相减，
+  // 特性边际统一用「full 去掉该特性」的临时产物与 full 相减，
   // 得到该特性在完整产物里的边际成本。这样 178 个特性都有真实体积数据，
-  // 不再因为 20 份 profile 都是全特性集而让 features 段恒空。
+  // 也不会因"某两份 profile 恰好配对"而走出另一套口径。
   // 临时产物写 .build/feature-deltas/，并在 try/finally 里清理，dist/ 永远只有 20 份正式包。
   const fullResult = results.find((result) => result.name === 'full')
   if (fullResult) {
-    const fingerprint = sourceFingerprint()
     const cached = cache ? readFeatureCache(fingerprint) : null
     const fullSel = fullSelection(registry)
     const pending = []
@@ -221,9 +266,6 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
       for (const [id, feature] of Object.entries(
         Object.assign({}, ...component.exports.map((item) => item.features ?? {}))
       )) {
-        if (features[id]) {
-          continue
-        }
         if (cached?.[id]) {
           features[id] = cached[id]
           continue
@@ -266,10 +308,23 @@ export async function buildAllProfiles({ reuse = false, cache = process.env.UIKI
       console.log(`[build] ${Object.keys(features).length} 个特性的边际体积命中内容哈希缓存，跳过临时构建`)
     }
 
+    const negative = Object.entries(features).filter(([, feature]) => SIZE_KEYS.some((key) => feature[key] < 0))
+    if (negative.length) {
+      console.log(
+        `[build] ${negative.length} 个特性边际为负值（裁掉特性反而变大），已按原始差值写入 sizes.json：${negative
+          .slice(0, 5)
+          .map(([id]) => id)
+          .join(', ')}${negative.length > 5 ? ' 等' : ''}`
+      )
+    }
+
     if (cache) {
       writeFeatureCache(fingerprint, features)
     }
   }
+
+  // 指纹与 sizes.json 同批落盘：下一次 verify:reuse / build:all --reuse 只有指纹一致才敢复用（F-70）
+  writeBuildFingerprint(fingerprint)
 
   const payload = {
     profiles: Object.fromEntries(results.map((result) => [result.name, result])),

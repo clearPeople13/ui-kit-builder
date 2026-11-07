@@ -83,7 +83,7 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"，加上 `time-picker.scene.spec.ts` 的 7 条真实操作序列，共 65 条。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 142 条。
 覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，按 statements / branches / functions / lines 卡阈值，低于基线即红。
-用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 65 条缺陷（F-1…F-65），全部已修复。
+用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 72 条缺陷（F-1…F-72），全部已修复。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## License

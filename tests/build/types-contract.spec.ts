@@ -304,12 +304,13 @@ describe('类型文件与源码同批', () => {
   })
 
   it('dist 里没有 profile 目录之外的孤儿产物（构建目录改名要一起清理）', () => {
+    // dist/custom/ 是构建器 UI 的自定义包命名空间，不属于 profile，但必须保留（F-68 / F-72）
     const dirs = fs
       .readdirSync(path.join(repoRoot, 'dist'), { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort()
-    expect(dirs).toEqual([...profileNames].sort())
+    expect(dirs).toEqual([...profileNames, 'custom'].sort())
     expect(readText('dist/full/package.json')).toContain('"module"')
   })
 })

@@ -98,17 +98,18 @@ describe('sizes.json 的成本表', () => {
     expect(Number.isNaN(Date.parse(sizes.generatedAt))).toBe(false)
   })
 
-  it('features 段覆盖全部 178 个特性，且每项都是非负增量', () => {
+  it('features 段覆盖全部 178 个特性，且每项都是有符号增量', () => {
     // F-27 修复：build-all 对每个特性都构建「full 去掉该特性」的临时产物与 full 相减，
     // 所以 178 个特性都有边际成本数据，不再恒空。
+    // F-67 修复：负边际不再夹成 0，这里只校验整数与归属，符号由 delta 单测覆盖。
     const all = featureEntries(registry)
       .map((entry) => entry.id)
       .sort()
     expect(Object.keys(sizes.features).sort()).toEqual(all)
     for (const [id, delta] of Object.entries(sizes.features)) {
       expect(delta.component, id).toBeTruthy()
-      expect(delta.jsBytes, `${id} js 增量`).toBeGreaterThanOrEqual(0)
-      expect(delta.cssBytes, `${id} css 增量`).toBeGreaterThanOrEqual(0)
+      expect(Number.isInteger(delta.jsBytes), `${id} js 增量应为整数`).toBe(true)
+      expect(Number.isInteger(delta.cssBytes), `${id} css 增量应为整数`).toBe(true)
     }
   })
 })
