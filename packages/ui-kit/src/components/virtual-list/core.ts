@@ -3,6 +3,7 @@ import { computed, defineComponent, h, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { mergeFeatureProps } from '../../shared/feature'
 import { mergeStyles } from '../../shared/utils'
+import { alignVirtualScrollTop, computeVirtualRange, resolveVirtualViewport } from '../../shared/virtual-window'
 import './core.css'
 
 const virtualListBaseProps = {
@@ -12,7 +13,16 @@ const virtualListBaseProps = {
   estimatedItemSize: { type: Number, default: 0 },
   itemKey: { type: String, default: '' },
   cache: { type: Number, default: 2 },
-  total: { type: Number, default: 0 }
+  total: { type: Number, default: 0 },
+  /**
+   * 受控窗口模式（§25）：传了 scrollTop 就由调用方维护滚动位置，本组件不再监听自身滚动。
+   * Select 这类「外层浮层是滚动容器」的场景靠它复用同一套窗口算法与渲染结构。
+   */
+  scrollTop: { type: Number, default: undefined },
+  /** 受控窗口模式下的可视高度；不传则退回 height */
+  viewportHeight: { type: Number, default: 0 },
+  /** false 时不渲染自己的滚动容器（不设高度与 overflow、不监听 scroll），只输出窗口内容 */
+  scrollable: { type: Boolean, default: true }
 }
 
 function renderItemContent(
@@ -34,31 +44,63 @@ export function createVirtualList(features: UiFeature[] = []) {
     name: 'UiVirtualList',
     inheritAttrs: false,
     props: { ...virtualListBaseProps, ...mergeFeatureProps(features) },
-    setup(props, { attrs, slots }) {
-      const scrollTop = ref(0)
+    setup(props, { attrs, slots, expose }) {
+      const rootRef = ref<HTMLElement>()
+      const innerScrollTop = ref(0)
 
-      const itemHeight = computed(() => {
-        if (props.itemSize > 0) {
-          return props.itemSize
-        }
-        return props.estimatedItemSize > 0 ? props.estimatedItemSize : 30
-      })
-
+      // 受控优先：调用方的 scrollTop 存在时以它为准，避免两份状态互相覆盖
+      const controlled = computed(() => typeof props.scrollTop === 'number')
+      const effectiveScrollTop = computed(() => (controlled.value ? Number(props.scrollTop) : innerScrollTop.value))
       const itemCount = computed(() => (props.total > 0 ? props.total : props.data.length))
-
-      const startIndex = computed(() => Math.max(0, Math.floor(scrollTop.value / itemHeight.value) - props.cache))
-
-      const endIndex = computed(() =>
-        Math.min(itemCount.value, Math.ceil((scrollTop.value + props.height) / itemHeight.value) + props.cache)
+      const viewport = computed(() =>
+        props.viewportHeight > 0 ? resolveVirtualViewport(props.viewportHeight) : resolveVirtualViewport(props.height)
+      )
+      const range = computed(() =>
+        computeVirtualRange({
+          scrollTop: effectiveScrollTop.value,
+          viewport: viewport.value,
+          itemSize: props.itemSize,
+          total: itemCount.value,
+          overscan: props.cache,
+          fallbackItemSize: props.estimatedItemSize
+        })
       )
 
-      function handleScroll(event: Event) {
-        scrollTop.value = (event.target as HTMLElement).scrollTop
+      function applyScroll(top: number) {
+        const next = Math.max(0, Number(top) || 0)
+        if (rootRef.value) {
+          rootRef.value.scrollTop = next
+        }
+        if (!controlled.value) {
+          innerScrollTop.value = next
+        }
       }
 
+      function handleScroll(event: Event) {
+        // 受控模式下滚动位置由调用方写入，这里不回写自己的状态
+        if (!controlled.value) {
+          innerScrollTop.value = (event.target as HTMLElement).scrollTop
+        }
+      }
+
+      expose({
+        scrollToTop: () => applyScroll(0),
+        scrollToIndex: (index: number) =>
+          applyScroll(
+            alignVirtualScrollTop(
+              index,
+              effectiveScrollTop.value,
+              range.value.itemSize,
+              viewport.value,
+              itemCount.value
+            )
+          )
+      })
+
       return () => {
+        const { start, end, itemSize, totalSize } = range.value
         const items: VNodeChild[] = []
-        for (let index = startIndex.value; index < endIndex.value; index++) {
+        for (let index = start; index < end; index++) {
           const item = props.data[index]
           // 占位行仅在未提供默认插槽时兜底展示；插槽场景把 item=undefined 交给消费方自行渲染骨架
           const showPlaceholder = index >= props.data.length && !slots.default
@@ -72,10 +114,10 @@ export function createVirtualList(features: UiFeature[] = []) {
                 class: ['ui-virtual-list__item', showPlaceholder ? 'is-placeholder' : ''],
                 style: {
                   position: 'absolute',
-                  top: `${index * itemHeight.value}px`,
+                  top: `${index * itemSize}px`,
                   left: '0',
                   right: '0',
-                  height: `${itemHeight.value}px`
+                  height: `${itemSize}px`
                 } as CSSProperties
               },
               showPlaceholder ? ['加载中…'] : renderItemContent(slots, item, index)
@@ -83,25 +125,32 @@ export function createVirtualList(features: UiFeature[] = []) {
           )
         }
 
+        const ownScroll = props.scrollable
         return h(
           'div',
           {
             ...attrs,
-            class: [attrs.class, 'ui-virtual-list'],
-            style: mergeStyles(attrs.style, {
-              height: `${props.height}px`,
-              overflowY: 'auto',
-              overflowX: 'hidden',
-              position: 'relative'
-            }),
-            onScroll: handleScroll
+            ref: rootRef,
+            class: [attrs.class, 'ui-virtual-list', ownScroll ? '' : 'is-static'],
+            style: mergeStyles(
+              attrs.style,
+              ownScroll
+                ? {
+                    height: `${props.height}px`,
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    position: 'relative'
+                  }
+                : { position: 'relative' }
+            ),
+            onScroll: ownScroll ? handleScroll : undefined
           },
           [
             h(
               'div',
               {
                 class: 'ui-virtual-list__spacer',
-                style: { height: `${itemCount.value * itemHeight.value}px`, position: 'relative' }
+                style: { height: `${totalSize}px`, position: 'relative' }
               },
               items
             )

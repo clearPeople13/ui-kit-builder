@@ -13,6 +13,10 @@ export default defineConfig({
     include: ['tests/build/**/*.spec.ts'],
     testTimeout: 30000,
     hookTimeout: 120000,
-    reporters: ['default']
+    reporters: ['default'],
+    // 这批用例会真的改仓库源文件（build-cache 模拟改动后还原）、真的打一次包（dev-api），
+    // 与只读断言并发时会互相污染：指纹断言读到变异中的源码、类型契约读到正在重写的产物。
+    // 表现为"用例全通过、文件级报错"的偶发红。串行代价约 +13s，换确定性。
+    fileParallelism: false
   }
 })

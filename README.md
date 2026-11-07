@@ -4,7 +4,7 @@
 
 ## 特性
 
-- **特性级裁剪**：每个组件的可选能力（如 `pagination.layout`、`select.clearable`、`table.virtual-scroll`）都是独立特性模块，构建时按 profile 白名单剔除未选中的代码与样式
+- **特性级裁剪**：每个组件的可选能力（如 `pagination.layout`、`select.select-clearable`、`select.select-virtualized`）都是独立特性模块，构建时按 profile 白名单剔除未选中的代码与样式
 - **profile 驱动构建**：一个 profile 产出一个独立包（ESM + 类型声明 + 独立 CSS + `meta.json` 体积/特性清单）
 - **20 套主题**：15 套对齐主流设计体系（Ant Design、Arco、TDesign、Naive UI、View Design、Vant、Varlet、Semi、Material 3、Bootstrap、shadcn/ui、Fluent 2、Carbon、Mantine、iOS），另有 `core` / `full` / `branded` / `chinese` / `cute` 5 套内置风格；主题全部由 CSS 令牌驱动，不侵入组件逻辑
 - **可视化构建器**：勾选组件、特性与主题，实时生成构建配置并估算产物体积
@@ -104,7 +104,7 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 另有 `npm run audit:visual` 的视觉体检：它在真实 Chromium 里对 124 个导出的组件做计算样式契约扫描（双层边框、原生外观残留、字体错配、文本裁切、渲染缺口），另开调试台服务对 5 个含原生控件的组件页做同一套检查（防止「源码修好、dist 产物或加载路径没跟上」），并产出 123 张逐组件截图（1 个抽象导出默认态无内容）+ 6 个重点场景首屏 + 5 张调试台页面的可视画廊 `visual-report/index.html`。像素基线只能防"以后变"，这一层专治"现在就长歪了"；有阻断项即非零退出，是门禁第十段。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架。
 覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，报告输出逐文件表格，全局阈值 88 / 84 / 89 / 88，并对 `src/components/**` 设 21 / 33 / 21 的组件级下限，低于下限即红。
-用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 83 条缺陷（F-1…F-83），全部已修复。
+用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 85 条缺陷（F-1…F-85），全部已修复。
 背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
 
 ## 服务端 CI

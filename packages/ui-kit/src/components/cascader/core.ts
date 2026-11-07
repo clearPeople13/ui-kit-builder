@@ -7,6 +7,7 @@ import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
 import { sizeValue } from '../../shared/behavior'
+import { computeVirtualRange } from '../../shared/virtual-window'
 import './core.css'
 
 const cascaderBaseProps = {
@@ -861,12 +862,16 @@ export function createCascader(features: UiFeature[] = []) {
           const height = Number(props.height ?? 204)
           const itemHeight = Math.max(16, Number(props.itemSize ?? 34))
           const virtual = Boolean(props.virtualScroll) && column.length > 40
-          const scrollTop = scrollTops.value[level] ?? 0
-          const maxStart = Math.max(0, column.length - 1)
-          const start = virtual ? Math.min(maxStart, Math.max(0, Math.floor(scrollTop / itemHeight) - 4)) : 0
-          const end = virtual
-            ? Math.min(column.length, Math.ceil((scrollTop + height) / itemHeight) + 4)
-            : column.length
+          // §25：窗口区间统一走 shared/virtual-window，不再各自 clamp
+          const range = computeVirtualRange({
+            scrollTop: scrollTops.value[level] ?? 0,
+            viewport: height,
+            itemSize: itemHeight,
+            total: column.length,
+            overscan: 4
+          })
+          const start = virtual ? range.start : 0
+          const end = virtual ? range.end : column.length
           const children: VNodeChild[] = []
           if (!column.length) {
             const emptyText = level === 0 && rootLoading.value ? '加载中…' : '无数据'

@@ -16,13 +16,16 @@ describe('构建缓存失效（A10 / C2 / C3）', () => {
   it('改组件源码只让该组件的缓存键变化', () => {
     const dir = path.join(repoRoot, 'packages/ui-kit/src/components/button')
     const probe = path.join(dir, '__cache_probe.tmp')
+    // 上次异常退出（Windows 上 rm 偶发 EBUSY）可能留下探针：先清掉，before 才是"没有探针"的基线。
+    // 否则 before 已经包含探针内容，再写入同样内容指纹不变 —— 表现为这条用例一次红一次绿。
+    fs.rmSync(probe, { force: true, maxRetries: 3, retryDelay: 50 })
     const before = buildAll.componentFingerprint('button')
     expect(before).toMatch(/^[0-9a-f]{40}$/)
     try {
-      fs.writeFileSync(probe, 'probe', 'utf8')
+      fs.writeFileSync(probe, `probe-${Date.now()}-${Math.random()}`, 'utf8')
       expect(buildAll.componentFingerprint('button')).not.toBe(before)
     } finally {
-      fs.rmSync(probe, { force: true })
+      fs.rmSync(probe, { force: true, maxRetries: 3, retryDelay: 50 })
     }
     expect(buildAll.componentFingerprint('button')).toBe(before)
   })

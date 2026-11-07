@@ -297,8 +297,9 @@ describe('Select', () => {
       await openBig()
       const virtual = document.querySelector('.ui-select__virtual')
       expect(virtual).not.toBeNull()
-      expect(virtual?.getAttribute('style')).toContain('height: 4080px')
-      expect(document.querySelector('.ui-select__virtual-window')?.getAttribute('style')).toContain('translateY(0px)')
+      // §25：窗口结构复用 VirtualList，占位高度落在它的 spacer 上（120 × 34）
+      expect(virtual?.classList.contains('ui-virtual-list')).toBe(true)
+      expect(virtual?.querySelector('.ui-virtual-list__spacer')?.getAttribute('style')).toContain('height: 4080px')
       expect(optionItems()).toHaveLength(14)
       expect(document.querySelector('.ui-select__dropdown')?.className).toContain('is-virtual')
     })
@@ -309,7 +310,8 @@ describe('Select', () => {
       panel.scrollTop = 1020
       panel.dispatchEvent(new Event('scroll', { bubbles: true }))
       await new Promise((resolve) => setTimeout(resolve, 0))
-      expect(document.querySelector('.ui-select__virtual-window')?.getAttribute('style')).toContain('translateY(850px)')
+      // 滚动 1020 / 行高 34 → 起点 25，首行绝对定位在 25 × 34 = 850
+      expect(document.querySelectorAll('.ui-virtual-list__item')[0].getAttribute('style')).toContain('top: 850px')
       expect(optionItems().length).toBeLessThan(30)
       expect(optionItems()[0].textContent).toContain('选项25')
     })
@@ -337,7 +339,7 @@ describe('Select', () => {
       await wrapper.find('.ui-select__trigger').trigger('click')
       const virtual = document.querySelector('.ui-select__virtual')
       expect(virtual).not.toBeNull()
-      expect(virtual?.getAttribute('style')).toContain('height: 120px')
+      expect(virtual?.querySelector('.ui-virtual-list__spacer')?.getAttribute('style')).toContain('height: 120px')
     })
   })
 })
