@@ -965,3 +965,50 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 | F-85 | `tests/build/build-cache.spec.ts` | `npm run test:build` 偶发红（同一份代码一次红一次绿），失败点固定在「改组件源码只让该组件的缓存键变化」 | 固定名探针 `__cache_probe.tmp` 在 Windows 上偶发删不掉；下次 `before` 已包含探针内容，再写入同样内容指纹不变 | 写入前先清残留、探针内容带唯一值、删除带重试；`vitest.build.config.ts` 改串行（这批用例会真改源码、真打包，与只读断言并发互相污染） |
 
 
+
+## 26. 门禁成本：从"每改一行跑十三段"到"只跑受影响的部分"（分支 `perf/20261107-scoped-gate`）
+
+> 触发：用户提出"才改了这几个文件，跑测试跑那么久"。先按会话记录逐条时间戳归因（窗口 54.3 分钟），再改机制，不靠感觉。
+
+### 26.1 归因（54.3 分钟实测）
+
+| 去向 | 时长 | 占比 | 性质 |
+| --- | --- | --- | --- |
+| 等后台门禁 / 浏览器任务跑完 | 17.1 分钟 | 31% | 其中 15:31、15:34 连跑两遍全量门禁，第二次单轮等了 529s（冷构建） |
+| 重跑用例 | 14.6 分钟 | 27% | 其中 10.6 分钟是同一个套件连跑 2–4 遍"赌是不是 flaky" |
+| 模型侧（思考 / 输出 / 上下文压缩） | 21.2 分钟 | 39% | 含收尾压缩 6.1 分钟，整任务两次压缩合计约 17 分钟 |
+| 构建（6 次 `build:all`） | 1.2 分钟 | 2% | 缓存本身是有效的，**不该往构建上继续投资** |
+
+结论：六成是"改一步就跑一遍全量"的节奏问题，四成是项目缺少增量入口与可预测性（冷热差 5 倍却不说原因）。两者相乘：入口慢 → 想多跑一遍确认 → 上下文被长输出撑到压缩。
+
+### 26.2 做法
+
+- **受影响范围选择器**（`scripts/test-impact.mjs` + `ci.mjs --changed`）：把「文件 → 受影响层 + 受影响用例」写成纯函数。组件用例按 `import` 判定归属（不是名字子串，`button` 不会把 `alert.spec.ts` 拉进来）；共享模块 / 组件库入口 / 构建器 / profile / 测试基础设施 / 未知路径一律回落全量。`npm run ci:plan` 只打印计划，`npm run ci:changed` 才执行。
+- **产物相关层不可省**：组件用例读的是 `dist/full/ui-kit.js`，`--changed` 仍保留 `build` / `verify` / 体积契约，否则是拿旧产物测新代码。
+- **浏览器层 3 路并行**：16 个文件 46s → 20s；探针服务仍由 `globalSetup` 单实例提供，worker 共享同一随机高位端口。
+- **类型检查增量**：两份 tsconfig 各写一份 `tsBuildInfoFile` 到 `.build/`，库 7.0s → 2.7s、用例 5.0s → 2.8s。
+- **隐式前置收进 `ci.mjs`**：宿主注入的 `CODEBUDDY_SAFE_DELETE_ENABLED=1` 会让构建清空 `dist/` 时整段假红，`NO_PROXY` 不设会让 Firefox 子集超时——现在由门禁自己补，并把补了什么打出来。
+- **构建并发 6 → 8，冷启动有交代**：开跑即报「要重算多少个特性、量级多久」，并按实际吞吐持续修正（固定 18s 常数第一次就偏了 50%，所以改成自校正）。10 路压测出现过一次 EMFILE（postcss 打开 core.css 失败），构建偶发红比慢几分钟更贵，退到 8 路。
+- **缓存口径与编排脚本解耦**：`componentFingerprint` / `profileFingerprint` 不再包含 `build-all.mjs` 全文，改用 `SIZE_ALGO_VERSION` 代表计量口径；治理校验扫 diff，动了 `delta()` / `SIZE_KEYS` / 缓存写盘等代码却没升版本号直接报红。
+- **pre-commit 不再重建**：`verify` 段在 fast 模式改用 `verify:if-fresh`，产物过期就跳过并说明"pre-push 会重建"，钩子 45–60s → 14s。
+
+### 26.3 验证数字
+
+- 全量门禁非构建段：132.7s → 118.9s（浏览器 −26s、类型 −4.3s；`test:build` +14s 是冷产物首次读取，热态回落）。
+- `ci:changed` 判据实测：改 `button/core.ts` → 9 段（build/format/typecheck/lint/verify/governance/test/test:build/visual），`test` 只跑 `button.spec.ts` 与 `style-attrs.spec.ts`；改 `time-picker/core.css` 额外带 `tests/browser/time-picker.scene.spec.ts` 与 CSS 令牌两条构建器用例；只改 `README.md` → 仅 governance。
+- pre-commit（`ci:fast`）：14s（format 4.8 / typecheck 2.6 / lint 4.3 / verify 0.9 跳过 / governance 1.1）。
+- 缓存口径守卫自测：仅追加注释 → 通过；追加 `delta(` 调用但不升版本号 → 报红并指出「SIZE_ALGO_VERSION 仍是 v2」。
+
+### 26.4 本批未做（附原因，避免被当成已完成）
+
+- **`test:build` 拆"只读并行 + 变异串行"**：试过并已回退——拆开后只读段并行 8s、变异段仍是 14s（dev-api 真打包、types-contract 生成 d.ts、theme-tokens / tree-shaking 各建一次），合计 22s，比不拆的 23s 只省 1s；变异段占六成，拆分层不解决问题。真要提速得让这五个用例共用一次构建产物，属于改测试契约，留待下一批。
+- **覆盖率与组件层重复跑同一批用例**：覆盖率必须在源码入口重放才有 per-file 数字，合并会丢掉"产物行为一致"这层保证；只在全量门禁跑，内循环由 `--changed` 跳过。
+- **绕过 npm 直调 CLI**：13 段各起一次 npm，固定开销约 10s，收益有限且要自己维护各 CLI 入口。
+- **门禁输出瘦身**：全量日志约 1140 行 / 195KB，改为精简 reporter 需要逐段确认失败信息仍可定位，留待下一批。
+
+### 26.5 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-86 | `scripts/build-all.mjs` | 改一句构建日志文案，`build:all` 就要重算 175 个特性边际，实测 467s | 组件级与 profile 级缓存键都包含 `build-all.mjs` 全文，把"编排脚本"当成了"计量口径" | 缓存键改用 `SIZE_ALGO_VERSION` 表示计量口径；治理校验扫 diff，算法代码变了却没升版号即报红 |
+| F-87 | `scripts/verify.mjs` | 源码改动后 `git commit` 会卡在 pre-commit：`verify:reuse` 发现指纹不一致就重建 198 份包，钩子超时 | fast 模式沿用了"过期即重建"的复用策略，把重活留在了提交钩子里 | 新增 `--if-fresh`：产物过期时跳过库级校验并说明"pre-push 全量门禁会重建"，钩子回到 14s |

@@ -313,6 +313,11 @@ function impactOf(file, root) {
   }
 
   // ---- 兜底 ----
+  if (
+    /^(vitest\.[^/]*\.config\.ts|tsconfig[^/]*\.json|eslint\.config\.mjs|package\.json|package-lock\.json)$/.test(file)
+  ) {
+    return { full: true, reason: `改了测试 / 工具链配置 ${file}，影响面覆盖全部层` }
+  }
   return { full: true, reason: `未识别的改动 ${file}，按全量处理` }
 }
 

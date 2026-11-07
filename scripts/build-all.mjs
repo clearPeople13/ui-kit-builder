@@ -39,13 +39,14 @@ export function staleDistDirs(existingDirs, reservedNames) {
 /**
  * 本机可用的构建并发度：留一个核给门禁自身与文件系统。
  *
- * 上限原来写死 6，而单次特性边际试算是一条 esbuild + 文件读写链，CPU 并不吃满；
- * 16 核机器上 6 路会让冷启动卡在 9 分钟。放到 10 路后冷启动约 5–6 分钟，
- * 热缓存（命中全部组件）不受影响。
+ * 上限原来写死 6，而单次特性边际试算是一条 esbuild + postcss + 文件读写链，CPU 并不吃满；
+ * 16 核机器上 6 路冷启动约 7–8 分钟，8 路实测约 6 分钟。
+ * 不再往上加：10 路压测时出现过一次 EMFILE（postcss 打开 core.css 失败），
+ * 构建阶段偶发红比慢几分钟更贵。热缓存（全部命中）不受并发度影响。
  */
 function concurrency() {
   const cpus = os.availableParallelism?.() ?? os.cpus().length
-  return Math.max(2, Math.min(10, cpus - 1))
+  return Math.max(2, Math.min(8, cpus - 1))
 }
 
 /** 单次特性边际试算的实测耗时（16 核 / 6 路时 175 个特性约 9 分钟，折合单次约 18s），只用于给"还要多久"一个量级 */
