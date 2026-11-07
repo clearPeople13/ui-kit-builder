@@ -80,7 +80,7 @@ export function createTooltip(features: UiFeature[] = []) {
           }
           innerOpen.value = true
           emit('update:visible', true)
-          emit('show')
+          emit('visible-change', true)
           const autoClose = Number(props.autoClose ?? 0)
           if (Number.isFinite(autoClose) && autoClose > 0) {
             autoCloseTimer = setTimeout(hide, autoClose)
@@ -107,7 +107,7 @@ export function createTooltip(features: UiFeature[] = []) {
           }
           innerOpen.value = false
           emit('update:visible', false)
-          emit('hide')
+          emit('visible-change', false)
         }
 
         function toggle() {

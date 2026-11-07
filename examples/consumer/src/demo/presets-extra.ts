@@ -1647,10 +1647,10 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       values: {}
     },
     {
-      id: 'open',
+      id: 'expanded',
       label: '打开状态',
-      hint: 'open=true 让 aria-expanded 与高亮框亮起来，与浮层实际是否渲染无关',
-      values: { open: true }
+      hint: 'expanded=true 让 aria-expanded 与高亮框亮起来，与浮层实际是否渲染无关',
+      values: { expanded: true }
     },
     {
       id: 'id',

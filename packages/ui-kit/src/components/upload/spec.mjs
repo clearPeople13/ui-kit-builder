@@ -32,7 +32,7 @@ export default {
           "description": "limit"
         },
         {
-          "name": "drag",
+          "name": "draggable",
           "type": "boolean",
           "description": "拖拽上传"
         },
@@ -74,7 +74,7 @@ export default {
           "name": "default",
           "scope": null,
           "fallback": true,
-          "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/drag 显示图标与提示文案"
+          "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
         }
       ],
       "features": {

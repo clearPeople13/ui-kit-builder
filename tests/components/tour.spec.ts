@@ -116,15 +116,14 @@ describe('Tour 漫游式引导', () => {
     expect(action('完成')).toBeUndefined()
   })
 
-  it('点下一步抛 change 与 update:current，页脚按钮随之切换', async () => {
+  it('点下一步抛 current-change，页脚按钮随之切换', async () => {
     const wrapper = await openKit({
       steps: [{ props: { title: '甲', description: '一' } }, { props: { title: '乙', description: '二' } }]
     })
     action('下一步')!.click()
     await nextTick()
     const tour = tourOf(wrapper)
-    expect(tour.emitted('change')).toEqual([[1]])
-    expect(tour.emitted('update:current')).toEqual([[1]])
+    expect(tour.emitted('current-change')).toEqual([[1]])
     expect(textOf('.ui-tour__progress')).toBe('2 / 2')
     expect(textOf('.ui-tour__panel__title')).toBe('乙')
     expect(action('上一步')).toBeTruthy()

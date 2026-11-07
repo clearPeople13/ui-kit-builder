@@ -81,11 +81,11 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
     expect(itemNodes(wrapper)[0].attributes('tabindex')).toBe('-1')
   })
 
-  it('聚焦某项时抛出 update:currentTabStopId 与 itemFocus', async () => {
+  it('聚焦某项时抛出 update:currentTabStopId 与 item-focus', async () => {
     const wrapper = mountGroup({}, ['a', 'b'])
     await itemNodes(wrapper)[1].trigger('focusin')
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['b'])
-    expect(wrapper.emitted('itemFocus')).toBeTruthy()
+    expect(wrapper.emitted('item-focus')).toBeTruthy()
   })
 
   it('方向键在可聚焦项之间移动停靠点', async () => {
@@ -131,10 +131,10 @@ describe('RovingFocusGroup / RovingFocusItem', () => {
     expect(wrapper.emitted('update:currentTabStopId')?.at(-1)).toEqual(['b'])
   })
 
-  it('失焦时抛出 itemBlur', async () => {
+  it('失焦时抛出 item-blur', async () => {
     const wrapper = mountGroup({}, ['a', 'b'])
     await itemNodes(wrapper)[0].trigger('blur')
-    expect(wrapper.emitted('itemBlur')).toBeTruthy()
+    expect(wrapper.emitted('item-blur')).toBeTruthy()
   })
 
   it('组 class 透传共存且不影响项结构', () => {

@@ -110,8 +110,8 @@ describe('Popper 弹出层', () => {
     expect(wrapper.attributes('aria-expanded')).toBe('false')
   })
 
-  it('open / virtualTriggering 落展开态与虚拟触发属性', () => {
-    const open = mount(PopperTrigger, { props: { open: true, id: 'trigger-1' } })
+  it('expanded / virtualTriggering 落展开态与虚拟触发属性', () => {
+    const open = mount(PopperTrigger, { props: { expanded: true, id: 'trigger-1' } })
     expect(open.classes()).toContain('is-open')
     expect(open.attributes('aria-expanded')).toBe('true')
     expect(open.attributes('id')).toBe('trigger-1')

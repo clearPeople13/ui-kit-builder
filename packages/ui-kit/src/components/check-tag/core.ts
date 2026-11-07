@@ -37,7 +37,9 @@ export function createCheckTag(features: UiFeature[] = []) {
             }
             checked.value = !checked.value
             emit('change', checked.value)
-            emit('update:checked', checked.value)
+            // 双 v-model 写口收敛（NAMING.md §5）：checked 态不再是 v-model 写口，
+            // 原 update:checked 改状态事件 checked-change，主写口只有 update:modelValue（本组件无）
+            emit('checked-change', checked.value)
           }
         }
       },

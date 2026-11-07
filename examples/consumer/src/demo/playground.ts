@@ -487,7 +487,7 @@ const PREVIEW_NOTES: Record<string, string> = {
   Dialog: '以浮层渲染在预览区中央，modelValue 开关即时控制显隐。',
   Drawer: '以抽屉浮层渲染，可实时观察方向、尺寸与遮罩。',
   MessageBox: '以 MessageBox 浮层渲染，modelValue 开关即时控制显隐。',
-  Menu: '示例是三组、三层菜单（分组 → 子菜单 → 子菜单 → 菜单项）：点击子菜单标题展开，指针悬停满 showTimeout（默认 300ms）也会自动展开，悬停展开的移出 hideTimeout 后收起，点击展开的保持展开。defaultOpeneds 逐级填入可一次展开到第三级，uniqueOpened 让同层子菜单互斥，collapse 只保留顶级条目且不再响应展开，horizontal 下分组标题隐藏、子菜单浮出为面板，textColor 与 backgroundColor 会一并作用于菜单项与浮出面板。',
+  Menu: '示例是三组、三层菜单（分组 → 子菜单 → 子菜单 → 菜单项）：点击子菜单标题展开，指针悬停满 showTimeout（默认 300ms）也会自动展开，悬停展开的移出 hideTimeout 后收起，点击展开的保持展开。defaultOpeneds 逐级填入可一次展开到第三级，uniqueOpened 让同层子菜单互斥，collapsed 只保留顶级条目且不再响应展开，horizontal 下分组标题隐藏、子菜单浮出为面板，textColor 与 backgroundColor 会一并作用于菜单项与浮出面板。',
   PageHeader:
     '标题与说明分别走 title / content，正文区域走 default 插槽，右侧操作区走 extra 插槽；返回按钮属于「图标」特性：包里开启该特性时默认渲染 arrowLeft 箭头，icon 可换成其他图标名或自定义渲染函数，传空字符串则隐藏，包里未开启该特性时始终没有返回按钮；点击按钮只触发 back 事件，跳转由使用方决定。',
   Container:

@@ -246,7 +246,7 @@ describe('Upload 上传', () => {
   })
 
   it('拖拽模式给出拖拽提示并在进入时高亮', async () => {
-    const wrapper = mountUpload({ drag: true })
+    const wrapper = mountUpload({ draggable: true })
     await nextTick()
     expect(wrapper.classes()).toContain('is-drag')
     expect(wrapper.find('.ui-upload__trigger').classes()).toContain('is-drag')
@@ -258,7 +258,7 @@ describe('Upload 上传', () => {
   })
 
   it('拖入文件后按 drag 开关决定是否接收', async () => {
-    const droppable = mountUpload({ drag: true })
+    const droppable = mountUpload({ draggable: true })
     await dropFiles(droppable, [file('拖入.png')])
     expect(droppable.emitted('update:file-list')?.[0]?.[0]).toHaveLength(1)
     expect(droppable.find('.ui-upload__trigger').classes()).not.toContain('is-dragover')

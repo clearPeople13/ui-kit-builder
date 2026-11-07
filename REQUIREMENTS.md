@@ -1155,3 +1155,21 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
 - 缺陷口径：F-1…F-105（F-101 为唯一已登记存量待改项），三处文档同步为 105 条。
 
+
+## 35. 优化计划第七波：命名存量改名第二刀（G7 A25 第二刀）（分支 `refactor/20261108-naming-float`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G7 A25 第二刀 + NAMING.md §5 迁移清单。守卫（F-101）BASELINE 登记的 10 组件存量命名违规全部改完，白名单清空。三个调度 agent 均开机即失联（159 字节 transcript、零文件活动），改码由整合者执行；checkbox/check-tag 分支（`refactor/20261108-naming-vmodel`）的部分交付经审计后并入。
+
+### 35.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-106 | `packages/ui-kit/src/components/{checkbox,check-tag,focus-trap,icon,menu,message-box,popper,roving-focus-group,tooltip,tour,upload}/core.ts`、`shared/behavior.ts`、demo presets/playground | F-101 守卫 BASELINE 的 10 组件存量违规：双 v-model 写口（checkbox/message-box/tour）、DOM 焦点词外泄（focus-trap）、动词原形布尔 prop（icon/menu/upload/popper）、camelCase 事件（roving-focus-group）、裸 show/hide/open 状态事件（tooltip/menu） | 各组件独立演化期命名随意，公约（NAMING.md）第一刀只立规矩未动存量 | 全部按 §5 清单改名：checkbox/check-tag `update:checked`→`checked-change`（shared checkboxChoiceState 内部写口经 setup 边界 withCheckedChange 转译，shared 基座不动）；focus-trap `focusout`→`blur`（原生 window 监听不动）；icon `spin`→`spinning`；menu `collapse`→`collapsed`、`open`/`close`→`submenu-change`(index, opened)；message-box `update:inputValue`→`input-value-change`；popper `open`→`expanded`（原目标「收敛 modelValue；open 删除」会丢 aria-expanded 驱动源，执行修正并回写 NAMING.md，PopperContent `visible` 单显示词合法保留）；roving-focus-group `itemFocus`/`itemBlur`→kebab；tooltip `show`/`hide`→`visible-change`；tour `update:current`+`change`→`current-change`（双出口并一）；upload `drag`→`draggable`（shared/behavior 三处引用同步） |
+
+### 35.2 验证
+
+- worktree 全绿：组件层 95 文件 1609 用例（含 11 份改名组件用例同步改断言）、naming-guard 6 用例在**清空后的 BASELINE** 上通过（两向校验：新增漂移红 + 死条目红，自测用合成源证明 6 模式全会咬人）；prettier/eslint 零告警。
+- 改名清单与执行结果回写 NAMING.md §5（完成的行打勾，popper 记执行修正；剩余 visible 阵营统一、mention filterOption、close 一词两义为第三刀，需先扩守卫模式）。
+- 交叉消费方已排查：tooltip 的 show/hide 无组件内/演示台监听者；menu `collapsed` 仅 tests/spec/demo 消费；popper `expanded` 仅 playground-preview/presets-extra 消费。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-106 全部修复（无已登记存量待改项），三处文档同步为 106 条。

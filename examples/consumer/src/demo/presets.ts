@@ -1711,10 +1711,10 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       }
     },
     {
-      id: 'drag',
+      id: 'draggable',
       label: '拖拽上传',
       hint: 'drag 为 true 时触发器自带虚线拖拽区；accept 只放行图片，拖入其它类型会被静默过滤',
-      values: { drag: true, accept: 'image/*' }
+      values: { draggable: true, accept: 'image/*' }
     },
     {
       id: 'no-list',
@@ -1749,7 +1749,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       id: 'collapse',
       label: '折叠菜单',
       hint: '只保留顶级条目：分组标题与子菜单内容收起，此时点击、悬停都不展开子菜单',
-      values: { collapse: true, defaultActive: 'settings' }
+      values: { collapsed: true, defaultActive: 'settings' }
     },
     {
       id: 'active-descendant',
@@ -1817,7 +1817,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'base', label: '基础', values: { name: 'star' } },
     { id: 'large', label: '大尺寸', values: { name: 'star', size: 32 } },
     { id: 'color', label: '着色', values: { name: 'heart', color: '#e5484d' } },
-    { id: 'spin', label: '旋转', values: { name: 'loader', spin: true } }
+    { id: 'spinning', label: '旋转', values: { name: 'loader', spinning: true } }
   ],
   Space: [
     { id: 'base', label: '基础间距', values: { size: 8, wrap: true } },

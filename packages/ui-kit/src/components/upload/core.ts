@@ -8,7 +8,7 @@ const uploadBaseProps = {
   disabled: { type: Boolean },
   listType: { type: String, default: 'text' },
   limit: { type: Number },
-  drag: { type: Boolean },
+  draggable: { type: Boolean },
   showFileList: { type: Boolean, default: true },
   accept: { type: String, default: '' },
   beforeUpload: { type: Function },

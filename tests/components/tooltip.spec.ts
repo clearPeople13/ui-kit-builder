@@ -43,13 +43,13 @@ describe('Tooltip 文字提示', () => {
     expect(popper()!.getAttribute('role')).toBe('tooltip')
   })
 
-  it('悬停立即展开并抛 show 与 update:visible', async () => {
+  it('悬停立即展开并抛 visible-change 与 update:visible', async () => {
     const wrapper = mountTooltip()
     await wrapper.trigger('mouseenter')
     await nextTick()
     expect(isOpen()).toBe(true)
     expect(popper()!.querySelector('.ui-tooltip__content')!.textContent).toBe('这是一条提示')
-    expect(wrapper.emitted('show')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
     expect(wrapper.emitted('update:visible')).toEqual([[true]])
   })
 
@@ -103,7 +103,7 @@ describe('Tooltip 文字提示', () => {
     vi.advanceTimersByTime(300)
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
   })
 
   it('移入浮层会取消收起计时，移出浮层再收起', async () => {
@@ -143,7 +143,7 @@ describe('Tooltip 文字提示', () => {
     expect(wrapper.emitted('update:visible')).toEqual([[true], [false]])
     // 未展开时按 Escape 不产生额外事件
     await wrapper.trigger('keydown', { key: 'Escape' })
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')?.filter((args) => args[0] === false)).toHaveLength(1)
   })
 
   it('trigger 为 click 时点击切换，数组写法同时保留两种触发', async () => {
@@ -211,14 +211,14 @@ describe('Tooltip 文字提示', () => {
     await wrapper.trigger('click')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted()).not.toHaveProperty('show')
+    expect(wrapper.emitted()).not.toHaveProperty('visible-change')
   })
 
   it('visible 受控展开与收起，缺省回到内部状态', async () => {
     const wrapper = mountTooltip({ visible: true })
     await nextTick()
     expect(isOpen()).toBe(true)
-    expect(wrapper.emitted('show')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
     await wrapper.setProps({ visible: false })
     expect(isOpen()).toBe(false)
     await wrapper.setProps({ visible: undefined })

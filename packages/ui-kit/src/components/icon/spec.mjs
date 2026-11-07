@@ -13,7 +13,7 @@ export default {
         { name: 'name', type: 'string', default: '', description: '内置图标名，如 close / check / chevronDown' },
         { name: 'size', type: 'number | string', description: '图标尺寸，数字按 px 处理' },
         { name: 'color', type: 'string', description: '图标颜色' },
-        { name: 'spin', type: 'boolean', default: false, description: '旋转动画' },
+        { name: 'spinning', type: 'boolean', default: false, description: '旋转动画' },
         { name: 'strokeWidth', type: 'number', default: 2, description: '描边宽度' },
       ],
       features: {},

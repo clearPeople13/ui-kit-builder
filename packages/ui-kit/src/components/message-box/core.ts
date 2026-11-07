@@ -131,7 +131,7 @@ export function createMessageBox(features: UiFeature[] = []) {
                   placeholder: props.inputPlaceholder ?? '',
                   onInput: (event: Event) => {
                     const value = (event.target as HTMLInputElement).value
-                    emit('update:inputValue', value)
+                    emit('input-value-change', value)
                     inputError.value = ''
                   }
                 }),

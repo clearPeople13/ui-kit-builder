@@ -32,7 +32,7 @@ export default {
           "description": "手风琴：展开一个子菜单时自动收起其余同级子菜单"
         },
         {
-          "name": "collapse",
+          "name": "collapsed",
           "type": "boolean",
           "description": "折叠菜单：分组标题与子菜单内容整体收起，只保留顶级条目，此时点击、悬停均不展开子菜单"
         },

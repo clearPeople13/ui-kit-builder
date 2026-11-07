@@ -39,7 +39,7 @@ export function createFocusTrap(features: UiFeature[] = []) {
       name: 'UiFocusTrap',
       baseClass: 'ui-focus-trap',
       props: focusTrapBaseProps,
-      emits: ['focusout'],
+      emits: ['blur'],
       attrs: () => ({ tabindex: -1 }),
       classes: (props) => [props.trapped ? 'is-trapped' : ''],
       setup(props, { emit, root }) {
@@ -121,7 +121,7 @@ export function createFocusTrap(features: UiFeature[] = []) {
           if (nextTarget && container.contains(nextTarget)) {
             return
           }
-          emit('focusout', event)
+          emit('blur', event)
           nextTick(focusStart)
         }
 

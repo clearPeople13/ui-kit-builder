@@ -10,7 +10,7 @@ const iconBaseProps = {
   name: { type: String, default: '' },
   size: { type: [Number, String] },
   color: { type: String, default: '' },
-  spin: { type: Boolean, default: false },
+  spinning: { type: Boolean, default: false },
   strokeWidth: { type: Number, default: DEFAULT_ICON_STROKE_WIDTH }
 }
 
@@ -21,7 +21,7 @@ export function createIcon(features: UiFeature[] = []) {
       baseClass: 'ui-icon',
       props: iconBaseProps,
       tag: (props) => (props.tag as string) || 'i',
-      classes: (props) => [props.spin ? 'is-loading' : ''],
+      classes: (props) => [props.spinning ? 'is-loading' : ''],
       styles: (props) => {
         const style: Record<string, string> = {}
         const size = sizeValue(props.size)

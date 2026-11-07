@@ -168,7 +168,7 @@ describe('MessageBox', () => {
     expect(Array.from(panel()?.classList ?? [])).toContain('ui-message-box__panel--warning')
   })
 
-  it('输入模式：受控回写 update:inputValue，校验失败展示错误', async () => {
+  it('输入模式：受控回写 input-value-change，校验失败展示错误', async () => {
     const validator = vi.fn((v: string) => (v ? true : '内容不能为空'))
     const wrapper = mountBox({
       showInput: true,
@@ -183,7 +183,7 @@ describe('MessageBox', () => {
     input.value = 'abc'
     input.dispatchEvent(new Event('input', { bubbles: true }))
     await nextTick()
-    expect(wrapper.emitted('update:inputValue')?.[0]).toEqual(['abc'])
+    expect(wrapper.emitted('input-value-change')?.[0]).toEqual(['abc'])
     await click('.ui-message-box__button.is-primary')
     expect(wrapper.emitted('confirm')).toBeUndefined()
     expect(document.querySelector('.ui-message-box__input-error')?.textContent).toBe('内容不能为空')

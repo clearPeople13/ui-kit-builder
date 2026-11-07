@@ -39,7 +39,7 @@ export function createRovingFocusGroup(features: UiFeature[] = []) {
     name: 'UiRovingFocusGroup',
     inheritAttrs: false,
     props: { ...rovingFocusGroupBaseProps, ...mergeFeatureProps(features) },
-    emits: ['update:currentTabStopId', 'itemFocus', 'itemBlur'],
+    emits: ['update:currentTabStopId', 'item-focus', 'item-blur'],
     setup(props, { attrs, slots, emit }) {
       const currentTabStopId = ref<string | null>(props.currentTabStopId)
       const elements = new Map<string, HTMLElement>()
@@ -88,7 +88,7 @@ export function createRovingFocusGroup(features: UiFeature[] = []) {
         const [id, element] = target
         element.focus({ preventScroll: true })
         setCurrentTabStopId(id)
-        emit('itemFocus', id)
+        emit('item-focus', id)
       }
 
       function keydown(event: KeyboardEvent) {
@@ -125,7 +125,7 @@ export function createRovingFocusGroup(features: UiFeature[] = []) {
           const [targetId, element] = event.key === 'Home' ? items[0] : items[items.length - 1]
           element.focus({ preventScroll: true })
           setCurrentTabStopId(targetId)
-          emit('itemFocus', targetId)
+          emit('item-focus', targetId)
         }
       }
 
@@ -169,10 +169,10 @@ export function createRovingFocusGroup(features: UiFeature[] = []) {
         releaseTabStop,
         itemFocus(id, event) {
           setCurrentTabStopId(id)
-          emit('itemFocus', id, event)
+          emit('item-focus', id, event)
         },
         itemBlur(id, event) {
-          emit('itemBlur', id, event)
+          emit('item-blur', id, event)
         },
         keydown
       }

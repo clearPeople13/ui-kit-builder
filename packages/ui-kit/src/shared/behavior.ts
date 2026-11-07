@@ -1926,7 +1926,7 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
     emits: ['change', 'update:file-list'],
     classes: (props) => [
       ...stateClasses(options.baseClass, props),
-      props.drag ? 'is-drag' : '',
+      props.draggable ? 'is-drag' : '',
       `is-${String(props.listType ?? 'text')}`
     ],
     setup() {
@@ -2027,7 +2027,7 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
             h('span', { class: `${baseClass}__hint` }, '上传')
           ]
         }
-        if (props.drag) {
+        if (props.draggable) {
           return [
             renderIcon(UploadIcon, { class: `${baseClass}__trigger-icon` }),
             h('span', { class: `${baseClass}__hint` }, '将文件拖到此处，或点击上传')
@@ -2039,16 +2039,16 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
       const trigger = h(
         'label',
         {
-          class: [`${baseClass}__trigger`, props.drag ? 'is-drag' : '', state.dragging ? 'is-dragover' : ''],
+          class: [`${baseClass}__trigger`, props.draggable ? 'is-drag' : '', state.dragging ? 'is-dragover' : ''],
           onDragenter: (event: DragEvent) => {
-            if (!props.drag || props.disabled) {
+            if (!props.draggable || props.disabled) {
               return
             }
             event.preventDefault()
             state.enableDragging()
           },
           onDragover: (event: DragEvent) => {
-            if (!props.drag || props.disabled) {
+            if (!props.draggable || props.disabled) {
               return
             }
             event.preventDefault()
@@ -2060,7 +2060,7 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
           onDrop: (event: DragEvent) => {
             event.preventDefault()
             state.disableDragging()
-            if (!props.drag || props.disabled) {
+            if (!props.draggable || props.disabled) {
               return
             }
             handleFiles(Array.from(event.dataTransfer?.files ?? []))

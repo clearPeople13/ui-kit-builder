@@ -184,45 +184,19 @@ function scanAll(): Record<string, Partial<Record<PatternId, string[]>>> {
 }
 
 /**
- * 存量违规白名单（G7-A25 第一刀登记，改名由 A25 第二刀执行，见 NAMING.md §5 迁移清单）。
+ * 存量违规白名单。G7-A25 第二刀（2026-11-08）已把第一刀登记的 10 组件全部改完并清空本表：
+ * checkbox/check-tag 的 update:checked→checked-change、focus-trap 的 focusout→blur、
+ * icon spin→spinning、menu collapse→collapsed + open/close→submenu-change、
+ * message-box 的 update:inputValue→input-value-change、popper 的 open→expanded、
+ * roving-focus-group 的 itemFocus/itemBlur→kebab、tour 的 update:current→current-change、
+ * tooltip 的 show/hide→visible-change、upload drag→draggable。
  * 结构：文件 → 模式 → 命中词。扫描结果与本表必须完全一致：
  * 表外的命中是新增漂移（红）；表内但已扫不到的条目说明修复后忘了删白名单（同样红，
  * 防止白名单漂成死名单）。两个方向都会给出精确的 文件 → 模式 → 词 差异。
+ * 第三刀（NAMING.md §5 剩余行：visible 阵营统一、mention filterOption、close 一词两义）
+ * 需要先扩守卫模式，再登记新 BASELINE。
  */
-const BASELINE: Record<string, Partial<Record<PatternId, string[]>>> = {
-  'checkbox/core.ts': {
-    'dual-update-alias': ['update:modelValue', 'update:checked']
-  },
-  'focus-trap/core.ts': {
-    'event-dom-focus-leak': ['focusout']
-  },
-  'icon/core.ts': {
-    'boolean-verb-prop': ['spin']
-  },
-  'menu/core.ts': {
-    'boolean-verb-prop': ['collapse'],
-    'state-event-bare-verb': ['open']
-  },
-  'message-box/core.ts': {
-    'dual-update-alias': ['update:modelValue', 'update:inputValue']
-  },
-  'popper/core.ts': {
-    'display-drift': ['visible', 'open'],
-    'boolean-verb-prop': ['open']
-  },
-  'roving-focus-group/core.ts': {
-    'event-camel-case': ['itemFocus', 'itemBlur']
-  },
-  'tooltip/core.ts': {
-    'state-event-bare-verb': ['show', 'hide']
-  },
-  'tour/core.ts': {
-    'dual-update-alias': ['update:modelValue', 'update:current']
-  },
-  'upload/core.ts': {
-    'boolean-verb-prop': ['drag']
-  }
-}
+const BASELINE: Record<string, Partial<Record<PatternId, string[]>>> = {}
 
 function formatFindings(findings: Record<string, Partial<Record<PatternId, string[]>>>): string {
   return Object.entries(findings)

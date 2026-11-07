@@ -74,10 +74,10 @@ describe('Icon 图标', () => {
     expect(styleOf(mountIcon({ name: 'close' }))).not.toContain('color')
   })
 
-  it('spin 切换 is-loading 类名', () => {
-    expect(mountIcon({ name: 'close', spin: true }).classes()).toContain('is-loading')
+  it('spinning 切换 is-loading 类名', () => {
+    expect(mountIcon({ name: 'close', spinning: true }).classes()).toContain('is-loading')
     expect(mountIcon({ name: 'close' }).classes()).not.toContain('is-loading')
-    expect(mountIcon({ name: 'close', spin: false }).classes()).not.toContain('is-loading')
+    expect(mountIcon({ name: 'close', spinning: false }).classes()).not.toContain('is-loading')
   })
 
   it('strokeWidth 缺省为 2 落在内层 svg', () => {

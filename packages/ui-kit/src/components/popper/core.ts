@@ -137,7 +137,7 @@ const popperTriggerBaseProps = {
   virtualTriggering: { type: Boolean },
   onClick: { type: Function },
   id: { type: String },
-  open: { type: Boolean }
+  expanded: { type: Boolean }
 }
 
 export function createPopperTrigger(features: UiFeature[] = []) {
@@ -147,11 +147,11 @@ export function createPopperTrigger(features: UiFeature[] = []) {
       baseClass: 'ui-popper-trigger',
       props: popperTriggerBaseProps,
       tag: () => 'div',
-      classes: (props) => [props.open ? 'is-open' : '', props.virtualTriggering ? 'is-virtual' : ''],
+      classes: (props) => [props.expanded ? 'is-open' : '', props.virtualTriggering ? 'is-virtual' : ''],
       attrs: (props) => ({
         id: props.id,
         role: 'button',
-        'aria-expanded': Boolean(props.open),
+        'aria-expanded': Boolean(props.expanded),
         'aria-hidden': props.virtualTriggering ? 'true' : undefined,
         onClick: (event: Event) => {
           if (typeof props.onClick === 'function') {

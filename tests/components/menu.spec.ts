@@ -120,18 +120,20 @@ describe('Menu 菜单', () => {
     ])
   })
 
-  it('点击子菜单标题展开并抛 open，再点收起并抛 close', async () => {
+  it('点击子菜单标题展开并抛 submenu-change，再点收起再抛 submenu-change', async () => {
     const wrapper = mountMenu()
     await openSubMenu(wrapper, 0)
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).toContain('is-opened')
-    expect(wrapper.emitted('open')).toEqual([['s1']])
+    expect(wrapper.emitted('submenu-change')).toEqual([['s1', true]])
     expect(wrapper.text()).toContain('订单列表')
     await openSubMenu(wrapper, 0)
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).not.toContain('is-opened')
-    expect(wrapper.emitted('open')).toEqual([['s1']])
-    expect(wrapper.emitted('close')).toEqual([['s1']])
+    expect(wrapper.emitted('submenu-change')).toEqual([
+      ['s1', true],
+      ['s1', false]
+    ])
   })
 
   it('defaultOpeneds 让子菜单初始就展开', async () => {
@@ -139,7 +141,7 @@ describe('Menu 菜单', () => {
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).toContain('is-opened')
     expect(wrapper.text()).toContain('退款申请')
-    expect(wrapper.emitted('open')).toBeUndefined()
+    expect(wrapper.emitted('submenu-change')).toBeUndefined()
   })
 
   it('分组渲染标题与小节容器', async () => {
@@ -174,8 +176,11 @@ describe('Menu 菜单', () => {
       ['ui-sub-menu'],
       ['ui-sub-menu', 'is-opened']
     ])
-    expect(wrapper.emitted('open')).toEqual([['a'], ['b']])
-    expect(wrapper.emitted('close')).toEqual([['a']])
+    expect(wrapper.emitted('submenu-change')).toEqual([
+      ['a', true],
+      ['a', false],
+      ['b', true]
+    ])
   })
 
   it('非手风琴模式下多个子菜单可同时展开', async () => {
@@ -190,12 +195,12 @@ describe('Menu 菜单', () => {
       ['ui-sub-menu', 'is-opened'],
       ['ui-sub-menu', 'is-opened']
     ])
-    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.emitted('submenu-change')?.every((args) => args[1] === true)).toBe(true)
   })
 
   it('折叠态只保留顶级条目，点击与悬停都不展开子菜单', async () => {
     vi.useFakeTimers()
-    const wrapper = mountMenu({ collapse: true })
+    const wrapper = mountMenu({ collapsed: true })
     await nextTick()
     expect(wrapper.classes()).toContain('is-collapse')
     await openSubMenu(wrapper, 0)
@@ -204,7 +209,7 @@ describe('Menu 菜单', () => {
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).not.toContain('is-opened')
     expect(wrapper.text()).not.toContain('订单列表')
-    expect(wrapper.emitted('open')).toBeUndefined()
+    expect(wrapper.emitted('submenu-change')).toBeUndefined()
   })
 
   it('子菜单项被选中时父级标题带上激活标识', async () => {
@@ -226,12 +231,15 @@ describe('Menu 菜单', () => {
     vi.advanceTimersByTime(1)
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).toContain('is-opened')
-    expect(wrapper.emitted('open')).toEqual([['s1']])
+    expect(wrapper.emitted('submenu-change')).toEqual([['s1', true]])
     await sub.trigger('mouseleave')
     vi.advanceTimersByTime(300)
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).not.toContain('is-opened')
-    expect(wrapper.emitted('close')).toEqual([['s1']])
+    expect(wrapper.emitted('submenu-change')).toEqual([
+      ['s1', true],
+      ['s1', false]
+    ])
   })
 
   it('SubMenu 的 showTimeout 覆盖 Menu 的延迟', async () => {
@@ -257,7 +265,7 @@ describe('Menu 菜单', () => {
     vi.advanceTimersByTime(500)
     await nextTick()
     expect(wrapper.find('.ui-sub-menu').classes()).toContain('is-opened')
-    expect(wrapper.emitted('close')).toBeUndefined()
+    expect(wrapper.emitted('submenu-change')?.every((args) => args[1] === true)).toBe(true)
   })
 
   it('禁用的子菜单点击与悬停都不展开', async () => {

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { CheckTag } from '@ui-kit-full'
 
 /**
- * CheckTag 可选标签：内部自持 checked，点击抛 change / update:checked。
+ * CheckTag 可选标签：内部自持 checked，点击抛 change / checked-change。
  * type 只对 success / warning / danger / info 发修饰类名，primary 走基础规则。
  */
 const mountCheckTag = (props: Record<string, any> = {}, slots: Record<string, string> = {}) =>
@@ -23,18 +23,18 @@ describe('CheckTag', () => {
     expect(wrapper.find('.ui-check-tag').exists()).toBe(true)
   })
 
-  it('点击切换内部选中态并抛 change / update:checked', async () => {
+  it('点击切换内部选中态并抛 change / checked-change', async () => {
     const wrapper = mountCheckTag({}, { default: '标签' })
     await wrapper.trigger('click')
     expect(wrapper.classes()).toContain('is-checked')
     expect(wrapper.emitted('change')?.[0]).toEqual([true])
-    expect(wrapper.emitted('update:checked')?.[0]).toEqual([true])
+    expect(wrapper.emitted('checked-change')?.[0]).toEqual([true])
 
     await wrapper.trigger('click')
     expect(wrapper.classes()).not.toContain('is-checked')
     expect(wrapper.emitted('change')).toHaveLength(2)
     expect(wrapper.emitted('change')?.at(-1)).toEqual([false])
-    expect(wrapper.emitted('update:checked')?.at(-1)).toEqual([false])
+    expect(wrapper.emitted('checked-change')?.at(-1)).toEqual([false])
   })
 
   it('disabled 时点击不生效且带 is-disabled', async () => {
@@ -65,7 +65,7 @@ describe('CheckTag', () => {
     expect(wrapper.text()).toBe('')
     expect(wrapper.element.childNodes.length).toBe(1)
     await wrapper.trigger('click')
-    expect(wrapper.emitted('update:checked')?.[0]).toEqual([true])
+    expect(wrapper.emitted('checked-change')?.[0]).toEqual([true])
   })
 
   it('长文本与特殊字符内容原样渲染', () => {
@@ -91,7 +91,7 @@ describe('CheckTag', () => {
     const wrapper = mountCheckTag({}, { default: '标签' })
     await wrapper.find('.ui-check-tag').trigger('click')
     expect(wrapper.emitted('change')).toHaveLength(1)
-    expect(wrapper.emitted('update:checked')).toHaveLength(1)
+    expect(wrapper.emitted('checked-change')).toHaveLength(1)
     expect(wrapper.emitted('change')?.[0]).toEqual([true])
   })
 

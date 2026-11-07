@@ -22,11 +22,11 @@ describe('Checkbox', () => {
     expect(mount(Checkbox, { props: { checked: true } }).find('input').element.checked).toBe(true)
   })
 
-  it('勾选与取消分别抛出 update:modelValue / update:checked / change', async () => {
+  it('勾选与取消分别抛出 update:modelValue / checked-change / change', async () => {
     const wrapper = mount(Checkbox, { props: { modelValue: false } })
     await wrapper.find('input').setValue(true)
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([true])
-    expect(wrapper.emitted('update:checked')?.[0]).toEqual([true])
+    expect(wrapper.emitted('checked-change')?.[0]).toEqual([true])
     expect(wrapper.emitted('change')?.[0]).toEqual([true])
 
     const checkedWrapper = mount(Checkbox, { props: { modelValue: true } })

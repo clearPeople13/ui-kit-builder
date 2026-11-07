@@ -62,7 +62,7 @@ const menuBaseProps = {
   defaultActive: { type: String, default: '' },
   defaultOpeneds: { type: Array, default: () => [] },
   uniqueOpened: { type: Boolean },
-  collapse: { type: Boolean },
+  collapsed: { type: Boolean },
   backgroundColor: { type: String },
   textColor: { type: String },
   activeTextColor: { type: String },
@@ -105,7 +105,7 @@ export function createMenu(features: UiFeature[] = []) {
         }
 
         function setOpen(index: string, opened: boolean) {
-          if (props.collapse || opened === isOpened(index)) {
+          if (props.collapsed || opened === isOpened(index)) {
             return
           }
           const owner = owners.get(index) ?? ''
@@ -116,12 +116,12 @@ export function createMenu(features: UiFeature[] = []) {
             : openeds.value.filter((item) => item !== index)
           for (const item of openeds.value) {
             if (!next.includes(item)) {
-              emit('close', item)
+              emit('submenu-change', item, false)
             }
           }
           openeds.value = next
           if (opened) {
-            emit('open', index)
+            emit('submenu-change', index, true)
           }
         }
 
@@ -137,7 +137,7 @@ export function createMenu(features: UiFeature[] = []) {
           setOpen,
           owners,
           mode: () => props.mode,
-          collapsible: () => Boolean(props.collapse),
+          collapsible: () => Boolean(props.collapsed),
           showTimeout: () => toDelay(props.showTimeout, 300),
           hideTimeout: () => toDelay(props.hideTimeout, 300)
         })
@@ -148,7 +148,7 @@ export function createMenu(features: UiFeature[] = []) {
           }
         }
       },
-      classes: (props) => [props.mode ? `is-${props.mode}` : '', props.collapse ? 'is-collapse' : ''],
+      classes: (props) => [props.mode ? `is-${props.mode}` : '', props.collapsed ? 'is-collapse' : ''],
       styles: (props) => ({
         color: props.textColor,
         '--ui-menu-bg': props.backgroundColor,

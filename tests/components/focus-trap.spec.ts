@@ -114,7 +114,7 @@ describe('FocusTrap 焦点陷阱', () => {
     expect(activeClass()).toBe('ft-last')
   })
 
-  it('焦点移出容器时抛 focusout 并拉回起点，内部移动不抛', async () => {
+  it('焦点移出容器时抛 blur 并拉回起点，内部移动不抛', async () => {
     const wrapper = mountTrap({ trapped: true })
     await nextTick()
     const first = wrapper.find('.ft-first').element as HTMLElement
@@ -123,7 +123,7 @@ describe('FocusTrap 焦点陷阱', () => {
     const innerMove = new FocusEvent('focusout', { bubbles: true, relatedTarget: last })
     first.dispatchEvent(innerMove)
     await nextTick()
-    expect(wrapper.emitted('focusout')).toBeUndefined()
+    expect(wrapper.emitted('blur')).toBeUndefined()
 
     const outside = document.createElement('a')
     outside.href = '#'
@@ -132,7 +132,7 @@ describe('FocusTrap 焦点陷阱', () => {
     first.dispatchEvent(leave)
     await nextTick()
     await nextTick()
-    expect(wrapper.emitted('focusout')).toHaveLength(1)
+    expect(wrapper.emitted('blur')).toHaveLength(1)
     expect(activeClass()).toBe('ft-first')
   })
 
@@ -147,14 +147,14 @@ describe('FocusTrap 焦点陷阱', () => {
     const wrapper = mountTrap({ trapped: true, focusTrapEl: host })
     await nextTick()
     expect(activeClass()).toBe('ext-inside')
-    // 焦点在外部容器内，focusout 到更外部才抛
+    // 焦点在外部容器内，blur 到更外部才抛
     const outside = document.createElement('span')
     document.body.appendChild(outside)
     const leave = new FocusEvent('focusout', { bubbles: true, relatedTarget: outside })
     inside.dispatchEvent(leave)
     await nextTick()
     await nextTick()
-    expect(wrapper.emitted('focusout')).toHaveLength(1)
+    expect(wrapper.emitted('blur')).toHaveLength(1)
     host.remove()
   })
 
@@ -175,7 +175,7 @@ describe('FocusTrap 焦点陷阱', () => {
     first.dispatchEvent(leave)
     await nextTick()
     await nextTick()
-    expect(wrapper.emitted('focusout')).toBeUndefined()
+    expect(wrapper.emitted('blur')).toBeUndefined()
   })
 
   it('禁用按钮不进入可聚焦集合，容器兜底聚焦', async () => {

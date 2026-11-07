@@ -1483,7 +1483,7 @@ const RovingFocusDemo = defineComponent({
       next.order = items.map((item) => `${idOf(item)}:${item.getAttribute('tabindex') ?? '—'}`).join(' ')
       next.focus = inside ? idOf(active) || '组容器' : '不在组内'
       next.key = keyLine.value
-      next.events = `itemFocus ${focusCount.value} · itemBlur ${blurCount.value} · 最近 ${lastEvent.value}`
+      next.events = `item-focus ${focusCount.value} · item-blur ${blurCount.value} · 最近 ${lastEvent.value}`
       next.arrow = `前 ${forwardKey()} · 后 ${backwardKey()}`
       next.plain = `普通 div 组 ${host.querySelectorAll('.pg-rvg__plain-btn').length} 个可 Tab 停靠 · 组内 ${stops.length} 个`
       read.value = next
@@ -1498,13 +1498,13 @@ const RovingFocusDemo = defineComponent({
 
     function handleItemFocus(id: string) {
       focusCount.value += 1
-      lastEvent.value = `itemFocus ${id}`
+      lastEvent.value = `item-focus ${id}`
       nextTick(measure)
     }
 
     function handleItemBlur(id: string) {
       blurCount.value += 1
-      lastEvent.value = `itemBlur ${id}`
+      lastEvent.value = `item-blur ${id}`
       nextTick(measure)
     }
 
@@ -1817,9 +1817,9 @@ const PopperDemo = defineComponent({
       return values
     }
 
-    // open 决定 aria-expanded 与高亮框：场景里显式打开，或跟着浮层实际开合走
+    // expanded 决定 aria-expanded 与高亮框：场景里显式打开，或跟着浮层实际开合走
     function triggerOpen(): boolean {
-      return attrsOf('PopperTrigger').open === true || shown.value
+      return attrsOf('PopperTrigger').expanded === true || shown.value
     }
 
     function offsetOf(): { left: number; top: number } {
@@ -2042,7 +2042,7 @@ const PopperDemo = defineComponent({
         return `面板这一层同时吃 strategy 和 zIndex：position 若是 static，写上去的 left/top 与 z-index 都会被浏览器忽略（这正是之前遮挡条总能压住面板的原因）。zIndex 设成 ${POPPER_RIVAL_ZINDEX} 以上，遮挡测试才会翻过来`
       }
       if (props.focus === 'PopperTrigger') {
-        return 'PopperTrigger 只做三件事：给 role=button、把 open 变成 aria-expanded 与高亮框、把 onClick 回调接上。点它看「触发点击」计数和 aria-expanded 一起动，才算验到'
+        return 'PopperTrigger 只做三件事：给 role=button、把 expanded 变成 aria-expanded 与高亮框、把 onClick 回调接上。点它看「触发点击」计数和 aria-expanded 一起动，才算验到'
       }
       return 'Popper 是定位容器：strategy 决定坐标按谁解释，坐标由宿主算。改成「坐标按视口原点」而锚点还是 absolute，间距立刻偏出一个舞台到视口的距离 —— 这就是基准与坐标必须配对'
     }
@@ -2066,7 +2066,7 @@ const PopperDemo = defineComponent({
           ),
           h(
             props.parts.PopperTrigger,
-            { ...attrsOf('PopperTrigger'), open: triggerOpen(), ref: triggerApi, onClick: handleTriggerClick },
+            { ...attrsOf('PopperTrigger'), expanded: triggerOpen(), ref: triggerApi, onClick: handleTriggerClick },
             () => h('button', { class: 'pg-ppr__trigger-btn', type: 'button' }, '点我开合浮层')
           ),
           shown.value

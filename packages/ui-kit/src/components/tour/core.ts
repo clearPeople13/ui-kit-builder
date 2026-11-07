@@ -242,8 +242,7 @@ export function createTour(features: UiFeature[] = []) {
             return
           }
           currentIndex.value = next
-          emit('update:current', next)
-          emit('change', next)
+          emit('current-change', next)
         }
 
         function next() {
