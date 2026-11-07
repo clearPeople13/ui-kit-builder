@@ -202,6 +202,56 @@ describe('Tabs', () => {
     expect(wrapper.text()).not.toContain('内容二')
     expect(navItems(wrapper).map((item) => item.text().replace('×', ''))).toEqual(['标签一', '标签三'])
   })
+
+  // WAI-ARIA Tabs 模式：roving tabindex + 方向键循环移动焦点（自动激活）
+  describe('键盘导航', () => {
+    it('roving tabindex：仅激活页签 tabindex=0，其余 -1', async () => {
+      const wrapper = await mountTabs({ modelValue: 'a' })
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1'])
+      expect(navItems(wrapper).map((item) => item.attributes('aria-selected'))).toEqual(['true', 'false', 'false'])
+    })
+
+    it('ArrowRight 移动焦点并激活下一页签，激活后 tabindex 翻转', async () => {
+      const wrapper = await mountTabs({ modelValue: 'a' })
+      await navItems(wrapper)[0].trigger('keydown', { key: 'ArrowRight' })
+      await nextTick()
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+      expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['b'])
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['-1', '0', '-1'])
+    })
+
+    it('ArrowLeft 从首个页签循环回到末尾可用页签并跳过禁用页签', async () => {
+      const wrapper = await mountTabs({ modelValue: 'a' })
+      await navItems(wrapper)[0].trigger('keydown', { key: 'ArrowLeft' })
+      await nextTick()
+      // 页签三 disabled，循环后应停在页签二
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+      expect(wrapper.emitted('tab-change')?.[0]).toEqual(['b'])
+    })
+
+    it('Home/End 跳到首/尾可用页签并激活', async () => {
+      const wrapper = await mountTabs({ modelValue: 'b' })
+      await navItems(wrapper)[1].trigger('keydown', { key: 'Home' })
+      await nextTick()
+      expect(document.activeElement).toBe(navItems(wrapper)[0].element)
+      expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['a'])
+
+      await navItems(wrapper)[0].trigger('keydown', { key: 'End' })
+      await nextTick()
+      // 页签三 disabled，End 停在页签二
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+      expect(wrapper.emitted('update:modelValue')?.[1]).toEqual(['b'])
+    })
+
+    it('keydown 落在非页签元素上时按激活页签推导起点', async () => {
+      const wrapper = await mountTabs({ modelValue: 'a' })
+      await wrapper.find('.ui-tabs__nav').trigger('keydown', { key: 'ArrowRight' })
+      await nextTick()
+      // 从激活页签（页签一）出发，跳过禁用的页签三回到页签二
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+      expect(wrapper.emitted('update:modelValue')?.[0]).toEqual(['b'])
+    })
+  })
 })
 
 describe('TabPane', () => {

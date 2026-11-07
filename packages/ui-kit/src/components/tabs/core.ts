@@ -212,6 +212,65 @@ export function createTabs(features: UiFeature[] = []) {
           emit('edit', undefined, 'add')
         }
 
+        // 导航按钮与页签元数据按渲染顺序一一对应（含禁用项），直接共享下标
+        function visiblePaneList(): TabPaneMeta[] {
+          return panes.value.filter((item) => !isRemoved(item.name))
+        }
+
+        // WAI-ARIA Tabs 自动激活模式：方向键移动焦点即激活目标页签，与 click 行为走同一 setActive 出口
+        function activateNavTarget(index: number, items: HTMLElement[]) {
+          const pane = visiblePaneList()[index]
+          if (!pane || pane.disabled) {
+            return
+          }
+          setActive(pane.name)
+          items[index]?.focus({ preventScroll: true })
+        }
+
+        function handleNavKeydown(event: KeyboardEvent) {
+          const keys = ['ArrowLeft', 'ArrowRight', 'Home', 'End']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const nav = event.currentTarget as HTMLElement
+          const items = Array.from(nav.querySelectorAll<HTMLElement>('.ui-tabs__nav-item'))
+          const list = visiblePaneList()
+          if (!items.length || !list.length) {
+            return
+          }
+          const enabledIndex = (index: number) => index >= 0 && index < list.length && !list[index].disabled
+          const target = (event.target as HTMLElement | null)?.closest('.ui-tabs__nav-item')
+          const currentIndex = target ? items.indexOf(target as HTMLElement) : -1
+          event.preventDefault()
+          if (event.key === 'Home' || event.key === 'End') {
+            const step = event.key === 'Home' ? 1 : -1
+            const edge = event.key === 'Home' ? 0 : list.length - 1
+            // Home/End 跳到首/尾可用页签
+            for (let offset = 0; offset < list.length; offset += 1) {
+              const index = (edge + step * offset + list.length * offset) % list.length
+              if (enabledIndex(index)) {
+                activateNavTarget(index, items)
+                return
+              }
+            }
+            return
+          }
+          const step = event.key === 'ArrowRight' ? 1 : -1
+          const from =
+            currentIndex >= 0 ? currentIndex : items.findIndex((item) => item.classList.contains('is-active'))
+          if (from < 0) {
+            return
+          }
+          // 循环移动焦点并跳过禁用页签
+          for (let offset = 1; offset <= list.length; offset += 1) {
+            const index = (from + step * offset + list.length * offset) % list.length
+            if (enabledIndex(index)) {
+              activateNavTarget(index, items)
+              return
+            }
+          }
+        }
+
         provide(TABS_CONTEXT, {
           active: () => active.value,
           setActive,
@@ -227,6 +286,7 @@ export function createTabs(features: UiFeature[] = []) {
           removeTab,
           addTab,
           isRemoved,
+          handleNavKeydown,
           get editable() {
             return Boolean(props.editable || props.addable)
           },
@@ -249,7 +309,8 @@ export function createTabs(features: UiFeature[] = []) {
           'div',
           {
             class: 'ui-tabs__nav',
-            role: 'tablist'
+            role: 'tablist',
+            onKeydown: state.handleNavKeydown
           },
           [
             ...state.paneList.map((pane: TabPaneMeta) =>
@@ -259,12 +320,14 @@ export function createTabs(features: UiFeature[] = []) {
                   key: String(pane.name),
                   type: 'button',
                   role: 'tab',
+                  'aria-selected': String(state.activeName) === String(pane.name) ? 'true' : 'false',
                   class: [
                     'ui-tabs__nav-item',
                     String(state.activeName) === String(pane.name) ? 'is-active' : '',
                     pane.disabled ? 'is-disabled' : ''
                   ],
-                  tabindex: Number(props.tabindex ?? 0),
+                  // roving tabindex：仅激活页签留在 Tab 序里，其余页签只靠方向键到达（WAI-ARIA Tabs）
+                  tabindex: String(state.activeName) === String(pane.name) ? Number(props.tabindex ?? 0) : -1,
                   onClick: () => {
                     if (!pane.disabled) {
                       state.setActive(pane.name)
