@@ -1,0 +1,52 @@
+# 服务端 CI：只负责把本机的唯一门禁原样跑一遍，判定逻辑全部留在 scripts/ci.mjs。
+# 十二段结论与耗时落在 ci-report.json，无论成败都作为制品上传，失败按阶段名定位。
+name: quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node 22（缓存根与消费方两份 lockfile）
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            examples/consumer/package-lock.json
+
+      - name: 安装根依赖
+        run: npm ci
+
+      - name: 安装浏览器（Chromium 全量 / Firefox 子集）
+        run: npx playwright install --with-deps chromium firefox
+
+      - name: 首次构建（消费方的 file: 依赖需要 dist/ 产物）
+        run: npm run build:all
+
+      - name: 安装消费方依赖
+        run: npm --prefix examples/consumer ci
+
+      - name: 十二段门禁
+        run: node scripts/ci.mjs
+
+      - name: 上传门禁报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-report
+          path: ci-report.json
+          if-no-files-found: warn

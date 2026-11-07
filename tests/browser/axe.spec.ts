@@ -44,7 +44,21 @@ const WHITELIST: Record<string, Record<string, string>> = {
   tree: {}
 }
 
+/**
+ * 组件入场动画（如 `.ui-tab-pane__content` 的 180ms 淡入）会让 axe 在中间帧读到半透明文字，
+ * color-contrast 因此偶发 serious。扫描前等动画收敛到终态；封顶 500ms，避免无限动画把用例挂住。
+ */
+async function settleAnimations(page: Page) {
+  await page.evaluate(() =>
+    Promise.race([
+      Promise.all(document.getAnimations().map((animation) => animation.finished.catch(() => undefined))),
+      new Promise<void>((resolve) => setTimeout(resolve, 500))
+    ])
+  )
+}
+
 async function seriousViolations(page: Page) {
+  await settleAnimations(page)
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze()
   return result.violations
     .filter((violation) => violation.impact === 'serious' || violation.impact === 'critical')

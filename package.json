@@ -54,7 +54,7 @@
     "test:browser:run": "vitest run --config vitest.browser.config.ts",
     "snap:layout": "node scripts/update-layout-snapshot.mjs",
     "snap:pixels": "node scripts/update-pixel-snapshot.mjs",
-    "test:all": "npm test && npm run test:build && npm run test:browser && npm run test:profiles && npm run test:coverage",
+    "test:all": "node scripts/ci.mjs",
     "quality": "node scripts/ci.mjs",
     "ci": "node scripts/ci.mjs",
     "ci:fast": "node scripts/ci.mjs --fast",
