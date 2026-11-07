@@ -88,6 +88,19 @@ function pickProp(prop) {
   return picked
 }
 
+// renderedVia 是契约守卫的豁免标注，只留在 spec/dist meta 里，不上调试台
+function pickSlot(slot) {
+  const picked = {
+    name: slot.name,
+    scope: slot.scope && Object.keys(slot.scope).length ? slot.scope : null,
+    fallback: slot.fallback
+  }
+  if (slot.description) {
+    picked.description = slot.description
+  }
+  return picked
+}
+
 export async function writeDemoMeta() {
   const registry = await loadRegistry()
   const components = registry.order.map((id) => {
@@ -101,6 +114,8 @@ export async function writeDemoMeta() {
       exports: spec.exports.map((entry) => ({
         name: entry.name,
         coreProps: entry.coreProps.map(pickProp),
+        // 无 slot 声明的导出不带该键，与 dist meta.json 的 slots 段同规则（非空才出现）
+        ...(entry.slots?.length ? { slots: entry.slots.map(pickSlot) } : {}),
         features: Object.entries(entry.features ?? {}).map(([featureId, feature]) => ({
           id: featureId,
           title: feature.title,

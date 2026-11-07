@@ -240,6 +240,7 @@ function serializeRegistry(registry) {
         exports: component.exports.map((item) => ({
           name: item.name,
           coreProps: item.coreProps.map((prop) => ({ ...prop, type: normalizePropType(prop.type) })),
+          slots: item.slots ?? [],
           features: Object.entries(item.features ?? {}).map(([id, feature]) => ({
             id,
             title: feature.title,

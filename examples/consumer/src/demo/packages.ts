@@ -25,6 +25,13 @@ export interface DemoPackage {
   }
 }
 
+export interface DemoSlotMeta {
+  name: string
+  scope: Record<string, string> | null
+  fallback: boolean
+  description?: string
+}
+
 export interface DemoComponentMeta {
   id: string
   title: string
@@ -34,6 +41,7 @@ export interface DemoComponentMeta {
   exports: {
     name: string
     coreProps: { name: string; type: string; default?: unknown; description?: string }[]
+    slots?: DemoSlotMeta[]
     features: {
       id: string
       title: string

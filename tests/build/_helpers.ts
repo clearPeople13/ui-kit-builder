@@ -12,6 +12,14 @@ import { fileURLToPath } from 'node:url'
 
 export const repoRoot = path.resolve(fileURLToPath(new URL('../..', import.meta.url)))
 
+export type SlotSpec = {
+  name: string
+  scope?: Record<string, string> | null
+  fallback: boolean
+  description?: string
+  renderedVia?: string
+}
+
 export type Registry = {
   name: string
   version: string
@@ -25,6 +33,7 @@ export type Registry = {
         createExport: string
         module: string
         coreProps: Array<{ name: string; type: string }>
+        slots?: SlotSpec[]
         features?: Record<string, FeatureSpec>
       }>
     }
@@ -47,6 +56,7 @@ export type ProfileMeta = {
   components: string[]
   selection: Record<string, string[]>
   features: string[]
+  slots?: Record<string, Record<string, SlotSpec[]>>
   files: Array<{ file: string; bytes: number; gzipBytes: number }>
   jsBytes: number
   cssBytes: number

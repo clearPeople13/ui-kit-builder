@@ -486,12 +486,14 @@ function generateTypes(registry, selection) {
   }
 
   const usesComponent = allTypes.some((type) => /\bComponent\b/.test(type))
+  const usesSlots = items.some((item) => (item.export.slots ?? []).length > 0)
   const iconSelected = 'icon' in selection
   const vueTypeImports = [
     'ComponentOptionsMixin',
     ...(usesComponent || iconSelected ? ['Component'] : []),
     'ComponentPublicInstance',
-    'DefineComponent'
+    'DefineComponent',
+    ...(usesSlots ? ['VNode'] : [])
   ]
   const lines = [`import type { ${vueTypeImports.join(', ')} } from 'vue'`, '']
 
@@ -534,6 +536,25 @@ function generateTypes(registry, selection) {
 
     lines.push(`export type ${entry.name}Props = ${intersections.join(' & ')}`)
     lines.push('')
+
+    const slots = entry.slots ?? []
+    if (slots.length) {
+      // Vue slots 接口惯例：无作用域 `(): VNode[]`，有作用域带 props 形参；
+      // scope 的键是作用域属性名、值是 TS 类型串（与 coreProps 的 type 同源）
+      lines.push(`export interface ${entry.name}Slots {`)
+      for (const slot of slots) {
+        if (slot.description) {
+          lines.push(`  /** ${slot.description} */`)
+        }
+        const scopeProps = Object.entries(slot.scope ?? {})
+        const signature = scopeProps.length
+          ? `(props: { ${scopeProps.map(([key, type]) => `${typePropName(key)}: ${normalizePropType(type)}`).join('; ')} }): VNode[]`
+          : '(): VNode[]'
+        lines.push(`  ${typePropName(slot.name)}${signature}`)
+      }
+      lines.push('}')
+      lines.push('')
+    }
 
     const methods = []
     const methodNames = new Set()
@@ -633,7 +654,19 @@ export async function buildProfile({
   const outDir = customOutDir ? path.resolve(rootDir, customOutDir) : path.join(rootDir, 'dist', profileName)
   const entryFile = path.join(rootDir, '.build', profileName, 'entry.ts')
 
-  const { activeFeatures, activeComponents } = generateEntry(entryFile, registry, selection)
+  const { items, activeFeatures, activeComponents } = generateEntry(entryFile, registry, selection)
+
+  // slot 契约随产物走（A21）：meta.json 带上选中导出的 slots 声明，
+  // 下游 demo API 表与契约用例都以它对齐 dist，不回头读 spec.mjs
+  const slotsMeta = {}
+  for (const item of items) {
+    const slots = item.export.slots ?? []
+    if (!slots.length) {
+      continue
+    }
+    slotsMeta[item.componentId] ??= {}
+    slotsMeta[item.componentId][item.export.name] = slots
+  }
 
   await build({
     configFile: false,
@@ -724,6 +757,7 @@ export async function buildProfile({
     components: activeComponents,
     selection,
     features: activeFeatures,
+    ...(Object.keys(slotsMeta).length ? { slots: slotsMeta } : {}),
     files,
     jsBytes,
     cssBytes,

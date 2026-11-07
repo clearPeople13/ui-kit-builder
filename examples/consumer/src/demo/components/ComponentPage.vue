@@ -22,6 +22,13 @@ interface ApiPropRow {
   locked: boolean
 }
 
+interface ApiSlotRow {
+  name: string
+  description: string
+  scopeText: string
+  fallbackText: string
+}
+
 interface ApiSection {
   key: string
   title: string
@@ -33,6 +40,7 @@ interface ApiSection {
 interface ApiBlock {
   name: string
   sections: ApiSection[]
+  slots: ApiSlotRow[]
   methods: string[]
 }
 
@@ -73,10 +81,20 @@ const LANDMARKS = [
 ]
 
 const ANCHOR_SECTIONS = [
-  { level: 0, id: 'pg-sec-overview', title: '概览', text: 'Anchor 由导航与页内 id 目标配对，点击后滚动定位，滚动时按阈值反查当前区块。' },
+  {
+    level: 0,
+    id: 'pg-sec-overview',
+    title: '概览',
+    text: 'Anchor 由导航与页内 id 目标配对，点击后滚动定位，滚动时按阈值反查当前区块。'
+  },
   { level: 1, id: 'pg-sec-layout', title: '布局', text: '子级链接缩进显示，激活时父级链路一起点亮。' },
   { level: 1, id: 'pg-sec-theme', title: '主题', text: '配色取自 --ui-color-primary 等主题变量，随主题切换。' },
-  { level: 0, id: 'pg-sec-props', title: '属性调试', text: 'type 决定形态，bound 决定激活阈值，offset 决定定位后预留的顶部间距。' },
+  {
+    level: 0,
+    id: 'pg-sec-props',
+    title: '属性调试',
+    text: 'type 决定形态，bound 决定激活阈值，offset 决定定位后预留的顶部间距。'
+  },
   { level: 1, id: 'pg-sec-props-anchor', title: 'Anchor', text: '容器负责监听滚动、计算激活链接并向下提供上下文。' },
   { level: 1, id: 'pg-sec-props-link', title: 'AnchorLink', text: '链接负责渲染文本、拦截页内跳转并回显激活态。' },
   { level: 0, id: 'pg-sec-build', title: '构建产物', text: '滚动偏移特性只在勾选后进入产物，未包含时开关置灰锁定。' }
@@ -197,7 +215,17 @@ const apiBlocks = computed<ApiBlock[]>(() => {
         }))
       })
     }
-    return { name: exp.name, sections, methods: exp.methods ?? [] }
+    const slots: ApiSlotRow[] = (exp.slots ?? []).map((slot) => ({
+      name: slot.name,
+      description: slot.description ?? '',
+      scopeText: slot.scope
+        ? Object.entries(slot.scope)
+            .map(([key, type]) => `${key}: ${type}`)
+            .join('; ')
+        : '—',
+      fallbackText: slot.fallback ? '有' : '无'
+    }))
+    return { name: exp.name, sections, slots, methods: exp.methods ?? [] }
   })
 })
 
@@ -337,6 +365,9 @@ const tocItems = computed<TocItem[]>(() => {
     items.push({ id: apiBlockId(block.name), title: block.name, level: 1 })
     for (const sec of block.sections) {
       items.push({ id: apiSectionId(block.name, sec.key), title: sec.title, level: 2 })
+    }
+    if (block.slots.length) {
+      items.push({ id: apiSectionId(block.name, 'slots'), title: 'Slots', level: 2 })
     }
     if (block.methods.length) {
       items.push({ id: apiSectionId(block.name, 'methods'), title: 'Methods', level: 2 })
@@ -665,12 +696,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
           </button>
           <button class="cp-demo__code-btn" type="button" @click="playgroundOpen = true">在线调试</button>
           <span class="cp-demo__flex" />
-          <button
-            class="cp-demo__code-btn"
-            type="button"
-            :aria-expanded="codeOpen"
-            @click="codeOpen = !codeOpen"
-          >
+          <button class="cp-demo__code-btn" type="button" :aria-expanded="codeOpen" @click="codeOpen = !codeOpen">
             {{ codeOpen ? '收起代码' : '展开代码' }}
           </button>
         </div>
@@ -757,10 +783,41 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
             </thead>
             <tbody>
               <tr v-for="row in sec.rows" :key="row.name">
-                <td><code>{{ row.name }}</code></td>
+                <td>
+                  <code>{{ row.name }}</code>
+                </td>
                 <td>{{ row.description || '—' }}</td>
-                <td><code class="cp-api__type">{{ row.type }}</code></td>
-                <td><code>{{ row.defaultText }}</code></td>
+                <td>
+                  <code class="cp-api__type">{{ row.type }}</code>
+                </td>
+                <td>
+                  <code>{{ row.defaultText }}</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-if="block.slots.length" :id="apiSectionId(block.name, 'slots')" class="cp-api__sec">
+          <h4 class="cp-api__sec-title">Slots</h4>
+          <table class="cp-api__table">
+            <thead>
+              <tr>
+                <th>插槽名</th>
+                <th>说明</th>
+                <th>作用域</th>
+                <th>默认内容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="slot in block.slots" :key="slot.name">
+                <td>
+                  <code>{{ slot.name }}</code>
+                </td>
+                <td>{{ slot.description || '—' }}</td>
+                <td>
+                  <code class="cp-api__type">{{ slot.scopeText }}</code>
+                </td>
+                <td>{{ slot.fallbackText }}</td>
               </tr>
             </tbody>
           </table>
@@ -776,7 +833,9 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
             </thead>
             <tbody>
               <tr v-for="method in block.methods" :key="method">
-                <td><code>{{ method }}</code></td>
+                <td>
+                  <code>{{ method }}</code>
+                </td>
                 <td>—</td>
               </tr>
             </tbody>

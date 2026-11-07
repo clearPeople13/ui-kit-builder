@@ -278,7 +278,9 @@ describe('图标网关的类型开关', () => {
         'ComponentOptionsMixin',
         ...(usesType(body, 'Component') ? ['Component'] : []),
         'ComponentPublicInstance',
-        'DefineComponent'
+        'DefineComponent',
+        // slot 契约（A21）：有组件声明 slots 时 d.ts 生成 Slots 接口，VNode 按用到才引入
+        ...(usesType(body, 'VNode') ? ['VNode'] : [])
       ])
       for (const name of names) {
         expect(usesType(body, name), `导入了 ${name} 却没用到`).toBe(true)

@@ -26,6 +26,54 @@ export async function loadRegistry({ fresh = false } = {}) {
   return registryPromise
 }
 
+/**
+ * 校验单个导出的 slots 声明（A21 slot 契约层）。
+ *
+ * spec.mjs 里 slots 是唯一的"实现侧事实"（组件代码渲染什么，就声明什么），
+ * 写错字段在这里直接报出组件/导出/插槽三级定位，而不是让下游 d.ts / demo meta
+ * 生成出看不懂的产物。校验通过原样返回（不拷贝），保持 spec 对象引用透明。
+ */
+export function validateExportSlots(componentId, exportName, slots) {
+  if (slots === undefined || slots === null) {
+    return slots ?? undefined
+  }
+  const where = `组件 ${componentId} 的导出 ${exportName}`
+  if (!Array.isArray(slots)) {
+    throw new Error(`${where} 的 slots 必须是数组`)
+  }
+  const seen = new Set()
+  for (const slot of slots) {
+    if (!slot || typeof slot !== 'object' || Array.isArray(slot)) {
+      throw new Error(`${where} 的 slots 每一项都必须是对象`)
+    }
+    if (typeof slot.name !== 'string' || !slot.name.trim()) {
+      throw new Error(`${where} 存在没有名字的 slot 声明（name 必须是非空字符串）`)
+    }
+    if (seen.has(slot.name)) {
+      throw new Error(`${where} 的 slot "${slot.name}" 重复声明`)
+    }
+    seen.add(slot.name)
+    if (slot.scope != null && (typeof slot.scope !== 'object' || Array.isArray(slot.scope))) {
+      throw new Error(`${where} 的 slot "${slot.name}" 的 scope 必须是对象或 null`)
+    }
+    for (const [scopeProp, scopeType] of Object.entries(slot.scope ?? {})) {
+      if (typeof scopeType !== 'string' || !scopeType.trim()) {
+        throw new Error(`${where} 的 slot "${slot.name}" 作用域属性 ${scopeProp} 缺少类型字符串`)
+      }
+    }
+    if (typeof slot.fallback !== 'boolean') {
+      throw new Error(`${where} 的 slot "${slot.name}" 的 fallback 必须是布尔（是否有默认内容）`)
+    }
+    if (slot.description !== undefined && typeof slot.description !== 'string') {
+      throw new Error(`${where} 的 slot "${slot.name}" 的 description 必须是字符串`)
+    }
+    if (slot.renderedVia !== undefined && (typeof slot.renderedVia !== 'string' || !slot.renderedVia.trim())) {
+      throw new Error(`${where} 的 slot "${slot.name}" 的 renderedVia 必须是非空字符串（豁免说明）`)
+    }
+  }
+  return slots
+}
+
 async function readRegistry() {
   const components = {}
 
@@ -40,6 +88,12 @@ async function readRegistry() {
       continue
     }
     const spec = (await import(`${pathToFileURL(specPath).href}?v=${fs.statSync(specPath).mtimeMs}`)).default
+    if (!Array.isArray(spec.exports)) {
+      throw new Error(`组件 ${entry.name} 的 spec.mjs 缺少 exports 数组`)
+    }
+    for (const item of spec.exports) {
+      validateExportSlots(spec.id, item.name, item.slots)
+    }
     components[spec.id] = spec
   }
 
