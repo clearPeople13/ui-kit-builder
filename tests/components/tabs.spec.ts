@@ -140,7 +140,7 @@ describe('Tabs', () => {
 
   it('closable 渲染关闭按钮并移除面板', async () => {
     const wrapper = await mountTabs({ modelValue: 'a', closable: true })
-    expect(wrapper.classes()).toContain('ui-tabs--closable')
+    expect(wrapper.classes()).toContain('ui-tabs.is-closable')
     const close = wrapper.findAll('.ui-tabs__nav-close')
     expect(close).toHaveLength(2)
     // 禁用标签不给关闭按钮

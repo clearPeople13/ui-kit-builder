@@ -8,6 +8,6 @@ export const tabsClosableFeature = createClassFeature({
   },
   className: (props) =>
     props.closable || props.closeable || props.showClose || props.closeText || props.beforeClose || props.closeIcon
-      ? 'ui-tabs--closable'
+      ? 'ui-tabs.is-closable'
       : undefined
 })

@@ -68,6 +68,12 @@ describe('full 产物的 SSR hydration（renderToString + 客户端接管）', (
     expect(html).toContain('ui-tabs')
     expect(html).toContain('ui-tab-pane')
     expect(html).toContain('甲内容')
+    // F-99：页签栏由父级从 default slot 的 VNode 声明式推导，SSR 首渲即包含导航
+    expect(html.match(/ui-tabs__nav-item/g)).toHaveLength(2)
+    expect(html).toContain('role="tab"')
+    expect(html).toContain('aria-selected="true"')
+    expect(html).toContain('甲')
+    expect(html).toContain('乙')
   })
 
   it('hydrate 在同一容器上静默接管：零告警、结构不被改写', async () => {
@@ -84,10 +90,10 @@ describe('full 产物的 SSR hydration（renderToString + 客户端接管）', (
     // hydrate 不是重渲：挂载完成的那一刻，服务端 HTML 逐字原样保留
     expect(container.innerHTML).toBe(before)
 
-    // Tabs 的页签栏在子组件 setup 注册后异步补渲（SSR 阶段页签栏为空是既有行为），
-    // 等一个 tick 再核对最终结构
-    await nextTick()
+    // F-99 修复后页签栏在 SSR HTML 首渲即存在（父级从 slot VNode 声明式推导），
+    // 挂载完成时导航已就位，等一个 tick 再核对注册补渲后的最终结构
     expect(container.querySelectorAll('.ui-tabs__nav-item')).toHaveLength(2)
+    await nextTick()
     expect(container.querySelectorAll('.ui-tab-pane__content')).toHaveLength(2)
     expect(hydrationNoise(), '补渲过程同样不允许冒出控制台告警').toEqual([])
   })

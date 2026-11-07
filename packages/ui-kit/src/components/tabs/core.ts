@@ -1,4 +1,4 @@
-import type { VNodeChild } from 'vue'
+import type { VNode } from 'vue'
 import { h, onBeforeUnmount, ref, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -9,6 +9,20 @@ interface TabPaneMeta {
   label: string
   disabled: boolean
   closable: boolean
+}
+
+// F-99：标记 TabPane 组件类型，Tabs 据此从 default slot 的 VNode 声明式推导页签元数据，
+// 不再依赖子组件 setup 注册（注册晚于父级首渲，SSR 输出里页签栏为空）
+const TAB_PANE_MARKER = Symbol('ui-tab-pane')
+
+function isTabPaneVNode(vnode: unknown): vnode is VNode {
+  return (
+    typeof vnode === 'object' &&
+    vnode !== null &&
+    typeof (vnode as VNode).type === 'object' &&
+    (vnode as VNode).type !== null &&
+    Boolean(((vnode as VNode).type as unknown as Record<symbol, unknown>)[TAB_PANE_MARKER])
+  )
 }
 
 interface TabsContext {
@@ -32,7 +46,7 @@ const tabPaneBaseProps = {
 }
 
 export function createTabPane(features: UiFeature[] = []) {
-  return createUiComponent(
+  const component = createUiComponent(
     {
       name: 'UiTabPane',
       baseClass: 'ui-tab-pane',
@@ -99,6 +113,8 @@ export function createTabPane(features: UiFeature[] = []) {
     },
     features
   )
+  ;(component as unknown as Record<symbol, boolean>)[TAB_PANE_MARKER] = true
+  return component
 }
 
 const tabsBaseProps = {
@@ -120,6 +136,8 @@ export function createTabs(features: UiFeature[] = []) {
         const panes = ref<TabPaneMeta[]>([])
         const active = ref<string | number>(props.modelValue ?? props.defaultValue ?? '')
         const removed = ref<Set<string>>(new Set())
+        // 每轮渲染由 content 用 default slot 的 VNode 同步；键盘导航等渲染外路径也读这份快照
+        let slotPanes: TabPaneMeta[] = []
 
         watch(
           () => props.modelValue,
@@ -162,6 +180,32 @@ export function createTabs(features: UiFeature[] = []) {
             }
           }
           commit(name)
+        }
+
+        // F-99：从 default slot 的 VNode 声明式推导页签元数据（label/disabled/name/closable）。
+        // 子组件注册晚于父级首渲，SSR 里注册拿不到首渲，导航必须由 VNode 推导。
+        // 未命名页签就地补一个基于 slot 序号的确定性 fallback name（写回 vnode.props 副本，
+        // 子组件 setup 解析 props 时拿到同一个 name，SSR 与客户端 hydrate 输出逐字一致）。
+        function readSlotPanes(vnodes: VNode[] | null): TabPaneMeta[] {
+          const list: TabPaneMeta[] = []
+          for (const vnode of vnodes ?? []) {
+            if (!isTabPaneVNode(vnode)) {
+              continue
+            }
+            const raw = { ...((vnode.props ?? {}) as Record<string, unknown>) }
+            let name = (raw.name ?? raw.label ?? null) as string | number | null
+            if (name === null) {
+              name = `pane-${list.length}`
+              vnode.props = { ...(vnode.props ?? {}), name }
+            }
+            list.push({
+              name,
+              label: (raw.label as string) || String(name),
+              disabled: Boolean(raw.disabled),
+              closable: Boolean(raw.closable)
+            })
+          }
+          return list
         }
 
         function register(pane: TabPaneMeta) {
@@ -212,9 +256,21 @@ export function createTabs(features: UiFeature[] = []) {
           emit('edit', undefined, 'add')
         }
 
-        // 导航按钮与页签元数据按渲染顺序一一对应（含禁用项），直接共享下标
+        // 导航按钮与页签元数据按渲染顺序一一对应（含禁用项），直接共享下标。
+        // 可见列表 = slot 推导（首渲唯一来源）+ 子组件注册（hydrate 后的运行时补充），
+        // 按 name 去重（slot 推导优先），再剔除已关闭项
         function visiblePaneList(): TabPaneMeta[] {
-          return panes.value.filter((item) => !isRemoved(item.name))
+          const list: TabPaneMeta[] = []
+          const seen = new Set<string>()
+          for (const pane of [...slotPanes, ...panes.value]) {
+            const key = String(pane.name)
+            if (seen.has(key) || isRemoved(pane.name)) {
+              continue
+            }
+            seen.add(key)
+            list.push(pane)
+          }
+          return list
         }
 
         // WAI-ARIA Tabs 自动激活模式：方向键移动焦点即激活目标页签，与 click 行为走同一 setActive 出口
@@ -294,7 +350,22 @@ export function createTabs(features: UiFeature[] = []) {
             return active.value
           },
           get paneList(): TabPaneMeta[] {
-            return panes.value.filter((item) => !isRemoved(item.name))
+            return visiblePaneList()
+          },
+          // content 每轮渲染用它同步 slot 推导快照，导航与键盘导航共享同一份顺序。
+          // 未受控（无 modelValue/defaultValue）时首渲直接把激活项落到第一个页签：
+          // 在渲染期推导而非 setup 里调 slot（Vue 会对 setup 期调 slot 发告警），
+          // 服务端与客户端首帧走同一条路径，SSR 输出与 hydrate 逐字一致
+          syncSlotPanes(vnodes: VNode[] | null): TabPaneMeta[] {
+            slotPanes = readSlotPanes(vnodes)
+            const list = visiblePaneList()
+            if (active.value === '') {
+              const first = list[0]
+              if (first && first.name !== '') {
+                active.value = first.name
+              }
+            }
+            return list
           }
         }
       },
@@ -305,6 +376,10 @@ export function createTabs(features: UiFeature[] = []) {
       ],
       content: ({ props, slots, state }) => {
         const tabsClosable = Boolean(props.closable || props.editable || props.addable)
+        // 页签 VNode 只取一次：导航元数据由它声明式推导（F-99，SSR 首渲即有页签栏），
+        // 同一批 VNode 继续作为面板内容渲染，保证两侧是同一对象
+        const paneVNodes = (slots.default?.() ?? null) as VNode[] | null
+        const navPanes = state.syncSlotPanes(paneVNodes)
         const nav = h(
           'div',
           {
@@ -313,7 +388,7 @@ export function createTabs(features: UiFeature[] = []) {
             onKeydown: state.handleNavKeydown
           },
           [
-            ...state.paneList.map((pane: TabPaneMeta) =>
+            ...navPanes.map((pane: TabPaneMeta) =>
               h(
                 'button',
                 {
@@ -368,8 +443,7 @@ export function createTabs(features: UiFeature[] = []) {
               : null
           ]
         )
-        const panes: VNodeChild = slots.default?.() ?? null
-        return [nav, h('div', { class: 'ui-tabs__content' }, [panes])]
+        return [nav, h('div', { class: 'ui-tabs__content' }, [paneVNodes])]
       }
     },
     features
