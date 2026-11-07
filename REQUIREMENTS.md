@@ -498,3 +498,25 @@ B2 承接 B1 的指纹机制，把"每次门禁都像冷启动"的构建成本�
 ### 17.4 遗留说明
 
 - `--fast` 实测高于计划书的 15 秒目标，主要由 typecheck（6.8s）与四次 npm 进程启动构成；进一步压缩需要把 pre-commit 改成直接调用本地 `tsc/eslint/prettier` 二进制（计划书 B3a 的 B8 已列为后续项），本批不改，避免把门禁入口再分叉。
+
+## 18. 第九批交付（工程与测试优化 · B3a：工具链测试，分支 `feature/20261107-optimization-plan`）
+
+### 18.1 背景与范围
+
+B3a 给仓库里两块没有安全网的代码补用例（计划书 §3 的 B1、B5、B6、B10）：dev-api 从 HTTP 中间件里拆出可导出的 `createApiHandlers()`，node 直测正常 / 405 / 400 / 413 / 409 六类分支；浏览器层新增 `configurator.spec.ts`；`verify.mjs` 与 `tests/build/**` 的重叠断言逐组迁移；门禁选择器抽成纯函数并加单测。
+
+### 18.2 缺陷清单
+
+| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-79 | `scripts/dev-api.mjs` | `/api/presets` 每次返回 500，构建器打开即报错 | B2 删除模块级 `PACKAGE_LABELS` 后，`listPresets()` 仍在引用该变量 | label 改从 `profileCatalog()` 读，与构建器 / 调试台同源 |
+| F-80 | `scripts/dev-api.mjs` | POST 请求体超过 512 KB 时中间件 promise 拒绝且无人兜底，请求挂起、无响应 | `readBody()` 的 reject 直接抛出 `async` 中间件 | 中间件捕获后返回 413（`请求体过大`），estimate / build 两条路由一致 |
+| F-81 | `scripts/verify.mjs` | 2239 条断言里大量内容与 `tests/build/**` 重复，同一事实两套口径各自漂移 | verify 同时承担产物细查与运行时冒烟 | 令牌 / 前缀 / d.ts / 特性标记 / package.json 细查迁到 `tests/build`，verify 收缩为产物存在性 / 导出冒烟 / SSR 冒烟三类 |
+
+### 18.3 交付与数字
+
+- 构建器侧用例 107 → **131 条**（14 个文件）：新增 `ci-stages.spec.ts` 4 条（全量 / fast / `--stage build` / 无匹配）、`demo-meta.spec.ts` 3 条（包集合 / 体积 / 清单与 `dist/*/meta.json` 一致）、`core-css.spec.ts` 6 条（从 verify 迁出的 core CSS/JS 边界）；`dev-api.spec.ts` 4 → 14 条（405 / 413 / 409 / 名字净化 / registry / packages / presets / estimate 缓存）；`theme-tokens.spec.ts` 新增 1 条主题皮肤规则随前缀改写。
+- 浏览器层用例 65 → **70 条**（12 个文件）：新增 `configurator.spec.ts` 5 条（根入口跳转、90 个组件、选 2 个组件试算为正、构建产物清单、配置下载）；浏览器层 setup 挂上 `apiPlugin()`，原探针场景不请求接口，控制台仍归零。
+- `node scripts/verify.mjs --reuse` 断言数 2239 → **44 项**，执行内容收敛为产物存在性、`activeComponents` 导出冒烟、类型测试与 SSR 渲染冒烟。
+- 门禁仍为十二段（B10 只导出纯函数，不改 `STAGES` 条目）；`ci.mjs` 顶层执行加了入口守卫，被测试 import 时不会真的跑门禁。
+- 缺陷 F-1…F-81 全部修复；三处文档口径同步为 81 条。

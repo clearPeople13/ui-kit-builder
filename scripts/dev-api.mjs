@@ -78,6 +78,8 @@ function listPresets() {
   if (!fs.existsSync(profilesDir)) {
     return []
   }
+  // label 与构建器、调试台同源，统一从 profiles/*.json 读（F-73 的遗漏分支）
+  const labels = new Map(profileEntries().map((entry) => [entry.dirName, entry.label]))
   const presets = []
   for (const file of fs.readdirSync(profilesDir)) {
     if (!file.endsWith('.json')) {
@@ -99,7 +101,7 @@ function listPresets() {
       .filter(Boolean)
     presets.push({
       id,
-      label: PACKAGE_LABELS[id] ?? id,
+      label: labels.get(id) ?? id,
       theme: { global: themeGlobal },
       palette,
       tokens: Object.keys(themeGlobal).length
@@ -434,9 +436,17 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 POST' })
           return
         }
+        let rawBody
+        try {
+          rawBody = await readBody(request)
+        } catch (error) {
+          // 请求体超过 512 KB 时直接给 413，避免中间件 promise 悬挂
+          sendJson(response, 413, { error: error.message })
+          return
+        }
         respond(
           response,
-          handlers.estimate(await readBody(request)).catch((error) => {
+          handlers.estimate(rawBody).catch((error) => {
             return { status: 500, payload: { error: error.message } }
           })
         )
@@ -447,9 +457,16 @@ export function apiPlugin() {
           sendJson(response, 405, { error: '只支持 POST' })
           return
         }
+        let rawBody
+        try {
+          rawBody = await readBody(request)
+        } catch (error) {
+          sendJson(response, 413, { error: error.message })
+          return
+        }
         respond(
           response,
-          handlers.build(await readBody(request)).catch((error) => {
+          handlers.build(rawBody).catch((error) => {
             return { status: 500, payload: { error: error.message } }
           })
         )

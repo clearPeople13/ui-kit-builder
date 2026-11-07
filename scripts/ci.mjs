@@ -13,11 +13,13 @@
  */
 import { spawnSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 // fullScript：全量模式下已经先跑过 build:all，各层改用不带 pretest 的 run 脚本，
 // 一次门禁只构建一轮；fast 模式用指纹校验过的 verify:reuse——产物没变就秒过，
 // 源码变了自动重建，不会像裸 verify 那样每次 pre-commit 都重打 198 份包（C1）。
-const STAGES = [
+export const STAGES = [
   {
     name: 'build',
     script: 'build:all',
@@ -62,80 +64,93 @@ const STAGES = [
   { name: 'consumer', script: 'verify:consumer', desc: '消费方校验（类型、负向用例、运行时）' }
 ]
 
-const argv = process.argv.slice(2)
-const fast = argv.includes('--fast')
-const keepGoing = argv.includes('--keep-going')
-const stageFlag = argv.indexOf('--stage')
-const only = stageFlag >= 0 ? argv[stageFlag + 1] : null
-
 // build 是后续各层的产物来源，verify 是产物 / API 一致性的第一道关；
 // 这两段失败后继续跑只会拿到一串二次报错，掩盖真正原因，所以默认立即短路。
-const CRITICAL_STAGES = new Set(['build', 'verify'])
+export const CRITICAL_STAGES = new Set(['build', 'verify'])
 
-const selected = STAGES.filter(
-  (stage) =>
-    (!fast || (stage.fast && !stage.fullOnly)) && (!only || stage.name.includes(only) || stage.script.includes(only))
-)
-if (selected.length === 0) {
-  console.error(`没有匹配的阶段：--stage ${only ?? ''}`)
-  process.exit(2)
-}
-
-// 只有"全量模式且真的先跑了 build"时，后续阶段才能复用同一批产物改走 fullScript；
-// --stage 单跑或 fast 模式都没有这份保证，必须用各自会自行构建的原始脚本。
-const singleBuild = !fast && selected.some((stage) => stage.name === 'build')
-
-const results = []
-let failed = false
-let abortedBy = null
-
-// 在 npm 里跑时复用同一个 npm-cli.js（跨平台、不依赖 PATH 上的 shim）；
-// 直接被 node/钩子调起时才退回可执行文件名，Windows 上 .cmd 必须经 shell 才能起来
-const npmCli = process.env.npm_execpath
-const command = npmCli ? process.execPath : process.platform === 'win32' ? 'npm.cmd' : 'npm'
-
-for (const [index, stage] of selected.entries()) {
-  const started = Date.now()
-  const script = singleBuild && stage.fullScript ? stage.fullScript : stage.script
-  process.stdout.write(`\n── ${stage.name} · ${stage.desc}\n`)
-  const run = spawnSync(command, npmCli ? [npmCli, 'run', script] : ['run', script], {
-    stdio: 'inherit',
-    shell: !npmCli,
-    encoding: 'utf8'
-  })
-  const durationMs = Date.now() - started
-  const ok = run.status === 0
-  failed = failed || !ok
-  results.push({ stage: stage.name, script, ok, durationMs })
-  process.stdout.write(
-    `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
+/**
+ * 门禁阶段选择器：纯函数，便于直接用单元测试锁住 fast / --stage 的行为（B10）。
+ */
+export function selectStages({ fast = false, only = null } = {}) {
+  return STAGES.filter(
+    (stage) =>
+      (!fast || (stage.fast && !stage.fullOnly)) && (!only || stage.name.includes(only) || stage.script.includes(only))
   )
-  if (!ok && !keepGoing && CRITICAL_STAGES.has(stage.name)) {
-    abortedBy = stage.name
-    selected.slice(index + 1).forEach((skipped) => {
-      results.push({ stage: skipped.name, script: skipped.script, ok: false, skipped: true, durationMs: 0 })
-    })
-    process.stdout.write(`\n${stage.name} 失败，后续阶段不再执行（--keep-going 可继续）\n`)
-    break
+}
+
+function main(argv) {
+  const fast = argv.includes('--fast')
+  const keepGoing = argv.includes('--keep-going')
+  const stageFlag = argv.indexOf('--stage')
+  const only = stageFlag >= 0 ? argv[stageFlag + 1] : null
+
+  const selected = selectStages({ fast, only })
+  if (selected.length === 0) {
+    console.error(`没有匹配的阶段：--stage ${only ?? ''}`)
+    return 2
   }
+
+  // 只有"全量模式且真的先跑了 build"时，后续阶段才能复用同一批产物改走 fullScript；
+  // --stage 单跑或 fast 模式都没有这份保证，必须用各自会自行构建的原始脚本。
+  const singleBuild = !fast && selected.some((stage) => stage.name === 'build')
+
+  const results = []
+  let failed = false
+  let abortedBy = null
+
+  // 在 npm 里跑时复用同一个 npm-cli.js（跨平台、不依赖 PATH 上的 shim）；
+  // 直接被 node/钩子调起时才退回可执行文件名，Windows 上 .cmd 必须经 shell 才能起来
+  const npmCli = process.env.npm_execpath
+  const command = npmCli ? process.execPath : process.platform === 'win32' ? 'npm.cmd' : 'npm'
+
+  for (const [index, stage] of selected.entries()) {
+    const started = Date.now()
+    const script = singleBuild && stage.fullScript ? stage.fullScript : stage.script
+    process.stdout.write(`\n── ${stage.name} · ${stage.desc}\n`)
+    const run = spawnSync(command, npmCli ? [npmCli, 'run', script] : ['run', script], {
+      stdio: 'inherit',
+      shell: !npmCli,
+      encoding: 'utf8'
+    })
+    const durationMs = Date.now() - started
+    const ok = run.status === 0
+    failed = failed || !ok
+    results.push({ stage: stage.name, script, ok, durationMs })
+    process.stdout.write(
+      `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
+    )
+    if (!ok && !keepGoing && CRITICAL_STAGES.has(stage.name)) {
+      abortedBy = stage.name
+      selected.slice(index + 1).forEach((skipped) => {
+        results.push({ stage: skipped.name, script: skipped.script, ok: false, skipped: true, durationMs: 0 })
+      })
+      process.stdout.write(`\n${stage.name} 失败，后续阶段不再执行（--keep-going 可继续）\n`)
+      break
+    }
+  }
+
+  const report = {
+    generatedAt: new Date().toISOString(),
+    mode: fast ? 'fast' : only ? `stage:${only}` : 'full',
+    ok: !failed,
+    abortedBy,
+    skipped: results.filter((item) => item.skipped).map((item) => item.stage),
+    totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
+    stages: results
+  }
+  writeFileSync(new URL('../ci-report.json', import.meta.url), `${JSON.stringify(report, null, 2)}\n`)
+
+  process.stdout.write('\n阶段汇总\n')
+  for (const item of results) {
+    const mark = item.skipped ? '·' : item.ok ? '✓' : '✗'
+    const detail = item.skipped ? '未执行' : `${(item.durationMs / 1000).toFixed(1)}s`
+    process.stdout.write(`  ${mark} ${item.stage.padEnd(16)} ${detail}\n`)
+  }
+  process.stdout.write(`\n${report.ok ? '门禁通过' : '门禁失败'}，明细见 ci-report.json\n`)
+  return report.ok ? 0 : 1
 }
 
-const report = {
-  generatedAt: new Date().toISOString(),
-  mode: fast ? 'fast' : only ? `stage:${only}` : 'full',
-  ok: !failed,
-  abortedBy,
-  skipped: results.filter((item) => item.skipped).map((item) => item.stage),
-  totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
-  stages: results
+const entryUrl = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : ''
+if (entryUrl === import.meta.url) {
+  process.exit(main(process.argv.slice(2)))
 }
-writeFileSync(new URL('../ci-report.json', import.meta.url), `${JSON.stringify(report, null, 2)}\n`)
-
-process.stdout.write('\n阶段汇总\n')
-for (const item of results) {
-  const mark = item.skipped ? '·' : item.ok ? '✓' : '✗'
-  const detail = item.skipped ? '未执行' : `${(item.durationMs / 1000).toFixed(1)}s`
-  process.stdout.write(`  ${mark} ${item.stage.padEnd(16)} ${detail}\n`)
-}
-process.stdout.write(`\n${report.ok ? '门禁通过' : '门禁失败'}，明细见 ci-report.json\n`)
-process.exit(report.ok ? 0 : 1)
