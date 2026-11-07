@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto'
 import { spawn, spawnSync } from 'node:child_process'
-import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, statSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { loadDetectors } from './detectors.mjs'
 
@@ -62,7 +62,7 @@ function parseArgs(argv) {
 function usage() {
   console.log(`guardian — 常驻自检守护循环（本地分支，不推送）
 
-用法: node scripts/guardian/guardian.mjs [flags]
+用法: node tools/guardian/guardian.mjs [flags]
 
   --dir <path>            仓库根目录（默认 cwd）
   --interval <s>          变更轮询间隔（默认 15）

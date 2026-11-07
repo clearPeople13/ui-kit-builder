@@ -9,6 +9,8 @@ import { consumerPort } from '../../scripts/worktree-ports.mjs'
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 const repoDir = path.resolve(rootDir, '../..')
 const configuratorDir = path.join(repoDir, 'configurator')
+const scriptsDir = path.join(repoDir, 'scripts')
+const distDir = path.join(repoDir, 'dist')
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -74,7 +76,9 @@ export default defineConfig({
   server: {
     port: consumerPort,
     fs: {
-      allow: [rootDir, repoDir]
+      // C10：只放行消费方自身、dist 产物、构建器与共享分类清单，
+      // 不再把整个仓库（含 .git / 测试 / 草稿）暴露给 /@fs
+      allow: [rootDir, distDir, configuratorDir, scriptsDir]
     },
     watch: {
       ignored: ['**/.build/**', '**/dist/**']

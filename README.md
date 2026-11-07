@@ -16,6 +16,7 @@
 packages/ui-kit/src/      组件源码；每个组件由 spec.mjs 声明导出、属性与特性
 profiles/                 构建配置（core、full + 18 套主题）
 scripts/                  构建、元数据生成、校验等脚本
+tools/                    非门禁的本地工具（guardian 常驻巡检）
 configurator/ + index.html  可视化构建器
 examples/consumer/        组件调试台（Vite + Vue 3）
 dist/                     构建产物（每个 profile 一个包）
@@ -78,7 +79,7 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`；
 当前覆盖 95 个文件、1582 条用例（含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归），90 个组件目录无一遗漏。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
-特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约、dev-api 接口分支、demo meta 新鲜度、门禁选择器，共 131 条。
+特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约、dev-api 接口分支、demo meta 新鲜度、门禁选择器、组件分类唯一来源、版本 / license / engines 一致性，共 137 条。
 浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口；Firefox 只跑布局 / 定位 / 键盘子集），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：
 布局与几何基线（`npm run snap:layout` 录入）、像素基线（`npm run snap:pixels` 录入）、浮层定位与滚动跟随、拖拽、键盘可达性、真实点击，以及"控制台告警归零"、`time-picker.scene.spec.ts` 的 7 条真实操作序列、构建器 UI（入口跳转 / 组件数 / 试算 / 构建产物 / 配置下载）、`core` / `antd` / `chinese` 裁剪产物冒烟、375×812 窄屏，以及 6 个场景的 axe wcag2a/aa 审计（serious / critical 白名单带理由），共 83 条。
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架，共 142 条。

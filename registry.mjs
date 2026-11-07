@@ -4,6 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 const rootDir = path.resolve(fileURLToPath(new URL('.', import.meta.url)))
 const componentsDir = path.join(rootDir, 'packages/ui-kit/src/components')
+const rootPackage = JSON.parse(fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'))
 
 let registryPromise = null
 
@@ -44,7 +45,8 @@ async function readRegistry() {
 
   return {
     name: '@demo/ui-kit',
-    version: '0.3.0',
+    // 版本只有 package.json 一处事实源，产物 package.json 随 registry.version 走（A8）
+    version: rootPackage.version,
     components,
     order: Object.keys(components).sort((left, right) => {
       return (components[left].order ?? 999) - (components[right].order ?? 999) || left.localeCompare(right)

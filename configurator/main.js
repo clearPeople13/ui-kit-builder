@@ -1,79 +1,61 @@
 import { createApp, h } from 'vue'
-
-const CATEGORIES = [
-  {
-    id: 'basic',
-    title: '基础元件',
-    hint: '图标、按钮、文字、标签',
-    ids: ['icon', 'button', 'link', 'text', 'space', 'divider', 'tag', 'badge', 'check-tag'],
-  },
-  {
-    id: 'layout',
-    title: '布局与容器',
-    hint: '栅格、容器、滚动、虚拟列表',
-    ids: ['container', 'row', 'col', 'splitter', 'affix', 'backtop', 'scrollbar', 'virtual-list'],
-  },
-  {
-    id: 'form',
-    title: '表单输入',
-    hint: '输入、选择、日期、上传',
-    ids: [
-      'autocomplete', 'cascader', 'cascader-panel', 'checkbox', 'color-picker', 'color-picker-panel',
-      'date-picker', 'date-picker-panel', 'form', 'input', 'input-number', 'input-otp', 'input-tag',
-      'mention', 'radio', 'rate', 'select', 'select-v2', 'slider', 'switch', 'time-picker',
-      'time-select', 'transfer', 'tree-select', 'upload',
-    ],
-  },
-  {
-    id: 'data',
-    title: '数据展示',
-    hint: '表格、卡片、树、进度',
-    ids: [
-      'avatar', 'calendar', 'card', 'carousel', 'collapse', 'collection', 'descriptions', 'empty',
-      'image', 'image-viewer', 'pagination', 'progress', 'result', 'skeleton', 'statistic', 'table',
-      'timeline', 'tree', 'tree-v2', 'watermark', 'countdown',
-    ],
-  },
-  {
-    id: 'nav',
-    title: '导航',
-    hint: '菜单、标签页、步骤、面包屑',
-    ids: ['anchor', 'breadcrumb', 'dropdown', 'menu', 'page-header', 'segmented', 'steps', 'tabs'],
-  },
-  {
-    id: 'feedback',
-    title: '反馈提示',
-    hint: '弹窗、消息、加载、引导',
-    ids: ['alert', 'dialog', 'drawer', 'loading', 'message', 'message-box', 'notification', 'overlay', 'tour'],
-  },
-  {
-    id: 'overlay',
-    title: '浮层与内部工具',
-    hint: '气泡、下拉根、焦点管理',
-    ids: [
-      'popconfirm', 'popover', 'popper', 'tooltip', 'focus-trap', 'roving-focus-group', 'slot',
-      'config-provider', 'collapse-transition', 'infinite-scroll',
-    ],
-  },
-]
+// 分类清单与调试台同源（C5）：脚本侧生成 meta.json，构建器直接复用同一份 ids
+import { CATEGORY_GROUPS as CATEGORIES } from '../scripts/demo-categories.mjs'
 
 const MINIMAL_IDS = [
-  'icon', 'button', 'input', 'input-number', 'text', 'space', 'form', 'checkbox', 'radio', 'switch',
-  'select', 'tag', 'divider', 'message', 'dialog', 'tooltip',
+  'icon',
+  'button',
+  'input',
+  'input-number',
+  'text',
+  'space',
+  'form',
+  'checkbox',
+  'radio',
+  'switch',
+  'select',
+  'tag',
+  'divider',
+  'message',
+  'dialog',
+  'tooltip'
 ]
 
 const COMMON_IDS = [
   ...MINIMAL_IDS,
-  'avatar', 'card', 'table', 'tabs', 'menu', 'breadcrumb', 'dropdown', 'pagination', 'alert', 'drawer',
-  'popover', 'popconfirm', 'upload', 'date-picker', 'time-picker', 'steps', 'progress', 'skeleton',
-  'empty', 'result', 'loading', 'notification', 'autocomplete', 'slider', 'badge', 'segmented',
+  'avatar',
+  'card',
+  'table',
+  'tabs',
+  'menu',
+  'breadcrumb',
+  'dropdown',
+  'pagination',
+  'alert',
+  'drawer',
+  'popover',
+  'popconfirm',
+  'upload',
+  'date-picker',
+  'time-picker',
+  'steps',
+  'progress',
+  'skeleton',
+  'empty',
+  'result',
+  'loading',
+  'notification',
+  'autocomplete',
+  'slider',
+  'badge',
+  'segmented'
 ]
 
 const PRESETS = [
   { id: 'minimal', title: '最小组件集', ids: MINIMAL_IDS },
   { id: 'common', title: '常用组合', ids: COMMON_IDS },
   { id: 'all', title: '全部组件', ids: null },
-  { id: 'none', title: '全不选', ids: [] },
+  { id: 'none', title: '全不选', ids: [] }
 ]
 
 const GLOBAL_GROUPS = [
@@ -81,52 +63,73 @@ const GLOBAL_GROUPS = [
     id: 'color',
     title: '品牌与状态色',
     hint: '主色、状态色与渐变',
-    match: token => token.startsWith('color-') || token.startsWith('gradient-'),
+    match: (token) => token.startsWith('color-') || token.startsWith('gradient-')
   },
-  { id: 'text', title: '文字颜色', hint: '正文、次要说明、占位文字', match: token => token.startsWith('text-color-') },
+  {
+    id: 'text',
+    title: '文字颜色',
+    hint: '正文、次要说明、占位文字',
+    match: (token) => token.startsWith('text-color-')
+  },
   {
     id: 'surface',
     title: '背景与边框',
     hint: '页面底色、卡片、分割线',
-    match: token => token === 'bg-color'
-      || token.startsWith('bg-color-')
-      || token.startsWith('fill-color')
-      || token.startsWith('border-color'),
+    match: (token) =>
+      token === 'bg-color' ||
+      token.startsWith('bg-color-') ||
+      token.startsWith('fill-color') ||
+      token.startsWith('border-color')
   },
-  { id: 'radius', title: '圆角', hint: '按钮、输入框、卡片', match: token => token.startsWith('radius-') },
+  { id: 'radius', title: '圆角', hint: '按钮、输入框、卡片', match: (token) => token.startsWith('radius-') },
   {
     id: 'font',
     title: '字体与字重',
     hint: '字号、字体、字重与字距',
-    match: token => token.startsWith('font-size-')
-      || token.startsWith('font-family')
-      || token.startsWith('font-weight-')
-      || token === 'font-smoothing'
-      || token === 'letter-spacing',
+    match: (token) =>
+      token.startsWith('font-size-') ||
+      token.startsWith('font-family') ||
+      token.startsWith('font-weight-') ||
+      token === 'font-smoothing' ||
+      token === 'letter-spacing'
   },
-  { id: 'shadow', title: '阴影', hint: '卡片、浮层的投影', match: token => token.startsWith('shadow-') },
-  { id: 'scrollbar', title: '页面滚动条', hint: '浏览器与画布滚动条', match: token => token.startsWith('scrollbar-') },
-  { id: 'interaction', title: '交互与焦点', hint: '键盘焦点环与强调描边', match: token => token.startsWith('focus-ring') },
+  { id: 'shadow', title: '阴影', hint: '卡片、浮层的投影', match: (token) => token.startsWith('shadow-') },
+  {
+    id: 'scrollbar',
+    title: '页面滚动条',
+    hint: '浏览器与画布滚动条',
+    match: (token) => token.startsWith('scrollbar-')
+  },
+  {
+    id: 'interaction',
+    title: '交互与焦点',
+    hint: '键盘焦点环与强调描边',
+    match: (token) => token.startsWith('focus-ring')
+  },
   {
     id: 'overlay',
     title: '浮层与遮罩',
     hint: '浮层最大高度、面板内边距、遮罩',
-    match: token => token.startsWith('floating-panel-') || token === 'panel-padding' || token === 'mask-color',
-  },
+    match: (token) => token.startsWith('floating-panel-') || token === 'panel-padding' || token === 'mask-color'
+  }
 ]
 
 // 组件 CSS 里存在不在组件 id 内的令牌前缀，归组时映射回组件
 const TOKEN_PREFIX_ALIASES = [
   ['sub-menu-', 'menu'],
-  ['step-', 'steps'],
+  ['step-', 'steps']
 ]
 
 function componentFamily(token) {
   for (const id of state.tokenPrefixes) {
-    if (token.startsWith(`${id}-`)) {return id}
+    if (token.startsWith(`${id}-`)) {
+      return id
+    }
   }
   for (const [prefix, id] of TOKEN_PREFIX_ALIASES) {
-    if (token.startsWith(prefix)) {return id}
+    if (token.startsWith(prefix)) {
+      return id
+    }
   }
   return ''
 }
@@ -164,7 +167,7 @@ const TOKEN_LABELS = {
   'scrollbar-thumb': '滑块',
   'scrollbar-thumb-hover': '滑块悬停',
   'scrollbar-track': '轨道',
-  'floating-panel-max-height': '浮层最大高度',
+  'floating-panel-max-height': '浮层最大高度'
 }
 
 const COMPONENT_TOKEN_LABELS = {
@@ -188,7 +191,7 @@ const COMPONENT_TOKEN_LABELS = {
   'bar-bg': '分隔条背景',
   'bar-grip': '拖拽点',
   'bar-line': '分隔线',
-  'dot-color': '圆点颜色',
+  'dot-color': '圆点颜色'
 }
 
 const PREVIEW_STYLE = `
@@ -222,7 +225,7 @@ const state = {
   // 上次预设填充的变量名集合，切换预设时只回收这些项，保留用户手工覆盖
   presetKeys: new Set(),
   themeOnlyModified: false,
-  preview: null,
+  preview: null
 }
 
 let isBuilding = false
@@ -298,7 +301,7 @@ const elements = {
   themeFilterModified: document.querySelector('#theme-filter-modified'),
   themeErrors: document.querySelector('#theme-errors'),
   themeErrorsText: document.querySelector('#theme-errors-text'),
-  themeErrorsJump: document.querySelector('#theme-errors-jump'),
+  themeErrorsJump: document.querySelector('#theme-errors-jump')
 }
 
 /* ---------- 数据 ---------- */
@@ -306,13 +309,17 @@ const elements = {
 function createEntry(component) {
   const features = new Map()
   for (const item of component.exports) {
-    for (const feature of item.features) {features.set(feature.id, feature)}
+    for (const feature of item.features) {
+      features.set(feature.id, feature)
+    }
   }
 
   const dependents = new Map()
   for (const feature of features.values()) {
     for (const dependency of feature.requires) {
-      if (!dependents.has(dependency)) {dependents.set(dependency, [])}
+      if (!dependents.has(dependency)) {
+        dependents.set(dependency, [])
+      }
       dependents.get(dependency).push(feature.id)
     }
   }
@@ -320,7 +327,9 @@ function createEntry(component) {
   const coreProps = new Map()
   for (const item of component.exports) {
     for (const prop of item.coreProps) {
-      if (!coreProps.has(prop.name)) {coreProps.set(prop.name, prop)}
+      if (!coreProps.has(prop.name)) {
+        coreProps.set(prop.name, prop)
+      }
     }
   }
 
@@ -338,54 +347,63 @@ function createEntry(component) {
     selected: new Set(),
     nodes: null,
     searchFields,
-    haystack: searchFields.map(field => field.text).join(' ').toLowerCase(),
-    nameHaystack: [
-      component.id,
-      component.title,
-      ...component.exports.map(item => item.name),
-    ].join(' ').toLowerCase(),
+    haystack: searchFields
+      .map((field) => field.text)
+      .join(' ')
+      .toLowerCase(),
+    nameHaystack: [component.id, component.title, ...component.exports.map((item) => item.name)].join(' ').toLowerCase()
   }
 }
 
 function buildSearchFields(component, coreProps, features, vars) {
   return [
     { label: '组件名', text: `${component.id} ${component.title}` },
-    { label: '导出名', text: component.exports.map(item => item.name).join(' ') },
+    { label: '导出名', text: component.exports.map((item) => item.name).join(' ') },
     { label: '属性', text: [...coreProps.keys()].join(' ') },
-    { label: '样式变量', text: vars.flatMap(token => [token.var, token.token]).join(' ') },
+    { label: '样式变量', text: vars.flatMap((token) => [token.var, token.token]).join(' ') },
     {
       label: '功能',
-      text: features.flatMap(feature => [
-        feature.id,
-        feature.title,
-        feature.description,
-        ...feature.props.map(prop => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
-        ...(feature.methods ?? []).flatMap(method => [method.name, method.signature, method.description ?? '']),
-      ]).join(' '),
-    },
-  ].filter(field => field.text)
+      text: features
+        .flatMap((feature) => [
+          feature.id,
+          feature.title,
+          feature.description,
+          ...feature.props.map((prop) => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
+          ...(feature.methods ?? []).flatMap((method) => [method.name, method.signature, method.description ?? ''])
+        ])
+        .join(' ')
+    }
+  ].filter((field) => field.text)
 }
 
 function buildGroups() {
-  return CATEGORIES.map(category => ({
+  return CATEGORIES.map((category) => ({
     ...category,
-    entries: category.ids.map(id => state.components.get(id)).filter(Boolean),
+    entries: category.ids.map((id) => state.components.get(id)).filter(Boolean),
     node: null,
     countNode: null,
-    toggleNode: null,
+    toggleNode: null
   }))
 }
 
 function addWithDependencies(entry, featureId) {
-  if (entry.selected.has(featureId)) {return}
+  if (entry.selected.has(featureId)) {
+    return
+  }
   const feature = entry.features.get(featureId)
-  if (!feature) {return}
-  for (const dependency of feature.requires) {addWithDependencies(entry, dependency)}
+  if (!feature) {
+    return
+  }
+  for (const dependency of feature.requires) {
+    addWithDependencies(entry, dependency)
+  }
   entry.selected.add(featureId)
 }
 
 function removeWithDependents(entry, featureId) {
-  if (!entry.selected.has(featureId)) {return}
+  if (!entry.selected.has(featureId)) {
+    return
+  }
   entry.selected.delete(featureId)
   for (const dependent of entry.dependents.get(featureId) ?? []) {
     removeWithDependents(entry, dependent)
@@ -395,11 +413,17 @@ function removeWithDependents(entry, featureId) {
 // 依赖级联新勾选的功能卡闪一下，让用户看见"自动带上了前置项"
 function flashAddedFeatures(entry, before) {
   const grid = entry.nodes.featureGroup?.querySelector('.feature-grid')
-  if (!grid) {return}
+  if (!grid) {
+    return
+  }
   for (const featureId of entry.selected) {
-    if (before.has(featureId)) {continue}
+    if (before.has(featureId)) {
+      continue
+    }
     const card = grid.querySelector(`[data-feature="${featureId}"]`)
-    if (!card) {continue}
+    if (!card) {
+      continue
+    }
     card.classList.add('is-dep-flash')
     window.setTimeout(() => card.classList.remove('is-dep-flash'), 1200)
   }
@@ -409,8 +433,12 @@ function flashAddedFeatures(entry, before) {
 
 function createElement(tag, className, text) {
   const node = document.createElement(tag)
-  if (className) {node.className = className}
-  if (text !== undefined) {node.textContent = text}
+  if (className) {
+    node.className = className
+  }
+  if (text !== undefined) {
+    node.textContent = text
+  }
   return node
 }
 
@@ -429,7 +457,9 @@ function showToast(message, type = 'info') {
   const id = ++toastSeq
   toast.dataset.toast = String(id)
   container.append(toast)
-  while (container.children.length > 3) {container.firstElementChild.remove()}
+  while (container.children.length > 3) {
+    container.firstElementChild.remove()
+  }
   window.setTimeout(() => {
     toast.classList.add('is-leaving')
     window.setTimeout(() => toast.remove(), 250)
@@ -493,14 +523,15 @@ function syncStepGates() {
 }
 
 function gateNextLink(event) {
-  if (event.currentTarget.classList.contains('is-disabled')) {event.preventDefault()}
+  if (event.currentTarget.classList.contains('is-disabled')) {
+    event.preventDefault()
+  }
 }
 
 function renderPropChip(prop) {
   const chip = createElement('code', 'prop-chip', `${prop.name}: ${prop.type}`)
-  const defaultText = prop.default === undefined || prop.default === null
-    ? ''
-    : ` · 默认 ${formatDefault(prop.default)}`
+  const defaultText =
+    prop.default === undefined || prop.default === null ? '' : ` · 默认 ${formatDefault(prop.default)}`
   chip.title = `${prop.description || prop.name}${defaultText}`
   return chip
 }
@@ -512,11 +543,12 @@ function renderMethodChip(method) {
 }
 
 function formatDefault(value) {
-  if (typeof value === 'string') {return value}
+  if (typeof value === 'string') {
+    return value
+  }
   try {
     return JSON.stringify(value)
-  }
-  catch {
+  } catch {
     return String(value)
   }
 }
@@ -533,7 +565,7 @@ function buildNode(entry) {
     match: null,
     featureInputs: new Map(),
     featureGroup: null,
-    featureCount: null,
+    featureCount: null
   }
 
   const summary = createElement('summary', 'component__summary')
@@ -545,7 +577,9 @@ function buildNode(entry) {
   checkbox.addEventListener('click', (event) => event.stopPropagation())
   checkbox.addEventListener('change', () => {
     entry.enabled = checkbox.checked
-    if (!entry.enabled) {entry.selected.clear()}
+    if (!entry.enabled) {
+      entry.selected.clear()
+    }
     syncEntry(entry)
     syncCategoryDom(entry.group)
     onSelectionChanged()
@@ -556,7 +590,7 @@ function buildNode(entry) {
   const titleRow = createElement('span', 'component__title-row')
   titleRow.append(
     createElement('span', 'component__title', entry.title),
-    createElement('code', 'component__id', entry.id),
+    createElement('code', 'component__id', entry.id)
   )
   const match = createElement('span', 'component__match')
   match.hidden = true
@@ -564,11 +598,13 @@ function buildNode(entry) {
   text.append(titleRow, match)
 
   const meta = createElement('span', 'component__meta')
-  meta.append(createElement(
-    'span',
-    'component__features',
-    entry.featureList.length ? `${entry.featureList.length} 个可选功能` : '无细分功能',
-  ))
+  meta.append(
+    createElement(
+      'span',
+      'component__features',
+      entry.featureList.length ? `${entry.featureList.length} 个可选功能` : '无细分功能'
+    )
+  )
   const count = createElement('span', 'component__count')
   count.hidden = true
   entry.nodes.count = count
@@ -593,12 +629,15 @@ function buildComponentLinks(entry) {
   const themeJump = createElement(
     'button',
     'link-button',
-    entry.vars.length ? `去第 3 步改这 ${entry.vars.length} 个样式变量 →` : '去第 3 步调全局样式 →',
+    entry.vars.length ? `去第 3 步改这 ${entry.vars.length} 个样式变量 →` : '去第 3 步调全局样式 →'
   )
   themeJump.type = 'button'
   themeJump.addEventListener('click', () => {
-    if (entry.vars.length) {focusThemeScope(entry.id)}
-    else {scrollToTheme()}
+    if (entry.vars.length) {
+      focusThemeScope(entry.id)
+    } else {
+      scrollToTheme()
+    }
   })
   links.append(themeJump)
   return links
@@ -608,10 +647,12 @@ function buildCoreProps(entry) {
   const block = createElement('div', 'core-props')
   block.append(
     createElement('span', 'core-props__label', `运行时属性（${entry.coreProps.size}）`),
-    createElement('p', 'core-props__hint', '写代码时传入的 props，始终保留，不需要勾选。'),
+    createElement('p', 'core-props__hint', '写代码时传入的 props，始终保留，不需要勾选。')
   )
   const chips = createElement('span', 'core-props__chips')
-  for (const prop of entry.coreProps.values()) {chips.append(renderPropChip(prop))}
+  for (const prop of entry.coreProps.values()) {
+    chips.append(renderPropChip(prop))
+  }
   block.append(chips)
   return block
 }
@@ -620,11 +661,13 @@ function buildComponentVars(entry) {
   const block = createElement('div', 'component-vars')
   block.append(createElement('span', 'core-props__label', `样式变量（${entry.vars.length}）`))
   if (!entry.vars.length) {
-    block.append(createElement(
-      'p',
-      'component-vars__empty',
-      '这个组件没有单独的样式变量，颜色、圆角、字号都复用第 3 步的全局设置。',
-    ))
+    block.append(
+      createElement(
+        'p',
+        'component-vars__empty',
+        '这个组件没有单独的样式变量，颜色、圆角、字号都复用第 3 步的全局设置。'
+      )
+    )
     return block
   }
 
@@ -657,14 +700,14 @@ function renderList() {
     const titles = createElement('div', 'category__titles')
     titles.append(
       createElement('h3', 'category__title', group.title),
-      createElement('span', 'category__hint', group.hint),
+      createElement('span', 'category__hint', group.hint)
     )
     const meta = createElement('div', 'category__meta')
     const count = createElement('span', 'category__count')
     const toggle = createElement('button', 'link-button')
     toggle.type = 'button'
     toggle.addEventListener('click', () => {
-      const allEnabled = group.entries.every(entry => entry.enabled)
+      const allEnabled = group.entries.every((entry) => entry.enabled)
       if (allEnabled) {
         inlineConfirm(toggle, '确认全部取消？', () => toggleCategory(group))
         return
@@ -685,14 +728,18 @@ function renderList() {
     fragment.append(section)
   }
   elements.componentList.append(fragment)
-  for (const group of state.groups) {syncCategoryDom(group)}
+  for (const group of state.groups) {
+    syncCategoryDom(group)
+  }
 }
 
 function toggleCategory(group) {
-  const allEnabled = group.entries.every(entry => entry.enabled)
+  const allEnabled = group.entries.every((entry) => entry.enabled)
   for (const entry of group.entries) {
     entry.enabled = !allEnabled
-    if (!entry.enabled) {entry.selected.clear()}
+    if (!entry.enabled) {
+      entry.selected.clear()
+    }
     syncEntry(entry)
   }
   syncCategoryDom(group)
@@ -700,16 +747,17 @@ function toggleCategory(group) {
 }
 
 function syncCategoryDom(group) {
-  if (!group?.countNode) {return}
+  if (!group?.countNode) {
+    return
+  }
   const total = group.entries.length
-  const enabled = group.entries.filter(entry => entry.enabled).length
+  const enabled = group.entries.filter((entry) => entry.enabled).length
   const query = elements.search.value.trim().toLowerCase()
   if (query) {
-    const matched = group.entries.filter(entry => entry.haystack.includes(query)).length
+    const matched = group.entries.filter((entry) => entry.haystack.includes(query)).length
     group.countNode.textContent = `匹配 ${matched} · 已启用 ${enabled} / ${total}`
     group.countNode.classList.toggle('is-empty', matched === 0)
-  }
-  else {
+  } else {
     group.countNode.textContent = `已启用 ${enabled} / ${total}`
     group.countNode.classList.toggle('is-empty', enabled === 0)
   }
@@ -728,7 +776,7 @@ function renderCategoryTabs() {
     button.dataset.category = item.id
     button.append(
       createElement('span', 'category-tab__title', item.title),
-      createElement('span', 'category-tab__count', String(item.total)),
+      createElement('span', 'category-tab__count', String(item.total))
     )
     button.addEventListener('click', () => {
       state.activeCategory = item.id
@@ -755,15 +803,19 @@ function snippetAt(text, index, query) {
   return {
     before: `${start > 0 ? '…' : ''}${text.slice(start, index)}`,
     hit: text.slice(index, index + query.length),
-    after: `${text.slice(index + query.length, end)}${end < text.length ? '…' : ''}`,
+    after: `${text.slice(index + query.length, end)}${end < text.length ? '…' : ''}`
   }
 }
 
 function matchInfoFor(entry, query) {
-  if (!query) {return null}
+  if (!query) {
+    return null
+  }
   for (const field of entry.searchFields) {
     const index = field.text.toLowerCase().indexOf(query)
-    if (index !== -1) {return { label: field.label, ...snippetAt(field.text, index, query) }}
+    if (index !== -1) {
+      return { label: field.label, ...snippetAt(field.text, index, query) }
+    }
   }
   const index = entry.haystack.indexOf(query)
   return index === -1 ? null : { label: '内容', ...snippetAt(entry.haystack, index, query) }
@@ -779,7 +831,7 @@ function renderMatchHint(entry, query) {
   entry.nodes.match.replaceChildren(
     document.createTextNode(`命中${info.label}：${info.before}`),
     createElement('mark', '', info.hit),
-    document.createTextNode(info.after),
+    document.createTextNode(info.after)
   )
   entry.nodes.match.hidden = false
 }
@@ -808,7 +860,9 @@ function applySearch() {
       const matched = categoryVisible && (!query || entry.haystack.includes(query))
       entry.nodes.details.hidden = !matched
       renderMatchHint(entry, matched ? query : '')
-      if (matched) {groupVisible += 1}
+      if (matched) {
+        groupVisible += 1
+      }
     }
     group.node.hidden = groupVisible === 0
     syncCategoryDom(group)
@@ -819,28 +873,27 @@ function applySearch() {
   if (!visible && query) {
     elements.emptyHint.replaceChildren(
       document.createTextNode('没有匹配的组件。 '),
-      createStatusAction('清除搜索', clearComponentSearch),
+      createStatusAction('清除搜索', clearComponentSearch)
     )
-  }
-  else {
+  } else {
     elements.emptyHint.textContent = '没有匹配的组件。'
   }
   if (query) {
     elements.listStatus.replaceChildren(
       document.createTextNode(`匹配 ${visible} 个组件`),
-      createStatusAction(`清除搜索，查看全部 ${state.order.length} 个`, clearComponentSearch),
+      createStatusAction(`清除搜索，查看全部 ${state.order.length} 个`, clearComponentSearch)
     )
     return
   }
   if (state.activeCategory !== 'all') {
-    const group = state.groups.find(item => item.id === state.activeCategory)
+    const group = state.groups.find((item) => item.id === state.activeCategory)
     elements.listStatus.replaceChildren(
       document.createTextNode(`${group.title}：${visible} 个组件`),
       createStatusAction('查看全部组件', () => {
         state.activeCategory = 'all'
         syncCategoryTabs()
         applySearch()
-      }),
+      })
     )
     return
   }
@@ -858,15 +911,23 @@ function handleComponentSearch() {
 /* ---------- 第 1 步：预设 ---------- */
 
 function presetIds(preset) {
-  if (preset.id === 'all') {return state.order.map(entry => entry.id)}
+  if (preset.id === 'all') {
+    return state.order.map((entry) => entry.id)
+  }
   return preset.ids ?? []
 }
 
 function presetHintText(preset) {
   const count = presetIds(preset).length
-  if (preset.id === 'minimal') {return `最小组件集：${count} 个组件，能撑起一个常规表单页；功能默认不勾选。`}
-  if (preset.id === 'common') {return `常用组合：${count} 个后台常用组件；功能默认不勾选，需要时在第 2 步补。`}
-  if (preset.id === 'all') {return `全部组件：${count} 个组件都启用；已勾选的功能保持不动。`}
+  if (preset.id === 'minimal') {
+    return `最小组件集：${count} 个组件，能撑起一个常规表单页；功能默认不勾选。`
+  }
+  if (preset.id === 'common') {
+    return `常用组合：${count} 个后台常用组件；功能默认不勾选，需要时在第 2 步补。`
+  }
+  if (preset.id === 'all') {
+    return `全部组件：${count} 个组件都启用；已勾选的功能保持不动。`
+  }
   return '全不选：组件和功能都会清空。'
 }
 
@@ -878,7 +939,7 @@ function renderPresets() {
     button.dataset.preset = preset.id
     button.append(
       createElement('span', 'preset__title', preset.title),
-      createElement('span', 'preset__count', String(presetIds(preset).length)),
+      createElement('span', 'preset__count', String(presetIds(preset).length))
     )
     button.addEventListener('click', () => applyPreset(preset))
     fragment.append(button)
@@ -891,21 +952,25 @@ function applyPreset(preset) {
   const allowed = new Set(presetIds(preset))
   for (const entry of state.order) {
     entry.enabled = allowed.has(entry.id)
-    if (!entry.enabled) {entry.selected.clear()}
+    if (!entry.enabled) {
+      entry.selected.clear()
+    }
     syncEntry(entry)
   }
-  for (const group of state.groups) {syncCategoryDom(group)}
+  for (const group of state.groups) {
+    syncCategoryDom(group)
+  }
   applySearch()
   onSelectionChanged()
 }
 
 function syncPresetState() {
-  const enabledIds = state.order.filter(entry => entry.enabled).map(entry => entry.id)
+  const enabledIds = state.order.filter((entry) => entry.enabled).map((entry) => entry.id)
   const enabledSet = new Set(enabledIds)
   let matched = null
   for (const preset of PRESETS) {
     const ids = presetIds(preset)
-    if (ids.length === enabledIds.length && ids.every(id => enabledSet.has(id))) {
+    if (ids.length === enabledIds.length && ids.every((id) => enabledSet.has(id))) {
       matched = preset
       break
     }
@@ -932,9 +997,11 @@ function buildFeatureCard(entry, feature) {
     feature.id,
     feature.title,
     feature.description,
-    ...feature.props.map(prop => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
-    ...(feature.methods ?? []).flatMap(method => [method.name, method.signature, method.description ?? '']),
-  ].join(' ').toLowerCase()
+    ...feature.props.map((prop) => `${prop.name} ${prop.type} ${prop.description ?? ''}`),
+    ...(feature.methods ?? []).flatMap((method) => [method.name, method.signature, method.description ?? ''])
+  ]
+    .join(' ')
+    .toLowerCase()
 
   const label = createElement('label', 'feature-card__label')
   const input = document.createElement('input')
@@ -943,8 +1010,11 @@ function buildFeatureCard(entry, feature) {
   input.setAttribute('aria-label', `启用 ${feature.title}`)
   input.addEventListener('change', () => {
     const before = new Set(entry.selected)
-    if (input.checked) {addWithDependencies(entry, feature.id)}
-    else {removeWithDependents(entry, feature.id)}
+    if (input.checked) {
+      addWithDependencies(entry, feature.id)
+    } else {
+      removeWithDependents(entry, feature.id)
+    }
     syncEntry(entry)
     flashAddedFeatures(entry, before)
     onSelectionChanged()
@@ -954,23 +1024,29 @@ function buildFeatureCard(entry, feature) {
   const titleRow = createElement('span', 'feature-card__title-row')
   titleRow.append(
     createElement('span', 'feature-card__title', feature.title),
-    createElement('code', 'feature-card__id', feature.id),
+    createElement('code', 'feature-card__id', feature.id)
   )
   const desc = createElement('span', 'feature-card__desc', feature.description)
   const propChips = createElement('span', 'feature-card__chips')
-  for (const prop of feature.props) {propChips.append(renderPropChip(prop))}
-  for (const method of feature.methods ?? []) {propChips.append(renderMethodChip(method))}
+  for (const prop of feature.props) {
+    propChips.append(renderPropChip(prop))
+  }
+  for (const method of feature.methods ?? []) {
+    propChips.append(renderMethodChip(method))
+  }
   text.append(titleRow, desc, propChips)
 
   label.append(text, input)
   card.append(label)
 
   if (feature.requires.length) {
-    card.append(createElement(
-      'span',
-      'feature-card__requires',
-      `需要先开启 ${feature.requires.map(id => entry.features.get(id)?.title ?? id).join('、')}，会自动勾选`,
-    ))
+    card.append(
+      createElement(
+        'span',
+        'feature-card__requires',
+        `需要先开启 ${feature.requires.map((id) => entry.features.get(id)?.title ?? id).join('、')}，会自动勾选`
+      )
+    )
   }
 
   entry.nodes.featureInputs.set(feature.id, input)
@@ -987,7 +1063,7 @@ function buildFeatureGroup(entry) {
   const title = createElement('span', 'feature-group__title')
   title.append(
     createElement('span', 'feature-group__name', entry.title),
-    createElement('code', 'feature-group__id', entry.id),
+    createElement('code', 'feature-group__id', entry.id)
   )
   const side = createElement('span', 'feature-group__side')
   const count = createElement('span', 'feature-group__count')
@@ -997,7 +1073,9 @@ function buildFeatureGroup(entry) {
     event.preventDefault()
     event.stopPropagation()
     const before = new Set(entry.selected)
-    for (const feature of entry.featureList) {addWithDependencies(entry, feature.id)}
+    for (const feature of entry.featureList) {
+      addWithDependencies(entry, feature.id)
+    }
     syncEntry(entry)
     flashAddedFeatures(entry, before)
     onSelectionChanged()
@@ -1016,7 +1094,9 @@ function buildFeatureGroup(entry) {
   group.append(head)
 
   const grid = createElement('div', 'feature-grid')
-  for (const feature of entry.featureList) {grid.append(buildFeatureCard(entry, feature))}
+  for (const feature of entry.featureList) {
+    grid.append(buildFeatureCard(entry, feature))
+  }
   group.append(grid)
 
   entry.nodes.featureGroup = group
@@ -1028,7 +1108,9 @@ function buildFeatureGroup(entry) {
 function renderFeaturePanel() {
   const fragment = document.createDocumentFragment()
   for (const entry of state.order) {
-    if (!entry.featureList.length) {continue}
+    if (!entry.featureList.length) {
+      continue
+    }
     fragment.append(buildFeatureGroup(entry))
   }
   elements.featurePanel.replaceChildren(fragment)
@@ -1036,7 +1118,9 @@ function renderFeaturePanel() {
 
 function syncEntry(entry) {
   const nodes = entry.nodes
-  if (!nodes) {return}
+  if (!nodes) {
+    return
+  }
   nodes.checkbox.checked = entry.enabled
   nodes.details.classList.toggle('is-disabled', !entry.enabled)
   nodes.details.classList.toggle('is-selected', entry.selected.size > 0)
@@ -1061,8 +1145,8 @@ function syncEntry(entry) {
 
 function applyFeatureSearch() {
   const query = elements.featureSearch.value.trim().toLowerCase()
-  const enabledEntries = state.order.filter(entry => entry.enabled)
-  const groups = state.order.filter(entry => entry.enabled && entry.featureList.length)
+  const enabledEntries = state.order.filter((entry) => entry.enabled)
+  const groups = state.order.filter((entry) => entry.enabled && entry.featureList.length)
   let matched = 0
   let matchedGroups = 0
 
@@ -1073,11 +1157,17 @@ function applyFeatureSearch() {
     for (const card of group.querySelectorAll('.feature-card')) {
       const cardMatched = !query || componentMatched || card.dataset.search.includes(query)
       card.hidden = !cardMatched
-      if (cardMatched) {groupMatches += 1}
+      if (cardMatched) {
+        groupMatches += 1
+      }
     }
     group.hidden = groupMatches === 0
-    if (!group.hidden) {matchedGroups += 1}
-    if (query && groupMatches > 0) {group.open = true}
+    if (!group.hidden) {
+      matchedGroups += 1
+    }
+    if (query && groupMatches > 0) {
+      group.open = true
+    }
     matched += groupMatches
   }
 
@@ -1110,7 +1200,9 @@ function applyFeatureSearch() {
 }
 
 function focusFeatureGroup(entry) {
-  if (!entry.nodes.featureGroup) {return}
+  if (!entry.nodes.featureGroup) {
+    return
+  }
   if (!entry.enabled) {
     entry.enabled = true
     syncEntry(entry)
@@ -1132,7 +1224,9 @@ function selectionStats() {
   let components = 0
   let features = 0
   for (const entry of state.order) {
-    if (!entry.enabled) {continue}
+    if (!entry.enabled) {
+      continue
+    }
     components += 1
     features += entry.selected.size
   }
@@ -1180,7 +1274,7 @@ function indexThemeTokens() {
       scope: 'global',
       def: token.value,
       owners: token.owners ?? [],
-      always: Boolean(token.always),
+      always: Boolean(token.always)
     })
   }
   for (const [scope, tokens] of Object.entries(state.tokens.components ?? {})) {
@@ -1189,7 +1283,7 @@ function indexThemeTokens() {
         var: token.var,
         token: token.token,
         scope,
-        def: token.value,
+        def: token.value
       })
     }
   }
@@ -1201,9 +1295,15 @@ function componentEnabled(id) {
 
 // 与构建期裁剪同一口径：全局变量只要还有一个已选组件会读它，就算有效
 function isTokenActive(info) {
-  if (!info) {return false}
-  if (info.scope !== 'global') {return componentEnabled(info.scope)}
-  if (info.always) {return true}
+  if (!info) {
+    return false
+  }
+  if (info.scope !== 'global') {
+    return componentEnabled(info.scope)
+  }
+  if (info.always) {
+    return true
+  }
   if (!info.owners?.length) {
     const family = componentFamily(info.token)
     return !family || componentEnabled(family)
@@ -1218,9 +1318,11 @@ function isValidThemeValue(value) {
 
 function hexColor(value) {
   const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(value ?? '').trim())
-  if (!match) {return ''}
+  if (!match) {
+    return ''
+  }
   const hex = match[1]
-  return `#${hex.length === 3 ? [...hex].map(char => char + char).join('') : hex}`.toLowerCase()
+  return `#${hex.length === 3 ? [...hex].map((char) => char + char).join('') : hex}`.toLowerCase()
 }
 
 function rewriteVarName(name, prefix) {
@@ -1228,28 +1330,44 @@ function rewriteVarName(name, prefix) {
 }
 
 function scopeTitle(scope) {
-  if (scope === 'global') {return '全局'}
+  if (scope === 'global') {
+    return '全局'
+  }
   const entry = state.components.get(scope)
   return entry ? entry.title : scope
 }
 
 function sampleKindOf(token) {
-  if (token.kind === 'color') {return 'color'}
-  if (token.token.includes('radius')) {return 'radius'}
-  if (token.token.includes('font-size')) {return 'font-size'}
-  if (token.token.includes('shadow')) {return 'shadow'}
-  if (token.token.includes('height')) {return 'height'}
+  if (token.kind === 'color') {
+    return 'color'
+  }
+  if (token.token.includes('radius')) {
+    return 'radius'
+  }
+  if (token.token.includes('font-size')) {
+    return 'font-size'
+  }
+  if (token.token.includes('shadow')) {
+    return 'shadow'
+  }
+  if (token.token.includes('height')) {
+    return 'height'
+  }
   return ''
 }
 
 function buildVarSample(token, kind) {
-  if (!kind) {return null}
+  if (!kind) {
+    return null
+  }
   const sample = createElement('span', `var-row__sample var-row__sample--${kind}`)
-  if (kind === 'font-size') {sample.textContent = 'Aa'}
+  if (kind === 'font-size') {
+    sample.textContent = 'Aa'
+  }
   return sample
 }
 
-function buildVarRow(token, scope) {
+function buildVarRow(token) {
   const row = createElement('div', 'var-row')
   row.dataset.var = token.var
 
@@ -1257,7 +1375,7 @@ function buildVarRow(token, scope) {
   const labelRow = createElement('span', 'var-row__label-row')
   labelRow.append(
     createElement('span', 'var-row__label', tokenLabel(token.token)),
-    createElement('code', 'var-row__name', token.var),
+    createElement('code', 'var-row__name', token.var)
   )
   const defaultValue = `${token.value}${token.source === 'fallback' ? '（var() 兜底）' : ''}`
   const meta = createElement('span', 'var-row__meta', `默认 ${defaultValue}`)
@@ -1267,7 +1385,9 @@ function buildVarRow(token, scope) {
   const fields = createElement('span', 'var-row__fields')
   const kind = sampleKindOf(token)
   const sample = buildVarSample(token, kind)
-  if (sample) {fields.append(sample)}
+  if (sample) {
+    fields.append(sample)
+  }
 
   let colorInput = null
   if (token.kind === 'color') {
@@ -1301,13 +1421,15 @@ function buildVarRow(token, scope) {
     text: textInput,
     reset,
     sample,
-    sampleKind: kind,
+    sampleKind: kind
   })
 
   textInput.addEventListener('input', () => {
     setOverride(token.var, textInput.value)
     const hex = hexColor(textInput.value)
-    if (hex && colorInput) {colorInput.value = hex}
+    if (hex && colorInput) {
+      colorInput.value = hex
+    }
   })
   if (colorInput) {
     colorInput.addEventListener('input', () => {
@@ -1338,11 +1460,13 @@ function buildVarGroup({ key, scope, title, subtitle, tokens, open, showScope = 
   }
   summary.append(
     titleRow,
-    createElement('span', 'theme-group__meta', `${subtitle ? `${subtitle} · ` : ''}${tokens.length} 项`),
+    createElement('span', 'theme-group__meta', `${subtitle ? `${subtitle} · ` : ''}${tokens.length} 项`)
   )
 
   const list = createElement('div', 'var-list')
-  for (const token of tokens) {list.append(buildVarRow(token, scope))}
+  for (const token of tokens) {
+    list.append(buildVarRow(token))
+  }
 
   details.append(summary, list)
   return details
@@ -1355,11 +1479,10 @@ function buildCategoryGroup({ key, title, hint, tokenTotal, children }) {
 
   const summary = createElement('summary', 'theme-group__summary')
   const titleRow = createElement('span', 'theme-group__title', title)
-  if (hint) {titleRow.append(createElement('span', 'theme-group__hint', hint))}
-  summary.append(
-    titleRow,
-    createElement('span', 'theme-group__meta', `${children.length} 个组件 · ${tokenTotal} 项`),
-  )
+  if (hint) {
+    titleRow.append(createElement('span', 'theme-group__hint', hint))
+  }
+  summary.append(titleRow, createElement('span', 'theme-group__meta', `${children.length} 个组件 · ${tokenTotal} 项`))
 
   const body = createElement('div', 'theme-subgroups theme-subgroups--nested')
   body.append(...children)
@@ -1373,10 +1496,7 @@ function buildThemeSection({ key, title, hint, count, children }) {
 
   const head = createElement('div', 'theme-section__head')
   const text = createElement('div', 'theme-section__text')
-  text.append(
-    createElement('span', 'theme-section__label', title),
-    createElement('span', 'theme-section__hint', hint),
-  )
+  text.append(createElement('span', 'theme-section__label', title), createElement('span', 'theme-section__hint', hint))
   head.append(text, createElement('span', 'theme-section__count', count))
 
   const body = createElement('div', 'theme-subgroups')
@@ -1386,32 +1506,45 @@ function buildThemeSection({ key, title, hint, count, children }) {
 }
 
 function enabledComponentsKey() {
-  return state.order.filter(entry => entry.enabled).map(entry => entry.id).join(',')
+  return state.order
+    .filter((entry) => entry.enabled)
+    .map((entry) => entry.id)
+    .join(',')
 }
 
 function buildThemeBuckets({ enabled, globals, componentTokens }) {
-  const semanticGroups = GLOBAL_GROUPS.map(group => ({ ...group, tokens: [] }))
+  const semanticGroups = GLOBAL_GROUPS.map((group) => ({ ...group, tokens: [] }))
   const unmatchedGlobals = []
   for (const token of globals) {
-    const group = semanticGroups.find(item => item.match(token.token))
-    if (group) {group.tokens.push(token)}
-    else {unmatchedGlobals.push(token)}
+    const group = semanticGroups.find((item) => item.match(token.token))
+    if (group) {
+      group.tokens.push(token)
+    } else {
+      unmatchedGlobals.push(token)
+    }
   }
 
   const buckets = new Map()
   function bucketOf(id) {
-    if (!buckets.has(id)) {buckets.set(id, { id, global: [], scoped: [] })}
+    if (!buckets.has(id)) {
+      buckets.set(id, { id, global: [], scoped: [] })
+    }
     return buckets.get(id)
   }
   const familyless = []
   for (const token of unmatchedGlobals) {
     const family = componentFamily(token.token)
-    if (family) {bucketOf(family).global.push(token)}
-    else {familyless.push(token)}
+    if (family) {
+      bucketOf(family).global.push(token)
+    } else {
+      familyless.push(token)
+    }
   }
 
   for (const [id, tokens] of Object.entries(componentTokens ?? {})) {
-    if (!tokens.length || !enabled.has(id)) {continue}
+    if (!tokens.length || !enabled.has(id)) {
+      continue
+    }
     bucketOf(id).scoped.push(...tokens)
   }
 
@@ -1419,41 +1552,49 @@ function buildThemeBuckets({ enabled, globals, componentTokens }) {
 }
 
 function renderThemePanel() {
-  const enabled = new Set(state.order.filter(entry => entry.enabled).map(entry => entry.id))
+  const enabled = new Set(state.order.filter((entry) => entry.enabled).map((entry) => entry.id))
   const allGlobals = state.tokens.global ?? []
-  const globals = allGlobals.filter(token => isTokenActive(state.varIndex.get(token.var)))
+  const globals = allGlobals.filter((token) => isTokenActive(state.varIndex.get(token.var)))
   const { semanticGroups, unmatchedGlobals, buckets } = buildThemeBuckets({
     enabled,
     globals,
-    componentTokens: state.tokens.components,
+    componentTokens: state.tokens.components
   })
 
   state.themeRows.clear()
   const semanticNodes = []
   for (const group of semanticGroups) {
-    if (!group.tokens.length) {continue}
-    semanticNodes.push(buildVarGroup({
-      key: `global-${group.id}`,
-      scope: 'global',
-      title: group.title,
-      subtitle: group.hint,
-      tokens: group.tokens,
-      open: group.id === 'color' || group.id === 'radius',
-    }))
+    if (!group.tokens.length) {
+      continue
+    }
+    semanticNodes.push(
+      buildVarGroup({
+        key: `global-${group.id}`,
+        scope: 'global',
+        title: group.title,
+        subtitle: group.hint,
+        tokens: group.tokens,
+        open: group.id === 'color' || group.id === 'radius'
+      })
+    )
   }
   if (unmatchedGlobals.length) {
-    semanticNodes.push(buildVarGroup({
-      key: 'global-unmatched',
-      scope: 'global',
-      title: '未归类变量',
-      subtitle: '前缀没有对应到任何组件',
-      tokens: unmatchedGlobals,
-      open: false,
-    }))
+    semanticNodes.push(
+      buildVarGroup({
+        key: 'global-unmatched',
+        scope: 'global',
+        title: '未归类变量',
+        subtitle: '前缀没有对应到任何组件',
+        tokens: unmatchedGlobals,
+        open: false
+      })
+    )
   }
 
   let semanticTotal = 0
-  for (const group of semanticGroups) {semanticTotal += group.tokens.length}
+  for (const group of semanticGroups) {
+    semanticTotal += group.tokens.length
+  }
   semanticTotal += unmatchedGlobals.length
 
   const categoryNodes = []
@@ -1464,32 +1605,42 @@ function renderThemePanel() {
     let categoryTotal = 0
     for (const componentId of ids) {
       const bucket = buckets.get(componentId)
-      if (!bucket) {continue}
+      if (!bucket) {
+        continue
+      }
       buckets.delete(componentId)
       const tokens = [...bucket.global, ...bucket.scoped]
-      if (!tokens.length) {continue}
+      if (!tokens.length) {
+        continue
+      }
       const selected = enabled.has(componentId)
-      children.push(buildVarGroup({
-        key: componentId,
-        scope: componentId,
-        title: scopeTitle(componentId),
-        subtitle: selected ? '只影响这个组件' : '未选组件 · 随共享样式带入',
-        tokens,
-        open: false,
-        showScope: true,
-      }))
+      children.push(
+        buildVarGroup({
+          key: componentId,
+          scope: componentId,
+          title: scopeTitle(componentId),
+          subtitle: selected ? '只影响这个组件' : '未选组件 · 随共享样式带入',
+          tokens,
+          open: false,
+          showScope: true
+        })
+      )
       categoryTotal += tokens.length
       componentTotal += tokens.length
     }
     componentGroups += children.length
-    if (!children.length) {return}
-    categoryNodes.push(buildCategoryGroup({
-      key: `category-${id}`,
-      title,
-      hint,
-      tokenTotal: categoryTotal,
-      children,
-    }))
+    if (!children.length) {
+      return
+    }
+    categoryNodes.push(
+      buildCategoryGroup({
+        key: `category-${id}`,
+        title,
+        hint,
+        tokenTotal: categoryTotal,
+        children
+      })
+    )
   }
   for (const category of CATEGORIES) {
     appendComponentCategory(category)
@@ -1499,7 +1650,7 @@ function renderThemePanel() {
       id: 'other',
       title: '其他组件',
       hint: '未归入上面分类的组件',
-      ids: [...buckets.keys()],
+      ids: [...buckets.keys()]
     })
   }
 
@@ -1509,17 +1660,19 @@ function renderThemePanel() {
       title: '全局通用变量',
       hint: '所有组件共用的基础样式，与选择哪些组件无关',
       count: `${semanticTotal} 项`,
-      children: semanticNodes,
-    }),
+      children: semanticNodes
+    })
   ]
   if (categoryNodes.length) {
-    sections.push(buildThemeSection({
-      key: 'component',
-      title: '组件专属变量',
-      hint: '按组件分组，只列出有变量的组件；未勾选组件的专属变量不打包，标“随共享样式带入”的变量仍会产出',
-      count: `${componentTotal} 项 · ${componentGroups} 个组件`,
-      children: categoryNodes,
-    }))
+    sections.push(
+      buildThemeSection({
+        key: 'component',
+        title: '组件专属变量',
+        hint: '按组件分组，只列出有变量的组件；未勾选组件的专属变量不打包，标“随共享样式带入”的变量仍会产出',
+        count: `${componentTotal} 项 · ${componentGroups} 个组件`,
+        children: categoryNodes
+      })
+    )
   }
   elements.themeGroups.replaceChildren(...sections)
 
@@ -1529,7 +1682,9 @@ function renderThemePanel() {
   const hidden = allGlobals.length - globals.length + hiddenScopes
   let hiddenModified = 0
   for (const [name, raw] of state.overrides) {
-    if (raw !== '' && !isTokenActive(state.varIndex.get(name))) {hiddenModified += 1}
+    if (raw !== '' && !isTokenActive(state.varIndex.get(name))) {
+      hiddenModified += 1
+    }
   }
   const keptNote = hiddenModified ? `，其中 ${hiddenModified} 项修改已保留` : ''
   const note = hidden ? `；未选组件的 ${hidden} 项已隐藏${keptNote}` : ''
@@ -1540,14 +1695,20 @@ function renderThemePanel() {
 }
 
 function syncThemePanelForSelection() {
-  if (enabledComponentsKey() === state.themeEnabledKey) {return false}
+  if (enabledComponentsKey() === state.themeEnabledKey) {
+    return false
+  }
   renderThemePanel()
-  if (elements.themeSearch.value.trim() || state.themeOnlyModified) {applyThemeSearch()}
+  if (elements.themeSearch.value.trim() || state.themeOnlyModified) {
+    applyThemeSearch()
+  }
   return true
 }
 
 function matchesGroupTitle(node, query) {
-  if (!node || !query) {return false}
+  if (!node || !query) {
+    return false
+  }
   return (node.dataset.title ?? '').toLowerCase().includes(query)
 }
 
@@ -1565,26 +1726,32 @@ function applyThemeSearch() {
         row.dataset.var,
         info?.token ?? '',
         info ? tokenLabel(info.token) : '',
-        scopeTitle(info?.scope ?? 'global'),
-      ].join(' ').toLowerCase()
+        scopeTitle(info?.scope ?? 'global')
+      ]
+        .join(' ')
+        .toLowerCase()
       const modified = (state.overrides.get(row.dataset.var) ?? '') !== ''
       const matched = (!query || titleHit || haystack.includes(query)) && (!state.themeOnlyModified || modified)
       row.hidden = !matched
-      if (matched) {groupMatches += 1}
+      if (matched) {
+        groupMatches += 1
+      }
     }
     group.hidden = groupMatches === 0
     if (groupMatches && (query || state.themeOnlyModified)) {
       group.open = true
-      if (category) {category.open = true}
+      if (category) {
+        category.open = true
+      }
     }
     visible += groupMatches
   }
 
   for (const category of elements.themeGroups.querySelectorAll('.theme-group--category')) {
-    category.hidden = ![...category.querySelectorAll('.theme-group--leaf')].some(leaf => !leaf.hidden)
+    category.hidden = ![...category.querySelectorAll('.theme-group--leaf')].some((leaf) => !leaf.hidden)
   }
   for (const section of elements.themeGroups.querySelectorAll('.theme-section')) {
-    section.hidden = ![...section.querySelectorAll('.theme-group--leaf')].some(leaf => !leaf.hidden)
+    section.hidden = ![...section.querySelectorAll('.theme-group--leaf')].some((leaf) => !leaf.hidden)
   }
 
   elements.themeEmpty.hidden = visible > 0
@@ -1599,8 +1766,7 @@ function applyThemeSearch() {
       elements.themeSearch.focus()
     })
     elements.themeEmpty.replaceChildren(document.createTextNode('没有匹配的变量。 '), clear)
-  }
-  else {
+  } else {
     elements.themeEmpty.textContent = '没有匹配的变量。'
   }
   const filterSuffix = state.themeOnlyModified ? '（仅已修改）' : ''
@@ -1618,7 +1784,9 @@ function syncThemeFilterButton() {
 
 function expandThemeGroups(open) {
   for (const group of elements.themeGroups.querySelectorAll('.theme-group')) {
-    if (open && group.hidden) {continue}
+    if (open && group.hidden) {
+      continue
+    }
     group.open = open
   }
 }
@@ -1639,7 +1807,9 @@ function focusThemeScope(scope) {
   syncThemeFilterButton()
   applyThemeSearch()
   const category = group.closest('.theme-group--category')
-  if (category) {category.open = true}
+  if (category) {
+    category.open = true
+  }
   group.open = true
   group.scrollIntoView({ behavior: 'smooth', block: 'center' })
   group.classList.add('is-flash')
@@ -1652,11 +1822,15 @@ function jumpToFirstInvalid() {
   syncThemeFilterButton()
   applyThemeSearch()
   for (const refs of state.themeRows.values()) {
-    if (!refs.row.classList.contains('is-invalid')) {continue}
+    if (!refs.row.classList.contains('is-invalid')) {
+      continue
+    }
     const group = refs.row.closest('.theme-group--leaf')
     if (group) {
       const category = group.closest('.theme-group--category')
-      if (category) {category.open = true}
+      if (category) {
+        category.open = true
+      }
       group.open = true
     }
     refs.row.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -1668,19 +1842,24 @@ function jumpToFirstInvalid() {
 }
 
 function setOverride(name, raw) {
-  if (raw === '') {state.overrides.delete(name)}
-  else {state.overrides.set(name, raw)}
+  if (raw === '') {
+    state.overrides.delete(name)
+  } else {
+    state.overrides.set(name, raw)
+  }
   syncVarRow(name)
   onThemeChanged()
 }
 
 function applyVarSample(name) {
   const refs = state.themeRows.get(name)
-  if (!refs || !refs.sample) {return}
+  if (!refs || !refs.sample) {
+    return
+  }
   const info = state.varIndex.get(name)
   const raw = state.overrides.get(name) ?? ''
   const valid = raw === '' || isValidThemeValue(raw)
-  const value = valid && raw.trim() ? raw.trim() : info?.def ?? ''
+  const value = valid && raw.trim() ? raw.trim() : (info?.def ?? '')
   const sample = refs.sample
   sample.style.background = ''
   sample.style.borderRadius = ''
@@ -1688,16 +1867,28 @@ function applyVarSample(name) {
   sample.style.boxShadow = ''
   sample.style.height = ''
 
-  if (refs.sampleKind === 'color') {sample.style.background = value}
-  if (refs.sampleKind === 'radius') {sample.style.borderRadius = value}
-  if (refs.sampleKind === 'font-size') {sample.style.fontSize = value}
-  if (refs.sampleKind === 'shadow') {sample.style.boxShadow = value}
-  if (refs.sampleKind === 'height') {sample.style.height = value}
+  if (refs.sampleKind === 'color') {
+    sample.style.background = value
+  }
+  if (refs.sampleKind === 'radius') {
+    sample.style.borderRadius = value
+  }
+  if (refs.sampleKind === 'font-size') {
+    sample.style.fontSize = value
+  }
+  if (refs.sampleKind === 'shadow') {
+    sample.style.boxShadow = value
+  }
+  if (refs.sampleKind === 'height') {
+    sample.style.height = value
+  }
 }
 
 function syncVarRow(name) {
   const refs = state.themeRows.get(name)
-  if (!refs) {return}
+  if (!refs) {
+    return
+  }
   const info = state.varIndex.get(name)
   const raw = state.overrides.get(name) ?? ''
   const valid = raw === '' || isValidThemeValue(raw)
@@ -1706,10 +1897,14 @@ function syncVarRow(name) {
   refs.row.classList.toggle('is-invalid', !valid)
   refs.reset.disabled = raw === ''
   refs.text.title = valid ? '' : '取值不能为空，也不能包含 ; { }'
-  if (refs.text !== document.activeElement) {refs.text.value = raw}
+  if (refs.text !== document.activeElement) {
+    refs.text.value = raw
+  }
   if (refs.color) {
     const hex = hexColor(raw) || hexColor(info?.def ?? '')
-    if (hex && refs.color.value !== hex) {refs.color.value = hex}
+    if (hex && refs.color.value !== hex) {
+      refs.color.value = hex
+    }
   }
   applyVarSample(name)
 }
@@ -1717,7 +1912,9 @@ function syncVarRow(name) {
 function invalidOverrides() {
   const names = []
   for (const [name, raw] of state.overrides) {
-    if (!isValidThemeValue(raw) && isTokenActive(state.varIndex.get(name))) {names.push(name)}
+    if (!isValidThemeValue(raw) && isTokenActive(state.varIndex.get(name))) {
+      names.push(name)
+    }
   }
   return names
 }
@@ -1727,17 +1924,26 @@ function themeFromOverrides() {
   const components = {}
   for (const [name, raw] of state.overrides) {
     const info = state.varIndex.get(name)
-    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {continue}
+    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {
+      continue
+    }
     const key = camelToken(info.token)
-    if (info.scope === 'global') {global[key] = raw.trim()}
-    else {
-      if (!components[info.scope]) {components[info.scope] = {}}
+    if (info.scope === 'global') {
+      global[key] = raw.trim()
+    } else {
+      if (!components[info.scope]) {
+        components[info.scope] = {}
+      }
       components[info.scope][key] = raw.trim()
     }
   }
   const theme = {}
-  if (Object.keys(global).length) {theme.global = global}
-  if (Object.keys(components).length) {theme.components = components}
+  if (Object.keys(global).length) {
+    theme.global = global
+  }
+  if (Object.keys(components).length) {
+    theme.components = components
+  }
   return Object.keys(theme).length ? theme : undefined
 }
 
@@ -1746,16 +1952,23 @@ function themeCssText(prefix, rootSelector = ':root') {
   const scopeDeclarations = new Map()
   for (const [name, raw] of state.overrides) {
     const info = state.varIndex.get(name)
-    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {continue}
+    if (!info || !isTokenActive(info) || !isValidThemeValue(raw)) {
+      continue
+    }
     const declaration = `  ${rewriteVarName(name, prefix)}: ${raw.trim()};`
-    if (info.scope === 'global') {globalDeclarations.push(declaration)}
-    else {
-      if (!scopeDeclarations.has(info.scope)) {scopeDeclarations.set(info.scope, [])}
+    if (info.scope === 'global') {
+      globalDeclarations.push(declaration)
+    } else {
+      if (!scopeDeclarations.has(info.scope)) {
+        scopeDeclarations.set(info.scope, [])
+      }
       scopeDeclarations.get(info.scope).push(declaration)
     }
   }
   const blocks = []
-  if (globalDeclarations.length) {blocks.push(`${rootSelector} {\n${globalDeclarations.join('\n')}\n}`)}
+  if (globalDeclarations.length) {
+    blocks.push(`${rootSelector} {\n${globalDeclarations.join('\n')}\n}`)
+  }
   for (const [scope, declarations] of scopeDeclarations) {
     blocks.push(`.${prefix}-${scope} {\n${declarations.join('\n')}\n}`)
   }
@@ -1771,9 +1984,13 @@ function renderThemeCounts() {
   let modified = 0
   let total = 0
   for (const [name, raw] of state.overrides) {
-    if (raw === '') {continue}
+    if (raw === '') {
+      continue
+    }
     total += 1
-    if (isTokenActive(state.varIndex.get(name))) {modified += 1}
+    if (isTokenActive(state.varIndex.get(name))) {
+      modified += 1
+    }
   }
   const invalid = invalidOverrides().length
   elements.themeCount.textContent = String(modified)
@@ -1789,12 +2006,16 @@ function onThemeChanged() {
   applyPreviewTheme()
   renderConfig()
   syncStepGates()
-  if (state.themeOnlyModified) {applyThemeSearch()}
+  if (state.themeOnlyModified) {
+    applyThemeSearch()
+  }
 }
 
 function resetAllOverrides() {
   state.overrides.clear()
-  for (const name of state.themeRows.keys()) {syncVarRow(name)}
+  for (const name of state.themeRows.keys()) {
+    syncVarRow(name)
+  }
   state.presetKeys = new Set()
   onThemeChanged()
   renderPresetStatus(presetById(state.preset))
@@ -1803,7 +2024,7 @@ function resetAllOverrides() {
 /* ---------- 主题预设 ---------- */
 
 function presetById(id) {
-  return state.presets.find(item => item.id === id) ?? null
+  return state.presets.find((item) => item.id === id) ?? null
 }
 
 function countThemeTokens(theme) {
@@ -1817,22 +2038,32 @@ function countThemeTokens(theme) {
 function varNameForThemeKey(scope, key) {
   const token = camelToken(key)
   for (const [name, info] of state.varIndex) {
-    if (info.scope === scope && camelToken(info.token) === token) {return name}
+    if (info.scope === scope && camelToken(info.token) === token) {
+      return name
+    }
   }
   return ''
 }
 
 function presetOverrides(preset) {
   const entries = new Map()
-  if (!preset) {return entries}
+  if (!preset) {
+    return entries
+  }
   const theme = preset.theme ?? {}
   const collect = (scope, tokens) => {
-    if (!tokens || typeof tokens !== 'object') {return}
+    if (!tokens || typeof tokens !== 'object') {
+      return
+    }
     for (const [key, value] of Object.entries(tokens)) {
       const raw = typeof value === 'number' ? String(value) : String(value ?? '').trim()
-      if (!isValidThemeValue(raw)) {continue}
+      if (!isValidThemeValue(raw)) {
+        continue
+      }
       const name = varNameForThemeKey(scope, key)
-      if (name) {entries.set(name, raw)}
+      if (name) {
+        entries.set(name, raw)
+      }
     }
   }
   collect('global', theme.global ?? theme.tokens)
@@ -1868,9 +2099,10 @@ function renderPresetStatus(preset, applied) {
   }
   const counts = countThemeTokens(preset.theme ?? {})
   const filled = applied ?? state.presetKeys.size
-  const appliedNote = filled === counts
-    ? `已填入 ${filled} 项主题令牌，可直接构建或继续微调`
-    : `已填入 ${filled} / ${counts} 项主题令牌（其余令牌在当前清单里不存在，已跳过）`
+  const appliedNote =
+    filled === counts
+      ? `已填入 ${filled} 项主题令牌，可直接构建或继续微调`
+      : `已填入 ${filled} / ${counts} 项主题令牌（其余令牌在当前清单里不存在，已跳过）`
   elements.presetStatus.textContent = `${preset.label} · ${appliedNote}`
 }
 
@@ -1880,14 +2112,14 @@ function renderPresetOptions() {
       id: '',
       label: '无预设',
       desc: '只保留变量覆盖，组件保持默认几何与配色',
-      palette: [],
+      palette: []
     },
-    ...state.presets.map(preset => ({
+    ...state.presets.map((preset) => ({
       id: preset.id,
       label: preset.label,
       desc: `一键填入 ${countThemeTokens(preset.theme ?? {})} 项主题令牌（配色、渐变、阴影、间距），每项都可继续微调`,
-      palette: preset.palette ?? [],
-    })),
+      palette: preset.palette ?? []
+    }))
   ]
 
   const fragment = document.createDocumentFragment()
@@ -1899,7 +2131,9 @@ function renderPresetOptions() {
     input.value = option.id
     input.checked = state.preset === option.id
     input.addEventListener('change', () => {
-      if (input.checked) {selectPreset(option.id)}
+      if (input.checked) {
+        selectPreset(option.id)
+      }
     })
 
     const body = createElement('span', 'preset-option__body')
@@ -1922,7 +2156,9 @@ function renderPresetOptions() {
 }
 
 function selectPreset(id) {
-  if (state.preset === id) {return}
+  if (state.preset === id) {
+    return
+  }
   state.preset = id
   const preset = presetById(id)
   const applied = preset ? applyPresetTheme(preset) : 0
@@ -1934,11 +2170,12 @@ function selectPreset(id) {
 async function loadPresets() {
   try {
     const response = await fetch('/api/presets', { cache: 'no-store' })
-    if (!response.ok) {throw new Error(`HTTP ${response.status}`)}
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
     const payload = await response.json()
     state.presets = Array.isArray(payload.presets) ? payload.presets : []
-  }
-  catch (error) {
+  } catch (error) {
     state.presets = []
     elements.presetStatus.textContent = `预设清单加载失败（${error.message}），可手动在变量清单里配置主题。`
   }
@@ -1958,66 +2195,74 @@ function rootToHost(cssText) {
 }
 
 function applyPreviewTheme() {
-  if (!state.preview) {return}
+  if (!state.preview) {
+    return
+  }
   state.preview.themeStyle.textContent = themeCssText(state.preview.prefix, ':host')
 }
 
 function syncPreviewHint() {
-  if (!state.preview) {return}
+  if (!state.preview) {
+    return
+  }
   const previewPrefix = state.preview.prefix
   const chosen = toPrefix(elements.classPrefix.value)
-  const prefixNote = chosen === previewPrefix
-    ? '变量改动即时生效'
-    : `构建前缀将改写为 ${chosen}，预览仍按 ${previewPrefix} 前缀展示`
+  const prefixNote =
+    chosen === previewPrefix ? '变量改动即时生效' : `构建前缀将改写为 ${chosen}，预览仍按 ${previewPrefix} 前缀展示`
   const preset = presetById(state.preset)
   const presetNote = preset ? `已填入「${preset.label}」预设` : '未选预设'
   elements.previewHint.textContent = `预览来自 ${state.preview.label} 预制包（${previewPrefix} 前缀）；${presetNote}，${prefixNote}。对话框、抽屉、加载等他处组件未在预览中出场，变量一样会写进产物。`
 }
 
 function createPreviewApp(mod) {
-  const slot = text => ({ default: () => text })
+  const slot = (text) => ({ default: () => text })
   return {
     name: 'ThemePreview',
     render() {
-      const row = children => h('div', { class: 'pv__row' }, children)
+      const row = (children) => h('div', { class: 'pv__row' }, children)
       return h('div', { class: 'pv' }, [
         row([
           h(mod.Button, { type: 'primary' }, slot('主要')),
           h(mod.Button, null, slot('默认')),
-          h(mod.Button, { plain: true, type: 'primary' }, slot('朴素')),
+          h(mod.Button, { plain: true, type: 'primary' }, slot('朴素'))
         ]),
         row([
           h(mod.Button, { type: 'success', size: 'small' }, slot('成功')),
           h(mod.Button, { type: 'danger', size: 'small' }, slot('危险')),
-          h(mod.Switch, { modelValue: true }),
+          h(mod.Switch, { modelValue: true })
         ]),
-        row([
-          h(mod.Input, { modelValue: '', placeholder: '输入内容' }),
-          h(mod.Rate, { modelValue: 4 }),
-        ]),
+        row([h(mod.Input, { modelValue: '', placeholder: '输入内容' }), h(mod.Rate, { modelValue: 4 })]),
         row([
           h(mod.Tag, { type: 'success' }, slot('成功')),
           h(mod.Tag, { type: 'warning' }, slot('警告')),
           h(mod.Tag, { type: 'danger' }, slot('危险')),
-          h(mod.Tag, null, slot('默认')),
+          h(mod.Tag, null, slot('默认'))
         ]),
         h(mod.Alert, {
           type: 'success',
           title: '主题生效时整块换色',
-          description: '背景、边框、文字都取自变量',
+          description: '背景、边框、文字都取自变量'
         }),
-        h(mod.Card, { header: '卡片' }, { default: () => h('div', { class: 'pv__text' }, '卡片圆角与阴影来自全局 token') }),
+        h(
+          mod.Card,
+          { header: '卡片' },
+          { default: () => h('div', { class: 'pv__text' }, '卡片圆角与阴影来自全局 token') }
+        ),
         h(mod.Divider, { content: '分割线' }),
-        h(mod.Menu, { mode: 'horizontal', defaultActive: 'theme' }, {
-          default: () => [
-            h(mod.MenuItem, { index: 'home' }, slot('首页')),
-            h(mod.MenuItem, { index: 'theme' }, slot('主题')),
-            h(mod.MenuItem, { index: 'build' }, slot('构建')),
-          ],
-        }),
-        h(mod.Progress, { percentage: 60 }),
+        h(
+          mod.Menu,
+          { mode: 'horizontal', defaultActive: 'theme' },
+          {
+            default: () => [
+              h(mod.MenuItem, { index: 'home' }, slot('首页')),
+              h(mod.MenuItem, { index: 'theme' }, slot('主题')),
+              h(mod.MenuItem, { index: 'build' }, slot('构建'))
+            ]
+          }
+        ),
+        h(mod.Progress, { percentage: 60 })
       ])
-    },
+    }
   }
 }
 
@@ -2025,18 +2270,21 @@ async function initPreview() {
   let payload
   try {
     const response = await fetch('/api/packages', { cache: 'no-store' })
-    if (!response.ok) {throw new Error(`HTTP ${response.status}`)}
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
     payload = await response.json()
-  }
-  catch (error) {
+  } catch (error) {
     elements.previewHint.textContent = `预览接口不可用（${error.message}），需要 npm run dev 启动。`
     return
   }
 
   const packages = payload.packages ?? []
-  const target = packages.find(item => item.id === 'full') ?? packages.find(item => item.prefix === 'ui') ?? packages[0]
+  const target =
+    packages.find((item) => item.id === 'full') ?? packages.find((item) => item.prefix === 'ui') ?? packages[0]
   if (!target) {
-    elements.previewHint.textContent = '还没找到构建产物。先点第 4 步的「生成 npm 包」或运行 npm run build:all，刷新后就有实时预览。'
+    elements.previewHint.textContent =
+      '还没找到构建产物。先点第 4 步的「生成 npm 包」或运行 npm run build:all，刷新后就有实时预览。'
     return
   }
 
@@ -2047,7 +2295,7 @@ async function initPreview() {
     const moduleUrl = `${target.moduleUrl}&preview=${Date.now()}`
     const [mod, cssText] = await Promise.all([
       import(/* @vite-ignore */ moduleUrl),
-      fetch(styleUrl).then(response => response.text()),
+      fetch(styleUrl).then((response) => response.text())
     ])
 
     const shadow = elements.previewStage.attachShadow({ mode: 'open' })
@@ -2063,13 +2311,12 @@ async function initPreview() {
     state.preview = {
       themeStyle,
       prefix: target.prefix || 'ui',
-      label: target.label || target.id,
+      label: target.label || target.id
     }
     elements.previewBadge.textContent = target.label || target.id
     applyPreviewTheme()
     syncPreviewHint()
-  }
-  catch (error) {
+  } catch (error) {
     elements.previewHint.textContent = `预览加载失败：${error.message}`
   }
 }
@@ -2077,15 +2324,23 @@ async function initPreview() {
 /* ---------- 体积试算 ---------- */
 
 function formatBytes(bytes) {
-  if (!Number.isFinite(bytes)) {return '—'}
-  if (bytes < 1024) {return `${bytes} B`}
+  if (!Number.isFinite(bytes)) {
+    return '—'
+  }
+  if (bytes < 1024) {
+    return `${bytes} B`
+  }
   const kb = bytes / 1024
-  if (kb < 100) {return `${kb.toFixed(1)} kB`}
+  if (kb < 100) {
+    return `${kb.toFixed(1)} kB`
+  }
   return `${Math.round(kb)} kB`
 }
 
 function formatSignedBytes(bytes) {
-  if (!Number.isFinite(bytes) || bytes === 0) {return '没有变化'}
+  if (!Number.isFinite(bytes) || bytes === 0) {
+    return '没有变化'
+  }
   const sign = bytes > 0 ? '+' : '-'
   return `${sign}${formatBytes(Math.abs(bytes))}`
 }
@@ -2099,14 +2354,14 @@ function renderEstimateNumbers(payload) {
     ['JS', payload.jsBytes],
     ['CSS', payload.cssBytes],
     ['合计', payload.totalBytes],
-    ['gzip', payload.gzipBytes],
+    ['gzip', payload.gzipBytes]
   ]
   const fragment = document.createDocumentFragment()
   for (const [label, bytes] of items) {
     const item = createElement('span', `estimate__item${label === '合计' ? ' estimate__item--total' : ''}`)
     item.append(
       createElement('span', 'estimate__label', label),
-      createElement('span', 'estimate__value', formatBytes(bytes)),
+      createElement('span', 'estimate__value', formatBytes(bytes))
     )
     fragment.append(item)
   }
@@ -2117,7 +2372,7 @@ function renderEstimateEmpty() {
   elements.estimateCard.classList.remove('is-loading', 'is-error', 'is-stale')
   elements.estimateBadge.textContent = '未选组件'
   elements.estimateNumbers.replaceChildren(
-    createElement('p', 'estimate__placeholder', '第 1 步选上组件后，这里会自动试算包体积。'),
+    createElement('p', 'estimate__placeholder', '第 1 步选上组件后，这里会自动试算包体积。')
   )
   elements.estimateDelta.textContent = ''
   elements.estimateNote.textContent = '试算会实际构建一次，约 1–2 秒。'
@@ -2138,8 +2393,7 @@ function renderEstimate(payload, previous, measured = false) {
   if (measured) {
     elements.estimateDelta.textContent = '刚刚生成的包，数字就是它的实际体积。'
     elements.estimateNote.textContent = `${payload.components} 个组件、${payload.features} 个功能，含主题覆盖。`
-  }
-  else {
+  } else {
     elements.estimateDelta.textContent = previous
       ? `较上次 ${formatSignedBytes(payload.totalBytes - previous.totalBytes)}，gzip ${formatSignedBytes(payload.gzipBytes - previous.gzipBytes)}。`
       : '首次试算：数字来自刚才的一次实际构建。'
@@ -2153,9 +2407,7 @@ function renderEstimateError(message) {
   elements.estimateCard.classList.add('is-error')
   elements.estimateBadge.textContent = '试算失败'
   if (!estimateLast) {
-    elements.estimateNumbers.replaceChildren(
-      createElement('p', 'estimate__placeholder', '暂时拿不到体积数据。'),
-    )
+    elements.estimateNumbers.replaceChildren(createElement('p', 'estimate__placeholder', '暂时拿不到体积数据。'))
     updateNavBuild()
   }
   elements.estimateDelta.textContent = ''
@@ -2194,17 +2446,22 @@ async function runEstimate(seq) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(config),
-      signal,
+      signal
     })
     const payload = await response.json()
-    if (!response.ok) {throw new Error(payload.error || `HTTP ${response.status}`)}
-    if (seq !== estimateSeq || signal.aborted) {return}
+    if (!response.ok) {
+      throw new Error(payload.error || `HTTP ${response.status}`)
+    }
+    if (seq !== estimateSeq || signal.aborted) {
+      return
+    }
     const previous = estimateLast
     estimateLast = payload
     renderEstimate(payload, previous)
-  }
-  catch (error) {
-    if (seq !== estimateSeq || error.name === 'AbortError') {return}
+  } catch (error) {
+    if (seq !== estimateSeq || error.name === 'AbortError') {
+      return
+    }
     renderEstimateError(error.message)
   }
 }
@@ -2234,19 +2491,21 @@ function toPrefix(value) {
 function currentConfig() {
   const components = {}
   for (const entry of state.order) {
-    if (!entry.enabled) {continue}
-    const selected = entry.featureList
-      .map(feature => feature.id)
-      .filter(id => entry.selected.has(id))
+    if (!entry.enabled) {
+      continue
+    }
+    const selected = entry.featureList.map((feature) => feature.id).filter((id) => entry.selected.has(id))
     components[entry.id] = selected
   }
   const config = {
     name: toProfileName(elements.packageSuffix.value),
     prefix: toPrefix(elements.classPrefix.value),
-    components,
+    components
   }
   const theme = themeFromOverrides()
-  if (theme) {config.theme = theme}
+  if (theme) {
+    config.theme = theme
+  }
   return config
 }
 
@@ -2258,7 +2517,7 @@ function renderConfig() {
   elements.outputPackage.textContent = `${state.name}-${config.name}`
 
   const enabledFeatureTotal = state.order
-    .filter(entry => entry.enabled)
+    .filter((entry) => entry.enabled)
     .reduce((total, entry) => total + entry.featureList.length, 0)
   elements.featureSelection.textContent = enabledFeatureTotal
     ? `已勾选 ${stats.features} / ${enabledFeatureTotal} 个功能`
@@ -2266,7 +2525,9 @@ function renderConfig() {
 }
 
 function resetBuildResult() {
-  if (isBuilding) {return}
+  if (isBuilding) {
+    return
+  }
   elements.buildOutput.hidden = true
   elements.buildHint.textContent = '构建会在 dist/<包名后缀> 输出独立包。'
 }
@@ -2274,7 +2535,9 @@ function resetBuildResult() {
 function setBuildingState(value) {
   isBuilding = value
   elements.buildButton.textContent = value ? '生成中…' : '生成 npm 包'
-  if (value) {elements.buildHint.textContent = '正在打包所选组件与功能…'}
+  if (value) {
+    elements.buildHint.textContent = '正在打包所选组件与功能…'
+  }
   syncStepGates()
 }
 
@@ -2292,8 +2555,7 @@ function renderBuildOutput(result) {
     try {
       await navigator.clipboard.writeText(result.dir)
       showToast('产物路径已复制', 'success')
-    }
-    catch {
+    } catch {
       showToast('复制失败，请手动选择复制', 'error')
     }
   })
@@ -2303,7 +2565,7 @@ function renderBuildOutput(result) {
   const summary = createElement(
     'p',
     'output__summary',
-    `${result.components.length} 个组件 · ${result.features.length} 个功能 · 前缀 ${result.prefix}`,
+    `${result.components.length} 个组件 · ${result.features.length} 个功能 · 前缀 ${result.prefix}`
   )
   elements.buildOutput.append(summary)
 
@@ -2319,14 +2581,12 @@ function renderBuildOutput(result) {
     createElement(
       'p',
       'output__total',
-      `合计 ${formatBytes(result.totalBytes)} · gzip ${formatBytes(result.gzipBytes)}`,
-    ),
+      `合计 ${formatBytes(result.totalBytes)} · gzip ${formatBytes(result.gzipBytes)}`
+    )
   )
 
   const types = createElement('details', 'output__types')
-  types.append(
-    createElement('summary', '', `index.d.ts · ${result.types.split('\n').length} 行`),
-  )
+  types.append(createElement('summary', '', `index.d.ts · ${result.types.split('\n').length} 行`))
   const typesBody = createElement('pre', '', result.types || '类型声明读取失败')
   types.append(typesBody)
   elements.buildOutput.append(types)
@@ -2337,7 +2597,7 @@ function renderBuildError(message) {
   elements.buildOutput.className = 'output output--error'
   elements.buildOutput.replaceChildren(
     createElement('p', 'output__title', '构建失败'),
-    createElement('p', 'output__message', message),
+    createElement('p', 'output__message', message)
   )
 }
 
@@ -2350,13 +2610,15 @@ function adoptBuildResult(result) {
     jsBytes: result.jsBytes,
     cssBytes: result.cssBytes,
     totalBytes: result.totalBytes,
-    gzipBytes: result.gzipBytes,
+    gzipBytes: result.gzipBytes
   }
   renderEstimate(estimateLast, null, true)
 }
 
 async function buildSelected() {
-  if (isBuilding) {return}
+  if (isBuilding) {
+    return
+  }
   const config = currentConfig()
   if (!Object.keys(config.components).length) {
     renderBuildError('至少选择一个组件后再生成。')
@@ -2375,21 +2637,21 @@ async function buildSelected() {
     const response = await fetch('/api/build', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config),
+      body: JSON.stringify(config)
     })
     const payload = await response.json()
-    if (!response.ok) {throw new Error(payload.error || `构建失败（HTTP ${response.status}）`)}
+    if (!response.ok) {
+      throw new Error(payload.error || `构建失败（HTTP ${response.status}）`)
+    }
     renderBuildOutput(payload)
     adoptBuildResult(payload)
     elements.buildHint.textContent = '产物已写入本地 dist 目录，可直接安装使用。'
     showToast(`构建成功，产物在 ${payload.dir}/`, 'success')
-  }
-  catch (error) {
+  } catch (error) {
     renderBuildError(error.message)
     elements.buildHint.textContent = '构建接口仅在 npm run dev 下可用；也可运行 npm run build:all。'
     showToast(`构建失败：${error.message}`, 'error')
-  }
-  finally {
+  } finally {
     setBuildingState(false)
   }
 }
@@ -2400,8 +2662,7 @@ async function copyConfig() {
   try {
     await navigator.clipboard.writeText(elements.configJson.textContent)
     showToast('build.config.json 已复制', 'success')
-  }
-  catch {
+  } catch {
     showToast('复制失败，请手动选择复制', 'error')
   }
 }
@@ -2410,15 +2671,14 @@ async function copyThemeCss() {
   try {
     await navigator.clipboard.writeText(elements.themeCssBody.textContent)
     showToast('theme.css 已复制', 'success')
-  }
-  catch {
+  } catch {
     showToast('复制失败，请手动选择复制', 'error')
   }
 }
 
 function downloadConfig() {
   const blob = new Blob([`${JSON.stringify(currentConfig(), null, 2)}\n`], {
-    type: 'application/json',
+    type: 'application/json'
   })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')
@@ -2433,9 +2693,7 @@ function downloadConfig() {
 
 function initStepNav() {
   const links = [...document.querySelectorAll('.step-nav__link')]
-  const sections = links
-    .map(link => document.querySelector(link.getAttribute('href')))
-    .filter(Boolean)
+  const sections = links.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean)
 
   function activate(id) {
     for (const link of links) {
@@ -2451,14 +2709,21 @@ function initStepNav() {
     let current = sections[0]
     for (const section of sections) {
       const top = section.getBoundingClientRect().top + window.scrollY
-      if (top <= marker) {current = section}
-      else {break}
+      if (top <= marker) {
+        current = section
+      } else {
+        break
+      }
     }
-    if (current) {activate(current.id)}
+    if (current) {
+      activate(current.id)
+    }
   }
 
   function onScroll() {
-    if (ticking) {return}
+    if (ticking) {
+      return
+    }
     ticking = true
     window.requestAnimationFrame(updateActive)
   }
@@ -2476,9 +2741,13 @@ function initStepNav() {
 
 function enableAllFeatures() {
   for (const entry of state.order) {
-    if (!entry.enabled) {continue}
+    if (!entry.enabled) {
+      continue
+    }
     const before = new Set(entry.selected)
-    for (const feature of entry.featureList) {addWithDependencies(entry, feature.id)}
+    for (const feature of entry.featureList) {
+      addWithDependencies(entry, feature.id)
+    }
     syncEntry(entry)
     flashAddedFeatures(entry, before)
   }
@@ -2487,7 +2756,9 @@ function enableAllFeatures() {
 
 function clearAllFeatures() {
   for (const entry of state.order) {
-    if (!entry.enabled) {continue}
+    if (!entry.enabled) {
+      continue
+    }
     entry.selected.clear()
     syncEntry(entry)
   }
@@ -2499,8 +2770,10 @@ function bindEvents() {
   elements.featureSearch.addEventListener('input', applyFeatureSearch)
   elements.allFeatures.addEventListener('click', enableAllFeatures)
   elements.clearFeatures.addEventListener('click', () => {
-    const anySelected = state.order.some(entry => entry.enabled && entry.selected.size > 0)
-    if (!anySelected) {return}
+    const anySelected = state.order.some((entry) => entry.enabled && entry.selected.size > 0)
+    if (!anySelected) {
+      return
+    }
     inlineConfirm(elements.clearFeatures, '确认全部关闭？', clearAllFeatures)
   })
   elements.packageSuffix.addEventListener('input', () => {
@@ -2541,10 +2814,11 @@ async function init() {
   let registry
   try {
     const response = await fetch('/api/registry', { cache: 'no-store' })
-    if (!response.ok) {throw new Error(`HTTP ${response.status}`)}
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
     registry = await response.json()
-  }
-  catch (error) {
+  } catch (error) {
     elements.listStatus.textContent = `组件清单加载失败：${error.message}`
     return
   }
@@ -2553,26 +2827,30 @@ async function init() {
   state.version = registry.version
   state.tokens = registry.tokens ?? { global: [], components: {} }
   indexThemeTokens()
-  state.order = registry.components.map(component => createEntry(component))
-  state.tokenPrefixes = state.order.map(entry => entry.id).sort((left, right) => right.length - left.length)
-  for (const entry of state.order) {state.components.set(entry.id, entry)}
+  state.order = registry.components.map((component) => createEntry(component))
+  state.tokenPrefixes = state.order.map((entry) => entry.id).sort((left, right) => right.length - left.length)
+  for (const entry of state.order) {
+    state.components.set(entry.id, entry)
+  }
   state.groups = buildGroups()
   for (const group of state.groups) {
-    for (const entry of group.entries) {entry.group = group}
+    for (const entry of group.entries) {
+      entry.group = group
+    }
   }
 
   elements.packageName.textContent = registry.name
   elements.manifestVersion.textContent = registry.version
   elements.componentTotal.textContent = String(state.order.length)
-  elements.featureTotal.textContent = String(
-    state.order.reduce((total, entry) => total + entry.featureList.length, 0),
-  )
+  elements.featureTotal.textContent = String(state.order.reduce((total, entry) => total + entry.featureList.length, 0))
 
   renderPresets()
   renderCategoryTabs()
   renderList()
   renderFeaturePanel()
-  for (const entry of state.order) {syncEntry(entry)}
+  for (const entry of state.order) {
+    syncEntry(entry)
+  }
   applySearch()
   applyFeatureSearch()
   renderThemePanel()

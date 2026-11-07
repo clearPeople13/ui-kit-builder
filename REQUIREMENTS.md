@@ -184,7 +184,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 行为变化只有两处，且都是"补齐键盘通路"：触发型浮层现在响应 Enter / Space 开合，以及 Escape 收起栈顶浮层；依赖"按 Enter 不展开"的宿主写法需要复查。`style` 的路由口径同步写进文档与用例：Aside 的宽度由 `width` 属性决定、Popover 的 `style` / `className` 落到面板，这两点在 attributes.spec 里以白名单形式钉住并写明理由，新增同类例外必须附理由才会被放行。
 
-配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；`sweep-shots.mjs` 顺带过了一遍 `eslint --fix`。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
+配套改动：`tsconfig.tests.json` 把 `tests/**` 与三份 vitest 配置纳入 `npm run typecheck`（先取 `strict: false` 的宽松档，拦拼写与 DOM 类型误用）；`eslint.config.mjs` 与 `.gitignore` 同批忽略 `_scratch/`、`.trae-html-share-packages/`，临时探针不再污染 lint；本地截图脚本顺带过了一遍 `eslint --fix`（该脚本已在 C7 删除）。体积影响：`dist/full/ui-kit.js` 641367 B（较上一批 +914 B，来自 `mergeStyles` 与键盘 / Escape 通路），CSS 250588 B 不变。
 
 仍存在的缺口，按重要性排列：没有 CI 与提交钩子，`npm run quality` 目前靠本地自觉执行；布局基线只比几何矩形不比像素，且非本机平台自动跳过；浏览器层 8 个文件串行执行约 15 s，profile 只验 `dist/full` 的运行时，另外 19 份产物仍只有结构与体积证据；覆盖率未设阈值门禁；真实设备（触摸、输入法、异构字体）未纳入。
 
@@ -433,7 +433,7 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 主工作树：保持 5173 / 5174 / 5199，行为不变。
 - WorkBuddy 专属工作树 `C:/WorkBench/ui-kit-builder-wb`：5273 / 5274 / 5299，已确认三个端口均空闲、5173 仍归主工作树。
 - `tests/browser/_global-setup.ts` 的探针服务用 `port: 0` 随机取端口并把地址写进 `UIKIT_HARNESS_BASE`，不参与这套配置，天然不冲突。
-- 三个消费方均已改为读取导出值：`vite.config.mjs`（根 dev）、`examples/consumer/vite.config.mjs`（调试台）、`scripts/guardian/detectors/sweep.mjs`（巡检）；全仓已无 5173 / 5174 / 5199 的硬编码使用点，只在缺省值与注释里出现。
+- 三个消费方均已改为读取导出值：`vite.config.mjs`（根 dev）、`examples/consumer/vite.config.mjs`（调试台）、`tools/guardian/detectors/sweep.mjs`（巡检）；全仓已无 5173 / 5174 / 5199 的硬编码使用点，只在缺省值与注释里出现。
 
 ### 15.6 治理守卫的可失败验证与自身盲点修复
 
@@ -565,3 +565,41 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 | `scrollable-region-focusable` | table | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项 |
 
 白名单按「场景 + 规则」登记，新增未登记的 serious / critical 会直接报红。
+
+## 20. 第九批 B4：一致性与检查范围（分支 `refactor/20261107-consistency-and-scope`）
+
+### 20.1 范围
+
+按 `OPTIMIZATION_PLAN.md` 的 B4 执行 A8 与 C5–C10：版本 / engines / license 单一事实源、组件分类合并、workspaces 决策、死资产清理、格式化与 ESLint 范围、用例 strict 与 `as any` 清理、消费方 `fs.allow` 收敛。本批未新增缺陷编号（F-82 起保留给后续真实缺陷），以下均为计划条目落地与配套守卫。
+
+### 20.2 交付与数字
+
+- 版本三处对齐：`package.json` 由 `0.1.0` 升到 `0.3.0`，`registry.mjs` 改为直接读 root `package.json` 的 `version`，产物 `dist/*/package.json` 继续用 registry 版本；三者由 `tests/build/package-consistency.spec.ts`（3 条）守住。
+- `license` 与 `engines`：root 声明 `Apache-2.0`（与 `LICENSE` 一致）与 `node >= 22`；`scripts/build-lib.mjs` 生成产物 package.json 时从 root 读取同源字段，消费方 `file:` 依赖不写版本号，升级只跟随产物。
+- 组件分类合并：`scripts/demo-categories.mjs` 成为唯一来源（8 组，含标题与说明），`configurator/main.js` 直接 import；`tests/build/category-groups.spec.ts`（3 条）校验 90 个组件无重复、无遗漏、`categoryOf` 与 `meta.json` 一致。
+- 死资产清理：删除 root `manifest.json`、`sweep-shots.mjs`、`scripts/generate-suite.mjs`、`reference/`；`scripts/guardian/**` 移入 `tools/guardian/**` 并更新 `package.json` 与文档路径，全仓 `git grep` 已无悬空引用。
+- 检查范围：`format` / `format:check` 覆盖 `configurator/**`（js/css/html）、根 `index.html`、消费方配置 / html / css、`tools/**/*.mjs`；ESLint 接入 `@typescript-eslint/recommended`，清掉 194 条新增报错（153 条未使用导入 + 41 条未使用局部变量 / 参数），唯一保留例外是 `no-explicit-any`（600+ 处历史泛型标注，见 20.4）。
+- 用例 strict：`tsconfig.tests.json` 改为 `strict: true` / `noImplicitAny: true`，`tests/shims.d.ts` 为未带声明的 `.mjs` / `.js` 产物提供环境声明；`npm run typecheck` 全绿。测试内 36 处 `as any` 全部改为 `as unknown as <具体形状>`，新用例不再允许 `as any`。
+- 消费方 `fs.allow`：从整个仓库收窄为 `examples/consumer`、`dist/`、`configurator/`、`scripts/` 四个目录；实测 `GET /` 200、`GET /configurator/` 200、`GET /@fs/<repo>/.git/config` 403、`GET /@fs/<repo>/tests/...` 403。
+- 用例数字：构建器侧 131 → **137 条**（16 个文件）；组件侧 1582、profile 142、浏览器 83 不变；`npm run quality` 十二段全绿。覆盖率清理死代码后实测 statements 88.39% / branches 84.81% / functions 89.39% / lines 88.39%，仍高于 88 / 84 / 89 / 88。
+
+### 20.3 死资产处置明细
+
+| 资产 | 处置 | 理由 |
+| --- | --- | --- |
+| `manifest.json` | 删除 | 只登记了 Button 的过时清单，与 `registry.mjs` / `meta.json` 重复 |
+| `sweep-shots.mjs` | 删除 | 一次性截图巡检脚本，不进门禁、无引用 |
+| `reference/element-plus-2.14.7-catalog.json` | 删除 | 早期对标快照，组件清单已由 registry 维护 |
+| `scripts/generate-suite.mjs` | 删除 | 一次性搭骨架生成器，spec.mjs 已是手工事实源 |
+| `scripts/guardian/**` | 移到 `tools/guardian/**` | 常驻巡检不属于构建流水线；端口仍走 `scripts/worktree-ports.mjs` |
+
+### 20.4 ESLint recommended 的例外
+
+`@typescript-eslint/recommended` 的 `no-explicit-any` 在 90 个组件与测试里命中 600+ 处，多为泛型插槽 / 事件载荷的历史标注。本批按计划 C9 只清「新文件与 36 处 `as any`」，不把这个规则一次性转成 error，以免把大规模类型重写混进一致性批次；其余 recommended 规则（未使用变量、空对象类型、`Function` 类型误用等）已全部清零。后续新增文件仍受 `no-explicit-any` 之外的全部 recommended 约束。
+
+### 20.5 workspaces 决策记录（C6）
+
+- 决策：**不迁移到 npm workspaces**。消费方 `examples/consumer` 虽然有独立 `package.json` / `package-lock.json`，但它依赖的 20 个 `@demo/ui-kit-*` 是 `file:../../dist/<profile>`，产物目录不是 workspace 包；迁移后 npm 仍要按 `file:` 复制 / 链接，收益只有少一个 `npm ci`，却会把「先构建 dist、再安装消费方」的隐式顺序藏进 workspace 链接，风险大于收益。
+- `file:` 语义：依赖值不带版本号，npm 以链接方式指向 `dist/<profile>` 的实际 `package.json`；版本升级只需改 root `package.json` → `npm run build:all` → 重装消费方依赖，不需要在消费方逐个改版本。
+- 升级步骤：`npm run build:all` → `npm --prefix examples/consumer ci` → `npm run verify:consumer`。
+- CI 缓存策略（与 B5 服务端流水线一致）：分别缓存 root 与 `examples/consumer` 的 `node_modules`，key 用各自的 `package-lock.json` 哈希；dist 不进缓存，必须由当前提交现场构建，避免旧产物被链接进消费方。

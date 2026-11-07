@@ -1,8 +1,12 @@
 {
   "name": "ui-kit-feature-build-demo",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite",
     "build:core": "node scripts/build-lib.mjs --config profiles/core.json",
@@ -31,8 +35,8 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tests.json",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
-    "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"registry.mjs\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
+    "format": "prettier --write \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"tools/**/*.mjs\" \"registry.mjs\" \"configurator/**/*.{js,css,html}\" \"index.html\" \"examples/consumer/*.mjs\" \"examples/consumer/scripts/**/*.mjs\" \"examples/consumer/**/*.html\" \"examples/consumer/**/*.css\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
+    "format:check": "prettier --check \"packages/ui-kit/src/**/*.ts\" \"scripts/**/*.mjs\" \"tools/**/*.mjs\" \"registry.mjs\" \"configurator/**/*.{js,css,html}\" \"index.html\" \"examples/consumer/*.mjs\" \"examples/consumer/scripts/**/*.mjs\" \"examples/consumer/**/*.html\" \"examples/consumer/**/*.css\" \"examples/consumer/src/**/*.{ts,mjs}\" \"tests/**/*.ts\" \"vitest.*.config.ts\"",
     "verify": "node scripts/verify.mjs",
     "verify:governance": "node scripts/verify-governance.mjs",
     "verify:reuse": "node scripts/verify.mjs --reuse",
@@ -61,8 +65,8 @@
     "test:coverage:run": "vitest run --coverage --config vitest.coverage.config.ts",
     "verify:consumer": "npm --prefix examples/consumer run check:all",
     "demo:consumer": "npm --prefix examples/consumer run dev",
-    "guardian": "node scripts/guardian/guardian.mjs",
-    "guardian:once": "node scripts/guardian/guardian.mjs --once"
+    "guardian": "node tools/guardian/guardian.mjs",
+    "guardian:once": "node tools/guardian/guardian.mjs --once"
   },
   "dependencies": {
     "@lucide/vue": "1.61.0",

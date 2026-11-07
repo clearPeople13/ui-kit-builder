@@ -149,7 +149,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 
 ## 7. 未覆盖 / 待办
 
-- 五层用例：组件侧 95 文件 1582 条、构建器侧 8 文件 95 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 11 文件 65 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫 + 7 条 TimePicker 场景契约）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧 95 文件 1582 条、构建器侧 16 文件 137 条、profile 运行时 2 文件 142 条（20 份产物 × 5 项 + 总数守卫 + 属性字典双向回查 41 条）、浏览器层 16 文件 83 条（6 条布局基线 + 6 条像素基线 + 1 条基线完整性守卫 + 7 条 TimePicker 场景契约 + 3 条裁剪产物冒烟 + 3 条 Firefox + 1 条窄屏 + 6 条 axe）、覆盖率层在同一批组件用例上重放并卡四维阈值；90 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
@@ -172,7 +172,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - **令牌裁剪判"没有 var() 消费者"**：`pruneUnusedThemeVars` 只裁 `:root` 里"包内无 `var()` 引用、且被未选中组件引用"的声明。取证据要用未选中组件 CSS 里的 `var(--ui-x-…)` 名单，再排除选中组件与 `shared/*.css` 仍在引用的项——直接拿 `--ui-dialog-*` 的全部出现位置去断言会误伤（`shared/theme.css` 里是声明不是消费）
 - **压缩器会吃掉注释标记**：`buildThemeCss` 留下的 `/* ui-kit theme raw css */` 在产物里被 minify 删掉，任何按这条注释找 rawCss 的断言都必红；要验证 rawCss 就断言它的内容（`@keyframes`）以及它同样过了前缀改写
 - **值也要过前缀改写**：`rewritePrefix` 作用于整段 CSS 文本，profile 里写 `"wave-animation": "ui-button-wave-spread 0.4s …"`，产物里是 `antd-button-wave-spread`。比对令牌值必须先 `localize(value, prefix)`，否则只能命中 `prefix === 'ui'` 的两份产物
-- **`spec.mjs` 是当前事实，不是生成物**：`scripts/generate-suite.mjs` 只在最初搭骨架时跑过一次，之后各组件的 `spec.mjs` 手工维护；改动类型字符串时两边都要改（F-28 就同时动了 `normalizePropType`、两份 `spec.mjs` 与 `generate-suite.mjs` 的 `tsType`），否则重新生成会把修正抹掉
+- **`spec.mjs` 是当前事实，不是生成物**：各组件 `spec.mjs` 全部手工维护，没有生成器（最初的一次性搭骨架脚本已在 C7 删除）；改动类型字符串时两边都要改（F-28 就同时动了 `normalizePropType` 与两份 `spec.mjs`），否则会出现声明与实现不一致
 - **探针构建写 `.tmp/`，退出必须清理**：`tree-shaking`/`theme-tokens`/`types-contract` 各自 `buildProfile({ outDir: '.tmp/…-probe' })`，`afterAll` 里除了删 `.tmp/<probe>` 还要删 `.build/<probe>`（入口 TS 落在那里），漏删会污染 `dist` 目录清单断言
 - **快照只在改设计时期望变更**：`tests/build/__snapshots__/` 两份——"无可标记字面量的特性清单"（42 条，新增纯 hooks 复用型特性时会变长，属于要求当面确认的信号）与"20 份令牌指纹"（改任何皮肤令牌值都会变红，防止误提交主题调整）
 
@@ -194,7 +194,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - **一次门禁只构建一轮**：`build` 段跑完 `build:all` 后，`verify` 切到 `verify:reuse`（直接读 `sizes.json` 与 20 份 `dist/`，缺失才回退完整构建），四层用例切到不带 pretest 的 `test:*:run`。只有"全量模式且确实选中了 `build`"才走这些变体，`--fast` 与 `--stage xxx` 单跑时仍用各自会自行构建的原始脚本，避免吃到陈旧产物
 - **`sizes.json.features` 的 178 条边际值不便宜**：每条要构建一份「full 去掉该特性」，冷启动约 9 分钟；结果按 sha1 内容指纹缓存在 `.build/feature-size-cache.json`（指纹覆盖 `packages/ui-kit/src`、`profiles`、`registry.mjs`、`build-lib.mjs`、`package.json`、`package-lock.json` 与 node/平台），命中后整轮约 1 分钟。调试缓存逻辑用 `UIKIT_NO_BUILD_CACHE=1` 强制重算，别把缓存文件提交进仓库（`.build/` 已 gitignore）
 - **试算产物不许进 `dist/`**：它们写 `.build/feature-deltas/`，`try/finally` 连同 `.build/feat-*` 入口目录一起清理；旧版本的 `dist/feat-*` 残留在下次构建开头清掉。`tests/build/build-hygiene.spec.ts` 守住 dist 目录清单、清理结果与缓存一致性
-- **并行工作树的端口各自独立**：根 dev（`npm run dev`）、调试台（`demo:consumer`）、guardian 巡检（`sweep.mjs`）三处端口统一经 `scripts/worktree-ports.mjs` 读取 `UIKIT_DEV_PORT` / `UIKIT_CONSUMER_PORT` / `UIKIT_SWEEP_PORT`，缺省 5173 / 5174 / 5199。新开工作树时只需在该工作树根目录写一份被 `.gitignore` 忽略的 `.env.workbuddy` 换成空闲端口段，主工作树与他人工作树都不受影响。浏览器层探针服务用 `port: 0` 随机取端口，本来就不需要配置
+- **并行工作树的端口各自独立**：根 dev（`npm run dev`）、调试台（`demo:consumer`）、guardian 巡检（`tools/guardian` 的 sweep 检测器）三处端口统一经 `scripts/worktree-ports.mjs` 读取 `UIKIT_DEV_PORT` / `UIKIT_CONSUMER_PORT` / `UIKIT_SWEEP_PORT`，缺省 5173 / 5174 / 5199。新开工作树时只需在该工作树根目录写一份被 `.gitignore` 忽略的 `.env.workbuddy` 换成空闲端口段，主工作树与他人工作树都不受影响。浏览器层探针服务用 `port: 0` 随机取端口，本来就不需要配置
 - 布局基线在 `tests/browser/__snapshots__/geometry.json`，按 `process.platform` 分桶，键是场景名、值是"锚点选择器 → 文档坐标矩形数组 + `<document>` 总高"。容差 1px；锚点表在 `tests/browser/_geometry.ts` 的 `ANCHORS`，新增场景必须同时登记锚点，否则用例会以"没有登记布局锚点"失败
 - 改样式或布局导致基线变红时，先读差异（谁从哪儿挪到哪儿），确认是预期变化再 `npm run snap:layout` 重录；把重录当成默认动作等于关掉这道门
 - 基线在别的机器上缺失时该用例自动跳过（`it.skipIf`），不会凭空报错；但录入模式下锚点找不到元素会当场失败，这是防"锚点写错却全绿"的保险
