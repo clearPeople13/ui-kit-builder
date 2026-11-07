@@ -103,7 +103,8 @@ describe('特性接口与属性表', () => {
     const core = bundleOf('core')
     expect(core.meta.features).toEqual([])
     for (const name of interfaceNames(core.types)) {
-      expect(name, `core 里出现了特性接口 ${name}`).toMatch(/CoreProps$/)
+      // XxxSlots 是选中导出的基础契约（A21），与 CoreProps 同属允许项；特性接口恒以 Props 结尾
+      expect(name, `core 里出现了特性接口 ${name}`).toMatch(/CoreProps$|Slots$/)
     }
   })
 
