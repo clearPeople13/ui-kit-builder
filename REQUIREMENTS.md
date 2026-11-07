@@ -2,73 +2,73 @@
 
 ## 目录
 
-| 章节 | 标题 |
-| --- | --- |
-| [§1](#s1) | 需求背景 |
-| [§2](#s2) | 需求范围 |
-| [§3](#s3) | 关键设计决定 |
-| [§4](#s4) | 验收标准 |
-| [§5](#s5) | 已知缺陷清单（首批记录，现已全部修复） |
-| [§6](#s6) | 后续批次建议 |
-| [§7](#s7) | 第二批交付（15 个组件文件、319 条组件用例 + 15 条缺陷守卫，守卫已随 §7.2 降级） |
-| [§8](#s8) | 第三批交付（6 个构建器侧测试文件、68 条用例，分支 `feature/20261107-tests-batch3`） |
-| [§9](#s9) | 第四批交付（质量门禁：真实浏览器层 + 统一入口，分支 `feature/20261107-quality-gate`） |
+| 章节        | 标题                                                                                                      |
+| ----------- | --------------------------------------------------------------------------------------------------------- |
+| [§1](#s1)   | 需求背景                                                                                                  |
+| [§2](#s2)   | 需求范围                                                                                                  |
+| [§3](#s3)   | 关键设计决定                                                                                              |
+| [§4](#s4)   | 验收标准                                                                                                  |
+| [§5](#s5)   | 已知缺陷清单（首批记录，现已全部修复）                                                                    |
+| [§6](#s6)   | 后续批次建议                                                                                              |
+| [§7](#s7)   | 第二批交付（15 个组件文件、319 条组件用例 + 15 条缺陷守卫，守卫已随 §7.2 降级）                           |
+| [§8](#s8)   | 第三批交付（6 个构建器侧测试文件、68 条用例，分支 `feature/20261107-tests-batch3`）                       |
+| [§9](#s9)   | 第四批交付（质量门禁：真实浏览器层 + 统一入口，分支 `feature/20261107-quality-gate`）                     |
 | [§10](#s10) | 第五批交付（全 profile 运行时校验 + 门禁阶段化与提交钩子，分支 `feature/20261107-every-profile-runtime`） |
-| [§11](#s11) | 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`） |
-| [§12](#s12) | 第七批交付（覆盖率阈值 + 像素基线，分支 `feature/20261107-coverage-pixel-baseline`） |
-| [§13](#s13) | 缺陷修复：特性-属性归属（分支 `fix/20261107-prop-attribution`） |
-| [§14](#s14) | 构建流水线优化（分支 `perf/20261107-build-pipeline`） |
-| [§15](#s15) | 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`） |
-| [§16](#s16) | 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`） |
-| [§17](#s17) | 第十批：调试台产物隔离与视觉体检补齐消费方路径（F-67） |
-| [§18](#s18) | 第十一批交付（工程与测试优化 · B1：门禁短路与产物安全，分支 `feature/20261107-optimization-plan`） |
-| [§19](#s19) | 第十一批交付（工程与测试优化 · B2：构建缓存与清单单一来源，分支 `feature/20261107-optimization-plan`） |
-| [§20](#s20) | 第十一批交付（工程与测试优化 · B3a：工具链测试，分支 `feature/20261107-optimization-plan`） |
-| [§21](#s21) | 第十一批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍） |
-| [§22](#s22) | 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`） |
-| [§23](#s23) | 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`） |
-| [§24](#s24) | 选择器统一：只保留 Select 并吸收大数据虚拟列表（分支 `feature/20261107-select-unification`） |
-| [§25](#s25) | 虚拟列表统一：一套算法、一个组件、真按需打包（分支 `feature/20261107-virtual-list-unify`） |
+| [§11](#s11) | 第六批交付（63 个组件目录全量接入用例，分支 `feature/20261107-tests-batch6`）                             |
+| [§12](#s12) | 第七批交付（覆盖率阈值 + 像素基线，分支 `feature/20261107-coverage-pixel-baseline`）                      |
+| [§13](#s13) | 缺陷修复：特性-属性归属（分支 `fix/20261107-prop-attribution`）                                           |
+| [§14](#s14) | 构建流水线优化（分支 `perf/20261107-build-pipeline`）                                                     |
+| [§15](#s15) | 第八批交付（场景缺陷闭环 + 治理校验，分支 `feature/20261107-scene-defect-closure`）                       |
+| [§16](#s16) | 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`）                                     |
+| [§17](#s17) | 第十批：调试台产物隔离与视觉体检补齐消费方路径（F-67）                                                    |
+| [§18](#s18) | 第十一批交付（工程与测试优化 · B1：门禁短路与产物安全，分支 `feature/20261107-optimization-plan`）        |
+| [§19](#s19) | 第十一批交付（工程与测试优化 · B2：构建缓存与清单单一来源，分支 `feature/20261107-optimization-plan`）    |
+| [§20](#s20) | 第十一批交付（工程与测试优化 · B3a：工具链测试，分支 `feature/20261107-optimization-plan`）               |
+| [§21](#s21) | 第十一批交付（工程与测试优化 · B3b：浏览器矩阵、覆盖率与无障碍）                                          |
+| [§22](#s22) | 第十一批 B4：一致性与检查范围（分支 `feature/20261107-optimization-plan`）                                |
+| [§23](#s23) | 第十一批 B5：文档、入口与服务端 CI（分支 `docs/20261107-docs-and-ci-entry`）                              |
+| [§24](#s24) | 选择器统一：只保留 Select 并吸收大数据虚拟列表（分支 `feature/20261107-select-unification`）              |
+| [§25](#s25) | 虚拟列表统一：一套算法、一个组件、真按需打包（分支 `feature/20261107-virtual-list-unify`）                |
 
 ## 缺陷编号索引
 
 每条缺陷的登记行（现象 / 根因 / 修复落点）都在对应章节的表格里；编号连续性与唯一性由 `scripts/verify-governance.mjs`（门禁 `governance` 段）校验。
 
-| 缺陷 | 章节 |
-| --- | --- |
-| F-1 | [§5](#s5) |
-| F-2 | [§5](#s5) |
-| F-3 | [§5](#s5) |
-| F-4 | [§5](#s5) |
-| F-5 | [§5](#s5) |
-| F-6 | [§5](#s5) |
-| F-7 | [§5](#s5) |
-| F-8 | [§5](#s5) |
-| F-9 | [§5](#s5) |
-| F-10 | [§5](#s5) |
-| F-11 | [§7](#s7) |
-| F-12 | [§7](#s7) |
-| F-13 | [§7](#s7) |
-| F-14 | [§7](#s7) |
-| F-15 | [§7](#s7) |
-| F-16 | [§7](#s7) |
-| F-17 | [§7](#s7) |
-| F-18 | [§7](#s7) |
-| F-19 | [§7](#s7) |
-| F-20 | [§7](#s7) |
-| F-21 | [§7](#s7) |
-| F-22 | [§7](#s7) |
-| F-23 | [§7](#s7) |
-| F-24 | [§7](#s7) |
-| F-25 | [§7](#s7) |
-| F-26 | [§8](#s8) |
-| F-27 | [§8](#s8) |
-| F-28 | [§8](#s8) |
-| F-29 | [§9](#s9) |
-| F-30 | [§9](#s9) |
-| F-31 | [§9](#s9) |
-| F-32 | [§9](#s9) |
-| F-33 | [§9](#s9) |
+| 缺陷 | 章节        |
+| ---- | ----------- |
+| F-1  | [§5](#s5)   |
+| F-2  | [§5](#s5)   |
+| F-3  | [§5](#s5)   |
+| F-4  | [§5](#s5)   |
+| F-5  | [§5](#s5)   |
+| F-6  | [§5](#s5)   |
+| F-7  | [§5](#s5)   |
+| F-8  | [§5](#s5)   |
+| F-9  | [§5](#s5)   |
+| F-10 | [§5](#s5)   |
+| F-11 | [§7](#s7)   |
+| F-12 | [§7](#s7)   |
+| F-13 | [§7](#s7)   |
+| F-14 | [§7](#s7)   |
+| F-15 | [§7](#s7)   |
+| F-16 | [§7](#s7)   |
+| F-17 | [§7](#s7)   |
+| F-18 | [§7](#s7)   |
+| F-19 | [§7](#s7)   |
+| F-20 | [§7](#s7)   |
+| F-21 | [§7](#s7)   |
+| F-22 | [§7](#s7)   |
+| F-23 | [§7](#s7)   |
+| F-24 | [§7](#s7)   |
+| F-25 | [§7](#s7)   |
+| F-26 | [§8](#s8)   |
+| F-27 | [§8](#s8)   |
+| F-28 | [§8](#s8)   |
+| F-29 | [§9](#s9)   |
+| F-30 | [§9](#s9)   |
+| F-31 | [§9](#s9)   |
+| F-32 | [§9](#s9)   |
+| F-33 | [§9](#s9)   |
 | F-34 | [§10](#s10) |
 | F-35 | [§10](#s10) |
 | F-36 | [§10](#s10) |
@@ -270,7 +270,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | 编号 | 位置                    | 原现象                                                                           | 根因                                                                                                                                       | 修复                                                                                                                                                                                               | 回归用例                                                                                                                                                                      |
 | ---- | ----------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-26 | `scripts/build-lib.mjs` | `meta.features` 报 179 条，入口 `entry.ts` 出现重复 import 语句                  | 同一个特性可以挂在同组件的多个导出上（`table.selection` 同时在 `Table` 与 `TableColumn`），`generateEntry` 按"导出 × 特性"逐条推送，没去重 | 入口生成按 `导出名 + 模块` 去重 import、按特性 id 去重 `activeFeatures`；类型生成侧同样按 id 去重                                                                                                  | `profile-contract.spec.ts`「features 是 registry 声明顺序下的特性 id，且不含重复项」+ `tree-shaking.spec.ts`「entry.ts 的特性 import 恰好等于被选中的特性模块，且没有重复行」 |
-| F-27 | `scripts/build-all.mjs` | `sizes.json.features` 恒为空对象，构建器界面拿不到"单个特性的体积成本"           | 增量靠"恰好等于 `requires` 与 `requires + [id]` 的两份 profile"配对求得；仓库里除 core（0 特性）外 19 份都是全特性集，任何配对都不成立     | 已修：对每个特性构建一份「full 去掉该特性」的临时产物与 `full` 相减，得到该特性在完整产物里的边际成本；178 个特性全部有数据，临时产物构建后清理 | `size-budget.spec.ts`「features 段覆盖全部 178 个特性，且每项都是非负增量」 |
+| F-27 | `scripts/build-all.mjs` | `sizes.json.features` 恒为空对象，构建器界面拿不到"单个特性的体积成本"           | 增量靠"恰好等于 `requires` 与 `requires + [id]` 的两份 profile"配对求得；仓库里除 core（0 特性）外 19 份都是全特性集，任何配对都不成立     | 已修：对每个特性构建一份「full 去掉该特性」的临时产物与 `full` 相减，得到该特性在完整产物里的边际成本；178 个特性全部有数据，临时产物构建后清理                                                    | `size-budget.spec.ts`「features 段覆盖全部 178 个特性，且每项都是非负增量」                                                                                                   |
 | F-28 | `normalizePropType`     | `index.d.ts` 里出现 `((...args: any[]) => any \| any[])`，数组分支被吞进返回类型 | 括号深度表把 `=>` 的 `>` 当右括号，深度穿到负数，箭头函数之后的顶层 `\|` 不再拆分                                                          | 深度计算跳过 `=` 之后的 `>`；两份 `spec.mjs` 把有歧义的类型写成显式括号（`((...args: any[]) => any) \| any[]`、`(value: string) => (boolean \| string \| undefined)`），生成器 `tsType` 同步补括号 | `builder-functions.spec.ts`「F-28：=> 的右尖括号不计入括号深度」「d.ts 里每一行属性类型都已规范化且幂等」                                                                     |
 
 <a id="s9"></a>
@@ -281,29 +281,29 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 ### 9.1 门禁清单（`npm run quality`）
 
-| 顺序 | 入口                      | 规模                         | 堵住的缺口                                                                    |
-| ---- | ------------------------- | ---------------------------- | ----------------------------------------------------------------------------- |
-| 1    | `npm run format:check`    | 全仓 ts / mjs                | 格式漂移导致评审 diff 失真                                                    |
-| 2    | `npm run typecheck`       | 库 + 用例两份工程            | 组件属性表与用例的拼写错误；新增 `tsconfig.tests.json` 把 `tests/**` 纳入检查 |
-| 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                               |
-| 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                      |
-| 5    | `npm test`                | 94 文件 1570 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖，无占位跳过）         |
-| 6    | `npm run test:build`      | 7 文件 89 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                   |
+| 顺序 | 入口                      | 规模                         | 堵住的缺口                                                                             |
+| ---- | ------------------------- | ---------------------------- | -------------------------------------------------------------------------------------- |
+| 1    | `npm run format:check`    | 全仓 ts / mjs                | 格式漂移导致评审 diff 失真                                                             |
+| 2    | `npm run typecheck`       | 库 + 用例两份工程            | 组件属性表与用例的拼写错误；新增 `tsconfig.tests.json` 把 `tests/**` 纳入检查          |
+| 3    | `npm run lint`            | eslint 全仓                  | 单行 `if`、`==`、`var` 等一致性                                                        |
+| 4    | `npm run verify`          | 库级校验                     | 产物存在性、API 一致性、图标名单三方对齐                                               |
+| 5    | `npm test`                | 94 文件 1570 条              | 组件行为、属性、事件、边界（happy-dom，90 个目录全覆盖，无占位跳过）                   |
+| 6    | `npm run test:build`      | 7 文件 89 条                 | 裁剪、令牌、体积、类型生成（20 份 profile）                                            |
 | 7    | `npm run test:browser`    | 9 文件 51 条                 | 真实布局 / 定位 / 滚动 / 拖拽 / 键盘 / 控制台归零 / 属性落盘 / 布局基线 / 固钉回顶引导 |
-| 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                            |
+| 8    | `npm run verify:consumer` | 正向类型 + 8 条反向 + 运行时 | 消费方按产物消费时的类型契约与渲染                                                     |
 
 ### 9.2 浏览器层用例（`tests/browser/**`，Chromium + 固定 1280×720）
 
-| 文件                                                                       | 用例 | 盯住的缺口                                                                               |
-| -------------------------------------------------------------------------- | ---- | ---------------------------------------------------------------------------------------- |
-| [tests/browser/floating.spec.ts](tests/browser/floating.spec.ts)           | 8    | 贴边翻转、右沿夹取、Select 面板等宽、滚动时面板与触发器相对位移恒定                      |
-| [tests/browser/table.spec.ts](tests/browser/table.spec.ts)                 | 6    | body 独立滚动而表头 / 合计固定、横向 scrollLeft 同步、冻结列贴边、列宽拖拽落列、合计数值 |
-| [tests/browser/tree.spec.ts](tests/browser/tree.spec.ts)                   | 4    | 5000 子节点展开耗时（实测 96 ms，门禁 800 ms）、逐层展开的节点数与 `node-click`          |
-| [tests/browser/interaction.spec.ts](tests/browser/interaction.spec.ts)     | 5    | 取色器 SV 区 / 色相条的真实矩形命中、点选与按住拖动的连续更新、十六进制回显一致          |
-| [tests/browser/a11y.spec.ts](tests/browser/a11y.spec.ts)                   | 7    | Tab 序列命中触发器 / 标签页 / 开关、Enter 展开、Space 收起、Escape 关闭、焦点可见        |
-| [tests/browser/attributes.spec.ts](tests/browser/attributes.spec.ts)       | 3    | 以 `spec.mjs` 为清单的 `id` 落盘扫描、全导出字符串 `style` 扫描、Popover 样式路由        |
-| [tests/browser/console-clean.spec.ts](tests/browser/console-clean.spec.ts) | 3    | 全家桶默认属性渲染零告警 / 零异常、渲染数量与尺寸下限                                    |
-| [tests/browser/visual.spec.ts](tests/browser/visual.spec.ts)               | 6    | 六个场景的布局指纹与基线比对（容差 1px，按平台分桶，`npm run snap:layout` 重录）         |
+| 文件                                                                       | 用例 | 盯住的缺口                                                                                                   |
+| -------------------------------------------------------------------------- | ---- | ------------------------------------------------------------------------------------------------------------ |
+| [tests/browser/floating.spec.ts](tests/browser/floating.spec.ts)           | 8    | 贴边翻转、右沿夹取、Select 面板等宽、滚动时面板与触发器相对位移恒定                                          |
+| [tests/browser/table.spec.ts](tests/browser/table.spec.ts)                 | 6    | body 独立滚动而表头 / 合计固定、横向 scrollLeft 同步、冻结列贴边、列宽拖拽落列、合计数值                     |
+| [tests/browser/tree.spec.ts](tests/browser/tree.spec.ts)                   | 4    | 5000 子节点展开耗时（实测 96 ms，门禁 800 ms）、逐层展开的节点数与 `node-click`                              |
+| [tests/browser/interaction.spec.ts](tests/browser/interaction.spec.ts)     | 5    | 取色器 SV 区 / 色相条的真实矩形命中、点选与按住拖动的连续更新、十六进制回显一致                              |
+| [tests/browser/a11y.spec.ts](tests/browser/a11y.spec.ts)                   | 7    | Tab 序列命中触发器 / 标签页 / 开关、Enter 展开、Space 收起、Escape 关闭、焦点可见                            |
+| [tests/browser/attributes.spec.ts](tests/browser/attributes.spec.ts)       | 3    | 以 `spec.mjs` 为清单的 `id` 落盘扫描、全导出字符串 `style` 扫描、Popover 样式路由                            |
+| [tests/browser/console-clean.spec.ts](tests/browser/console-clean.spec.ts) | 3    | 全家桶默认属性渲染零告警 / 零异常、渲染数量与尺寸下限                                                        |
+| [tests/browser/visual.spec.ts](tests/browser/visual.spec.ts)               | 6    | 六个场景的布局指纹与基线比对（容差 1px，按平台分桶，`npm run snap:layout` 重录）                             |
 | [tests/browser/sticky.spec.ts](tests/browser/sticky.spec.ts)               | 9    | 固钉吸附阈值与占位尺寸、容器内回顶 calc 贴边、平滑滚回顶部并收起、引导面板 placement / offset 贴靠与高亮包裹 |
 
 支撑件：`vitest.browser.config.ts`（串行、60 s 超时）、`tests/browser/_global-setup.ts`（仓库根起 Vite dev server，并 `define` 三个 Vue feature flags 常量）、`tests/browser/harness/`（`?scene=` 选场景，`window.__probe` 回传运行期事实，`window.__kit` / `__vue` 供页面内直接挂载）、`tests/browser/_session.ts`（会话与断言工具箱）、`tests/browser/_geometry.ts`（锚点表 + 指纹采集 + 差异报告）。
@@ -338,12 +338,12 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 
 `npm run quality` 与 `npm run ci` 现在是同一条命令（`node scripts/ci.mjs`）：先统一构建一次，再依次跑格式 → 类型（库 + 用例）→ lint → 库级校验 → 治理校验 → 组件用例 → 构建器侧契约 → **20 份 profile 运行时** → 真实浏览器层 → **视觉体检** → **源码覆盖率阈值** → 消费方校验。runner 可以只看退出码与机读的 `ci-report.json`（已 gitignore）判定，不必 grep 终端输出。
 
-| 段落     | 命令                                   | 说明                                                                     |
-| -------- | -------------------------------------- | ------------------------------------------------------------------------ |
-| 秒级五段 | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验 / 治理校验，`.githooks/pre-commit` 就是它 |
-| 全量十三段 | `npm run ci`                         | 先统一构建一次，后续各层复用，含四层用例、视觉体检、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
-| 单段     | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位（该段仍会自行构建）                         |
-| 装钩子   | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门 |
+| 段落       | 命令                                   | 说明                                                                                                                    |
+| ---------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 秒级五段   | `npm run ci:fast`                      | 格式 / 类型 / lint / 库级校验 / 治理校验，`.githooks/pre-commit` 就是它                                                 |
+| 全量十三段 | `npm run ci`                           | 先统一构建一次，后续各层复用，含四层用例、视觉体检、源码覆盖率、profile 运行时与消费方校验，`.githooks/pre-push` 就是它 |
+| 单段       | `node scripts/ci.mjs --stage profiles` | 只跑名字命中的阶段，便于定位（该段仍会自行构建）                                                                        |
+| 装钩子     | `npm run hooks:install`                | `git config core.hooksPath .githooks`，一次即可；`SKIP_HOOKS=1` 留逃生门                                                |
 
 ### 10.2 profile 运行时用例（`tests/profiles/**`，142 条）
 
@@ -363,7 +363,7 @@ F-11 的口径澄清：只有"类名与同名布尔开关 prop 对应"却写成�
 | ---- | ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-34 | 仓库 git 配置 / `.prettierrc.json` | 换一台机器全新 clone 后 `npm run quality` 第一段就红：144 个文件格式不合规 | `core.autocrlf=true` 把签出文本变成 CRLF，而 `endOfLine: "lf"` 不容许；门禁此前只在"本机首次构建出来的工作树"上成立 | 已修：新增 `.gitattributes`（`* text=auto eol=lf` + 二进制标注）并全仓 renormalize，main `539877a`                                                                                             |
 | F-35 | `countdown/core.ts:110`            | 发出 `ui-countdown__time` 类名，20 份产物里没有任何一条规则选中它          | 时间文本从未有过专属样式，数字抖动时宽度会跳                                                                        | 已修：`countdown/core.css` 补 `.ui-countdown__time { font-variant-numeric: tabular-nums }`（与 `__value` 继承值一致，浏览器层 42 条与布局基线全绿，证明零渲染变化），`DEAD_CLASS_NAMES` 已清空 |
-| F-36 | `watermark` 核心                   | `ui-watermark__layer` 同样是死类名                                         | 图层靠内联样式定位，类名只是占位                                                                                    | 已修：`watermark/core.css` 补 `.ui-watermark__layer { user-select: none }`，图层类名成为可覆写的真实落点（分支 `fix/20261107-dead-class-names`），`dead-classes` 守卫转绿 |
+| F-36 | `watermark` 核心                   | `ui-watermark__layer` 同样是死类名                                         | 图层靠内联样式定位，类名只是占位                                                                                    | 已修：`watermark/core.css` 补 `.ui-watermark__layer { user-select: none }`，图层类名成为可覆写的真实落点（分支 `fix/20261107-dead-class-names`），`dead-classes` 守卫转绿                      |
 
 同批还发现 `ui-rate__icon--void` 无独立规则，但状态修饰类允许由基础规则兜底（Alert 的默认 `effect=light` 同理），不计入缺陷，用例也只对 `前缀-组件` 与 `前缀-组件__元素` 两类结构性类名要求样式覆盖。
 
@@ -404,20 +404,20 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 新接入的 63 个组件在写用例的过程中又暴露了一批"声明与实现脱钩"的问题，全部按同一约定处理：先用 `it.fails` 守卫记录 → 修源码 → 守卫降级为常规用例。
 
-| 编号 | 位置                         | 现象                                                                                   | 根因                                                                                                                  | 修复                                                                                                   | 回归用例                      |
-| ---- | ---------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------- |
-| F-39 | Link、Result                 | 传 `tag="span"` / `tag="section"` 不换标签，只把无效属性漏到 DOM 上                     | 两处 `tag` 读取都写在 `tag: (props) => …` 里，但 props 表从未声明 `tag`，值只进 attrs                               | 两处 core props 补 `tag: { type: String }`（无 default，保住"没传就用默认标签"），spec.mjs 同步             | link.spec / result.spec       |
-| F-40 | DatePickerPanel              | `type: 'month'` 提交 `2026-03-01`、`type: 'year'` 提交 `2022-01-01`                     | `outputFormat()` 只读 `valueFormat / dateFormat`，缺省恒为 `YYYY-MM-DD`，没按粒度收敛                                  | 缺省输出按 `gridType()` 分支：月 `YYYY-MM`、年 `YYYY`、日 `YYYY-MM-DD`                                  | date-picker-panel.spec        |
-| F-41 | Slider popper 特性           | 垂直滑块的气泡仍贴顶部（`is-top`），而不是右侧                                         | 特性声明给 `placement` 设了 `default: 'top'`，`behavior.ts` 里 `vertical ? 'right' : 'top'` 的兜底永远走不到           | 去掉 default，改为缺省 `undefined`；spec.mjs 的 default 同步为 `null`                                   | slider.spec                   |
-| F-42 | `shared/behavior.ts` range   | 低位从 20 拖到 30 后，`change` 仍回吐 `[20, 60]`                                        | `onChange` 读的是 props 派生的 `rangeLow / rangeHigh`，父层尚未回写时落后一拍                                           | `onChange` 改读原生输入框当前值并做 min/max 归一                                                         | slider.spec                   |
-| F-43 | ColorPickerPanel             | `predefine: ['red']` 点选得到兜底蓝 `#409eff`                                           | `parseColor` 只认 `#` / `rgb()` / `hsl()`，颜色名直接落兜底                                                           | 兜底前加 `chroma.valid` 分支（与 ColorPicker 同源依赖），颜色名归一为 RGBA                              | color-picker-panel.spec       |
-| F-44 | InputTag                     | `trigger: 'Both'` 按空格不提交，退化成只认 Enter                                       | `Both` 在映射表里是 `null`，`TRIGGER_KEY_MAP[...] ?? 'Enter'` 把 null 当成缺省值，`null` 分支永不可达                  | 改为 `in` 判键存在，null 分支按 "Enter 与空格都提交" 处理                                                | input-tag.spec                |
-| F-45 | PopperContent                | `className` 完全丢失                                                                   | `attrs` 返回的 `class` 被 `component.ts` 用宿主 `attrs.class` 重建的 class 数组覆盖                                    | `className` 改走 `classes` 合并（字符串 / 数组 / 对象 / 布尔四档归一）                                  | popper.spec                   |
-| F-46 | PopperContent                | `content / label / title` 只落到 HTML 属性，面板内无文本                               | props 表未声明这五个内容位，`content()` 的回退链读到的全是 `undefined`                                                | props 表补 `content / label / title / description / value`，spec.mjs 同步                                | popper.spec                   |
-| F-47 | SelectV2                     | 非过滤态下焦点在触发器按 Escape 不收起面板                                             | Escape 只绑在面板上，面板是触发器的兄弟节点，键盘事件到不了                                                            | 触发器 `onKeydown` 补 Escape → `hideDropdown()`                                                         | select-v2.spec                |
-| F-48 | TreeSelect                   | 触发器 `tabindex=0` 可聚焦，但 Enter / Space 无任何反应                                 | 触发器只挂了 `onClick`，没有键盘通路                                                                                  | 触发器补 `onKeydown`：Enter / Space 开合、Escape 收起                                                   | tree-select.spec              |
-| F-49 | CheckTag                     | `type` 声明了 primary / success / info / warning / danger，但任意值都不产生修饰类名     | `classes` 只拼了 `is-checked` / `is-disabled`，从未消费 `type`                                                        | 四个有独立配色规则的变体发 `ui-check-tag--{type}`；primary 走基础规则，不造无样式规则的死类名             | check-tag.spec                |
-| F-50 | Notification                 | 传 `modelValue=false` 不会隐藏，值只漏成属性                                           | `overlayConfig` 以 `modelValue` 为可见性通道，但组件 props 表没声明它，`resolveVisible` 永远取缺省 `true`               | props 表补 `modelValue: { type: Boolean, default: true }`，spec.mjs 同步                                | notification.spec             |
+| 编号 | 位置                       | 现象                                                                                | 根因                                                                                                         | 修复                                                                                            | 回归用例                |
+| ---- | -------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ----------------------- |
+| F-39 | Link、Result               | 传 `tag="span"` / `tag="section"` 不换标签，只把无效属性漏到 DOM 上                 | 两处 `tag` 读取都写在 `tag: (props) => …` 里，但 props 表从未声明 `tag`，值只进 attrs                        | 两处 core props 补 `tag: { type: String }`（无 default，保住"没传就用默认标签"），spec.mjs 同步 | link.spec / result.spec |
+| F-40 | DatePickerPanel            | `type: 'month'` 提交 `2026-03-01`、`type: 'year'` 提交 `2022-01-01`                 | `outputFormat()` 只读 `valueFormat / dateFormat`，缺省恒为 `YYYY-MM-DD`，没按粒度收敛                        | 缺省输出按 `gridType()` 分支：月 `YYYY-MM`、年 `YYYY`、日 `YYYY-MM-DD`                          | date-picker-panel.spec  |
+| F-41 | Slider popper 特性         | 垂直滑块的气泡仍贴顶部（`is-top`），而不是右侧                                      | 特性声明给 `placement` 设了 `default: 'top'`，`behavior.ts` 里 `vertical ? 'right' : 'top'` 的兜底永远走不到 | 去掉 default，改为缺省 `undefined`；spec.mjs 的 default 同步为 `null`                           | slider.spec             |
+| F-42 | `shared/behavior.ts` range | 低位从 20 拖到 30 后，`change` 仍回吐 `[20, 60]`                                    | `onChange` 读的是 props 派生的 `rangeLow / rangeHigh`，父层尚未回写时落后一拍                                | `onChange` 改读原生输入框当前值并做 min/max 归一                                                | slider.spec             |
+| F-43 | ColorPickerPanel           | `predefine: ['red']` 点选得到兜底蓝 `#409eff`                                       | `parseColor` 只认 `#` / `rgb()` / `hsl()`，颜色名直接落兜底                                                  | 兜底前加 `chroma.valid` 分支（与 ColorPicker 同源依赖），颜色名归一为 RGBA                      | color-picker-panel.spec |
+| F-44 | InputTag                   | `trigger: 'Both'` 按空格不提交，退化成只认 Enter                                    | `Both` 在映射表里是 `null`，`TRIGGER_KEY_MAP[...] ?? 'Enter'` 把 null 当成缺省值，`null` 分支永不可达        | 改为 `in` 判键存在，null 分支按 "Enter 与空格都提交" 处理                                       | input-tag.spec          |
+| F-45 | PopperContent              | `className` 完全丢失                                                                | `attrs` 返回的 `class` 被 `component.ts` 用宿主 `attrs.class` 重建的 class 数组覆盖                          | `className` 改走 `classes` 合并（字符串 / 数组 / 对象 / 布尔四档归一）                          | popper.spec             |
+| F-46 | PopperContent              | `content / label / title` 只落到 HTML 属性，面板内无文本                            | props 表未声明这五个内容位，`content()` 的回退链读到的全是 `undefined`                                       | props 表补 `content / label / title / description / value`，spec.mjs 同步                       | popper.spec             |
+| F-47 | SelectV2                   | 非过滤态下焦点在触发器按 Escape 不收起面板                                          | Escape 只绑在面板上，面板是触发器的兄弟节点，键盘事件到不了                                                  | 触发器 `onKeydown` 补 Escape → `hideDropdown()`                                                 | select-v2.spec          |
+| F-48 | TreeSelect                 | 触发器 `tabindex=0` 可聚焦，但 Enter / Space 无任何反应                             | 触发器只挂了 `onClick`，没有键盘通路                                                                         | 触发器补 `onKeydown`：Enter / Space 开合、Escape 收起                                           | tree-select.spec        |
+| F-49 | CheckTag                   | `type` 声明了 primary / success / info / warning / danger，但任意值都不产生修饰类名 | `classes` 只拼了 `is-checked` / `is-disabled`，从未消费 `type`                                               | 四个有独立配色规则的变体发 `ui-check-tag--{type}`；primary 走基础规则，不造无样式规则的死类名   | check-tag.spec          |
+| F-50 | Notification               | 传 `modelValue=false` 不会隐藏，值只漏成属性                                        | `overlayConfig` 以 `modelValue` 为可见性通道，但组件 props 表没声明它，`resolveVisible` 永远取缺省 `true`    | props 表补 `modelValue: { type: Boolean, default: true }`，spec.mjs 同步                        | notification.spec       |
 
 另有一条复核后判定"不是缺陷"：Popconfirm 的 `hideAfter` 只在触发器 `mouseleave` 后延迟收起，确认 / 取消按钮点击立即关闭——与 Element Plus 口径一致，`spec.mjs` 的描述没写清作用范围。守卫已改为契约用例，明确"按钮路径不受 `hideAfter` 影响"。
 
@@ -430,21 +430,21 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 ### 11.5 六批次与缺陷收口
 
-| 批次   | 交付内容                                                        | 分支                                        | 缺陷                      |
-| ------ | --------------------------------------------------------------- | ------------------------------------------- | ------------------------- |
-| 首批   | 13 个测试文件 258 条，核心组件行为与属性                        | `feature/20261106-component-tests`          | F-1…F-18，另开修复分支     |
-| 缺陷修 | `it.fails` 守卫全部降级为常规用例                               | `fix/20261106-component-defects`            | F-1…F-18 修复与回归       |
-| 第二批 | 15 个组件 319 条 + 守卫降级，28 文件 612 条                     | `feature/20261106-component-tests-batch2`   | F-19…F-25，修复分支并行    |
-| 第三批 | 构建器侧 6 文件 68 条：裁剪、令牌、体积、类型                   | `feature/20261107-tests-batch3`             | F-26、F-28 修复；F-27 记录 |
-| 第四批 | 真实浏览器层 8 文件 42 条 + 统一门禁 `quality`                  | `feature/20261107-quality-gate`             | F-29…F-33                  |
-| 第五批 | 20 份 profile 运行时 2 文件 142 条 + 阶段化 runner 与钩子       | `feature/20261107-every-profile-runtime`    | —                         |
-| 第六批 | 63 个组件目录全量接入，94 文件 1576 条；属性字典双向回查 41 条 | `feature/20261107-tests-batch6`             | F-39…F-50                  |
-| 收口   | 15 条类型基线清零、格式与 lint 归零、全部合入 `main`            | `main`                                      | F-34…F-38（前批遗留）      |
+| 批次   | 交付内容                                                       | 分支                                      | 缺陷                       |
+| ------ | -------------------------------------------------------------- | ----------------------------------------- | -------------------------- |
+| 首批   | 13 个测试文件 258 条，核心组件行为与属性                       | `feature/20261106-component-tests`        | F-1…F-18，另开修复分支     |
+| 缺陷修 | `it.fails` 守卫全部降级为常规用例                              | `fix/20261106-component-defects`          | F-1…F-18 修复与回归        |
+| 第二批 | 15 个组件 319 条 + 守卫降级，28 文件 612 条                    | `feature/20261106-component-tests-batch2` | F-19…F-25，修复分支并行    |
+| 第三批 | 构建器侧 6 文件 68 条：裁剪、令牌、体积、类型                  | `feature/20261107-tests-batch3`           | F-26、F-28 修复；F-27 记录 |
+| 第四批 | 真实浏览器层 8 文件 42 条 + 统一门禁 `quality`                 | `feature/20261107-quality-gate`           | F-29…F-33                  |
+| 第五批 | 20 份 profile 运行时 2 文件 142 条 + 阶段化 runner 与钩子      | `feature/20261107-every-profile-runtime`  | —                          |
+| 第六批 | 63 个组件目录全量接入，94 文件 1576 条；属性字典双向回查 41 条 | `feature/20261107-tests-batch6`           | F-39…F-50                  |
+| 收口   | 15 条类型基线清零、格式与 lint 归零、全部合入 `main`           | `main`                                    | F-34…F-38（前批遗留）      |
 
 - 前六批共记录 50 条缺陷（F-1…F-50），全部已修复且都留有会红的回归用例；守卫文件 `tests/findings.spec.ts` 已随修复删除，不允许以 `it.fails` 长期挂账。后续第七批、特性-属性修复与构建流水线优化新增的缺陷见 §12、§13、§14、§15。
 - 15 条分支（8 条 `feature/*`、7 条 `fix/*`）全部已合入默认分支 `main`，合并后 `git branch --merged main` 覆盖全部分支；Gitee 侧 issue（IKTJSG、IKTJS5）均为 closed，PR #1、#2 均为 merged，无遗留待办。
 - 收口后的门禁基线：组件层 94 文件 1570 条、构建器层 7 文件 89 条、profile 运行时 2 文件 142 条、浏览器层 10 文件 58 条、`verify` 2239 项、消费方正反向类型与运行时校验，合计 1859 条用例；另有覆盖率层在同一批组件用例上重放并卡阈值（不重复计入条数，见 §12）。
-- 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/**"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
+- 原先把 affix / backtop / tour 的 6 条 `it.skip` 占位（注释写着"归 tests/browser/\*\*"）全部落地为真实浏览器用例 `tests/browser/sticky.spec.ts`，组件层从此没有占位跳过。
 
 <a id="s12"></a>
 
@@ -456,13 +456,13 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 直接给主配置加 `--coverage` 只能统计到 `dist/full/ui-kit.js` 这一个 bundle 的行覆盖——数字再高也说不出"哪个组件没被测到"。本批新增 `vitest.coverage.config.ts`：仍跑 `tests/components/**` 的同一批用例，但把 `@ui-kit-full` 指向 `.build/full/entry.ts` 源码入口。full profile 下产物与源码前缀同为 `ui-`、特性全开，1570 条用例在源码上逐条重放全过——这本身就是"产物与源码行为同构"的旁证。
 
-| 项目         | 说明                                                                                       |
-| ------------ | ------------------------------------------------------------------------------------------ |
-| 统计范围     | `packages/ui-kit/src/**/*.ts`，`all: true`（没被 import 的文件也进分母，删用例不能虚高）    |
-| 实测基线     | statements 88.35%（21031/23802）、branches 84.78%、functions 89.20%、lines 88.35%           |
-| 阈值         | statements 87 / branches 83 / functions 88 / lines 87，只允许往上走                        |
-| 输出         | 终端摘要 + `coverage/coverage-summary.json`（已 gitignore）                                 |
-| 接入门禁     | `npm run test:coverage` 成为第十段                                                          |
+| 项目     | 说明                                                                                     |
+| -------- | ---------------------------------------------------------------------------------------- |
+| 统计范围 | `packages/ui-kit/src/**/*.ts`，`all: true`（没被 import 的文件也进分母，删用例不能虚高） |
+| 实测基线 | statements 88.35%（21031/23802）、branches 84.78%、functions 89.20%、lines 88.35%        |
+| 阈值     | statements 87 / branches 83 / functions 88 / lines 87，只允许往上走                      |
+| 输出     | 终端摘要 + `coverage/coverage-summary.json`（已 gitignore）                              |
+| 接入门禁 | `npm run test:coverage` 成为第十段                                                       |
 
 阈值可失败已验证：临时把 statements 抬到 99% 时 Vitest 打印 `ERROR: Coverage for statements (88.35%) does not meet global threshold (99%)` 并以非零码退出。
 
@@ -479,10 +479,10 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 ### 12.3 第七批缺陷清单
 
-| 编号 | 位置                    | 现象                                                  | 根因                                                                 | 修复                                                                                        |
-| ---- | ----------------------- | ----------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| F-51 | `package.json` 脚本     | `npm run test:coverage` 直接失败，覆盖率长期不可用    | 只有脚本没有 provider 依赖，`@vitest/coverage-v8` 从未安装            | 安装 `@vitest/coverage-v8`（对齐 vitest 3.2.7），补 `vitest.coverage.config.ts` 与阈值门禁   |
-| F-52 | `README.md:11`          | 调试台写"91 个组件的场景预设"，实际 90 个             | `meta:demo` 产出的 `components` 与 `dist/full/meta.json` 都是 90，文档多算了一个 | 改为 90，并以 `examples/consumer/src/demo/meta.json` 为唯一口径                              |
+| 编号 | 位置                | 现象                                               | 根因                                                                             | 修复                                                                                       |
+| ---- | ------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| F-51 | `package.json` 脚本 | `npm run test:coverage` 直接失败，覆盖率长期不可用 | 只有脚本没有 provider 依赖，`@vitest/coverage-v8` 从未安装                       | 安装 `@vitest/coverage-v8`（对齐 vitest 3.2.7），补 `vitest.coverage.config.ts` 与阈值门禁 |
+| F-52 | `README.md:11`      | 调试台写"91 个组件的场景预设"，实际 90 个          | `meta:demo` 产出的 `components` 与 `dist/full/meta.json` 都是 90，文档多算了一个 | 改为 90，并以 `examples/consumer/src/demo/meta.json` 为唯一口径                            |
 
 门禁从九段变十段：`scripts/ci.mjs` 的 STAGES 增加 `test:coverage`（在 `test:browser` 之后），`npm run quality` 与 pre-push 钩子自动包含。
 
@@ -492,8 +492,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 第七批把属性字典的双向守卫收紧到"已启用特性"口径后，暴露出四组把 core prop 记在特性名下的归属错误：这些 props 在组件 `core.ts` 里无条件声明、core 产物里也真实存在，字典却只挂在某个可被裁掉的特性上。后果有两层——开关关掉后属性仍在运行时，但生成的 `index.d.ts` 不再声明它；正向守卫用"任意特性"放行，等于让被关掉的特性替 core prop 背书，再丢也没人发现。
 
-| 编号 | 位置                                      | 现象                                                                 | 根因                                                        | 修复                                                             |
-| ---- | ----------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- |
+| 编号 | 位置                                      | 现象                                                                   | 根因                                                                                                                                         | 修复                                                                          |
+| ---- | ----------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | F-53 | message / skeleton / steps / tree 的 spec | 4 条 core prop 记在特性名下，特性关闭后 d.ts 缺声明而运行时仍有该 prop | `showClose`、`loading`、`icon`、`checkStrictly` 在 `core.ts` 已无条件声明，spec 却重复记在 `closable` / `loading` / `icons` / `selection` 上 | 四条移入对应 export 的 `coreProps`，特性 props 置空或只保留真正由特性提供的项 |
 
 守卫同步收紧：`tests/profiles/props-documented.spec.ts` 的正向检查从"coreProps 或任意 feature"改为"coreProps 加上本 profile 已启用的特性"，与反向完全同口径；原先为这四条开的后门注释一并删除。修复后 20 份 profile 的正反向守卫全绿，`index.d.ts` 与运行时 props 重新一一对应。
@@ -504,8 +504,8 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 第七批之后 `npm run quality` 一次要跑 22 分钟以上，其中绝大部分不是断言，而是重复构建：`build:all` 每次产出 20 份正式 profile + 178 份「full 去掉某特性」的试算产物（合计 198 份），而 `quality` 串行调用 `verify`、`test:build`、`test:profiles` 各自的前置钩子，把这一轮构建重复了三次（约 600 份包）；试算产物还曾写进 `dist/`，中断时会在构建器界面里留下上百个 `feat-*` 包。
 
-| 编号 | 位置 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
+| 编号 | 位置                                                        | 现象                                                                              | 根因                                                                                                   | 修复                                                                                                                                                                                       |
+| ---- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | F-54 | `scripts/build-all.mjs` / `package.json` / `scripts/ci.mjs` | `quality` 一轮重复构建三次，单次 22 分钟以上；试算产物混入 `dist/` 且中断后不清理 | 各层用例用 `pretest` 各自触发 `build:all`/`build:full`；试算产物直接写到 `dist/<name>`；无缓存、无并发 | 门禁改为"先 build 一次，后续切 `verify:reuse` 与 `test:*:run`"；试算产物移入 `.build/feature-deltas/` 并在 `finally` 清理；178 条边际值按源码 sha1 缓存；20 份 profile 与试算池按 6 路并发 |
 
 四层改动：
@@ -527,13 +527,13 @@ F-37 不是孤例，所以本批把同一类坑整体扫了一遍：解析 90 �
 
 TimePicker 被外部指出有问题：F-16 把触发区从纯 `span` 换成真实 `<input>` 时，§7.2 自己写下的"依赖触发区不是表单控件的写法需要复查"一直没人复查。组件层 39 条用例全绿、浏览器层 TimePicker 0 条用例，于是"点输入框会收起面板""输入被面板旧值覆盖"这类问题既修不掉也测不出来。本批不靠补用例数量，而是把流程缺的三道闸做成机器判定。
 
-| 闸   | 落地物                                                                | 失败条件                                                                                 |
-| ---- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| 场景契约化 | `REQUIREMENTS.md` F-NN 登记                                       | 守卫挂账却没登记，治理校验报红                                                       |
-| 必须先见红 | `tests/findings.spec.ts`（`it.fails`），常驻两份 vitest 配置的 include | 未修代码上守卫全绿＝缺陷已复现；修完转红才允许降级                               |
-| 影响面清单 | `scripts/verify-governance.mjs`                                    | 改 `shared/*` 而同族组件缺组件层用例；改交互代码而缺浏览器层场景用例               |
-| 基线零漂移 | `snap:layout` / `snap:pixels` + 覆盖率四维阈值 + `KNOWLEDGE.md` §5.1 归因口径 | 除报障场景外任何漂移，或覆盖率阈值下降                                       |
-| 全链路归档 | `npm run quality`（十二段）                                        | 任一段红                                                                                 |
+| 闸         | 落地物                                                                        | 失败条件                                                             |
+| ---------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 场景契约化 | `REQUIREMENTS.md` F-NN 登记                                                   | 守卫挂账却没登记，治理校验报红                                       |
+| 必须先见红 | `tests/findings.spec.ts`（`it.fails`），常驻两份 vitest 配置的 include        | 未修代码上守卫全绿＝缺陷已复现；修完转红才允许降级                   |
+| 影响面清单 | `scripts/verify-governance.mjs`                                               | 改 `shared/*` 而同族组件缺组件层用例；改交互代码而缺浏览器层场景用例 |
+| 基线零漂移 | `snap:layout` / `snap:pixels` + 覆盖率四维阈值 + `KNOWLEDGE.md` §5.1 归因口径 | 除报障场景外任何漂移，或覆盖率阈值下降                               |
+| 全链路归档 | `npm run quality`（十二段）                                                   | 任一段红                                                             |
 
 治理校验成为门禁第六段：`package.json` 新增 `verify:governance` 并插入 `quality` 链，`scripts/ci.mjs` 的 STAGES 同步增加 `governance`（`fast: true`，pre-commit 也跑），pre-push 注释与 `KNOWLEDGE.md` 的段数口径同步。它做五件静态检查：影响面清单、特性裁剪静态守卫、文档数字与产物对齐（README 组件数 ↔ `examples/consumer/src/demo/meta.json`；quality 段数 ↔ STAGES ↔ KNOWLEDGE 标注）、缺陷编号唯一性与连续性、三处文档的缺陷总数口径。可失败已验证：把 README 的 90 临时改成 91，校验立即报 `README 组件数 91 与 demo/meta.json 的 90 不一致（F-52 复发）` 并以退出码 1 结束，恢复后转绿；编号守卫的可失败验证见 §15.6。
 
@@ -541,19 +541,19 @@ TimePicker 被外部指出有问题：F-16 把触发区从纯 `span` 换成真�
 
 ### 15.2 第八批缺陷清单
 
-| 编号 | 位置                              | 现象                                                                 | 根因                                                                 | 修复 / 守护                                                                                                     |
-| ---- | --------------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| F-55 | `time-picker/core.ts`             | 面板已开时点输入框会收起浮层，无法连续键入                         | `onClick: toggleSide` 挂在触发区 div 上，F-16 新增的 input 点击冒泡触发开关 | input 命中走 `openSide`（只开不关），其余区域仍 toggle；组件层 + 浏览器层各一条                          |
-| F-56 | `time-picker/core.ts`             | 键入草稿未回车就点列项，草稿被打开面板时的旧值覆盖，一次点击两次写回 | `commitDraft` 与 `applyTime` 各自基于不同状态，互不感知             | 统一 `writeValue`（一次操作一次 emit + 乐观同步草稿），`adoptDraft` 让所有写回通道先并入草稿；blur 到面板内部时跳过提交 |
-| F-57 | `shared/date.ts`                  | `abc1:2xyz` / `1:299` / `上午9:30随意` 被吞成合法时间提交           | `parseTimeValue` 正则未首尾锚定                                     | 锚定；新增 `parseTimeText` 按显示格式回输；同族 time-select 的口径变更另有一条用例锁住                     |
-| F-58 | `time-picker/core.ts`             | 照着 `format: 'HH 点 mm 分'` 显示的内容键入无法提交                 | 显示 / 输入 / 输出三套格式没打通                                    | `parseTimeText(text, displayFormat)` 按 pattern 编译正则回输                                                |
-| F-59 | `time-picker/core.ts`             | `defaultValue` / `defaultTime` 只影响面板高亮，输入框空着且默认值永远写不回 | `displayAt` 只读 `modelValue`                                 | 抽 `initialPartsAt` 共用默认值链，显示与初始高亮同一来源                                                   |
-| F-60 | `time-picker/core.ts`             | 区间写回一端带秒一端不带秒（`['03:24:00','18:30']`）               | `applyTime` 只格式化被改的一端                                      | `writeValue` 用 `normalizeModelValue` 规范化两端；原先把混合格式当预期的用例已改正                        |
-| F-61 | `time-picker/core.ts`             | 清空后输入框仍显示旧值                                               | `clearValue` 只 emit，不碰草稿                                      | 清空后同步两端草稿                                                                                              |
-| F-62 | `time-picker/features/clearable`  | `clearable: false` 时 `--clearable` 类名仍挂                        | `className` 把恒真的默认 `clearIcon` 一起判进去                    | 只认 `clearable`；改正组件层错误预期，`feature-class-switch` 补一组正反断言                              |
-| F-63 | `shared/date.ts`                  | `format: 'hh:mm A'` 输出字面量 `hh:24 A`                            | 格式化只支持 24 小时制 token                                        | 支持 `hh` / `h` / `A` / `a`；`hasSecondsToken` 取代 `includes('s')` 避免字面 s 误开秒列                  |
-| F-64 | `time-picker/core.ts`             | 构建时裁掉 `editable` 特性后输入框仍可键入                         | `props.editable !== false` 把"特性未启用=undefined"当成可编辑       | 只认显式 `=== true`；由治理校验的全库静态守卫守护                                                          |
-| F-65 | `date-picker/core.ts`             | 与 F-64 同源，`canEdit` 同样用 `!== false`                          | 全库静态扫描发现                                                    | 同样改为 `=== true`；静态守卫守护                                                                               |
+| 编号 | 位置                             | 现象                                                                        | 根因                                                                        | 修复 / 守护                                                                                                             |
+| ---- | -------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| F-55 | `time-picker/core.ts`            | 面板已开时点输入框会收起浮层，无法连续键入                                  | `onClick: toggleSide` 挂在触发区 div 上，F-16 新增的 input 点击冒泡触发开关 | input 命中走 `openSide`（只开不关），其余区域仍 toggle；组件层 + 浏览器层各一条                                         |
+| F-56 | `time-picker/core.ts`            | 键入草稿未回车就点列项，草稿被打开面板时的旧值覆盖，一次点击两次写回        | `commitDraft` 与 `applyTime` 各自基于不同状态，互不感知                     | 统一 `writeValue`（一次操作一次 emit + 乐观同步草稿），`adoptDraft` 让所有写回通道先并入草稿；blur 到面板内部时跳过提交 |
+| F-57 | `shared/date.ts`                 | `abc1:2xyz` / `1:299` / `上午9:30随意` 被吞成合法时间提交                   | `parseTimeValue` 正则未首尾锚定                                             | 锚定；新增 `parseTimeText` 按显示格式回输；同族 time-select 的口径变更另有一条用例锁住                                  |
+| F-58 | `time-picker/core.ts`            | 照着 `format: 'HH 点 mm 分'` 显示的内容键入无法提交                         | 显示 / 输入 / 输出三套格式没打通                                            | `parseTimeText(text, displayFormat)` 按 pattern 编译正则回输                                                            |
+| F-59 | `time-picker/core.ts`            | `defaultValue` / `defaultTime` 只影响面板高亮，输入框空着且默认值永远写不回 | `displayAt` 只读 `modelValue`                                               | 抽 `initialPartsAt` 共用默认值链，显示与初始高亮同一来源                                                                |
+| F-60 | `time-picker/core.ts`            | 区间写回一端带秒一端不带秒（`['03:24:00','18:30']`）                        | `applyTime` 只格式化被改的一端                                              | `writeValue` 用 `normalizeModelValue` 规范化两端；原先把混合格式当预期的用例已改正                                      |
+| F-61 | `time-picker/core.ts`            | 清空后输入框仍显示旧值                                                      | `clearValue` 只 emit，不碰草稿                                              | 清空后同步两端草稿                                                                                                      |
+| F-62 | `time-picker/features/clearable` | `clearable: false` 时 `--clearable` 类名仍挂                                | `className` 把恒真的默认 `clearIcon` 一起判进去                             | 只认 `clearable`；改正组件层错误预期，`feature-class-switch` 补一组正反断言                                             |
+| F-63 | `shared/date.ts`                 | `format: 'hh:mm A'` 输出字面量 `hh:24 A`                                    | 格式化只支持 24 小时制 token                                                | 支持 `hh` / `h` / `A` / `a`；`hasSecondsToken` 取代 `includes('s')` 避免字面 s 误开秒列                                 |
+| F-64 | `time-picker/core.ts`            | 构建时裁掉 `editable` 特性后输入框仍可键入                                  | `props.editable !== false` 把"特性未启用=undefined"当成可编辑               | 只认显式 `=== true`；由治理校验的全库静态守卫守护                                                                       |
+| F-65 | `date-picker/core.ts`            | 与 F-64 同源，`canEdit` 同样用 `!== false`                                  | 全库静态扫描发现                                                            | 同样改为 `=== true`；静态守卫守护                                                                                       |
 
 F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码上全部见红，修复后全部报 `Expect test to fail`，再降级为 `tests/components/time-picker-scenes.spec.ts` 的常规 `it` 并删除守卫文件。F-64 / F-65 属于构建期特性裁剪，运行时用例证不了，由 `verify:governance` 的常驻静态守卫覆盖。
 
@@ -563,13 +563,13 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 治理校验扫描 90 个组件目录的 feature 布尔 prop，凡在 `core.ts` 里被写成 `props.x !== false` 就报红。除 F-64 / F-65 外还有 5 处命中，逐条核实后分类如下；按约定"已审计但无害"也必须落盘，白名单项必须带编号且能在本文查到，否则门禁变红。
 
-| 编号 | 命中                          | 结论                                                                                                                     |
-| ---- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 编号 | 命中                          | 结论                                                                                                                        |
+| ---- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | A-1  | `avatar.teleported`           | `panel` 由 `avatar-group-popper` 特性提供，特性裁掉时 `panel` 为 null，`panel && ...` 短路，Teleport 分支根本不会执行，无害 |
-| A-2  | `form.showMessage`            | 该 getter 缺省 true 与 core 默认展示校验消息一致；`form.validate` 特性裁剪后子项不再消费该 provide 值，无害               |
-| A-3  | `form.validateOnRuleChange`   | 同上，缺省 true 与默认行为一致，且只在校验规则变化时触发，裁剪后不产生额外能力，无害                                     |
-| A-4  | `tooltip.enterable`           | 缺省 true 与 Tooltip 默认"鼠标可进入浮层"一致，`tooltip.popper` 特性裁剪后浮层由该特性决定，无害                        |
-| —    | `date-picker-panel.clearable` | 误报：源码已有 `'clearable' in props &&` 存在性守卫，守卫已改为识别 `in props` 并跳过，不是缺陷                          |
+| A-2  | `form.showMessage`            | 该 getter 缺省 true 与 core 默认展示校验消息一致；`form.validate` 特性裁剪后子项不再消费该 provide 值，无害                 |
+| A-3  | `form.validateOnRuleChange`   | 同上，缺省 true 与默认行为一致，且只在校验规则变化时触发，裁剪后不产生额外能力，无害                                        |
+| A-4  | `tooltip.enterable`           | 缺省 true 与 Tooltip 默认"鼠标可进入浮层"一致，`tooltip.popper` 特性裁剪后浮层由该特性决定，无害                            |
+| —    | `date-picker-panel.clearable` | 误报：源码已有 `'clearable' in props &&` 存在性守卫，守卫已改为识别 `in props` 并跳过，不是缺陷                             |
 
 ### 15.4 产物与数字
 
@@ -595,7 +595,6 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - **守卫自身盲点（已修）**：初版用 `git diff`（只看未暂存）取改动面，开发者只要先 `git add`，影响面清单就会打印"本次无源码改动"后静默跳过。改为 `git diff HEAD`（未暂存 + 已暂存）与 `git diff HEAD -- <components>`，并对未跟踪的新 `core.ts` 按全文补扫交互关键字。同一批已暂存改动的前后对照：修复前跳过，修复后重新报出「shared/date.ts 同族 3 个组件」「time-picker 浏览器层 1 个文件」。
 - **合并兼容性**：并行的构建流水线分支会把 `quality` 改成委托 `ci.mjs`、并新增统一 `build` 段。治理校验的段数判定同时认硬编码 `npm run` 链与委托形态；另外常驻一条「STAGES 必须含 `governance` 且 `package.json` 必须有 `verify:governance`」的守卫，避免合并 `ci.mjs` 时把治理段覆盖掉、让治理校验变成"没进门禁的脚本"。
 
-
 <a id="s16"></a>
 
 ## 16. 第九批交付（视觉能力补齐，分支 `feature/20261107-visual-capability`）
@@ -615,8 +614,8 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 ### 16.2 缺陷清单
 
-| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
-| ---- | ---- | ---- | ---- | ----------- |
+| 编号 | 位置                                                  | 现象                                                                                                                                        | 根因                                                                                                                                                                                                                                                                                                    | 修复 / 守护                                                                                                                                 |
+| ---- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-66 | `time-picker/core.css`、`features/editable/style.css` | 触发区圆角外壳里套着原生 `<input>` 的 2px 深灰边框、白色不透明底、2px 内边距与 Arial 字体，形成双层边框；文本相对图标内缩、字体与外壳不一致 | F-16 把触发区从 `span` 换成真实 `<input>` 时，`.ui-time-picker__value` / `__placeholder` 只写了 flex / 省略号，漏掉 `border: 0`、`background: transparent`、`padding: 0`、`font: inherit`、`appearance: none` 等原生外观复位；`controls.css` 的 reset 只覆盖 `.ui-input__inner` 等类名，不含 TimePicker | `core.css` 补齐完整复位 + `::placeholder` 口径；`editable/style.css` 承载 `cursor: text`；由 `audit:visual` 的 `nested-border` 规则常驻阻断 |
 
 按约定做了全库同类扫描：视觉体检在真实 Chromium 里覆盖 **124 个导出组件 / 21 个可见原生控件**，逐条查计算样式与矩形；除 TimePicker 外没有第二处双层边框（`InputTag` 的 4px 内边距是标签间留白的设计，记为 warning 不阻断）。修复后复跑：**0 项阻断 / 1 项提示**，并逐张查看 `TimePicker` 元素图与 `?scene=time-picker` 首屏确认内框消失、图标 / 文本 / 箭头落回同一条容器。
@@ -625,14 +624,14 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 不依赖任何基线，把"肉眼可见的丑"翻译成可计算契约：
 
-| 规则 | 判定 | 级别 |
-| ---- | ---- | ---- |
-| `nested-border` | 组件内部原生控件自己画了可见边框，且祖先容器也画了边框 | error（阻断） |
-| `opaque-fill` | 内层控件背景不透明，与外壳底色叠成色块 | warning |
-| `nested-padding` | 内层控件还有左右内边距，文本相对图标内缩 | warning |
-| `font-mismatch` | 内层控件字体与外壳不一致 | warning |
-| `clipped-text` | 输入值宽超出可见宽且未省略 | error（阻断） |
-| `render-gap` | 组件没渲染根节点 / 声明数与渲染数或截图数不符 / 重点场景缺失 | error（阻断） |
+| 规则             | 判定                                                         | 级别          |
+| ---------------- | ------------------------------------------------------------ | ------------- |
+| `nested-border`  | 组件内部原生控件自己画了可见边框，且祖先容器也画了边框       | error（阻断） |
+| `opaque-fill`    | 内层控件背景不透明，与外壳底色叠成色块                       | warning       |
+| `nested-padding` | 内层控件还有左右内边距，文本相对图标内缩                     | warning       |
+| `font-mismatch`  | 内层控件字体与外壳不一致                                     | warning       |
+| `clipped-text`   | 输入值宽超出可见宽且未省略                                   | error（阻断） |
+| `render-gap`     | 组件没渲染根节点 / 声明数与渲染数或截图数不符 / 重点场景缺失 | error（阻断） |
 
 同时产出**看得见的复核入口**（这是"视觉能力"的另一半）：`visual-report/shots/` 下 124 张逐组件元素截图 + 6 张重点场景首屏（`floating` / `table` / `tree` / `color` / `a11y` / `time-picker`），`visual-report/index.html` 是可直接打开的画廊，阻断项标红、写明命中规则与具体数值。截图前停掉动画 / 过渡 / 光标，整页只截一次再按文档坐标裁出逐组件图（初版逐元素截图 124 次要跑 278s，改后整段约十几秒），零尺寸组件写占位图并标注"默认态无内容"；画廊已 gitignore，每次体检重新生成。
 
@@ -652,7 +651,6 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 - 门禁十三段，STAGES 与 `npm run quality` 段数一致；`KNOWLEDGE.md` 的「唯一门禁（十三段）」、README 与 pre-push 注释同步。
 - 缺陷 F-1…F-66 全部修复，守卫文件已删除，无 `it.fails` 长期挂账。
 - 用例数不变（组件层 95 文件 1582 条、构建器侧 8 文件 95 条、profile 2 文件 142 条、浏览器 11 文件 65 条）：本批交付的是门禁能力与复核入口，不是用例。
-
 
 <a id="s17"></a>
 
@@ -674,8 +672,8 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 ### 17.3 缺陷清单
 
-| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
-| ---- | ---- | ---- | ---- | ----------- |
+| 编号 | 位置                                                            | 现象                                                                                                     | 根因                                                                                                 | 修复 / 守护                                                                                                                                                                                                                                             |
+| ---- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-67 | `examples/consumer/vite.config.mjs`、`scripts/visual-audit.mjs` | 第九批修掉 TimePicker 双层边框后，组件调试台里仍显示 2px 深灰内框、白底与 Arial 字体；门禁与源码画廊全绿 | `node_modules/@demo` 软链跨工作树指向主工作树旧 dist；视觉体检只覆盖源码 harness，没有覆盖消费方页面 | `vite.config.mjs` 用两条 `resolve.alias` 把 20 份 profile 的 JS / CSS 钉到本工作树 `dist/<id>/`；`visual-audit.mjs` 另起调试台服务，对 5 个含原生控件的组件页跑同一套计算样式契约并把截图 / 异常写进画廊；`verify-governance` 静态锁死 alias 与页面清单 |
 
 ### 17.4 修复与机制
@@ -702,15 +700,15 @@ F-55…F-63 先在 `tests/findings.spec.ts` 以 9 条 `it.fails` 在未修代码
 
 ### 18.2 缺陷清单
 
-| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-68 | `scripts/dev-api.mjs` | `/api/build` 传 `name=full` 可直接覆盖 `dist/full` 这类正式产物 | 自定义构建直接写 `dist/<name>`，没有校验保留名 | 保留名来自 `profiles/*.json`，命中返回 409；自定义包统一写 `dist/custom/<name>`，返回体新增 `dir` |
-| F-69 | `scripts/build-all.mjs` | 特性负边际被夹成 `0`，与"真的没变"无法区分 | `delta()` 对四项差值取 `Math.max(0, …)` | `delta()` 返回带符号差值，负值原样写入 `sizes.json`，构建日志给出负值提示 |
-| F-70 | `scripts/build-all.mjs` | 删掉 profile JSON 后旧 `dist/<name>` 仍在，继续被 `/api/packages` 当成可安装包 | 构建前没有清理陈旧目录 | 构建前清理"不在 `profiles/` 且不在 `dist/custom/`"的目录，先打印再删除 |
-| F-71 | `scripts/build-all.mjs` | 改了边际算法后仍命中旧缓存，负边际继续被旧值覆盖 | 特性缓存指纹没有包含 `scripts/build-all.mjs` | 指纹输入补 `scripts/build-all.mjs`，改算法即全量重算 |
-| F-72 | `scripts/verify.mjs` / `scripts/build-all.mjs` | `verify:reuse` 只看 `ui-kit.js` 是否存在，改一行源码后仍复用旧产物 | 复用凭据只有文件存在性与 `sizes.json` | `build:all` 落盘 `.build/build-fingerprint.json`；`loadBuiltResults` 校验源码指纹，不符返回 `null` 触发重建 |
-| F-73 | `scripts/ci.mjs` | build 失败后仍继续跑后续阶段，二次报错掩盖真正的失败点 | 循环只累计 `failed`，没有短路 | `build` / `verify` 失败立即中断（`--keep-going` 可改为继续）；汇总与 `ci-report.json` 标记未执行阶段 |
-| F-74 | `dist/` 自定义包 | 自定义包名以 `feat-` 开头会被下一次构建当作试算残留删除 | 清理逻辑按 `feat-*` 前缀扫描 `dist/` | 自定义包进入 `dist/custom/` 命名空间，清理只针对 `dist/` 顶层目录且保留 `custom/` |
+| 编号 | 位置                                           | 现象                                                                           | 根因                                           | 修复 / 守护                                                                                                 |
+| ---- | ---------------------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| F-68 | `scripts/dev-api.mjs`                          | `/api/build` 传 `name=full` 可直接覆盖 `dist/full` 这类正式产物                | 自定义构建直接写 `dist/<name>`，没有校验保留名 | 保留名来自 `profiles/*.json`，命中返回 409；自定义包统一写 `dist/custom/<name>`，返回体新增 `dir`           |
+| F-69 | `scripts/build-all.mjs`                        | 特性负边际被夹成 `0`，与"真的没变"无法区分                                     | `delta()` 对四项差值取 `Math.max(0, …)`        | `delta()` 返回带符号差值，负值原样写入 `sizes.json`，构建日志给出负值提示                                   |
+| F-70 | `scripts/build-all.mjs`                        | 删掉 profile JSON 后旧 `dist/<name>` 仍在，继续被 `/api/packages` 当成可安装包 | 构建前没有清理陈旧目录                         | 构建前清理"不在 `profiles/` 且不在 `dist/custom/`"的目录，先打印再删除                                      |
+| F-71 | `scripts/build-all.mjs`                        | 改了边际算法后仍命中旧缓存，负边际继续被旧值覆盖                               | 特性缓存指纹没有包含 `scripts/build-all.mjs`   | 指纹输入补 `scripts/build-all.mjs`，改算法即全量重算                                                        |
+| F-72 | `scripts/verify.mjs` / `scripts/build-all.mjs` | `verify:reuse` 只看 `ui-kit.js` 是否存在，改一行源码后仍复用旧产物             | 复用凭据只有文件存在性与 `sizes.json`          | `build:all` 落盘 `.build/build-fingerprint.json`；`loadBuiltResults` 校验源码指纹，不符返回 `null` 触发重建 |
+| F-73 | `scripts/ci.mjs`                               | build 失败后仍继续跑后续阶段，二次报错掩盖真正的失败点                         | 循环只累计 `failed`，没有短路                  | `build` / `verify` 失败立即中断（`--keep-going` 可改为继续）；汇总与 `ci-report.json` 标记未执行阶段        |
+| F-74 | `dist/` 自定义包                               | 自定义包名以 `feat-` 开头会被下一次构建当作试算残留删除                        | 清理逻辑按 `feat-*` 前缀扫描 `dist/`           | 自定义包进入 `dist/custom/` 命名空间，清理只针对 `dist/` 顶层目录且保留 `custom/`                           |
 
 计划书 A7（`sameFeatures` 配对的死代码分支）属于构建口径收敛，不是缺陷：本批直接删除该分支，特性边际统一走"full 减去特性"的试算路径，`sizes.json` 全部 178 条都由同一套口径产出。
 
@@ -730,14 +728,14 @@ B2 承接 B1 的指纹机制，把"每次门禁都像冷启动"的构建成本�
 
 ### 19.2 缺陷清单
 
-| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-75 | `scripts/build-all.mjs` / `scripts/dev-api.mjs` / `scripts/generate-demo-meta.mjs` / `examples/consumer/package.json` | profile 清单、展示名、消费方依赖各维护一份，新增 profile 要改 4 处，`chinese` 一直没进示例工程 | 清单靠手写数组与包名表 | 新增 `scripts/profile-catalog.mjs` 作为唯一来源（含 `label` / `order`）；`npm run sync:consumer-deps` 从 `dist/` 生成消费方依赖 |
-| F-76 | `scripts/build-all.mjs` | 任一组件改动都会让 178 条特性边际全部重算 | 缓存只有一个全局 `sourceFingerprint` 键 | 缓存 v2 按组件分键（组件源码 + shared + 注册表 + build-lib + full 配置），每批完成即落盘 |
-| F-77 | `scripts/build-all.mjs` | 每次门禁都重打 20 份 profile，哪怕配置与源码没变 | profile 产物没有缓存 | profile 级指纹（配置 + 选中组件源码 + shared + 注册表 + build-lib）+ 产物三件套校验，命中直接复用 `meta.json` |
-| F-78 | `scripts/ci.mjs` | pre-commit 的 `--fast` 仍跑裸 `verify`，每次都重打 198 份包 | `verify` 段没有指纹复用 | `--fast` 改用 `verify:reuse`，产物没变秒过、源码变了自动重建 |
-| F-79 | `registry.mjs` | 同一次构建里 20 次 `buildProfile` 各加载一遍 90 个 `spec.mjs` | `loadRegistry` 无进程内缓存 | 进程级 Promise memo，dev 调试台用 `{ fresh: true }` 绕过 |
-| F-80 | `scripts/dev-api.mjs` / `configurator/main.js` | 来回切换相同组件组合会反复打包试算；旧请求不能中止 | 估算无缓存、请求只靠 seq 丢弃响应 | 估算结果按"选中组件 + 主题"LRU（30 条）；前端 debounce 降到 300ms 并新增 AbortController |
+| 编号 | 位置                                                                                                                  | 现象                                                                                           | 根因                                    | 修复 / 守护                                                                                                                     |
+| ---- | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| F-75 | `scripts/build-all.mjs` / `scripts/dev-api.mjs` / `scripts/generate-demo-meta.mjs` / `examples/consumer/package.json` | profile 清单、展示名、消费方依赖各维护一份，新增 profile 要改 4 处，`chinese` 一直没进示例工程 | 清单靠手写数组与包名表                  | 新增 `scripts/profile-catalog.mjs` 作为唯一来源（含 `label` / `order`）；`npm run sync:consumer-deps` 从 `dist/` 生成消费方依赖 |
+| F-76 | `scripts/build-all.mjs`                                                                                               | 任一组件改动都会让 178 条特性边际全部重算                                                      | 缓存只有一个全局 `sourceFingerprint` 键 | 缓存 v2 按组件分键（组件源码 + shared + 注册表 + build-lib + full 配置），每批完成即落盘                                        |
+| F-77 | `scripts/build-all.mjs`                                                                                               | 每次门禁都重打 20 份 profile，哪怕配置与源码没变                                               | profile 产物没有缓存                    | profile 级指纹（配置 + 选中组件源码 + shared + 注册表 + build-lib）+ 产物三件套校验，命中直接复用 `meta.json`                   |
+| F-78 | `scripts/ci.mjs`                                                                                                      | pre-commit 的 `--fast` 仍跑裸 `verify`，每次都重打 198 份包                                    | `verify` 段没有指纹复用                 | `--fast` 改用 `verify:reuse`，产物没变秒过、源码变了自动重建                                                                    |
+| F-79 | `registry.mjs`                                                                                                        | 同一次构建里 20 次 `buildProfile` 各加载一遍 90 个 `spec.mjs`                                  | `loadRegistry` 无进程内缓存             | 进程级 Promise memo，dev 调试台用 `{ fresh: true }` 绕过                                                                        |
+| F-80 | `scripts/dev-api.mjs` / `configurator/main.js`                                                                        | 来回切换相同组件组合会反复打包试算；旧请求不能中止                                             | 估算无缓存、请求只靠 seq 丢弃响应       | 估算结果按"选中组件 + 主题"LRU（30 条）；前端 debounce 降到 300ms 并新增 AbortController                                        |
 
 ### 19.3 交付与数字
 
@@ -762,11 +760,11 @@ B3a 给仓库里两块没有安全网的代码补用例（计划书 §3 的 B1�
 
 ### 20.2 缺陷清单
 
-| 编号 | 位置 | 现象 | 根因 | 修复 / 守护 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-81 | `scripts/dev-api.mjs` | `/api/presets` 每次返回 500，构建器打开即报错 | B2 删除模块级 `PACKAGE_LABELS` 后，`listPresets()` 仍在引用该变量 | label 改从 `profileCatalog()` 读，与构建器 / 调试台同源 |
-| F-82 | `scripts/dev-api.mjs` | POST 请求体超过 512 KB 时中间件 promise 拒绝且无人兜底，请求挂起、无响应 | `readBody()` 的 reject 直接抛出 `async` 中间件 | 中间件捕获后返回 413（`请求体过大`），estimate / build 两条路由一致 |
-| F-83 | `scripts/verify.mjs` | 2239 条断言里大量内容与 `tests/build/**` 重复，同一事实两套口径各自漂移 | verify 同时承担产物细查与运行时冒烟 | 令牌 / 前缀 / d.ts / 特性标记 / package.json 细查迁到 `tests/build`，verify 收缩为产物存在性 / 导出冒烟 / SSR 冒烟三类 |
+| 编号 | 位置                  | 现象                                                                     | 根因                                                              | 修复 / 守护                                                                                                            |
+| ---- | --------------------- | ------------------------------------------------------------------------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| F-81 | `scripts/dev-api.mjs` | `/api/presets` 每次返回 500，构建器打开即报错                            | B2 删除模块级 `PACKAGE_LABELS` 后，`listPresets()` 仍在引用该变量 | label 改从 `profileCatalog()` 读，与构建器 / 调试台同源                                                                |
+| F-82 | `scripts/dev-api.mjs` | POST 请求体超过 512 KB 时中间件 promise 拒绝且无人兜底，请求挂起、无响应 | `readBody()` 的 reject 直接抛出 `async` 中间件                    | 中间件捕获后返回 413（`请求体过大`），estimate / build 两条路由一致                                                    |
+| F-83 | `scripts/verify.mjs`  | 2239 条断言里大量内容与 `tests/build/**` 重复，同一事实两套口径各自漂移  | verify 同时承担产物细查与运行时冒烟                               | 令牌 / 前缀 / d.ts / 特性标记 / package.json 细查迁到 `tests/build`，verify 收缩为产物存在性 / 导出冒烟 / SSR 冒烟三类 |
 
 ### 20.3 交付与数字
 
@@ -794,32 +792,32 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 21.3 top-10 低覆盖清单与组件级下限
 
-| 文件 | lines | branches |
-| ---- | ---- | ---- |
-| `tree/features/draggable/index.ts` | 21.67 | 50.00 |
-| `drawer/features/draggable/resize.ts` | 34.42 | 66.66 |
-| `collapse-transition/core.ts` | 37.66 | 100.00 |
-| `table/features/resize/index.ts` | 46.93 | 44.44 |
-| `splitter/core.ts` | 48.22 | 77.27 |
-| `button/features/bg-color/index.ts` | 59.52 | 60.00 |
-| `scrollbar/core.ts` | 67.06 | 73.07 |
-| `anchor/core.ts` | 69.84 | 76.47 |
-| `table/core.ts` | 72.82 | 74.10 |
-| `input-number/features/methods/index.ts` | 75.00 | 100.00 |
+| 文件                                     | lines | branches |
+| ---------------------------------------- | ----- | -------- |
+| `tree/features/draggable/index.ts`       | 21.67 | 50.00    |
+| `drawer/features/draggable/resize.ts`    | 34.42 | 66.66    |
+| `collapse-transition/core.ts`            | 37.66 | 100.00   |
+| `table/features/resize/index.ts`         | 46.93 | 44.44    |
+| `splitter/core.ts`                       | 48.22 | 77.27    |
+| `button/features/bg-color/index.ts`      | 59.52 | 60.00    |
+| `scrollbar/core.ts`                      | 67.06 | 73.07    |
+| `anchor/core.ts`                         | 69.84 | 76.47    |
+| `table/core.ts`                          | 72.82 | 74.10    |
+| `input-number/features/methods/index.ts` | 75.00 | 100.00   |
 
 这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑（低于 21 / 33 / 21 直接红），后续补完拖拽类单测再抬线。
 
 ### 21.4 axe 白名单（按场景 × 规则）
 
-| 规则 | 涉及场景 | 理由 / 归属 |
-| ---- | ---- | ---- |
-| `aria-allowed-attr` | gallery / floating / a11y | 浮层触发器把 `aria-expanded` 加在 role 不匹配的元素上，待统一 role 方案 |
-| `aria-command-name` / `aria-input-field-name` | gallery / floating / color | 触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名 |
-| `aria-required-children` / `aria-tooltip-name` | gallery | 空数据级联面板与通用 popper 内容区缺语义 role，属对应组件专项 |
-| `button-name` | gallery / a11y | 仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 `aria-label` |
-| `color-contrast` | gallery | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题 |
-| `image-alt` / `label` / `listitem` | gallery / a11y | 探针场景用空 props 渲染，没有 alt / label；列表 role 语义待统一 |
-| `scrollable-region-focusable` | table | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项 |
+| 规则                                           | 涉及场景                   | 理由 / 归属                                                              |
+| ---------------------------------------------- | -------------------------- | ------------------------------------------------------------------------ |
+| `aria-allowed-attr`                            | gallery / floating / a11y  | 浮层触发器把 `aria-expanded` 加在 role 不匹配的元素上，待统一 role 方案  |
+| `aria-command-name` / `aria-input-field-name`  | gallery / floating / color | 触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名 |
+| `aria-required-children` / `aria-tooltip-name` | gallery                    | 空数据级联面板与通用 popper 内容区缺语义 role，属对应组件专项            |
+| `button-name`                                  | gallery / a11y             | 仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 `aria-label`     |
+| `color-contrast`                               | gallery                    | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题                 |
+| `image-alt` / `label` / `listitem`             | gallery / a11y             | 探针场景用空 props 渲染，没有 alt / label；列表 role 语义待统一          |
+| `scrollable-region-focusable`                  | table                      | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项                 |
 
 白名单按「场景 + 规则」登记，新增未登记的 serious / critical 会直接报红。
 
@@ -844,13 +842,13 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 22.3 死资产处置明细
 
-| 资产 | 处置 | 理由 |
-| --- | --- | --- |
-| `manifest.json` | 删除 | 只登记了 Button 的过时清单，与 `registry.mjs` / `meta.json` 重复 |
-| `sweep-shots.mjs` | 删除 | 一次性截图巡检脚本，不进门禁、无引用 |
-| `reference/element-plus-2.14.7-catalog.json` | 删除 | 早期对标快照，组件清单已由 registry 维护 |
-| `scripts/generate-suite.mjs` | 删除 | 一次性搭骨架生成器，spec.mjs 已是手工事实源 |
-| `scripts/guardian/**` | 移到 `tools/guardian/**` | 常驻巡检不属于构建流水线；端口仍走 `scripts/worktree-ports.mjs` |
+| 资产                                         | 处置                     | 理由                                                             |
+| -------------------------------------------- | ------------------------ | ---------------------------------------------------------------- |
+| `manifest.json`                              | 删除                     | 只登记了 Button 的过时清单，与 `registry.mjs` / `meta.json` 重复 |
+| `sweep-shots.mjs`                            | 删除                     | 一次性截图巡检脚本，不进门禁、无引用                             |
+| `reference/element-plus-2.14.7-catalog.json` | 删除                     | 早期对标快照，组件清单已由 registry 维护                         |
+| `scripts/generate-suite.mjs`                 | 删除                     | 一次性搭骨架生成器，spec.mjs 已是手工事实源                      |
+| `scripts/guardian/**`                        | 移到 `tools/guardian/**` | 常驻巡检不属于构建流水线；端口仍走 `scripts/worktree-ports.mjs`  |
 
 ### 22.4 ESLint recommended 的例外
 
@@ -927,14 +925,14 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 对 `packages/ui-kit/src/components` 全量静态审计后，答案是「是」，而且比预想更分散：
 
-| 位置 | 改造前实现 | 窗口算法 |
-| --- | --- | --- |
-| `select/core.ts` | `virtualWindow()` + `.ui-select__virtual` / `__virtual-window` + `translateY` | overscan 5、运行时实测行高、分组回退全量 |
-| `cascader/core.ts` | `.ui-cascader__window` + 逐行 `top` 定位 | overscan 4、`itemSize` 下限 16 |
-| `cascader-panel/core.ts` | 与 cascader 同一段逻辑的第二份拷贝 | overscan 4、`itemSize > 0` 才启用 |
-| `table/core.ts` | 变量行高前缀和 + 贴底锁 + 滚动停稳后实测回填 | 动态行高，与前三种不同类 |
-| `transfer.virtualized` | 只挂 `ui-transfer--virtualized` 类名 | **无实现（空壳）** |
-| `virtual-list` 组件 | 除自身用例与调试台元数据外**全仓零引用** | 第三套固定行高实现 |
+| 位置                     | 改造前实现                                                                    | 窗口算法                                 |
+| ------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------- |
+| `select/core.ts`         | `virtualWindow()` + `.ui-select__virtual` / `__virtual-window` + `translateY` | overscan 5、运行时实测行高、分组回退全量 |
+| `cascader/core.ts`       | `.ui-cascader__window` + 逐行 `top` 定位                                      | overscan 4、`itemSize` 下限 16           |
+| `cascader-panel/core.ts` | 与 cascader 同一段逻辑的第二份拷贝                                            | overscan 4、`itemSize > 0` 才启用        |
+| `table/core.ts`          | 变量行高前缀和 + 贴底锁 + 滚动停稳后实测回填                                  | 动态行高，与前三种不同类                 |
+| `transfer.virtualized`   | 只挂 `ui-transfer--virtualized` 类名                                          | **无实现（空壳）**                       |
+| `virtual-list` 组件      | 除自身用例与调试台元数据外**全仓零引用**                                      | 第三套固定行高实现                       |
 
 决定性证据来自 `sizes.json`：`select.select-virtualized` 的边际体积只有 **441 B js / 310 B css**，与同样是空壳的 `cascader.virtualized`（240 B）同量级。这说明 §24 把窗口算术写进 `select/core.ts` 后，**不开特性也照样打包**，「开了才打包」只是运行时 `props.virtualized === true` 的分支判定，并没有发生体积裁剪。
 
@@ -959,12 +957,10 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 25.5 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-84 | `packages/ui-kit/src/components/select/core.ts` | 不选 `select.select-virtualized` 也照样打包虚拟渲染代码；该特性边际值只有 441 B，「开了才打包」名不副实 | §24 把窗口算术与 `ui-select__virtual` 渲染写进 core；构建器只裁特性模块，不裁 core 里的分支 | 虚拟实现整体搬进 `features/select-virtualized/`，core 只留 `featureHook` 扩展点并复用 `virtual-list`；off/on 实测差 6896 B，边际值 441 B → 2499 B |
-| F-85 | `tests/build/build-cache.spec.ts` | `npm run test:build` 偶发红（同一份代码一次红一次绿），失败点固定在「改组件源码只让该组件的缓存键变化」 | 固定名探针 `__cache_probe.tmp` 在 Windows 上偶发删不掉；下次 `before` 已包含探针内容，再写入同样内容指纹不变 | 写入前先清残留、探针内容带唯一值、删除带重试；`vitest.build.config.ts` 改串行（这批用例会真改源码、真打包，与只读断言并发互相污染） |
-
-
+| 编号 | 文件                                            | 现象                                                                                                    | 根因                                                                                                         | 修复                                                                                                                                              |
+| ---- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-84 | `packages/ui-kit/src/components/select/core.ts` | 不选 `select.select-virtualized` 也照样打包虚拟渲染代码；该特性边际值只有 441 B，「开了才打包」名不副实 | §24 把窗口算术与 `ui-select__virtual` 渲染写进 core；构建器只裁特性模块，不裁 core 里的分支                  | 虚拟实现整体搬进 `features/select-virtualized/`，core 只留 `featureHook` 扩展点并复用 `virtual-list`；off/on 实测差 6896 B，边际值 441 B → 2499 B |
+| F-85 | `tests/build/build-cache.spec.ts`               | `npm run test:build` 偶发红（同一份代码一次红一次绿），失败点固定在「改组件源码只让该组件的缓存键变化」 | 固定名探针 `__cache_probe.tmp` 在 Windows 上偶发删不掉；下次 `before` 已包含探针内容，再写入同样内容指纹不变 | 写入前先清残留、探针内容带唯一值、删除带重试；`vitest.build.config.ts` 改串行（这批用例会真改源码、真打包，与只读断言并发互相污染）               |
 
 ## 26. 门禁成本：从"每改一行跑十三段"到"只跑受影响的部分"（分支 `perf/20261107-scoped-gate`）
 
@@ -972,12 +968,12 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 26.1 归因（54.3 分钟实测）
 
-| 去向 | 时长 | 占比 | 性质 |
-| --- | --- | --- | --- |
-| 等后台门禁 / 浏览器任务跑完 | 17.1 分钟 | 31% | 其中 15:31、15:34 连跑两遍全量门禁，第二次单轮等了 529s（冷构建） |
-| 重跑用例 | 14.6 分钟 | 27% | 其中 10.6 分钟是同一个套件连跑 2–4 遍"赌是不是 flaky" |
-| 模型侧（思考 / 输出 / 上下文压缩） | 21.2 分钟 | 39% | 含收尾压缩 6.1 分钟，整任务两次压缩合计约 17 分钟 |
-| 构建（6 次 `build:all`） | 1.2 分钟 | 2% | 缓存本身是有效的，**不该往构建上继续投资** |
+| 去向                               | 时长      | 占比 | 性质                                                              |
+| ---------------------------------- | --------- | ---- | ----------------------------------------------------------------- |
+| 等后台门禁 / 浏览器任务跑完        | 17.1 分钟 | 31%  | 其中 15:31、15:34 连跑两遍全量门禁，第二次单轮等了 529s（冷构建） |
+| 重跑用例                           | 14.6 分钟 | 27%  | 其中 10.6 分钟是同一个套件连跑 2–4 遍"赌是不是 flaky"             |
+| 模型侧（思考 / 输出 / 上下文压缩） | 21.2 分钟 | 39%  | 含收尾压缩 6.1 分钟，整任务两次压缩合计约 17 分钟                 |
+| 构建（6 次 `build:all`）           | 1.2 分钟  | 2%   | 缓存本身是有效的，**不该往构建上继续投资**                        |
 
 结论：六成是"改一步就跑一遍全量"的节奏问题，四成是项目缺少增量入口与可预测性（冷热差 5 倍却不说原因）。两者相乘：入口慢 → 想多跑一遍确认 → 上下文被长输出撑到压缩。
 
@@ -1008,10 +1004,10 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 26.5 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-86 | `scripts/build-all.mjs` | 改一句构建日志文案，`build:all` 就要重算 175 个特性边际，实测 467s | 组件级与 profile 级缓存键都包含 `build-all.mjs` 全文，把"编排脚本"当成了"计量口径" | 缓存键改用 `SIZE_ALGO_VERSION` 表示计量口径；治理校验扫 diff，算法代码变了却没升版号即报红 |
-| F-87 | `scripts/verify.mjs` | 源码改动后 `git commit` 会卡在 pre-commit：`verify:reuse` 发现指纹不一致就重建 198 份包，钩子超时 | fast 模式沿用了"过期即重建"的复用策略，把重活留在了提交钩子里 | 新增 `--if-fresh`：产物过期时跳过库级校验并说明"pre-push 全量门禁会重建"，钩子回到 14s |
+| 编号 | 文件                    | 现象                                                                                              | 根因                                                                               | 修复                                                                                       |
+| ---- | ----------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| F-86 | `scripts/build-all.mjs` | 改一句构建日志文案，`build:all` 就要重算 175 个特性边际，实测 467s                                | 组件级与 profile 级缓存键都包含 `build-all.mjs` 全文，把"编排脚本"当成了"计量口径" | 缓存键改用 `SIZE_ALGO_VERSION` 表示计量口径；治理校验扫 diff，算法代码变了却没升版号即报红 |
+| F-87 | `scripts/verify.mjs`    | 源码改动后 `git commit` 会卡在 pre-commit：`verify:reuse` 发现指纹不一致就重建 198 份包，钩子超时 | fast 模式沿用了"过期即重建"的复用策略，把重活留在了提交钩子里                      | 新增 `--if-fresh`：产物过期时跳过库级校验并说明"pre-push 全量门禁会重建"，钩子回到 14s     |
 
 ## 27. 优化计划第一波：服务端安全、构建指纹、组件约定与调试台性能（分支 `fix/20261108-opt-wave-1`）
 
@@ -1019,17 +1015,17 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 27.1 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-88 | `scripts/dev-api.mjs` | `/packs/:packId/*` 的 `packId` 未校验，`GET /packs/../.git/config` 这类路径能读到仓库外文件 | `packId` / `fileName` 直接拼进 `path.resolve`，没有任何 `..` 与分隔符拦截 | 入参拒绝 `..` 与路径分隔符；resolve 后双重 `startsWith` 确认仍落在 `dist/<packId>/` 内，不存在返回 404 |
-| F-89 | `scripts/build-all.mjs` | 改了 `table` 里 import 的 `checkbox`，缓存指纹不识别，`build:all` 复用旧特性产物 | 组件指纹只含自身目录，漏掉跨组件 import 闭包；`builtinInputs` 也没含 `package.json` / `tsconfig.json` / `vite.config.mjs` | `siblingComponentDeps` 沿源码 import 收集跨组件目录并入指纹；`builtinInputs` 补三份根配置 |
-| F-90 | `registry.mjs` | `spec.mjs` 里 `requires` 成环时 `visit()` 无限递归，报 `RangeError: Maximum call stack size exceeded`，看不出是哪两个特性互相依赖 | 递归前没有 visiting 集合，只有事后 `seen` | 加 `visiting` 集合：入递归前登记、出递归摘除，撞环直接抛带 `status=400` 的错误并点明环上特性 |
-| F-91 | `packages/ui-kit/src/shared/behavior.ts` | dialog 里开 select，一次 Escape 把两层一起关掉 | overlay 公共层 Escape 处理不查 `defaultPrevented`；内层 select 只 `preventDefault` 不 `stopPropagation`，按键冒泡到外层 overlay | `handleKeydown` 前置 `defaultPrevented` 检查；内层浮层接管后外层不再响应。回归用例：dialog 内开 select，第一次 Escape 只关 select、第二次才关 dialog |
-| F-92 | `packages/ui-kit/src/components/date-picker/core.ts` | 格式串 `YYYY-MM-DD HH:mm (summer)` 这种含字面 `s` 的串会误渲染秒列 | `showSeconds` 用 `pattern.includes('s')` 判断，把字面量当占位符 | 改用 `shared/date` 的 `hasSecondsToken`（与 time-picker 同一判定口径），只认 `s` / `ss` token |
-| F-93 | `packages/ui-kit/src/components/form/core.ts` | A 字段每次输入都会把 B 字段的 validator 重跑一遍（远程查重等副作用被无辜触发）；`FormRule.trigger` 写了不生效 | `watch(model, validateFields, {deep, immediate})` 全量校验所有字段，trigger 字段无人读取 | 按 path 快照比对（Date / 数组 / 嵌套对象安全）找出变更字段，只重校验 trigger 含 `change` 的规则；FormItem 挂 `focusout` + `blurCapture` 冒泡失焦，只重校验 trigger 含 `blur` 的规则；首次 immediate 保持整表校验兼容既有行为 |
-| F-94 | `packages/ui-kit/src/shared/component.ts` 及 10 个组件 | input / checkbox / switch 等挂 `onChange` 后一次操作回调两次 | 事件未声明进 `emits` 时监听留在 `attrs` 被铺到根节点成原生监听，组件内 `emit()` 又回退调用 `attrs` 同名监听，原生冒泡 + emit 回退 = 双通道 | select / date-picker / input / checkbox / checkbox-button / checkbox-group / switch / input-number / cascader / autocomplete 按实际 `emit()` 补全 `emits` 声明（Vue 自动把对应监听从 attrs 剔除）；component.ts 补机制说明注释；每组件加「只触发一次」回归用例 |
-| F-95 | `packages/ui-kit/src/components/button/core.ts` | 连点按钮产生的 ripple `setTimeout` 在组件卸载后才回调，闭包持有已卸载实例 | 水波纹定时器没有登记与清理 | `waveTimers` 集合登记全部定时器，`onBeforeUnmount` 统一 `clearTimeout`；affix / infinite-scroll 同批补泄漏守卫用例 |
-| F-96 | `examples/consumer/src/demo/table-data.ts` / `scenes.ts` / `table-demo.ts` | 切到 Table 场景明显卡顿：预设的 10 万行数据在模块加载时 eager 生成约 175k 行；每次场景切换对所有 preset 值 `structuredClone`；`heavyRows` 非响应式导致重渲染失效 | presets.ts 顶层执行重计算；scenes.ts 无差别深拷贝；table-demo 直接暴露静态数组 | 重数据改惰性工厂（首次用到才生成，引用不变复用）；`presetValues` 按引用物化惰性值（小值仍 structuredClone）；`heavyRows` 改 `computed` + `watch`。10 万行场景切换 180–200ms → 0.12ms（同引用），配套 `scripts/bench-heavy.mjs` 基准 |
+| 编号 | 文件                                                                       | 现象                                                                                                                                                             | 根因                                                                                                                                       | 修复                                                                                                                                                                                                                                                           |
+| ---- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-88 | `scripts/dev-api.mjs`                                                      | `/packs/:packId/*` 的 `packId` 未校验，`GET /packs/../.git/config` 这类路径能读到仓库外文件                                                                      | `packId` / `fileName` 直接拼进 `path.resolve`，没有任何 `..` 与分隔符拦截                                                                  | 入参拒绝 `..` 与路径分隔符；resolve 后双重 `startsWith` 确认仍落在 `dist/<packId>/` 内，不存在返回 404                                                                                                                                                         |
+| F-89 | `scripts/build-all.mjs`                                                    | 改了 `table` 里 import 的 `checkbox`，缓存指纹不识别，`build:all` 复用旧特性产物                                                                                 | 组件指纹只含自身目录，漏掉跨组件 import 闭包；`builtinInputs` 也没含 `package.json` / `tsconfig.json` / `vite.config.mjs`                  | `siblingComponentDeps` 沿源码 import 收集跨组件目录并入指纹；`builtinInputs` 补三份根配置                                                                                                                                                                      |
+| F-90 | `registry.mjs`                                                             | `spec.mjs` 里 `requires` 成环时 `visit()` 无限递归，报 `RangeError: Maximum call stack size exceeded`，看不出是哪两个特性互相依赖                                | 递归前没有 visiting 集合，只有事后 `seen`                                                                                                  | 加 `visiting` 集合：入递归前登记、出递归摘除，撞环直接抛带 `status=400` 的错误并点明环上特性                                                                                                                                                                   |
+| F-91 | `packages/ui-kit/src/shared/behavior.ts`                                   | dialog 里开 select，一次 Escape 把两层一起关掉                                                                                                                   | overlay 公共层 Escape 处理不查 `defaultPrevented`；内层 select 只 `preventDefault` 不 `stopPropagation`，按键冒泡到外层 overlay            | `handleKeydown` 前置 `defaultPrevented` 检查；内层浮层接管后外层不再响应。回归用例：dialog 内开 select，第一次 Escape 只关 select、第二次才关 dialog                                                                                                           |
+| F-92 | `packages/ui-kit/src/components/date-picker/core.ts`                       | 格式串 `YYYY-MM-DD HH:mm (summer)` 这种含字面 `s` 的串会误渲染秒列                                                                                               | `showSeconds` 用 `pattern.includes('s')` 判断，把字面量当占位符                                                                            | 改用 `shared/date` 的 `hasSecondsToken`（与 time-picker 同一判定口径），只认 `s` / `ss` token                                                                                                                                                                  |
+| F-93 | `packages/ui-kit/src/components/form/core.ts`                              | A 字段每次输入都会把 B 字段的 validator 重跑一遍（远程查重等副作用被无辜触发）；`FormRule.trigger` 写了不生效                                                    | `watch(model, validateFields, {deep, immediate})` 全量校验所有字段，trigger 字段无人读取                                                   | 按 path 快照比对（Date / 数组 / 嵌套对象安全）找出变更字段，只重校验 trigger 含 `change` 的规则；FormItem 挂 `focusout` + `blurCapture` 冒泡失焦，只重校验 trigger 含 `blur` 的规则；首次 immediate 保持整表校验兼容既有行为                                   |
+| F-94 | `packages/ui-kit/src/shared/component.ts` 及 10 个组件                     | input / checkbox / switch 等挂 `onChange` 后一次操作回调两次                                                                                                     | 事件未声明进 `emits` 时监听留在 `attrs` 被铺到根节点成原生监听，组件内 `emit()` 又回退调用 `attrs` 同名监听，原生冒泡 + emit 回退 = 双通道 | select / date-picker / input / checkbox / checkbox-button / checkbox-group / switch / input-number / cascader / autocomplete 按实际 `emit()` 补全 `emits` 声明（Vue 自动把对应监听从 attrs 剔除）；component.ts 补机制说明注释；每组件加「只触发一次」回归用例 |
+| F-95 | `packages/ui-kit/src/components/button/core.ts`                            | 连点按钮产生的 ripple `setTimeout` 在组件卸载后才回调，闭包持有已卸载实例                                                                                        | 水波纹定时器没有登记与清理                                                                                                                 | `waveTimers` 集合登记全部定时器，`onBeforeUnmount` 统一 `clearTimeout`；affix / infinite-scroll 同批补泄漏守卫用例                                                                                                                                             |
+| F-96 | `examples/consumer/src/demo/table-data.ts` / `scenes.ts` / `table-demo.ts` | 切到 Table 场景明显卡顿：预设的 10 万行数据在模块加载时 eager 生成约 175k 行；每次场景切换对所有 preset 值 `structuredClone`；`heavyRows` 非响应式导致重渲染失效 | presets.ts 顶层执行重计算；scenes.ts 无差别深拷贝；table-demo 直接暴露静态数组                                                             | 重数据改惰性工厂（首次用到才生成，引用不变复用）；`presetValues` 按引用物化惰性值（小值仍 structuredClone）；`heavyRows` 改 `computed` + `watch`。10 万行场景切换 180–200ms → 0.12ms（同引用），配套 `scripts/bench-heavy.mjs` 基准                            |
 
 ### 27.2 验证
 
@@ -1043,10 +1039,10 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 28.1 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-97 | `packages/ui-kit/src/components/tabs/core.ts` | 所有页签 tabindex 相同，方向键不能在页签间移动焦点，不符合 WAI-ARIA Tabs 模式 | 从未实现 roving tabindex 与键盘导航 | 激活页签 `tabindex=0`、其余 `-1`，补 `aria-selected`；tablist 容器内联 `onKeydown`：ArrowLeft/ArrowRight 循环移动焦点并自动激活（复用 `setActive` 出口，跳过禁用），Home/End 跳首/尾可用页签 |
-| F-98 | `packages/ui-kit/src/components/tree-v2/core.ts` | 树无 `role`/`aria-*`，键盘完全不可操作 | 未实现 ARIA 与键盘导航 | 容器 `role="tree"`、节点 `role="treeitem"`，`aria-expanded`/`aria-selected` 与状态同步；容器内联 `onKeydown` 实现 WAI-ARIA Tree View 模式：ArrowUp/Down 在可见节点循环移动焦点、ArrowRight 展开/下钻、ArrowLeft 收起/回父级、Enter 选中（复用 `handleNodeClick` 出口）；无 window 级监听，不涉及卸载清理 |
+| 编号 | 文件                                             | 现象                                                                          | 根因                                | 修复                                                                                                                                                                                                                                                                                                     |
+| ---- | ------------------------------------------------ | ----------------------------------------------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-97 | `packages/ui-kit/src/components/tabs/core.ts`    | 所有页签 tabindex 相同，方向键不能在页签间移动焦点，不符合 WAI-ARIA Tabs 模式 | 从未实现 roving tabindex 与键盘导航 | 激活页签 `tabindex=0`、其余 `-1`，补 `aria-selected`；tablist 容器内联 `onKeydown`：ArrowLeft/ArrowRight 循环移动焦点并自动激活（复用 `setActive` 出口，跳过禁用），Home/End 跳首/尾可用页签                                                                                                             |
+| F-98 | `packages/ui-kit/src/components/tree-v2/core.ts` | 树无 `role`/`aria-*`，键盘完全不可操作                                        | 未实现 ARIA 与键盘导航              | 容器 `role="tree"`、节点 `role="treeitem"`，`aria-expanded`/`aria-selected` 与状态同步；容器内联 `onKeydown` 实现 WAI-ARIA Tree View 模式：ArrowUp/Down 在可见节点循环移动焦点、ArrowRight 展开/下钻、ArrowLeft 收起/回父级、Enter 选中（复用 `handleNodeClick` 出口）；无 window 级监听，不涉及卸载清理 |
 
 ### 28.2 验证
 
@@ -1060,8 +1056,8 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 29.1 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
+| 编号 | 文件                                          | 现象                                                                      | 根因                                                                                    | 修复                                                                                                                                                                      |
+| ---- | --------------------------------------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | F-99 | `packages/ui-kit/src/components/tabs/core.ts` | SSR 首渲页签栏为空：服务端渲染的 HTML 里 tab 导航无内容，hydrate 后才出现 | TabPane 在 setup 里向父级注册，晚于父组件首次渲染，父级导航依赖的子组件元数据首渲不存在 | 已登记未修复（第二刀）：导航元数据需改为声明式（从 slots/VDOM 推导）或注册提前到 beforeMount；当前用例在 `tests/build/ssr-hydrate.spec.ts` 注释中固化现状，修复后移除豁免 |
 
 ### 29.2 本批测试层交付
@@ -1081,13 +1077,29 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 30.1 缺陷登记
 
-| 编号 | 文件 | 现象 | 根因 | 修复 |
-| ---- | ---- | ---- | ---- | ---- |
-| F-100 | `packages/ui-kit/src/shared/behavior.ts` / `segmented/core.ts` / `select/core.ts` | normalizeOptions 三份实现并存，字段回退链各自漂移（「自定义字段名+缺字段」场景两版各有盲区） | 同类逻辑从未收拢出口，各组件各造一份 | 收拢为 `shared/options.ts` 唯一出口（回退链取并集，注释写明取舍；groups 开关默认关防误吞带 `options` 字段的普通对象）；segmented/behavior/select 迁移，守卫 `options-normalizer-exit.spec` 锁定组件侧零定义 |
-| F-101 | 全库 props/events 命名 | 同语义多词并存：受控显示 modelValue(6 组件)/visible(5)/open(1) 三套，布尔 prop 出现动词原形 4 处，事件 focusout 外泄、双 update: 写口等 | 无命名公约、无漂移守卫 | 第一刀已落地：`NAMING.md` 公约（受控显示=modelValue、布尔=形容词/分词、事件=动词原形或 `xxx-change`）+ `naming-guard.spec` 6 模式守卫（存量白名单 10 文件双向校验）。**存量违规改名（visible/open 收敛等）为第二刀**，迁移清单见 NAMING.md |
+| 编号  | 文件                                                                              | 现象                                                                                                                                    | 根因                                 | 修复                                                                                                                                                                                                                                       |
+| ----- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| F-100 | `packages/ui-kit/src/shared/behavior.ts` / `segmented/core.ts` / `select/core.ts` | normalizeOptions 三份实现并存，字段回退链各自漂移（「自定义字段名+缺字段」场景两版各有盲区）                                            | 同类逻辑从未收拢出口，各组件各造一份 | 收拢为 `shared/options.ts` 唯一出口（回退链取并集，注释写明取舍；groups 开关默认关防误吞带 `options` 字段的普通对象）；segmented/behavior/select 迁移，守卫 `options-normalizer-exit.spec` 锁定组件侧零定义                                |
+| F-101 | 全库 props/events 命名                                                            | 同语义多词并存：受控显示 modelValue(6 组件)/visible(5)/open(1) 三套，布尔 prop 出现动词原形 4 处，事件 focusout 外泄、双 update: 写口等 | 无命名公约、无漂移守卫               | 第一刀已落地：`NAMING.md` 公约（受控显示=modelValue、布尔=形容词/分词、事件=动词原形或 `xxx-change`）+ `naming-guard.spec` 6 模式守卫（存量白名单 10 文件双向校验）。**存量违规改名（visible/open 收敛等）为第二刀**，迁移清单见 NAMING.md |
 
 ### 30.2 验证
 
 - 组件层 95 文件 1609 用例全绿（去重后 bundle 缩小约 1.15 kB，产物合并后统一刷新）；naming-guard 6/6、options 守卫正反验证。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
 - 缺陷口径：F-1…F-101（F-99/F-101 含已登记的存量待改项），三处文档同步为 101 条。
+
+## 31. 优化计划第四波：slot 契约层（G7 A21 第一刀）（分支 `refactor/20261108-slot-contract`）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G7 A21。slots 是唯一没有 second source 的组件事实（props/features 有运行时声明与 d.ts 互证，slot 只存在于渲染代码），先建契约层与 input 样板；零 slot 组件铺量第二刀在 `refactor/20261108-slot-rollout` 执行。
+
+### 31.1 缺陷登记
+
+| 编号  | 文件                                        | 现象                                                                           | 根因                          | 修复                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ----- | ------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-102 | 全部组件 `spec.mjs` / 产物 d.ts / demo meta | 组件 slot 无契约：d.ts 与调试台 API 表没有 slot 事实来源，声明口径全靠口口相传 | slot 从未纳入 spec 元数据体系 | 契约层落地：`spec.mjs` 新增 `slots` schema（registry 加载时强校验 name/scope/fallback/description/renderedVia）→ 构建生成 `XxxSlots` 接口（VNode 按用到引入）→ 产物 `meta.json` 带 `slots` 段 → 调试台 API 表新增 Slots 段（core 属性表契约同步放行 `Slots$` 接口）；input `append` 样板；守卫 `tests/build/slot-contract.spec.ts` 四组用例：dist meta 与 spec 逐字一致、d.ts 形态、demo meta 数据源、静态渲染守卫（renderedVia 豁免须在台账登记原因）。**dialog/drawer/tree/transfer/upload/cascader/radio/checkbox 铺声明为第二刀** |
+
+### 31.2 验证
+
+- build 层 21 文件 198 用例全绿（slot 契约 4 组 + types 契约修正后）；组件层 95 文件 1609 用例全绿；typecheck 零错误。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-102（F-99/F-101/F-102 含已登记的存量待改项），三处文档同步为 102 条。
