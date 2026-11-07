@@ -24,7 +24,10 @@ function componentsDeclaring(propName: string) {
     if (!fs.existsSync(spec)) {
       continue
     }
-    if (new RegExp(`"name":\\s*"${propName}"`).test(fs.readFileSync(spec, 'utf8'))) {
+    // spec.mjs 有两种合法词形：原始 JSON 风（"name": "id"）与被 prettier 重排后的 JS 风（name: 'id'），
+    // 两者都会被 prettier 互转，扫描必须同时认；\b 边界防止 rename 之类的键被误命中
+    const declared = new RegExp(`\\bname\\b\\s*:\\s*['"]${propName}['"]|"name"\\s*:\\s*"${propName}"`)
+    if (declared.test(fs.readFileSync(spec, 'utf8'))) {
       found.push({ componentId: entry.name, exportName: toPascal(entry.name) })
     }
   }
