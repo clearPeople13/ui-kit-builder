@@ -208,7 +208,10 @@ function runTypeTests(tsconfigPath) {
 
 async function main() {
   const registry = await loadRegistry()
-  const { results } = await buildAllProfiles()
+  // 门禁里 build:all 已先跑过一次，--reuse 直接读 sizes.json，避免 verify 再打 198 份包；
+  // 单独执行 npm run verify 仍走完整构建，保证"产物是当前源码的事实"。
+  const reuse = process.argv.includes('--reuse')
+  const { results } = await buildAllProfiles({ reuse })
   const byName = Object.fromEntries(results.map((result) => [result.name, result]))
   const core = byName.core
   const full = byName.full
