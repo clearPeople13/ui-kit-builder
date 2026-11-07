@@ -18,8 +18,14 @@ const EXEMPT_COMPONENTS = new Set(['tabs'])
 
 const FORBIDDEN = [
   { pattern: /is-size-[a-z]/, label: '尺寸类 is-size-*（应为 --size-*）' },
-  { pattern: /(?<![\w-])--(small|large|mini|sm|lg|xl|xs)(?![\w-])/, label: '裸尺寸档位类 --small/--large/...（应为 --size-*）' },
-  { pattern: /(?<![\w-])--(closable|loading|vertical)(?![\w-])/, label: '状态类 --closable/--loading/--vertical（应为 is-*）' }
+  {
+    pattern: /(?<![\w-])--(small|large|mini|sm|lg|xl|xs)(?![\w-])/,
+    label: '裸尺寸档位类 --small/--large/...（应为 --size-*）'
+  },
+  {
+    pattern: /(?<![\w-])--(closable|loading|vertical)(?![\w-])/,
+    label: '状态类 --closable/--loading/--vertical（应为 is-*）'
+  }
 ]
 
 function componentIds(): string[] {
@@ -62,9 +68,7 @@ describe('size / 状态修饰类词形守卫（A22）', () => {
           lines.forEach((line, index) => {
             // 字符串内容（如 demo 文案、注释里引用旧词形说明）不算漂移，只扫 class 语境：
             // ts 里的 class/className 模板与 css 选择器行
-            const inClassContext =
-              file.endsWith('.css') ||
-              /class(Name)?\s*[:=]|\$\{|baseClass|--size|is-/.test(line)
+            const inClassContext = file.endsWith('.css') || /class(Name)?\s*[:=]|\$\{|baseClass|--size|is-/.test(line)
             if (inClassContext && pattern.test(line)) {
               hits.push(`${file}:${index + 1} ${label} → ${line.trim().slice(0, 80)}`)
             }
