@@ -59,6 +59,8 @@
     "quality": "node scripts/ci.mjs",
     "ci": "node scripts/ci.mjs",
     "ci:fast": "node scripts/ci.mjs --fast",
+    "ci:changed": "node scripts/ci.mjs --changed",
+    "ci:plan": "node scripts/ci.mjs --changed --dry",
     "hooks:install": "git config core.hooksPath .githooks",
     "test:watch": "vitest",
     "pretest:coverage": "npm run build:full",
