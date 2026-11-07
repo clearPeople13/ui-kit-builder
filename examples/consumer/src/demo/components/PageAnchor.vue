@@ -60,7 +60,14 @@ onBeforeUnmount(disconnect)
       <li
         v-for="item in tocState.items"
         :key="item.id"
-        :class="['pg-anchor__item', { 'is-active': activeId === item.id, 'is-sub': item.level }]"
+        :class="[
+          'pg-anchor__item',
+          {
+            'is-active': activeId === item.id,
+            'is-sub': item.level === 1,
+            'is-sub2': item.level === 2
+          }
+        ]"
       >
         <a :href="`#${item.id}`" @click.prevent="scrollTo(item.id)">{{ item.title }}</a>
       </li>

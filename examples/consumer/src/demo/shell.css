@@ -429,6 +429,7 @@ body {
 .app-content .ov-section,
 .app-content .cp-block,
 .app-content .cp-api,
+.app-content .cp-api__sec,
 .app-content .cp-locked {
   scroll-margin-top: 84px;
 }
@@ -497,6 +498,12 @@ body {
   padding-left: 22px;
   color: var(--app-faint);
   font-size: 11.5px;
+}
+
+.pg-anchor__item.is-sub2 a {
+  padding-left: 38px;
+  color: var(--app-faint);
+  font-size: 11px;
 }
 
 .pg-anchor__item.is-active a {

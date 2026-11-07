@@ -322,6 +322,10 @@ function apiBlockId(name: string): string {
   return 'cp-api-' + name.toLowerCase()
 }
 
+function apiSectionId(name: string, key: string): string {
+  return 'cp-api-' + name.toLowerCase() + '-' + key.toLowerCase()
+}
+
 const tocItems = computed<TocItem[]>(() => {
   const items: TocItem[] = [{ id: 'cp-sec-demo', title: '代码演示' }]
   items.push({ id: 'cp-sec-features', title: '特性开关' })
@@ -331,6 +335,12 @@ const tocItems = computed<TocItem[]>(() => {
   items.push({ id: 'cp-sec-api', title: 'API' })
   for (const block of apiBlocks.value) {
     items.push({ id: apiBlockId(block.name), title: block.name, level: 1 })
+    for (const sec of block.sections) {
+      items.push({ id: apiSectionId(block.name, sec.key), title: sec.title, level: 2 })
+    }
+    if (block.methods.length) {
+      items.push({ id: apiSectionId(block.name, 'methods'), title: 'Methods', level: 2 })
+    }
   }
   if (lockedFeatures.value.length) {
     items.push({ id: 'cp-sec-locked', title: '本包裁剪的特性' })
@@ -727,6 +737,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
         <div
           v-for="sec in block.sections"
           :key="sec.key"
+          :id="apiSectionId(block.name, sec.key)"
           :class="sec.locked ? 'cp-api__sec is-locked' : 'cp-api__sec'"
         >
           <h4 class="cp-api__sec-title">
@@ -754,7 +765,7 @@ watch(() => [props.componentId, props.packageId], handleContextChange, { immedia
             </tbody>
           </table>
         </div>
-        <div v-if="block.methods.length" class="cp-api__sec">
+        <div v-if="block.methods.length" :id="apiSectionId(block.name, 'methods')" class="cp-api__sec">
           <h4 class="cp-api__sec-title">Methods</h4>
           <table class="cp-api__table">
             <thead>
