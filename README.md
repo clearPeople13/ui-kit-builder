@@ -8,7 +8,7 @@
 - **profile 驱动构建**：一个 profile 产出一个独立包（ESM + 类型声明 + 独立 CSS + `meta.json` 体积/特性清单）
 - **20 套主题**：15 套对齐主流设计体系（Ant Design、Arco、TDesign、Naive UI、View Design、Vant、Varlet、Semi、Material 3、Bootstrap、shadcn/ui、Fluent 2、Carbon、Mantine、iOS），另有 `core` / `full` / `branded` / `chinese` / `cute` 5 套内置风格；主题全部由 CSS 令牌驱动，不侵入组件逻辑
 - **可视化构建器**：勾选组件、特性与主题，实时生成构建配置并估算产物体积
-- **组件调试台**：89 个组件的场景预设、属性面板、API 属性表与在线编辑预览
+- **组件调试台**：88 个组件的场景预设、属性面板、API 属性表与在线编辑预览
 
 ## 目录结构
 
@@ -100,7 +100,7 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 
 各层用例条数不再写进文档（历史上手写计数漂移过多次），一律以对应命令的终端输出和 `ci-report.json` 的阶段记录为准。
 
-组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`：覆盖 89 个组件目录，含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归，无一目录遗漏。
+组件用例位于 `tests/components/`，断言对象是构建产物 `dist/full/ui-kit.js`：覆盖 88 个组件目录，含 `feature-class-switch.spec.ts` 的特性开关类名专项、`style-attrs.spec.ts` 的样式属性归位、`floating-keyboard.spec.ts` 的浮层键盘与 Escape 分层、`time-picker-scenes.spec.ts` 的场景契约回归，无一目录遗漏。
 构建器侧用例位于 `tests/build/`，走独立的 `vitest.build.config.ts`（node 环境），断言对象是 20 份 profile 的产物本身：
 特性裁剪结果、`meta.json` / `sizes.json` 自证信息、体积阈值、主题令牌落盘与指纹、`index.d.ts` 与 `spec.mjs` 的类型契约、dev-api 接口分支、demo meta 新鲜度、门禁选择器、组件分类唯一来源、版本 / license / engines 一致性。
 浏览器层用例位于 `tests/browser/`，走 `vitest.browser.config.ts`（Vite dev server + Chromium，固定 1280×720 视口；Firefox 只跑布局 / 定位 / 键盘子集），补的是 happy-dom 里"永远为 0 的尺寸"测不到的东西：

@@ -42,7 +42,6 @@ const COMMON_IDS = [
   'progress',
   'skeleton',
   'empty',
-  'result',
   'loading',
   'notification',
   'autocomplete',

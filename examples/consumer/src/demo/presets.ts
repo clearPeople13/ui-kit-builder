@@ -1854,8 +1854,7 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
   Empty: [
     { id: 'base', label: '基础', values: {} },
     { id: 'description', label: '自定义描述', values: { description: '暂无搜索结果，换个关键词试试' } }
-  ],
-  Result: [{ id: 'base', label: '基础', values: { title: '操作成功', subTitle: '相关结果已生成，可以继续下一步。' } }]
+  ]
 }
 
 function mergeScenePresets(

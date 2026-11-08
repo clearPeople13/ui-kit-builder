@@ -95,8 +95,7 @@ export const CATEGORY_GROUPS = [
       'popconfirm',
       'popover',
       'tooltip',
-      'tour',
-      'result'
+      'tour'
     ]
   },
   {

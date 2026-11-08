@@ -463,34 +463,6 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
       values: { title: '', content: '仅有描述内容的页头' }
     }
   ],
-  Result: [
-    {
-      id: 'success',
-      label: '成功图标',
-      requires: 'result.icons',
-      values: { icon: 'success', title: '构建成功', subTitle: '产物已写入 dist 目录。' }
-    },
-    {
-      id: 'warning',
-      label: '警告图标',
-      requires: 'result.icons',
-      values: { icon: 'warning', title: '存在警告', subTitle: '构建完成，但有 3 条警告。' }
-    },
-    {
-      id: 'error',
-      label: '错误图标',
-      requires: 'result.icons',
-      values: { icon: 'error', title: '构建失败', subTitle: '请检查控制台错误日志。' }
-    },
-    {
-      id: 'long-sub',
-      label: '长副标题',
-      values: {
-        title: '操作成功',
-        subTitle: '相关结果已生成，可以继续下一步；如果暂时不需要，也可以稍后从历史记录中恢复。'
-      }
-    }
-  ],
   Skeleton: [
     { id: 'base', label: '基础', values: {} },
     { id: 'animated', label: '动画', values: { animated: true } },
