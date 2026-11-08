@@ -158,9 +158,9 @@ export default {
           description: 'id'
         },
         {
-          name: 'open',
+          name: 'expanded',
           type: 'boolean',
-          description: 'open'
+          description: 'expanded'
         }
       ],
       features: {}
