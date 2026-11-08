@@ -6,7 +6,7 @@ import { nextZIndex } from '../../shared/z-index'
 import './core.css'
 
 const loadingBaseProps = {
-  visible: { type: Boolean, default: true },
+  modelValue: { type: Boolean, default: true },
   text: { type: String, default: '' },
   size: { type: [Number, String], default: '' },
   color: { type: String, default: '' },
@@ -31,7 +31,7 @@ export function createLoading(features: UiFeature[] = []) {
       baseClass: 'ui-loading',
       props: loadingBaseProps,
       classes: (props) => [
-        props.visible ? '' : 'is-hidden',
+        props.modelValue ? '' : 'is-hidden',
         props.fullscreen ? 'is-fullscreen' : '',
         props.lock ? 'is-lock' : '',
         props.customClass
@@ -39,7 +39,7 @@ export function createLoading(features: UiFeature[] = []) {
       setup(props) {
         const zIndex = ref(nextZIndex())
         watch(
-          () => props.visible,
+          () => props.modelValue,
           (value) => {
             if (value && props.fullscreen) {
               zIndex.value = nextZIndex()
@@ -69,7 +69,7 @@ export function createLoading(features: UiFeature[] = []) {
         return style
       },
       content: ({ props }) => {
-        if (!props.visible) {
+        if (!props.modelValue) {
           return null
         }
         const spinnerStyle: CSSProperties = {

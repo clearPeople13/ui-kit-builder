@@ -230,21 +230,33 @@ describe('Mention 提及输入', () => {
     expect(readonly.emitted('visible-change')).toBeUndefined()
   })
 
-  it('filterOption=false 列出全部，函数形式按自定义规则收窄', async () => {
-    const all = mountMention({ modelValue: '@b', options, filterOption: false })
+  it('filterable=false 列出全部，filterMethod 按自定义规则收窄', async () => {
+    const all = mountMention({ modelValue: '@b', options, filterable: false })
     await all.find('.ui-mention__inner').trigger('focus')
     await nextTick()
     expect(optionNodes().map((node) => node.textContent)).toEqual(['Alice', 'Bob', 'Carol'])
     reset()
 
+    const filtered: Array<[string, string]> = []
     const custom = mountMention({
       modelValue: '@a',
       options,
-      filterOption: (_query: string, item: any) => item.value === 'alice'
+      filterMethod: (query: string, item: { value: string }) => {
+        filtered.push([query, item.value])
+        return item.value === 'alice'
+      }
     })
     await custom.find('.ui-mention__inner').trigger('focus')
     await nextTick()
     expect(optionNodes().map((node) => node.textContent)).toEqual(['Alice'])
+    expect(filtered).toContainEqual(['a', 'alice'])
+    expect(filtered).toContainEqual(['a', 'carol'])
+    reset()
+
+    const label = mountMention({ modelValue: '@RO', options })
+    await label.find('.ui-mention__inner').trigger('focus')
+    await nextTick()
+    expect(optionNodes().map((node) => node.textContent)).toEqual(['Carol'])
   })
 
   it('自定义 prefix / props 字段映射 / split 参与插入文本', async () => {

@@ -32,7 +32,8 @@ const mentionBaseProps = {
   name: { type: String },
   prefix: { type: [String, Array], default: '@' },
   split: { type: String, default: ' ' },
-  filterOption: { type: [Boolean, Function], default: undefined },
+  filterable: { type: Boolean, default: true },
+  filterMethod: { type: Function },
   whole: { type: Boolean },
   props: { type: Object, default: () => ({}) }
 }
@@ -173,11 +174,11 @@ export function createMention(features: UiFeature[] = []) {
 
         function filterOptions(query: string): unknown[] {
           const list = Array.isArray(props.options) ? props.options : []
-          if (props.filterOption === false) {
+          if (!props.filterable) {
             return list
           }
-          if (typeof props.filterOption === 'function') {
-            return list.filter((item) => props.filterOption(query, item))
+          if (typeof props.filterMethod === 'function') {
+            return list.filter((item) => props.filterMethod(query, item))
           }
           const keyword = query.toLowerCase()
           return list.filter((item) => optionLabel(item, props).toLowerCase().includes(keyword))

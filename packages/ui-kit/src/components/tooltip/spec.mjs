@@ -39,9 +39,9 @@ export default {
           "default": "hover"
         },
         {
-          "name": "visible",
+          "name": "modelValue",
           "type": "boolean",
-          "description": "visible"
+          "description": "受控显示状态（v-model），缺省时回退内部触发状态"
         },
         {
           "name": "showArrow",

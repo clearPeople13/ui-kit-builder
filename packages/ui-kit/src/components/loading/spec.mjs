@@ -10,9 +10,9 @@ export default {
       "createExport": "createLoading",
       "coreProps": [
         {
-          "name": "visible",
+          "name": "modelValue",
           "type": "boolean",
-          "description": "visible",
+          "description": "是否显示加载态（v-model）",
           "default": true
         },
         {
