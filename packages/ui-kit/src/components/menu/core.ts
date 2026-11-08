@@ -1,4 +1,4 @@
-import { h, isVNode, onBeforeUnmount, ref, watch } from 'vue'
+import { h, isVNode, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -19,10 +19,17 @@ interface MenuContext {
   collapsible: () => boolean
   showTimeout: () => number
   hideTimeout: () => number
+  // roving tabindex：整组菜单只占一个 Tab 停靠点，键盘/点击在可导航项间同步当前项
+  navId: () => string | null
+  setNavId: (id: string) => void
+  registerNav: (id: string, element: HTMLElement) => void
+  unregisterNav: (id: string) => void
+  ensureNav: () => void
 }
 
 const MENU_CONTEXT = Symbol('ui-menu-context')
 const SUBMENU_OWNER = Symbol('ui-submenu-owner')
+let menuNavSeed = 0
 
 function toDelay(value: unknown, fallback: number): number {
   if (value === '' || value === null || value === undefined) {
@@ -129,6 +136,137 @@ export function createMenu(features: UiFeature[] = []) {
           setOpen(index, !isOpened(index))
         }
 
+        // ===== roving tabindex：menu-item 与 sub-menu 标题共享整组唯一的 Tab 停靠点 =====
+        const navId = ref<string | null>(null)
+        const navElements = new Map<string, HTMLElement>()
+
+        function registerNav(id: string, element: HTMLElement) {
+          navElements.set(id, element)
+          // 初始停靠点落在首个注册的可导航项
+          if (!navId.value) {
+            navId.value = id
+          }
+        }
+
+        function ensureNav() {
+          const current = navId.value ? navElements.get(navId.value) : undefined
+          if (current && !current.closest('.is-disabled')) {
+            return
+          }
+          // 当前停靠项被卸载或禁用后，回退到首个可用项，避免整组从 Tab 序里消失
+          for (const [id, element] of navElements) {
+            if (!element.closest('.is-disabled')) {
+              navId.value = id
+              return
+            }
+          }
+          navId.value = null
+        }
+
+        function unregisterNav(id: string) {
+          navElements.delete(id)
+          ensureNav()
+        }
+
+        function setNavId(id: string) {
+          navId.value = id
+        }
+
+        function navIdOf(element: HTMLElement): string | null {
+          for (const [id, item] of navElements) {
+            if (item === element) {
+              return id
+            }
+          }
+          return null
+        }
+
+        const NAV_ITEM_SELECTOR = '.ui-menu-item__inner, .ui-sub-menu__title'
+
+        // 可导航项按 DOM 顺序收集（收起子菜单的子项不渲染，自然退出导航）；禁用项一律跳过
+        function navigableItems(root: HTMLElement): HTMLElement[] {
+          return Array.from(root.querySelectorAll<HTMLElement>(NAV_ITEM_SELECTOR)).filter(
+            (element) => !element.closest('.is-disabled')
+          )
+        }
+
+        function focusNavItem(element: HTMLElement) {
+          element.focus({ preventScroll: true })
+          const id = navIdOf(element)
+          if (id) {
+            navId.value = id
+          }
+        }
+
+        // WAI-ARIA 交互式菜单键盘映射：↑↓ 在可导航项间循环移动，→ 展开/进入子菜单，
+        // ← 收起子菜单或回到父级标题，Home/End 跳首末可用项；禁用项跳过
+        function handleNavKeydown(event: KeyboardEvent) {
+          const keys = ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const root = event.currentTarget as HTMLElement
+          const target = (event.target as HTMLElement | null)?.closest<HTMLElement>(NAV_ITEM_SELECTOR)
+          if (!target || !root.contains(target) || target.closest('.is-disabled')) {
+            return
+          }
+          const items = navigableItems(root)
+          if (!items.length) {
+            return
+          }
+          event.preventDefault()
+          const currentIndex = items.indexOf(target)
+
+          if (event.key === 'Home' || event.key === 'End') {
+            focusNavItem(event.key === 'Home' ? items[0] : items[items.length - 1])
+            return
+          }
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const step = event.key === 'ArrowDown' ? 1 : -1
+            const from = currentIndex >= 0 ? currentIndex : 0
+            focusNavItem(items[(from + step + items.length) % items.length])
+            return
+          }
+          if (event.key === 'ArrowRight') {
+            // 仅子菜单标题响应：未展开先展开，随后焦点落到第一个子项（无子项则停在标题）
+            if (!target.classList.contains('ui-sub-menu__title')) {
+              return
+            }
+            const subRoot = target.parentElement as HTMLElement | null
+            const index = subRoot?.getAttribute('data-submenu-index')
+            if (index && !isOpened(index)) {
+              setOpen(index, true)
+            }
+            void nextTick(() => {
+              if (!subRoot) {
+                return
+              }
+              // 第一个子项 = 子树内排除标题自身的首个可导航元素（嵌套子菜单标题也算）
+              const first = navigableItems(subRoot).find((element) => element !== target)
+              if (first) {
+                focusNavItem(first)
+              }
+            })
+            return
+          }
+          // ArrowLeft：子项上收起所在子菜单并把焦点交回标题；标题上收起自身、焦点不动
+          const subRoot = target.closest('.ui-sub-menu') as HTMLElement | null
+          if (!subRoot) {
+            return
+          }
+          const index = subRoot.getAttribute('data-submenu-index')
+          if (index && isOpened(index)) {
+            setOpen(index, false)
+          }
+          const title = Array.from(subRoot.children).find(
+            (child): child is HTMLElement =>
+              child instanceof HTMLElement && child.classList.contains('ui-sub-menu__title')
+          )
+          if (title && target !== title) {
+            focusNavItem(title)
+          }
+        }
+
         provide(MENU_CONTEXT, {
           active: () => active.value,
           setActive,
@@ -139,15 +277,22 @@ export function createMenu(features: UiFeature[] = []) {
           mode: () => props.mode,
           collapsible: () => Boolean(props.collapsed),
           showTimeout: () => toDelay(props.showTimeout, 300),
-          hideTimeout: () => toDelay(props.hideTimeout, 300)
+          hideTimeout: () => toDelay(props.hideTimeout, 300),
+          navId: () => navId.value,
+          setNavId,
+          registerNav,
+          unregisterNav,
+          ensureNav
         })
 
         return {
+          handleNavKeydown,
           get activeIndex() {
             return active.value
           }
         }
       },
+      attrs: (_props, state) => ({ onKeydown: state.handleNavKeydown }),
       classes: (props) => [props.mode ? `is-${props.mode}` : '', props.collapsed ? 'is-collapse' : ''],
       styles: (props) => ({
         color: props.textColor,
@@ -174,14 +319,36 @@ export function createMenuItem(features: UiFeature[] = []) {
       props: menuItemBaseProps,
       setup(props, { inject }) {
         const context = inject(MENU_CONTEXT, null) as MenuContext | null
+        const navKey = props.index || `ui-menu-item-nav-${menuNavSeed++}`
+        const innerRef = ref<HTMLElement | null>(null)
+
+        onMounted(() => {
+          if (innerRef.value) {
+            context?.registerNav(navKey, innerRef.value)
+          }
+        })
+        onBeforeUnmount(() => context?.unregisterNav(navKey))
+        // 禁用态翻转后兜底重选停靠点，否则整组可能从 Tab 序里消失
+        watch(
+          () => props.disabled,
+          () => context?.ensureNav()
+        )
+
         return {
+          innerRef,
           get active() {
             return Boolean(props.index) && context?.active() === props.index
+          },
+          // roving tabindex：仅当前停靠项为 0，禁用项整体退出 Tab 序与键盘导航
+          get tabindex() {
+            return props.disabled ? undefined : context?.navId() === navKey ? 0 : -1
           },
           select() {
             if (props.disabled || !props.index) {
               return
             }
+            // 鼠标点击同步 roving 当前项，与键盘导航共用同一出口
+            context?.setNavId(navKey)
             context?.setActive(props.index)
           }
         }
@@ -192,6 +359,8 @@ export function createMenuItem(features: UiFeature[] = []) {
           'div',
           {
             class: 'ui-menu-item__inner',
+            ref: state.innerRef,
+            tabindex: state.tabindex,
             onClick: () => state.select()
           },
           [slots.default?.() ?? null]
@@ -237,6 +406,8 @@ export function createSubMenu(features: UiFeature[] = []) {
       setup(props, { inject, provide, slots }) {
         const context = inject(MENU_CONTEXT, null) as MenuContext | null
         const owner = inject(SUBMENU_OWNER, '') as string
+        const navKey = props.index || `ui-sub-menu-nav-${menuNavSeed++}`
+        const titleRef = ref<HTMLElement | null>(null)
         if (props.index) {
           context?.owners.set(String(props.index), owner)
         }
@@ -244,6 +415,16 @@ export function createSubMenu(features: UiFeature[] = []) {
         let timer: ReturnType<typeof setTimeout> | null = null
         // 悬停展开的子菜单移出后自动收起；点击展开的保持展开
         let openedByHover = false
+
+        onMounted(() => {
+          if (titleRef.value) {
+            context?.registerNav(navKey, titleRef.value)
+          }
+        })
+        watch(
+          () => props.disabled,
+          () => context?.ensureNav()
+        )
 
         function clearTimer() {
           if (timer) {
@@ -291,11 +472,17 @@ export function createSubMenu(features: UiFeature[] = []) {
           if (props.index) {
             context?.owners.delete(String(props.index))
           }
+          context?.unregisterNav(navKey)
         })
 
         return {
+          titleRef,
           get opened() {
             return Boolean(props.index) && Boolean(context?.isOpened(props.index as string))
+          },
+          // roving tabindex：仅当前停靠项为 0，禁用项整体退出 Tab 序与键盘导航
+          get tabindex() {
+            return props.disabled ? undefined : context?.navId() === navKey ? 0 : -1
           },
           // 激活项是否在本子菜单的子树内（子项选中、父级收起时给标题一个高亮标识）
           get activeDescendant() {
@@ -318,13 +505,17 @@ export function createSubMenu(features: UiFeature[] = []) {
             }
             clearTimer()
             openedByHover = false
+            // 鼠标点击同步 roving 当前项，与键盘导航共用同一出口
+            context?.setNavId(navKey)
             context?.toggleOpen(props.index)
           }
         }
       },
-      attrs: (_props, state) => ({
+      attrs: (props, state) => ({
         onMouseenter: state.handleEnter,
-        onMouseleave: state.handleLeave
+        onMouseleave: state.handleLeave,
+        // 键盘导航靠它把标题反查回子菜单 index（无 index 的子菜单本就无法展开）
+        'data-submenu-index': props.index || undefined
       }),
       classes: (props, state) => [
         state.opened ? 'is-opened' : '',
@@ -344,6 +535,8 @@ export function createSubMenu(features: UiFeature[] = []) {
             'div',
             {
               class: 'ui-sub-menu__title',
+              ref: state.titleRef,
+              tabindex: state.tabindex,
               onClick: () => state.toggle()
             },
             [

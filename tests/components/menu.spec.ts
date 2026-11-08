@@ -47,6 +47,11 @@ function openSubMenu(wrapper: ReturnType<typeof mountMenu>, index: number) {
   return wrapper.findAll('.ui-sub-menu__title')[index].trigger('click')
 }
 
+// 可导航项 = menu-item 内层 + sub-menu 标题（DOM 顺序）
+function navItems(wrapper: ReturnType<typeof mountMenu>) {
+  return wrapper.findAll('.ui-menu-item__inner, .ui-sub-menu__title')
+}
+
 afterEach(() => {
   while (mounted.length) {
     mounted.pop()!.unmount()
@@ -303,5 +308,111 @@ describe('Menu 菜单', () => {
     const plain = mountMenu()
     await nextTick()
     expect(plain.attributes('style') || '').not.toContain('--ui-menu-bg')
+  })
+
+  // WAI-ARIA 交互式菜单键盘映射：roving tabindex + 方向键/Home/End 导航（禁用项跳过）
+  describe('键盘导航', () => {
+    it('roving tabindex：仅首个可导航项 tabindex=0，其余 -1，禁用项无 tabindex', async () => {
+      const wrapper = mountMenu()
+      await nextTick()
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', undefined])
+    })
+
+    it('ArrowDown 移动焦点并翻转 roving tabindex，子菜单展开后子项参与导航', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1', undefined])
+      await navItems(wrapper)[0].trigger('keydown', { key: 'ArrowDown' })
+      await nextTick()
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['-1', '0', '-1', '-1', undefined])
+    })
+
+    it('ArrowUp 从首个循环回到末尾可用项并跳过禁用项', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      await navItems(wrapper)[0].trigger('keydown', { key: 'ArrowUp' })
+      await nextTick()
+      // 末项「已下线」disabled，循环后停在「退款申请」
+      expect(document.activeElement).toBe(navItems(wrapper)[3].element)
+    })
+
+    it('Home/End 跳到首/末可用项', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      await navItems(wrapper)[2].trigger('keydown', { key: 'End' })
+      await nextTick()
+      expect(document.activeElement).toBe(navItems(wrapper)[3].element)
+      await navItems(wrapper)[3].trigger('keydown', { key: 'Home' })
+      await nextTick()
+      expect(document.activeElement).toBe(navItems(wrapper)[0].element)
+    })
+
+    it('ArrowRight 展开子菜单、抛 submenu-change 并进入第一个子项', async () => {
+      const wrapper = mountMenu()
+      await nextTick()
+      await navItems(wrapper)[1].trigger('keydown', { key: 'ArrowRight' })
+      await nextTick()
+      await nextTick()
+      expect(wrapper.find('.ui-sub-menu').classes()).toContain('is-opened')
+      expect(wrapper.emitted('submenu-change')).toEqual([['s1', true]])
+      expect(document.activeElement).toBe(navItems(wrapper)[2].element)
+      expect(navItems(wrapper)[2].attributes('tabindex')).toBe('0')
+    })
+
+    it('ArrowRight 在已展开子菜单标题上直接进入第一个子项，不重复抛 submenu-change', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      await navItems(wrapper)[1].trigger('keydown', { key: 'ArrowRight' })
+      await nextTick()
+      expect(wrapper.emitted('submenu-change')).toBeUndefined()
+      expect(document.activeElement).toBe(navItems(wrapper)[2].element)
+    })
+
+    it('ArrowLeft 在子项上收起子菜单、抛 submenu-change 并把焦点交回标题', async () => {
+      const wrapper = mountMenu()
+      await nextTick()
+      await navItems(wrapper)[1].trigger('keydown', { key: 'ArrowRight' })
+      await nextTick()
+      await nextTick()
+      await navItems(wrapper)[2].trigger('keydown', { key: 'ArrowLeft' })
+      await nextTick()
+      expect(wrapper.find('.ui-sub-menu').classes()).not.toContain('is-opened')
+      expect(wrapper.emitted('submenu-change')).toEqual([
+        ['s1', true],
+        ['s1', false]
+      ])
+      expect(document.activeElement).toBe(navItems(wrapper)[1].element)
+    })
+
+    it('ArrowLeft 在子菜单标题上收起自身且焦点保持不动', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      const title = navItems(wrapper)[1].element as HTMLElement
+      title.focus()
+      await navItems(wrapper)[1].trigger('keydown', { key: 'ArrowLeft' })
+      await nextTick()
+      expect(wrapper.find('.ui-sub-menu').classes()).not.toContain('is-opened')
+      expect(wrapper.emitted('submenu-change')).toEqual([['s1', false]])
+      expect(document.activeElement).toBe(title)
+    })
+
+    it('导航键 keydown 均 preventDefault', async () => {
+      const wrapper = mountMenu()
+      await nextTick()
+      for (const key of ['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+        const event = new KeyboardEvent('keydown', { key, cancelable: true, bubbles: true })
+        navItems(wrapper)[0].element.dispatchEvent(event)
+        expect(event.defaultPrevented).toBe(true)
+      }
+    })
+
+    it('鼠标点击同步 roving 当前项', async () => {
+      const wrapper = mountMenu({ defaultOpeneds: ['s1'] })
+      await nextTick()
+      await clickItem(wrapper, '订单列表')
+      await nextTick()
+      expect(navItems(wrapper).map((item) => item.attributes('tabindex'))).toEqual(['-1', '-1', '0', '-1', undefined])
+    })
   })
 })
