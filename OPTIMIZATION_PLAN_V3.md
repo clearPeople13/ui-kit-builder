@@ -109,7 +109,7 @@ npm run quality
 - **第 2 波（已完成）**：W1.2a、W1.2b、W1.2c、W1.2d 四路并行合入，23 条 BASELINE 缺口清空。
 - **第 4 波（当前）**：W2.2 已删除 transfer 空壳；W2.1 cascader / cascader-panel 特性化待启动。
 - **第 4 波（已完成）**：W2.2 删除 transfer 空壳；W3.1 / W3.2 / W3.3 一次性收口并通过 6 个 axe 场景。
-- **第 5 波（当前）**：W4.1 覆盖率补盲待启动，最后 W4.2 / W5.1 收口。
+- **第 5 波（已完成）**：W2.1 / W4 / W5.1 全部并入；计划内批次收口。
 
 > 历史教训：单个 agent 超过 12–16 文件或同时跨多个共享文件，产出会明显下降；本计划按组件族拆，不按“大而全”拆。
 
@@ -247,14 +247,14 @@ W5.1 ─────────────────────────
 | W1.3b | done | w13b-overlay-close | `feat/20261108-overlay-close-slot` | `.worktrees/overlay-close` | 已合入 `181bbe4` + `06c563e`；dialog/drawer/image-viewer/notification 四件套 close 插槽，86 条用例 |
 | W1.3c | done | w13c-upload-slots | `feat/20261108-upload-slots` | `.worktrees/upload-slots` | 已合入 `d564cd1`；trigger / hint / file-item（作用域 file/index/remove），21 条用例 |
 | W1.3d | done | w13d-tree-node | `feat/20261108-tree-node-slot` | `.worktrees/tree-node-slot` | 已合入 `70626e7`；default 节点插槽（node/data/level），优先于 renderContent |
-| W2.1 | ready | — | `refactor/20261108-cascader-virtualized` | 待建 | 可启动；cascader / cascader-panel 窗口逻辑搬进特性目录 |
+| W2.1 | done | w21-cascader-virt | `refactor/20261108-cascader-virtualized` | `.worktrees/cascader-virt` | 已合入 `332a675`；边际 240B/258B → 1782B/1622B，67 组件用例 + 8 浏览器用例 |
 | W2.2 | done | w22-transfer-virtualized | `refactor/20261108-transfer-virtualized` | `.worktrees/transfer-virtualized` | 已删除零实现特性、白名单与文档同步；README 特性数 175→174 |
 | W3.1 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 触发器 / 输入默认可访问名，`aria-command-name` / `aria-input-field-name` 白名单已删 |
 | W3.2 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 空数据级联列、TreeV2 空态、Tooltip/Popper 名称、Table 滚动可达收口 |
 | W3.3 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 日历 / 轮播 / 折叠 / 穿梭图标按钮补 `aria-label` |
-| W4.1 | blocked | — | `test/20261108-coverage-drag` | — | 等 W2/W3 |
-| W4.2 | blocked | — | `test/20261108-coverage-floor` | — | 等 W4.1 |
-| W5.1 | ready | — | `perf/20261108-ci-fast` | — | 可随时启动 |
+| W4.1 | done | w4-coverage | `test/20261108-coverage` | `.worktrees/coverage` | 已合入 `5f3a2ad`；37 条边界用例，四个目标文件 lines 均 ≥89% |
+| W4.2 | done | w4-coverage | `test/20261108-coverage` | `.worktrees/coverage` | 组件级下限 7/0/7 → 30/40/30（实际配置基线），全量覆盖率 84.68→87.72% |
+| W5.1 | done | w51-ci-fast | `perf/20261108-ci-fast` | `.worktrees/ci-fast` | 已合入 `d61d545`；fast 五段并行，实测 5.7s（15s+ → 5.7s） |
 
 ## 10. 完成定义（DoD）
 

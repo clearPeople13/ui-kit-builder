@@ -805,7 +805,9 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 | `table/core.ts`                          | 72.82 | 74.10    |
 | `input-number/features/methods/index.ts` | 75.00 | 100.00   |
 
-这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑（低于 21 / 33 / 21 直接红），后续补完拖拽类单测再抬线。
+这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑。
+
+W4 已补盲：把 `resolveDropType` / `canDropNode` / `moveNode`、`resolveDrawerSize`、`resolveColumnWidth`、`resolveDragRange` / `resolveKeyboardDelta` 等纯函数从闭包抽出，新增 37 条边界用例。四个目标文件现为 tree 96.61/88.75、drawer resize 100/100、table resize 89.47/81.25、splitter 96.15/82.08（lines/branches）。组件级下限从实际的 7/0/7 抬到 **30/40/30**，全量聚合覆盖率 lines 84.59 → **87.69**、branches 77.64 → **79.79**。当前阈值是聚合口径（未开 `perFile`），逐文件下限需另开任务补齐 `collapse-transition` / `button.bg-color` 等低覆盖文件。
 
 ### 21.4 axe 白名单（按场景 × 规则）
 
@@ -951,7 +953,7 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 25.4 本批未统一的部分（已登记，避免被当成已完成）
 
-- `cascader.virtualized` / `cascader-panel.virtualized` 两个特性仍是「只挂类名」：窗口逻辑在各自 `core.ts` 里（已接内核但仍在 core，裁不掉）。两者已列入待统一清单，治理守卫会阻止新增空壳。
+- `cascader.virtualized` / `cascader-panel.virtualized` 已于 W2.1 真正特性化：core 只留 `featureHook` 扩展点，滚动状态、窗口算术与 `__window` / `__row` 渲染全部搬进各自 `features/virtualized/`；边际值从 240B / 258B 提升到 **1782B / 1622B**。治理守卫改为检查 core 不得 import 虚拟实现、不得直接读 `virtualScroll` / `itemSize`，且特性必须复用 `shared/virtual-window`。
 - `transfer.virtualized` 零实现，已于 W2.2 删除；双列表虚拟化若要做，按新功能单独立项，不再挂空壳。
 - `table` 的虚拟滚动是变量行高 + 前缀和 + 贴底锁，与固定行高窗口不是同一种算法，强行套内核会丢掉动态行高能力，本批不动。
 
