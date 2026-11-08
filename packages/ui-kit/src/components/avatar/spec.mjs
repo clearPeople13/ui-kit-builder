@@ -42,6 +42,14 @@ export default {
           "description": "fit"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+        }
+      ],
       "features": {
         "avatar.icons": {
           "title": "图标",
@@ -113,6 +121,14 @@ export default {
           "type": "string | any[] | Record<string, any> | boolean",
           "default": null,
           "description": "collapseStyle"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "头像组成员，渲染在组容器内；无默认内容"
         }
       ],
       "features": {

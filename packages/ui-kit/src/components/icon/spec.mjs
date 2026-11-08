@@ -16,6 +16,14 @@ export default {
         { name: 'spinning', type: 'boolean', default: false, description: '旋转动画' },
         { name: 'strokeWidth', type: 'number', default: 2, description: '描边宽度' },
       ],
+      slots: [
+        {
+          name: 'default',
+          scope: null,
+          fallback: true,
+          description: '图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性',
+        },
+      ],
       features: {},
     },
   ],

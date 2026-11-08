@@ -26,6 +26,14 @@ export default {
           "description": "checked"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
+        }
+      ],
       "features": {}
     }
   ]

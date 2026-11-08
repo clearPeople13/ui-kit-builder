@@ -34,6 +34,14 @@ export default {
           "description": "分割线文案"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
+        }
+      ],
       "features": {}
     }
   ]

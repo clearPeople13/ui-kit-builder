@@ -69,6 +69,17 @@ export default {
           "description": "为 false 时不渲染自己的滚动容器（不设高度与 overflow），只输出窗口内容"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": {
+            "item": "any",
+            "index": "number"
+          },
+          "fallback": true,
+          "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
+        }
+      ],
       "features": {}
     }
   ]

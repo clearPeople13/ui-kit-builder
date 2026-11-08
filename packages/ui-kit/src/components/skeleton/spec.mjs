@@ -38,6 +38,14 @@ export default {
           "description": "loading"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+        }
+      ],
       "features": {
         "skeleton.loading": {
           "title": "加载状态",

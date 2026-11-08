@@ -34,6 +34,14 @@ export default {
           "description": "滚动高度达到该值时显示按钮"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
+        }
+      ],
       "features": {}
     }
   ]
