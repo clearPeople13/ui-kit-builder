@@ -59,11 +59,6 @@ export default {
           "description": "props"
         },
         {
-          "name": "virtualScroll",
-          "type": "boolean",
-          "description": "virtualScroll"
-        },
-        {
           "name": "height",
           "type": "number",
           "default": 204,
@@ -273,11 +268,15 @@ export default {
         },
         "cascader.virtualized": {
           "title": "虚拟滚动",
-          "description": "虚拟滚动：itemSize",
+          "description": "虚拟滚动：virtualScroll、itemSize",
           "module": "packages/ui-kit/src/components/cascader/features/virtualized/index.ts",
           "exportName": "cascaderVirtualizedFeature",
           "requires": [],
           "props": [
+            {
+              "name": "virtualScroll",
+              "type": "boolean"
+            },
             {
               "name": "itemSize",
               "type": "number",

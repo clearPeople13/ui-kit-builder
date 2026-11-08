@@ -268,15 +268,29 @@ if (virtualFeatureBytes && virtualFeatureBytes < 1500) {
     `select.select-virtualized 边际值仅 ${virtualFeatureBytes}B，虚拟实现没有落在特性里（特性被架空，"开了才打包"是假的）`
   )
 }
-// 仍是「只挂类名」的空壳虚拟特性必须逐个登记在 §25，新增空壳或删登记都会红
-const SHELL_VIRTUAL_FEATURES = ['cascader.virtualized', 'cascader-panel.virtualized']
-const shellMissing = SHELL_VIRTUAL_FEATURES.filter((id) => !requirementsText.includes(id))
-if (shellMissing.length) {
-  fail(`空壳虚拟特性没有登记进 REQUIREMENTS §25 待统一清单：${shellMissing.join(', ')}`)
+// 仍留在 core 里的虚拟窗口实现会被特性裁剪守卫拦下：窗口算法与渲染必须在 features/virtualized/
+const VIRTUAL_FEATURES = [
+  { component: 'cascader', feature: 'cascader.virtualized', core: 'cascader' },
+  { component: 'cascader-panel', feature: 'cascader-panel.virtualized', core: 'cascader-panel' }
+]
+for (const entry of VIRTUAL_FEATURES) {
+  const coreText = read(`${SRC}/components/${entry.core}/core.ts`)
+  const coreImports = coreText
+    .split('\n')
+    .filter((line) => /^\s*import\b/.test(line))
+    .join('\n')
+  if (/virtual-window|virtual-list|VirtualList/.test(coreImports)) {
+    fail(`${entry.core}/core.ts 又 import 了虚拟窗口实现，特性裁剪会失效（虚拟逻辑必须留在 features/virtualized）`)
+  }
+  if (/props\.(?:virtualScroll|itemSize|estimatedItemSize)\b/.test(coreText)) {
+    fail(`${entry.core}/core.ts 又直接读取虚拟化 prop，特性裁剪后行为会跟着 prop 缺失漂移`)
+  }
+  const featureText = read(`${SRC}/components/${entry.component}/features/virtualized/index.ts`)
+  if (!/virtual-window/.test(featureText)) {
+    fail(`${entry.feature} 没有复用 shared/virtual-window 的窗口算术，窗口逻辑散落在别处`)
+  }
 }
-notes.push(
-  `虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），空壳特性 ${SHELL_VIRTUAL_FEATURES.length} 个已登记`
-)
+notes.push(`虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），cascader 两项窗口逻辑已收进特性目录`)
 
 // 2.3 构建缓存口径守卫（§26）
 // 边际体积缓存键不再包含 build-all.mjs 全文，改口径只看库里的 SIZE_ALGO_VERSION。
