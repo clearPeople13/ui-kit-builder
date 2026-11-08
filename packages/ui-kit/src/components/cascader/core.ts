@@ -3,6 +3,7 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch
 import { Check, ChevronDown, ChevronRight, Minus, X } from '../../shared/icons'
 import { collectFeatureHooks, type UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
@@ -102,6 +103,7 @@ export function createCascader(features: UiFeature[] = []) {
       // 逐个对应本文件里的 emit(...) 调用点，避免监听落入 attrs 与 emit 双通道
       emits: ['update:modelValue', 'change', 'clear', 'expand-change', 'visible-change'],
       setup(props, { emit }) {
+        const locale = useLocale('cascader')
         const open = ref(false)
         const query = ref('')
         const inputText = ref('')
@@ -567,7 +569,11 @@ export function createCascader(features: UiFeature[] = []) {
               },
               [allSelected ? renderIcon(Check) : indeterminate ? renderIcon(Minus) : null]
             ),
-            h('span', { class: 'ui-cascader__select-all-label', onClick: toggleAll }, allSelected ? '清空' : '全选'),
+            h(
+              'span',
+              { class: 'ui-cascader__select-all-label', onClick: toggleAll },
+              allSelected ? locale.value.clear : locale.value.selectAll
+            ),
             h('span', { class: 'ui-cascader__select-all-count' }, `${selectedCount} / ${candidates.length}`)
           ])
         }
@@ -727,7 +733,7 @@ export function createCascader(features: UiFeature[] = []) {
                     {
                       type: 'button',
                       class: 'ui-cascader__tag-close',
-                      'aria-label': `移除 ${displayText(item)}`,
+                      'aria-label': formatLocale(locale.value.removeFormat, { label: displayText(item) }),
                       onClick: (event: Event) => {
                         event.stopPropagation()
                         removePath(index)
@@ -747,7 +753,7 @@ export function createCascader(features: UiFeature[] = []) {
                 {
                   class: 'ui-cascader__tag ui-cascader__tag--more',
                   tabindex: 0,
-                  'aria-label': `还有 ${hidden.length} 个已选项`,
+                  'aria-label': formatLocale(locale.value.hiddenFormat, { count: hidden.length }),
                   onMouseenter: showTagPop,
                   onMouseleave: hideTagPop
                 },
@@ -792,7 +798,9 @@ export function createCascader(features: UiFeature[] = []) {
                 ref: inputRef,
                 class: 'ui-cascader__input',
                 value: inputText.value,
-                placeholder: hasValue.value ? displayText(displayLabels.value[0]) : props.placeholder || '请选择',
+                placeholder: hasValue.value
+                  ? displayText(displayLabels.value[0])
+                  : props.placeholder || locale.value.placeholder,
                 disabled: Boolean(props.disabled),
                 readonly: Boolean(props.disabled),
                 onInput: handleFilterInput,
@@ -804,7 +812,7 @@ export function createCascader(features: UiFeature[] = []) {
           if (hasValue.value) {
             return [h('span', { class: 'ui-cascader__selected' }, displayText(displayLabels.value[0]))]
           }
-          return [h('span', { class: 'ui-cascader__placeholder' }, props.placeholder || '请选择')]
+          return [h('span', { class: 'ui-cascader__placeholder' }, props.placeholder || locale.value.placeholder)]
         }
 
         function renderNode(node: CascaderNode, level: number, tabStop: string, itemHeight?: number): VNodeChild {
@@ -884,7 +892,7 @@ export function createCascader(features: UiFeature[] = []) {
               loading
                 ? h('span', { class: 'ui-loader ui-loader--inline', role: 'status' }, [
                     h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
-                    h('span', null, '加载中…')
+                    h('span', null, locale.value.loading)
                   ])
                 : expandable
                   ? renderIcon(ChevronRight, { class: 'ui-cascader__node-arrow' })
@@ -919,7 +927,7 @@ export function createCascader(features: UiFeature[] = []) {
           const end = virtual ? range.end : column.length
           const children: VNodeChild[] = []
           if (!column.length) {
-            const emptyText = level === 0 && rootLoading.value ? '加载中…' : '无数据'
+            const emptyText = level === 0 && rootLoading.value ? locale.value.loading : locale.value.noData
             children.push(h('div', { class: 'ui-floating-panel__empty' }, emptyText))
           } else if (!virtual) {
             for (let index = 0; index < column.length; index += 1) {
@@ -951,7 +959,7 @@ export function createCascader(features: UiFeature[] = []) {
               class: ['ui-cascader__column', virtual ? 'is-virtual' : ''],
               style: { maxHeight: `${height}px` },
               role: 'listbox',
-              'aria-label': `第 ${level + 1} 级`,
+              'aria-label': formatLocale(locale.value.levelFormat, { level: level + 1 }),
               onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined,
               onKeydown: (event: KeyboardEvent) => handleColumnKeydown(level, event)
             },
@@ -1105,7 +1113,7 @@ export function createCascader(features: UiFeature[] = []) {
         function renderSearch(): VNodeChild {
           const items = searchResults.value
           if (!items.length) {
-            return h('div', { class: 'ui-floating-panel__empty' }, '无匹配数据')
+            return h('div', { class: 'ui-floating-panel__empty' }, locale.value.noMatch)
           }
           return h(
             'div',
@@ -1156,6 +1164,8 @@ export function createCascader(features: UiFeature[] = []) {
 
         return {
           triggerRef,
+          // 清空按钮的 aria-label 由 content 渲染，setup 内的闭包到不了，经 state 透出
+          locale,
           get open() {
             return open.value
           },
@@ -1189,7 +1199,7 @@ export function createCascader(features: UiFeature[] = []) {
               {
                 type: 'button',
                 class: 'ui-cascader__clear',
-                'aria-label': '清空',
+                'aria-label': state.locale.value.clear,
                 onClick: (event: Event) => {
                   event.stopPropagation()
                   state.clearValue()

@@ -21,6 +21,7 @@ import {
   resolveFeatureStates
 } from '../../shared/feature'
 import { sizeValue } from '../../shared/behavior'
+import { useLocale } from '../../shared/config'
 import { mergeStyles } from '../../shared/utils'
 import { createCheckbox } from '../checkbox/core'
 import './core.css'
@@ -46,7 +47,8 @@ const tableBaseProps = {
   rowKey: { type: [String, Function] },
   rowClassName: { type: [String, Function], default: '' },
   rowStyle: { type: [Object, Function] },
-  emptyText: { type: String, default: '暂无数据' },
+  // 不给 default：留空才能让 ConfigProvider 的 locale 生效，显式传值仍优先
+  emptyText: { type: String },
   tableLayout: { type: String, default: 'fixed' },
   showOverflowTooltip: { type: Boolean },
   virtual: { type: Boolean }
@@ -273,6 +275,7 @@ export function createTable(features: UiFeature[] = []) {
     props: { ...tableBaseProps, ...mergeFeatureProps(features) },
     emits: ['row-click', 'selection-change', 'current-change', 'sort-change', 'resize-change', 'tree-expand'],
     setup(props, { attrs, slots, emit, expose }) {
+      const locale = useLocale('table')
       const resolved = props as Record<string, any>
       const root = shallowRef<HTMLElement | null>(null)
       const wrapper = shallowRef<HTMLElement | null>(null)
@@ -1032,7 +1035,7 @@ export function createTable(features: UiFeature[] = []) {
             {
               type: 'button',
               class: ['ui-table__expand', expanded ? 'is-expanded' : ''],
-              'aria-label': expanded ? '收起行' : '展开行',
+              'aria-label': expanded ? locale.value.collapseRow : locale.value.expandRow,
               'aria-expanded': expanded ? 'true' : 'false',
               onClick: (event: Event) => {
                 event.stopPropagation()
@@ -1513,7 +1516,9 @@ export function createTable(features: UiFeature[] = []) {
         if (!rows.length) {
           bodyRows.push(
             h('tr', { class: 'ui-table__empty-row' }, [
-              h('td', { colspan: Math.max(1, columns.length) }, [slots.empty ? slots.empty() : resolved.emptyText])
+              h('td', { colspan: Math.max(1, columns.length) }, [
+                slots.empty ? slots.empty() : resolved.emptyText || locale.value.emptyText
+              ])
             ])
           )
         }

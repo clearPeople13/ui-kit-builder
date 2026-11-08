@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { CascaderPanel } from '@ui-kit-full'
+import { CascaderPanel, ConfigProvider } from '@ui-kit-full'
 
 /**
  * CascaderPanel 内联级联面板：没有浮层与触发器，直接按 activePath 展开多列。
@@ -308,5 +308,17 @@ describe('CascaderPanel 级联面板', () => {
       'ui-cascader-panel--virtualized',
       'ui-cascader-panel--plain'
     ])
+  })
+
+  it('层级 aria-label 走 locale，未注入的空数据文案回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { cascader: { levelFormat: 'L{level}' } } },
+      slots: { default: () => h(CascaderPanel, { options: [] }) },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(columns()[0].getAttribute('aria-label')).toBe('L1')
+    expect(wrapper.find('.ui-cascader-panel__empty').text()).toBe('无数据')
   })
 })

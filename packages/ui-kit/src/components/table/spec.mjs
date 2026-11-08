@@ -80,7 +80,6 @@ export default {
         {
           name: 'emptyText',
           type: 'string',
-          default: '暂无数据',
           description: '空数据文案'
         },
         {

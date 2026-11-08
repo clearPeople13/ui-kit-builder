@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick, toRaw } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Table, TableColumn } from '@ui-kit-full'
+import { Table, TableColumn, ConfigProvider } from '@ui-kit-full'
 
 const rows = [
   { id: 1, name: 'A', age: 20 },
@@ -451,5 +451,27 @@ describe('Table', () => {
   it('fit=false 时不铺满宽度', async () => {
     const wrapper = await setup({ fit: false })
     expect(wrapper.find('table.ui-table__inner').attributes('style')).toContain('width: 220px')
+  })
+
+  it('文案走 ConfigProvider 注入的 locale，未注入的键回退中文', async () => {
+    const expandColumns = () => [h(TableColumn, { type: 'expand' }), h(TableColumn, { prop: 'name', label: '名称' })]
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { table: { emptyText: 'Nothing', collapseRow: 'Collapse' } } },
+      slots: { default: () => h(Table, { data: rows }, { default: expandColumns }) },
+      attachTo: document.body
+    })
+    await nextTick()
+    // expandRow 未注入 → 默认中文；collapseRow 注入 → 生效
+    expect(wrapper.find('.ui-table__expand').attributes('aria-label')).toBe('展开行')
+    await wrapper.find('.ui-table__expand').trigger('click')
+    expect(wrapper.find('.ui-table__expand').attributes('aria-label')).toBe('Collapse')
+
+    const empty = mount(ConfigProvider, {
+      props: { locale: { table: { emptyText: 'Nothing' } } },
+      slots: { default: () => h(Table, { data: [] }, { default: expandColumns }) },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(empty.find('.ui-table__empty-row td').text()).toBe('Nothing')
   })
 })

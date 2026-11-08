@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Tree } from '@ui-kit-full'
+import { Tree, ConfigProvider } from '@ui-kit-full'
 
 /** findAll('input') 拿到的是 VueNode<Element>，勾选与半选态要按 HTMLInputElement 读 */
 function inputOf(node: { element: Element }): HTMLInputElement {
@@ -298,6 +298,26 @@ describe('Tree', () => {
   it('空数据渲染占位文案', async () => {
     expect(mountTree({ data: [] }).find('.ui-tree__empty').text()).toBe('暂无数据')
     expect(mountTree({ data: [], emptyText: '啥也没有' }).find('.ui-tree__empty').text()).toBe('啥也没有')
+  })
+
+  it('空数据文案走 ConfigProvider 注入的 locale，切换实时生效，未注入回退中文', async () => {
+    const injected = mount(ConfigProvider, {
+      props: { locale: { tree: { emptyText: 'Nothing here' } } },
+      slots: { default: () => h(Tree, { data: [] }) },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(injected.find('.ui-tree__empty').text()).toBe('Nothing here')
+    await injected.setProps({ locale: { tree: { emptyText: 'Changed' } } })
+    expect(injected.find('.ui-tree__empty').text()).toBe('Changed')
+
+    const fallback = mount(ConfigProvider, {
+      props: { locale: { tree: {} } },
+      slots: { default: () => h(Tree, { data: [] }) },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(fallback.find('.ui-tree__empty').text()).toBe('暂无数据')
   })
 
   it('非对象数组按字符串标签渲染', async () => {

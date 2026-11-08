@@ -3,6 +3,7 @@ import { computed, h, nextTick, ref, watch } from 'vue'
 import { Check, ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { sameValue } from '../../shared/value'
 import { computeVirtualRange } from '../../shared/virtual-window'
@@ -99,6 +100,8 @@ export function createCascaderPanel(features: UiFeature[] = []) {
       props: cascaderPanelBaseProps,
       classes: (props) => (props.disabled === true ? ['is-disabled'] : []),
       setup(props, { emit }) {
+        // 与 cascader 共用同一命名空间：内联面板的文案口径必须与浮层版本一致
+        const locale = useLocale('cascader')
         const activePath = ref<any[]>([])
         const focusKey = ref('')
         const lazyChildren = ref<Record<string, PanelNode[]>>({})
@@ -333,7 +336,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               loading
                 ? h('span', { class: 'ui-loader ui-loader--inline', role: 'status' }, [
                     h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
-                    h('span', null, '加载中…')
+                    h('span', null, locale.value.loading)
                   ])
                 : expandable
                   ? renderIcon(ChevronRight, { class: 'ui-cascader-panel__node-arrow' })
@@ -472,7 +475,11 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           let children: VNodeChild[] = []
           if (!column.length) {
             children = [
-              h('div', { class: 'ui-cascader-panel__empty' }, level === 0 && rootLoading.value ? '加载中…' : '无数据')
+              h(
+                'div',
+                { class: 'ui-cascader-panel__empty' },
+                level === 0 && rootLoading.value ? locale.value.loading : locale.value.noData
+              )
             ]
           } else if (!virtual) {
             children = column.map((node) => renderNode(node, level, tabStop))
@@ -506,7 +513,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               class: ['ui-cascader-panel__column', virtual ? 'is-virtual' : ''],
               style: { maxHeight: `${height}px` },
               role: 'listbox',
-              'aria-label': `第 ${level + 1} 级`,
+              'aria-label': formatLocale(locale.value.levelFormat, { level: level + 1 }),
               onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined,
               onKeydown: (event: KeyboardEvent) => handleColumnKeydown(level, event)
             },

@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
-import { Cascader } from '@ui-kit-full'
+import { h, nextTick } from 'vue'
+import { Cascader, ConfigProvider } from '@ui-kit-full'
 
 /**
  * Cascader 级联选择器：面板 teleport 到 body，关闭时若 persistent 仍在 DOM 里（display:none）。
@@ -495,5 +495,49 @@ describe('Cascader', () => {
     await openByClick(wrapper)
     expect(document.querySelector('.ui-floating-panel__empty')?.textContent).toBe('无数据')
     expect(columnsOf()).toHaveLength(1)
+  })
+
+  it('文案走 ConfigProvider 注入的 locale，未注入的键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { cascader: { placeholder: 'Pick one', levelFormat: 'L{level}' } } },
+      slots: {
+        default: () => h(Cascader, { options: tree, multiple: true, selectAll: true, modelValue: [] })
+      },
+      attachTo: document.body
+    })
+    wrappers.push(wrapper)
+    expect(wrapper.find('.ui-cascader__placeholder').text()).toBe('Pick one')
+    await openByClick(wrapper)
+    expect(columnsOf()[0].getAttribute('aria-label')).toBe('L1')
+    // selectAll 未注入，回退默认中文
+    expect(document.querySelector('.ui-cascader__select-all-label')?.textContent).toBe('全选')
+  })
+
+  it('移除 / 折叠 / 全选文案按 locale 模板插值', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: {
+        locale: { cascader: { removeFormat: 'Drop {label}', hiddenFormat: '{count} more', selectAll: 'All' } }
+      },
+      slots: {
+        default: () =>
+          h(Cascader, {
+            options: tree,
+            multiple: true,
+            selectAll: true,
+            collapseTags: true,
+            maxCollapseTags: 1,
+            modelValue: [
+              ['zj', 'hz'],
+              ['zj', 'nb']
+            ]
+          })
+      },
+      attachTo: document.body
+    })
+    wrappers.push(wrapper)
+    expect(wrapper.find('.ui-cascader__tag-close').attributes('aria-label')).toBe('Drop 浙江 / 杭州')
+    expect(wrapper.find('.ui-cascader__tag--more').attributes('aria-label')).toBe('1 more')
+    await openByClick(wrapper)
+    expect(document.querySelector('.ui-cascader__select-all-label')?.textContent).toBe('All')
   })
 })

@@ -4,6 +4,7 @@ import { ChevronDown, ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { collectFeatureHooks } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { collectDescendantKeys, collectTreeKeys, normalizeTreeNodes } from '../../shared/tree'
 import type { UiTreeNode } from '../../shared/tree'
@@ -14,7 +15,8 @@ const TreeCheckbox = createCheckbox([])
 
 const treeBaseProps = {
   data: { type: Array, default: () => [] },
-  emptyText: { type: String, default: '暂无数据' },
+  // 不给 default：留空才能让 ConfigProvider 的 locale 生效，显式传值仍优先
+  emptyText: { type: String },
   defaultExpandAll: { type: Boolean },
   defaultCheckedKeys: { type: Array, default: () => [] },
   defaultExpandedKeys: { type: Array, default: () => [] },
@@ -393,6 +395,7 @@ export function createTree(features: UiFeature[] = []) {
           filterText,
           checkedKeys,
           expandedKeys,
+          locale: useLocale('tree'),
           applyCheckedKeys,
           handleNodesKeydown,
           get nodes() {
@@ -403,7 +406,7 @@ export function createTree(features: UiFeature[] = []) {
       },
       content: ({ props, state, states }) => {
         if (!state.nodes.length) {
-          return h('div', { class: 'ui-tree__empty' }, props.emptyText)
+          return h('div', { class: 'ui-tree__empty' }, props.emptyText || state.locale.value.emptyText)
         }
         const hooks = collectFeatureHooks(states, 'treeNodeProps')
         const extend = hooks.length
