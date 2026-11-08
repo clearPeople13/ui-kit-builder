@@ -415,10 +415,80 @@ export function createTimePicker(features: UiFeature[] = []) {
           }
         }
 
+        // 焦点本就在面板外（输入框上 Escape）时不动它；焦点在面板里才归还触发字段
+        function restoreFieldFocus() {
+          const active = document.activeElement
+          const target =
+            active instanceof HTMLElement && !panelRef.value?.contains(active)
+              ? active
+              : fieldRefs[activeSide.value]?.value
+          target?.focus({ preventScroll: true })
+        }
+
+        // 键盘打开后焦点落进首列选中项（禁用时退到第一个可用项），列项本身是原生 button，Enter 即确认
+        function focusSelectedItem() {
+          nextTick(() => {
+            const column = panelRef.value?.querySelector('.ui-time-picker__column')
+            const items = Array.from(column?.querySelectorAll<HTMLButtonElement>('.ui-time-picker__time-item') ?? [])
+            const target =
+              items.find((item) => item.classList.contains('is-selected') && !item.disabled) ??
+              items.find((item) => !item.disabled)
+            target?.focus({ preventScroll: true })
+          })
+        }
+
         function handleKeydown(event: KeyboardEvent) {
           if (event.key === 'Escape' && open.value) {
             event.preventDefault()
             closePanel()
+            restoreFieldFocus()
+            return
+          }
+          if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
+            return
+          }
+          const target = (event.target as HTMLElement | null)?.closest(
+            '.ui-time-picker__time-item'
+          ) as HTMLElement | null
+          if (!target) {
+            return
+          }
+          const list = target.closest('.ui-time-picker__list')
+          const items = Array.from(list?.querySelectorAll<HTMLButtonElement>('.ui-time-picker__time-item') ?? [])
+          if (!items.length) {
+            return
+          }
+          event.preventDefault()
+          const currentIndex = items.indexOf(target as HTMLButtonElement)
+          const step = event.key === 'ArrowDown' ? 1 : -1
+          // 禁用项拿不到焦点，逐格扫描跳过（对齐 menu/tree 的 skip-disabled 口径）
+          for (let offset = 1; offset < items.length; offset += 1) {
+            const index = currentIndex + step * offset
+            if (index < 0 || index >= items.length) {
+              break
+            }
+            if (!items[index].disabled) {
+              items[index].focus({ preventScroll: true })
+              return
+            }
+          }
+        }
+
+        // 输入框的 keydown 冒泡到这里时已由 handleDraftKeydown 分流，再处理会重复打开/抢焦点
+        function handleFieldKeydown(index: number, event: KeyboardEvent) {
+          if ((event.target as HTMLElement | null)?.closest('input')) {
+            return
+          }
+          if (event.key === 'Enter' || event.key === 'ArrowDown') {
+            event.preventDefault()
+            openSide(index)
+            focusSelectedItem()
+            return
+          }
+          if (event.key === 'Escape' && open.value) {
+            event.preventDefault()
+            closePanel()
+            restoreFieldFocus()
           }
         }
 
@@ -584,7 +654,31 @@ export function createTimePicker(features: UiFeature[] = []) {
         function handleDraftKeydown(index: number, event: KeyboardEvent) {
           if (event.key === 'Enter') {
             event.preventDefault()
+            if (!open.value) {
+              // 草稿未改动时回车没有可提交内容，语义即打开面板；有改动时保持"提交草稿"的原路径
+              if (drafts[index].value !== displayAt(index)) {
+                commitDraft(index)
+                return
+              }
+              openSide(index)
+              focusSelectedItem()
+              return
+            }
             commitDraft(index)
+            return
+          }
+          if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            if (!open.value) {
+              openSide(index)
+              focusSelectedItem()
+            }
+            return
+          }
+          if (event.key === 'Escape' && open.value) {
+            event.preventDefault()
+            closePanel()
+            restoreFieldFocus()
           }
         }
 
@@ -636,6 +730,7 @@ export function createTimePicker(features: UiFeature[] = []) {
           handleDraftInput,
           handleDraftKeydown,
           handleDraftBlur,
+          handleFieldKeydown,
           idAt,
           nameAt
         }
@@ -688,11 +783,7 @@ export function createTimePicker(features: UiFeature[] = []) {
                 }
                 state.toggleSide(index)
               },
-              onKeydown: (event: KeyboardEvent) => {
-                if (event.key === 'Escape') {
-                  state.closePanel()
-                }
-              }
+              onKeydown: (event: KeyboardEvent) => state.handleFieldKeydown(index, event)
             },
             [
               renderIcon(props.prefixIcon || Clock, { class: 'ui-time-picker__icon' }),

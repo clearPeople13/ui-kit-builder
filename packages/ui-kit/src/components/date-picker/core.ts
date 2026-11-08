@@ -72,6 +72,8 @@ export function createDatePicker(features: UiFeature[] = []) {
         const seconds = ref(new Date().getSeconds())
         const triggerRef = ref<HTMLElement>()
         const panelRef = ref<HTMLElement>()
+        // 打开时的活动元素（触发元素），仅键盘关闭时归还焦点，与 dialog 的 restoreFocus 口径一致
+        let restoreTarget: HTMLElement | null = null
 
         const range = computed(() => Boolean(props.isRange) || String(props.type || 'date').endsWith('range'))
         const type = computed(() => String(props.type || 'date'))
@@ -373,14 +375,57 @@ export function createDatePicker(features: UiFeature[] = []) {
         function handleDraftKeydown(part: 'start' | 'end', event: KeyboardEvent) {
           if (event.key === 'Enter') {
             event.preventDefault()
+            // 草稿未改动时回车没有可提交内容，语义即打开面板；有改动时保持"提交并收起"的原路径
+            if (!open.value && startText.value === displayStart.value && endText.value === displayEnd.value) {
+              openPanel()
+              focusActiveDay()
+              return
+            }
             commitDraft(part, true)
+            return
+          }
+          if (event.key === 'ArrowDown') {
+            event.preventDefault()
+            if (!open.value) {
+              openPanel()
+              focusActiveDay()
+            }
             return
           }
           if (event.key === 'Escape') {
             event.preventDefault()
             syncDrafts()
-            closePanel()
+            closePanel(true)
           }
+        }
+
+        // 输入框的 keydown 冒泡到这里时已由 handleDraftKeydown 分流，再处理会重复打开/抢焦点
+        function handleTriggerKeydown(event: KeyboardEvent) {
+          if ((event.target as HTMLElement | null)?.closest('input')) {
+            return
+          }
+          if (event.key === 'Enter' || event.key === 'ArrowDown') {
+            event.preventDefault()
+            openPanel()
+            focusActiveDay()
+            return
+          }
+          if (event.key === 'Escape' && open.value) {
+            event.preventDefault()
+            closePanel(true)
+          }
+        }
+
+        // 键盘打开后焦点落进网格：优先已选日，其次今天，兜底第一个非禁用日格
+        function focusActiveDay() {
+          nextTick(() => {
+            const cells = Array.from(panelRef.value?.querySelectorAll<HTMLButtonElement>('.ui-date-picker__cell') ?? [])
+            const target =
+              cells.find((cell) => cell.classList.contains('is-selected') && !cell.disabled) ??
+              cells.find((cell) => cell.classList.contains('is-today') && !cell.disabled) ??
+              cells.find((cell) => !cell.disabled)
+            target?.focus({ preventScroll: true })
+          })
         }
 
         function handleDraftBlur(part: 'start' | 'end') {
@@ -405,18 +450,26 @@ export function createDatePicker(features: UiFeature[] = []) {
           if (props.disabled || props.readonly || open.value) {
             return
           }
+          const active = document.activeElement
+          restoreTarget = active instanceof HTMLElement ? active : null
           syncFromValue()
           open.value = true
           emit('visible-change', true)
           nextTick(refresh)
         }
 
-        function closePanel() {
+        // 外点关闭不归还焦点：用户焦点已落在新目标上，抢回来反而打断点击流
+        function closePanel(restoreFocus = false) {
           if (!open.value) {
             return
           }
           open.value = false
           emit('visible-change', false)
+          if (restoreFocus) {
+            const target = restoreTarget ?? triggerRef.value ?? null
+            restoreTarget = null
+            nextTick(() => target?.focus({ preventScroll: true }))
+          }
         }
 
         function togglePanel() {
@@ -646,11 +699,57 @@ export function createDatePicker(features: UiFeature[] = []) {
           return Array.isArray(list) && list.includes(second)
         }
 
+        function handleGridKeydown(event: KeyboardEvent) {
+          const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const target = (event.target as HTMLElement | null)?.closest('.ui-date-picker__cell') as HTMLElement | null
+          if (!target) {
+            return
+          }
+          const grid = target.closest('.ui-date-picker__grid')
+          const cells = Array.from(grid?.querySelectorAll<HTMLButtonElement>('.ui-date-picker__cell') ?? [])
+          if (!cells.length) {
+            return
+          }
+          event.preventDefault()
+          const currentIndex = cells.indexOf(target as HTMLButtonElement)
+          const enabled = (index: number) => index >= 0 && index < cells.length && !cells[index].disabled
+          if (event.key === 'Home' || event.key === 'End') {
+            const step = event.key === 'Home' ? 1 : -1
+            const edge = event.key === 'Home' ? 0 : cells.length - 1
+            for (let offset = 0; offset < cells.length; offset += 1) {
+              const index = edge + step * offset
+              if (enabled(index)) {
+                cells[index].focus({ preventScroll: true })
+                return
+              }
+            }
+            return
+          }
+          // 日格按 7 列排布，↑↓ 按整周跳；禁用日拿不到焦点，逐格扫描跳过（对齐 menu/tree 的 skip-disabled 口径）
+          const step =
+            event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : event.key === 'ArrowUp' ? -7 : 7
+          for (let offset = 1; offset < cells.length; offset += 1) {
+            const index = currentIndex + step * offset
+            if (index < 0 || index >= cells.length) {
+              break
+            }
+            if (enabled(index)) {
+              cells[index].focus({ preventScroll: true })
+              return
+            }
+          }
+        }
+
         function handleKeydown(event: KeyboardEvent) {
           if (event.key === 'Escape' && open.value) {
             event.preventDefault()
-            closePanel()
+            closePanel(true)
+            return
           }
+          handleGridKeydown(event)
         }
 
         function handlePointerDown(event: PointerEvent) {
@@ -1092,6 +1191,7 @@ export function createDatePicker(features: UiFeature[] = []) {
           handleDraftKeydown,
           handleDraftBlur,
           handleDraftPointer,
+          handleTriggerKeydown,
           renderPanel
         }
       },
@@ -1152,11 +1252,7 @@ export function createDatePicker(features: UiFeature[] = []) {
             'aria-expanded': state.open,
             'aria-label': props.ariaLabel,
             onClick: state.togglePanel,
-            onKeydown: (event: KeyboardEvent) => {
-              if (event.key === 'Escape') {
-                state.closePanel()
-              }
-            }
+            onKeydown: state.handleTriggerKeydown
           },
           [h('div', { class: 'ui-date-picker__value-wrap' }, triggerChildren)]
         )
@@ -1171,7 +1267,8 @@ export function createDatePicker(features: UiFeature[] = []) {
               tabindex: props.disabled ? undefined : props.tabindex,
               role: 'combobox',
               'aria-expanded': state.open,
-              onClick: state.togglePanel
+              onClick: state.togglePanel,
+              onKeydown: state.handleTriggerKeydown
             },
             [
               renderIcon(props.prefixIcon || Calendar, { class: 'ui-date-picker__icon' }),
@@ -1201,7 +1298,8 @@ export function createDatePicker(features: UiFeature[] = []) {
               tabindex: props.disabled ? undefined : props.tabindex,
               role: 'combobox',
               'aria-expanded': state.open,
-              onClick: state.togglePanel
+              onClick: state.togglePanel,
+              onKeydown: state.handleTriggerKeydown
             },
             [
               h('input', {
