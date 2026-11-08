@@ -24,7 +24,6 @@ exports[`产物文本与特性选择一致 > 无可标记字面量的特性清�
   "mention.clearable",
   "mention.icons",
   "mention.loading",
-  "mention.password",
   "mention.word-limit",
   "pagination.layout",
   "scrollbar.methods",
