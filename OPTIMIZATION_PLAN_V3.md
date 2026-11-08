@@ -107,7 +107,7 @@ npm run quality
 
 - **第 1 波（已完成）**：W0.1（`cedb99f`）+ W1.1（`a9fc051`）。55 条公开 slot 缺口已登记，双向守卫已生效。
 - **第 2 波（已完成）**：W1.2a、W1.2b、W1.2c、W1.2d 四路并行合入，23 条 BASELINE 缺口清空。
-- **第 3 波（进行中）**：W1.2e 已并入；W1.3a 共享车道先跑，随后 W1.3b；W1.3c / W1.3d 可并行。
+- **第 3 波（进行中）**：W1.2e / W1.3a / W1.3b 已并入；W1.3c、W1.3d 可并行，随后进 W2 虚拟化收口。
 - **第 4 波**：W1.3b → W3.1 → W3.2 串行（共享基座），W2.1 / W2.2 可与组件车道并行。
 - **第 5 波**：W3.3 + W4.1 并行，最后 W4.2 / W5.1 收口。
 
@@ -244,9 +244,9 @@ W5.1 ─────────────────────────
 | W1.2d | done | w12d-slot-feedback | `refactor/20261108-slot-feedback` | `.worktrees/slot-feedback` | 已合入 `0728d6d`；9 组件 / 173 用例 |
 | W1.2e | done | w12e-slot-base | `refactor/20261108-slot-base` | `.worktrees/slot-base` | 已合入 `57be1cf`；7 个 A 类组件，101 条用例，C/D 保留台账理由 |
 | W1.3a | done | w13a-input-slots | `feat/20261108-input-slots` | `.worktrees/input-slots` | 已合入 `531496e`；input 四插槽 + autocomplete/mention append，62 条用例 |
-| W1.3b | ready | — | `feat/20261108-overlay-close-slot` | 待建 | 共享车道；dialog/drawer close 插槽 |
-| W1.3c | blocked | — | `feat/20261108-upload-slots` | — | 等 W1.1 |
-| W1.3d | blocked | — | `feat/20261108-tree-node-slot` | — | 等 W1.1 |
+| W1.3b | done | w13b-overlay-close | `feat/20261108-overlay-close-slot` | `.worktrees/overlay-close` | 已合入 `181bbe4` + `06c563e`；dialog/drawer/image-viewer/notification 四件套 close 插槽，86 条用例 |
+| W1.3c | ready | — | `feat/20261108-upload-slots` | 待建 | 可并行；upload trigger / hint / file-item |
+| W1.3d | ready | — | `feat/20261108-tree-node-slot` | 待建 | 可并行；tree 自定义节点作用域 |
 | W2.1 | blocked | — | `refactor/20261108-cascader-virtualized` | — | 等 W1.1 |
 | W2.2 | blocked | — | `refactor/20261108-transfer-virtualized` | — | 等决策确认 |
 | W3.1 | blocked | — | `fix/20261108-a11y-names` | — | 等 W1.3b |
