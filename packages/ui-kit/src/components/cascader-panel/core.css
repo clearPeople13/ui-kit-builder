@@ -32,17 +32,6 @@
   border-right: 0;
 }
 
-.ui-cascader-panel__window {
-  position: relative;
-  width: 100%;
-}
-
-.ui-cascader-panel__row {
-  position: absolute;
-  right: 0;
-  left: 0;
-}
-
 .ui-cascader-panel__node {
   display: flex;
   align-items: center;
