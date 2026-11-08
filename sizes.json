@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T12:17:51.313Z",
+  "generatedAt": "2026-11-08T12:30:59.879Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -189,6 +189,16 @@
       },
       "features": [],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -202,6 +212,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -240,6 +278,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -288,6 +336,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -599,6 +657,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -735,6 +803,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -1367,6 +1448,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -1380,6 +1471,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -1418,6 +1537,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -1466,6 +1595,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -1777,6 +1916,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -1913,6 +2062,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -2545,6 +2707,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -2558,6 +2730,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -2596,6 +2796,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -2644,6 +2854,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -2955,6 +3175,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -3091,6 +3321,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -3723,6 +3966,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -3736,6 +3989,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -3774,6 +4055,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -3822,6 +4113,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -4133,6 +4434,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -4269,6 +4580,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -4901,6 +5225,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -4914,6 +5248,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -4952,6 +5314,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -5000,6 +5372,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -5311,6 +5693,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -5447,6 +5839,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -6079,6 +6484,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -6092,6 +6507,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -6130,6 +6573,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -6178,6 +6631,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -6489,6 +6952,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -6625,6 +7098,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -7257,6 +7743,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -7270,6 +7766,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -7308,6 +7832,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -7356,6 +7890,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -7667,6 +8211,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -7803,6 +8357,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -8435,6 +9002,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -8448,6 +9025,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -8486,6 +9091,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -8534,6 +9149,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -8845,6 +9470,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -8981,6 +9616,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -9613,6 +10261,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -9626,6 +10284,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -9664,6 +10350,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -9712,6 +10408,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -10023,6 +10729,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -10159,6 +10875,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -10791,6 +11520,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -10804,6 +11543,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -10842,6 +11609,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -10890,6 +11667,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -11201,6 +11988,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -11337,6 +12134,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -11969,6 +12779,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -11982,6 +12802,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -12020,6 +12868,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -12068,6 +12926,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -12379,6 +13247,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -12515,6 +13393,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -13147,6 +14038,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -13160,6 +14061,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -13198,6 +14127,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -13246,6 +14185,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -13557,6 +14506,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -13693,6 +14652,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -14325,6 +15297,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -14338,6 +15320,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -14376,6 +15386,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -14424,6 +15444,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -14735,6 +15765,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -14871,6 +15911,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -15503,6 +16556,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -15516,6 +16579,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -15554,6 +16645,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -15602,6 +16703,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -15913,6 +17024,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -16049,6 +17170,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -16681,6 +17815,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -16694,6 +17838,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -16732,6 +17904,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -16780,6 +17962,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -17091,6 +18283,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -17227,6 +18429,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -17859,6 +19074,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -17872,6 +19097,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -17910,6 +19163,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -17958,6 +19221,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -18269,6 +19542,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -18405,6 +19688,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -19037,6 +20333,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -19050,6 +20356,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -19088,6 +20422,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -19136,6 +20480,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -19447,6 +20801,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -19583,6 +20947,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -20215,6 +21592,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -20228,6 +21615,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -20266,6 +21681,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -20314,6 +21739,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -20625,6 +22060,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -20761,6 +22206,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -21393,6 +22851,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -21406,6 +22874,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -21444,6 +22940,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -21492,6 +22998,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -21803,6 +23319,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -21939,6 +23465,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },
@@ -22571,6 +24110,16 @@
         "watermark.popper"
       ],
       "slots": {
+        "icon": {
+          "Icon": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ]
+        },
         "alert": {
           "Alert": [
             {
@@ -22584,6 +24133,34 @@
               "scope": null,
               "fallback": true,
               "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+            }
+          ]
+        },
+        "avatar": {
+          "Avatar": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
+          "AvatarGroup": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
+            }
+          ]
+        },
+        "backtop": {
+          "Backtop": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ]
         },
@@ -22622,6 +24199,16 @@
               "scope": null,
               "fallback": true,
               "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+            }
+          ]
+        },
+        "check-tag": {
+          "CheckTag": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ]
         },
@@ -22670,6 +24257,16 @@
               "scope": null,
               "fallback": false,
               "description": "底部操作区，仅在提供时渲染于面板 footer（无默认内容，不提供则不渲染 footer）"
+            }
+          ]
+        },
+        "divider": {
+          "Divider": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ]
         },
@@ -22981,6 +24578,16 @@
             }
           ]
         },
+        "skeleton": {
+          "Skeleton": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ]
+        },
         "statistic": {
           "Statistic": [
             {
@@ -23117,6 +24724,19 @@
               "scope": null,
               "fallback": true,
               "description": "上传触发区内容，渲染在触发 label 内，缺省按 listType/draggable 显示图标与提示文案"
+            }
+          ]
+        },
+        "virtual-list": {
+          "VirtualList": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ]
         },

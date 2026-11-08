@@ -56,6 +56,14 @@
               "description": "描边宽度"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "图标内容，渲染在图标根节点内；无插槽时回退 icon / name 属性"
+            }
+          ],
           "features": [],
           "methods": []
         }
@@ -622,6 +630,14 @@
               "description": "图片填充模式"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "头像内容，渲染在 ui-avatar__text 内；无插槽时回退 icon 属性"
+            }
+          ],
           "features": [
             {
               "id": "avatar.icons",
@@ -691,6 +707,14 @@
               "type": "string | any[] | Record<string, any> | boolean",
               "default": null,
               "description": "折叠标签自定义样式"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "头像组成员，渲染在组容器内；无默认内容"
             }
           ],
           "features": [
@@ -780,6 +804,14 @@
               "type": "number",
               "default": 200,
               "description": "滚动高度达到该值时显示按钮"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "按钮内容，渲染在 ui-backtop__button 内；无插槽时回退内置 ChevronUp 图标"
             }
           ],
           "features": [],
@@ -1842,6 +1874,14 @@
               "name": "checked",
               "type": "boolean",
               "description": "是否选中"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": false,
+              "description": "可选标签内容，渲染在标签文本节点内；无默认内容"
             }
           ],
           "features": [],
@@ -3477,6 +3517,14 @@
               "type": "string",
               "default": "",
               "description": "分割线文案"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "分割线文字，渲染在 ui-divider__text 内；无插槽时回退 content 属性"
             }
           ],
           "features": [],
@@ -7913,6 +7961,14 @@
               "description": "是否加载中"
             }
           ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": null,
+              "fallback": true,
+              "description": "实际内容，loading=false 或提供插槽时渲染；无插槽且加载中时回退骨架行"
+            }
+          ],
           "features": [
             {
               "id": "skeleton.loading",
@@ -10841,6 +10897,17 @@
               "type": "boolean",
               "default": true,
               "description": "为 false 时不渲染自己的滚动容器（不设高度与 overflow），只输出窗口内容"
+            }
+          ],
+          "slots": [
+            {
+              "name": "default",
+              "scope": {
+                "item": "any",
+                "index": "number"
+              },
+              "fallback": true,
+              "description": "行内容，渲染在窗口内每行；无插槽时回退 item.label 或 String(item)"
             }
           ],
           "features": [],
