@@ -287,7 +287,8 @@ if (virtualFeatureBytes && virtualFeatureBytes < 1500) {
 // 仍留在 core 里的虚拟窗口实现会被特性裁剪守卫拦下：窗口算法与渲染必须在 features/virtualized/
 const VIRTUAL_FEATURES = [
   { component: 'cascader', feature: 'cascader.virtualized', core: 'cascader' },
-  { component: 'cascader-panel', feature: 'cascader-panel.virtualized', core: 'cascader-panel' }
+  { component: 'cascader-panel', feature: 'cascader-panel.virtualized', core: 'cascader-panel' },
+  { component: 'tree', feature: 'tree.virtualized', core: 'tree' }
 ]
 for (const entry of VIRTUAL_FEATURES) {
   const coreText = read(`${SRC}/components/${entry.core}/core.ts`)
@@ -306,7 +307,9 @@ for (const entry of VIRTUAL_FEATURES) {
     fail(`${entry.feature} 没有复用 shared/virtual-window 的窗口算术，窗口逻辑散落在别处`)
   }
 }
-notes.push(`虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），cascader 两项窗口逻辑已收进特性目录`)
+notes.push(
+  `虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），cascader 两项与 tree 的窗口逻辑已收进特性目录`
+)
 
 // 2.3 构建缓存口径守卫（§26）
 // 边际体积缓存键不再包含 build-all.mjs 全文，改口径只看库里的 SIZE_ALGO_VERSION。

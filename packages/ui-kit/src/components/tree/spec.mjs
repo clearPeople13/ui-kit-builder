@@ -163,6 +163,34 @@ export default {
             }
           ]
         },
+        'tree.virtualized': {
+          title: '大数据虚拟滚动',
+          description:
+            '大数据虚拟滚动：virtualized、itemSize、virtualThreshold（需配合 height 固定视口，超过阈值才窗口化）',
+          module: 'packages/ui-kit/src/components/tree/features/virtualized/index.ts',
+          exportName: 'treeVirtualizedFeature',
+          requires: [],
+          props: [
+            {
+              name: 'virtualized',
+              type: 'boolean',
+              default: true,
+              description: '是否允许窗口化（低于阈值或未设 height 时自动回退全量渲染）'
+            },
+            {
+              name: 'itemSize',
+              type: 'number',
+              default: 30,
+              description: '行高兜底值，运行时优先按首行实测高度计算窗口'
+            },
+            {
+              name: 'virtualThreshold',
+              type: 'number',
+              default: 100,
+              description: '可见节点数超过该阈值才进入窗口化'
+            }
+          ]
+        },
         'tree.methods': {
           title: '实例方法',
           description: '通过 ref 操作树：getCheckedNodes、setCheckedKeys、filter。',

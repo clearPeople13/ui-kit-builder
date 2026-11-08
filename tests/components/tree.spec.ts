@@ -719,4 +719,81 @@ describe('Tree', () => {
       expect(wrapper.emitted('node-drag-end')).toHaveLength(1)
     })
   })
+
+  // tree.virtualized：窗口化渲染 / 阈值与 height 回退 / 滚动与键盘跨窗口
+  describe('虚拟滚动', () => {
+    const bigTree = Array.from({ length: 120 }, (_value, index) => ({
+      id: index + 1,
+      label: `节点 ${index + 1}`,
+      children: [{ id: 1000 + index, label: `节点 ${index + 1} - 子项` }]
+    }))
+    const bigVisible = 240
+
+    it('超过阈值且设 height：只渲染可视窗口行，占位层撑开全量高度', async () => {
+      const wrapper = mountTree({ data: bigTree, defaultExpandAll: true, height: 300 })
+      await nextTick()
+      expect(wrapper.classes()).toContain('ui-tree--virtualized')
+      expect(nodes(wrapper).length).toBeLessThan(bigVisible)
+      const spacer = wrapper.find('.ui-virtual-list__spacer')
+      expect(spacer.exists()).toBe(true)
+      expect(spacer.attributes('style')).toContain(`height: ${bigVisible * 30}px`)
+    })
+
+    it('滚动容器后窗口行切换到对应区间', async () => {
+      const wrapper = mountTree({ data: bigTree, defaultExpandAll: true, height: 300 })
+      await nextTick()
+      const container = wrapper.find('.ui-tree__nodes').element as HTMLElement
+      container.scrollTop = 6000
+      container.dispatchEvent(new Event('scroll'))
+      await nextTick()
+      const labels = wrapper.findAll('.ui-tree__label').map((item) => item.text())
+      // scrollTop 6000 / 行高 30 → 窗口起点 195，即第 98 个根节点的子项行
+      expect(labels[0]).toBe('节点 98 - 子项')
+      expect(nodes(wrapper).length).toBeLessThan(bigVisible)
+    })
+
+    it('低于阈值或未设 height：回退全量渲染，不挂虚拟结构', async () => {
+      const small = mountTree({ data: treeData, defaultExpandAll: true, height: 300 })
+      await nextTick()
+      expect(small.find('.ui-virtual-list__spacer').exists()).toBe(false)
+      expect(nodes(small)).toHaveLength(5)
+
+      const noHeight = mountTree({ data: bigTree, defaultExpandAll: true })
+      await nextTick()
+      expect(noHeight.find('.ui-virtual-list__spacer').exists()).toBe(false)
+      expect(nodes(noHeight)).toHaveLength(bigVisible)
+    })
+
+    it('virtualized=false 强制全量渲染', async () => {
+      const wrapper = mountTree({ data: bigTree, defaultExpandAll: true, height: 300, virtualized: false })
+      await nextTick()
+      expect(wrapper.find('.ui-virtual-list__spacer').exists()).toBe(false)
+      expect(nodes(wrapper)).toHaveLength(bigVisible)
+    })
+
+    it('键盘 ArrowDown 跨窗口：滚动到目标行并聚焦，data-key 定位全集下标', async () => {
+      const wrapper = mountTree({ data: bigTree, defaultExpandAll: true, height: 300 })
+      await nextTick()
+      const container = wrapper.find('.ui-tree__nodes').element as HTMLElement
+      for (let step = 0; step < 30; step += 1) {
+        const current = document.activeElement?.closest?.('.ui-tree__node') ?? nodes(wrapper)[0].element
+        current.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }))
+        await nextTick()
+      }
+      const active = document.activeElement as HTMLElement
+      // 30 次 ↓ 落在全集第 31 个可见节点 = 第 16 个根节点（根/子项交替排列）
+      expect(active.getAttribute('data-key')).toBe('16')
+      expect(container.scrollTop).toBeGreaterThan(0)
+    })
+
+    it('窗口行仍走 core 同一出口：展开点击与勾选语义不变', async () => {
+      const wrapper = mountTree({ data: bigTree, defaultExpandAll: true, height: 300, showCheckbox: true })
+      await nextTick()
+      await wrapper.findAll('.ui-tree__checkbox input')[0].setValue(true)
+      await nextTick()
+      expect(wrapper.emitted('check-change')?.[0]).toEqual([bigTree[0], true])
+      await clickNode(wrapper, 0)
+      expect(wrapper.emitted('node-click')?.[0]).toEqual([bigTree[0]])
+    })
+  })
 })

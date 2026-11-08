@@ -231,8 +231,15 @@ export function createTree(features: UiFeature[] = []) {
           return visible.find((node) => !node.disabled)?.key ?? ''
         }
 
-        function focusVisibleNode(index: number, visible: UiTreeNode[], items: HTMLElement[]) {
-          items[index]?.focus({ preventScroll: true })
+        // 特性（如 tree.virtualized）接管焦点落点：窗口化后目标行可能不在 DOM 里，
+        // 由特性先滚动窗口再聚焦；未接管时按 DOM 顺序直接聚焦
+        function focusVisibleNode(index: number, visible: UiTreeNode[], container: HTMLElement) {
+          if (state.focusAdapter) {
+            state.focusAdapter(index, visible, container)
+          } else {
+            const items = Array.from(container.querySelectorAll<HTMLElement>('.ui-tree__node'))
+            items[index]?.focus({ preventScroll: true })
+          }
           currentKey.value = visible[index].key
         }
 
@@ -250,7 +257,15 @@ export function createTree(features: UiFeature[] = []) {
             return
           }
           const target = (event.target as HTMLElement | null)?.closest('.ui-tree__node')
-          const currentIndex = target ? items.indexOf(target as HTMLElement) : -1
+          // data-key 优先：窗口化后 DOM 只剩可视切片，下标与 visible 全集不再一一对应
+          const targetKey = target?.getAttribute('data-key')
+          let currentIndex =
+            targetKey !== null && targetKey !== undefined
+              ? visible.findIndex((entry) => String(entry.key) === targetKey)
+              : -1
+          if (currentIndex < 0 && target) {
+            currentIndex = items.indexOf(target as HTMLElement)
+          }
           if (currentIndex < 0) {
             return
           }
@@ -268,7 +283,7 @@ export function createTree(features: UiFeature[] = []) {
                 break
               }
               if (enabled(index)) {
-                focusVisibleNode(index, visible, items)
+                focusVisibleNode(index, visible, container)
                 return
               }
             }
@@ -280,7 +295,7 @@ export function createTree(features: UiFeature[] = []) {
             for (let offset = 0; offset < visible.length; offset += 1) {
               const index = (edge + step * offset + visible.length * offset) % visible.length
               if (enabled(index)) {
-                focusVisibleNode(index, visible, items)
+                focusVisibleNode(index, visible, container)
                 return
               }
             }
@@ -298,7 +313,7 @@ export function createTree(features: UiFeature[] = []) {
               index += 1
             ) {
               if (visible[index].level === node.level + 1 && enabled(index)) {
-                focusVisibleNode(index, visible, items)
+                focusVisibleNode(index, visible, container)
                 return
               }
             }
@@ -312,7 +327,7 @@ export function createTree(features: UiFeature[] = []) {
           for (let index = currentIndex - 1; index >= 0; index -= 1) {
             if (visible[index].level < node.level) {
               if (enabled(index)) {
-                focusVisibleNode(index, visible, items)
+                focusVisibleNode(index, visible, container)
               }
               return
             }
@@ -334,81 +349,95 @@ export function createTree(features: UiFeature[] = []) {
           }
         }
 
-        function renderNodes(list: UiTreeNode[], extend?: (node: UiTreeNode) => Record<string, any>): VNodeChild[] {
+        // 单行渲染：递归模式与窗口化模式（tree.virtualized 经 renderNodeWindow 钩子）共用同一出口，
+        // 行的结构 / 事件 / 勾选语义只有一种实现
+        function renderNodeRow(node: UiTreeNode, extend?: (node: UiTreeNode) => Record<string, any>): VNodeChild {
           const tabStop = rovingTabStopKey(visibleNodes())
+          const expanded = isExpanded(node)
+          const check = isChecked(node) ? 'checked' : checkState(node)
+          const indent = Number(props.indent ?? 18)
+          return h(
+            'div',
+            {
+              key: node.key,
+              // data-key 让键盘导航在窗口化（DOM 只剩可视切片）下也能定位全集下标
+              'data-key': String(node.key),
+              class: [
+                'ui-tree__node',
+                {
+                  'is-expanded': expanded,
+                  'is-current': props.highlightCurrent && String(currentKey.value) === String(node.key),
+                  'is-disabled': node.disabled
+                }
+              ],
+              style: { paddingLeft: `${node.level * indent + 4}px` },
+              // roving tabindex：整棵树一个 Tab 停靠点，禁用节点移出 Tab 序
+              tabindex: node.disabled ? undefined : String(tabStop) === String(node.key) ? 0 : -1,
+              onClick: () => handleNodeClick(node),
+              ...(extend?.(node) ?? {})
+            },
+            [
+              node.children.length
+                ? renderIcon(props.icon || (expanded ? ChevronDown : ChevronRight), {
+                    class: 'ui-tree__expand',
+                    attrs: {
+                      onClick: (event: Event) => {
+                        event.stopPropagation()
+                        if (!node.disabled) {
+                          toggleExpand(node)
+                        }
+                      }
+                    }
+                  })
+                : h('span', { class: 'ui-tree__expand is-leaf' }),
+              props.showCheckbox
+                ? h(TreeCheckbox, {
+                    class: 'ui-tree__checkbox',
+                    modelValue: check === 'checked',
+                    indeterminate: check === 'indeterminate',
+                    disabled: Boolean(node.disabled),
+                    onClick: (event: Event) => event.stopPropagation(),
+                    'onUpdate:modelValue': (checked: boolean) => toggleCheck(node, checked)
+                  })
+                : null,
+              h('span', { class: 'ui-tree__label' }, [
+                slots.default
+                  ? slots.default({ node, data: node.raw, level: node.level })
+                  : props.renderContent
+                    ? props.renderContent(node.raw, node)
+                    : node.label
+              ])
+            ]
+          )
+        }
+
+        function renderNodes(list: UiTreeNode[], extend?: (node: UiTreeNode) => Record<string, any>): VNodeChild[] {
           return list.filter(matchesFilter).map((node) => {
             const expanded = isExpanded(node)
-            const check = isChecked(node) ? 'checked' : checkState(node)
-            const indent = Number(props.indent ?? 18)
             return [
-              h(
-                'div',
-                {
-                  key: node.key,
-                  class: [
-                    'ui-tree__node',
-                    {
-                      'is-expanded': expanded,
-                      'is-current': props.highlightCurrent && String(currentKey.value) === String(node.key),
-                      'is-disabled': node.disabled
-                    }
-                  ],
-                  style: { paddingLeft: `${node.level * indent + 4}px` },
-                  // roving tabindex：整棵树一个 Tab 停靠点，禁用节点移出 Tab 序
-                  tabindex: node.disabled ? undefined : String(tabStop) === String(node.key) ? 0 : -1,
-                  onClick: () => handleNodeClick(node),
-                  ...(extend?.(node) ?? {})
-                },
-                [
-                  node.children.length
-                    ? renderIcon(props.icon || (expanded ? ChevronDown : ChevronRight), {
-                        class: 'ui-tree__expand',
-                        attrs: {
-                          onClick: (event: Event) => {
-                            event.stopPropagation()
-                            if (!node.disabled) {
-                              toggleExpand(node)
-                            }
-                          }
-                        }
-                      })
-                    : h('span', { class: 'ui-tree__expand is-leaf' }),
-                  props.showCheckbox
-                    ? h(TreeCheckbox, {
-                        class: 'ui-tree__checkbox',
-                        modelValue: check === 'checked',
-                        indeterminate: check === 'indeterminate',
-                        disabled: Boolean(node.disabled),
-                        onClick: (event: Event) => event.stopPropagation(),
-                        'onUpdate:modelValue': (checked: boolean) => toggleCheck(node, checked)
-                      })
-                    : null,
-                  h('span', { class: 'ui-tree__label' }, [
-                    slots.default
-                      ? slots.default({ node, data: node.raw, level: node.level })
-                      : props.renderContent
-                        ? props.renderContent(node.raw, node)
-                        : node.label
-                  ])
-                ]
-              ),
+              renderNodeRow(node, extend),
               expanded && node.children.length ? renderNodes(node.children, extend) : null
             ]
           })
         }
 
-        return {
+        const state: Record<string, any> = {
           filterText,
           checkedKeys,
           expandedKeys,
           locale: useLocale('tree'),
           applyCheckedKeys,
           handleNodesKeydown,
+          /** 滚动容器（content 渲染时挂 ref），供特性量行高 / 读可视高度 */
+          nodesEl: undefined as HTMLElement | undefined,
           get nodes() {
             return nodes.value
           },
+          visibleNodes,
+          renderNodeRow,
           renderNodes
         }
+        return state
       },
       classes: (props) => [props.height ? 'is-scrollable' : ''],
       content: ({ props, state, states }) => {
@@ -420,14 +449,34 @@ export function createTree(features: UiFeature[] = []) {
           ? (node: UiTreeNode) =>
               Object.assign({}, ...hooks.map((hook: (node: UiTreeNode) => Record<string, any>) => hook(node)))
           : undefined
+        // 窗口化特性（tree.virtualized）接管节点区渲染；未接管时退回递归全量渲染
+        let children = state.renderNodes(state.nodes, extend)
+        for (const hook of collectFeatureHooks(states, 'renderNodeWindow')) {
+          const custom = hook({
+            props,
+            container: state.nodesEl as HTMLElement | undefined,
+            nodes: state.visibleNodes(),
+            extend,
+            renderNode: state.renderNodeRow
+          })
+          if (custom) {
+            children = custom
+            break
+          }
+        }
+        const scrollHooks = collectFeatureHooks(states, 'onNodesScroll')
         return h(
           'div',
           {
             class: 'ui-tree__nodes',
             style: { height: addUnit(props.height) },
+            ref: (element: any) => {
+              state.nodesEl = element ?? undefined
+            },
+            onScroll: scrollHooks.length ? (event: Event) => scrollHooks.forEach((hook) => hook({ event })) : undefined,
             onKeydown: state.handleNodesKeydown
           },
-          state.renderNodes(state.nodes, extend)
+          [children]
         )
       }
     },

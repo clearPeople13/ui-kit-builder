@@ -1,0 +1,32 @@
+.ui-tree--virtualized {
+  /* 虚拟滚动 */
+}
+
+.ui-tree--virtualized .ui-tree__nodes {
+  scrollbar-width: thin;
+  -ms-overflow-style: auto;
+}
+
+.ui-tree--virtualized .ui-tree__nodes::-webkit-scrollbar {
+  display: block;
+  width: 6px;
+  height: 6px;
+}
+
+.ui-tree--virtualized .ui-tree__nodes::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ui-color-info) 35%, transparent);
+}
+
+.ui-tree--virtualized .ui-tree__nodes::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--ui-color-info) 55%, transparent);
+}
+
+.ui-tree--virtualized .ui-tree__nodes::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ui-tree--virtualized .ui-virtual-list__item {
+  /* 树行高由 --ui-tree-node-min-height 决定，窗口行高以实测 itemSize 为准，不额外裁切 */
+  overflow: visible;
+}

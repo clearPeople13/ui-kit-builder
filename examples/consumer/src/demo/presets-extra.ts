@@ -1159,6 +1159,22 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       id: 'indent',
       label: '缩进 28',
       values: { data: TREE_DATA, defaultExpandAll: true, indent: 28 }
+    },
+    {
+      id: 'virtual',
+      label: '大数据虚拟滚动',
+      hint: '节点数超阈值时只渲染可视窗口行，需配合 height 固定视口',
+      requires: 'tree.virtualized',
+      values: {
+        data: Array.from({ length: 120 }, (_value, index) => ({
+          key: `root-${index}`,
+          label: `节点 ${index + 1}`,
+          children: [{ key: `leaf-${index}`, label: `节点 ${index + 1} - 子项` }]
+        })),
+        defaultExpandAll: true,
+        height: 300,
+        virtualized: true
+      }
     }
   ],
   VirtualList: [

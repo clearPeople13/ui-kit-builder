@@ -1322,13 +1322,14 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 ### 44.1 变更内容
 
 - 删除 `packages/ui-kit/src/components/tree-v2/`（core / core.css / spec / features/check）与 `tests/components/tree-v2.spec.ts`；`tree-v2.check` 的复选能力 Tree 本就全量具备（showCheckbox / defaultCheckedKeys / checkStrictly / checkOnClickNode），零能力损失。
-- Tree 新增 `height: string | number` core prop：存在时根节点挂 `is-scrollable`，`.ui-tree__nodes` 写高度并 `overflow: auto`（样式只在 is-scrollable 下生效，不扰动 tree-select / transfer 内嵌场景）。
-- 调试台：Tree 预设新增「固定高度滚动」「缩进 28」，TreeV2 预设与目录节点移除；`scripts/demo-categories.mjs`、`playground.ts`、`presets-extra.ts` 同步。
-- 守卫：`verify-governance.mjs` 的「旧组件不得复活」从 Select 单例扩展为清单（select-v2 / tree-v2），并断言 Tree spec 保留 `height`（防统一改造被架空）。
+- Tree 新增 `height: string | number` core prop：存在时根节点挂 `is-scrollable`，`.ui-tree__nodes` 写高度并 `overflow: auto`（样式只在 is-scrollable 下生效，不扰动 tree-select / transfer 内嵌场景）；尺寸解析复用 `shared/utils` 的 `addUnit`。
+- 新增 `tree.virtualized` 特性（大数据虚拟滚动）：`virtualized`（默认开）+ `virtualThreshold`（默认 100）+ `itemSize`（行高兜底 30，运行时按首行实测）；需配合 `height`，低于阈值或未设 height 自动回退全量渲染。窗口算术只引用 `shared/virtual-window`，渲染复用 VirtualList 受控窗口模式（滚动容器仍是 `.ui-tree__nodes`），单行渲染经 core 暴露的 `renderNodeRow` 回到 core——展开/勾选/点击语义全量与窗口两种模式同一出口。core 侧为此新增三个特性扩展点：`renderNodeWindow`（接管节点区渲染）、`onNodesScroll`（转发容器滚动）、`focusAdapter`（窗口化后键盘聚焦先滚后焦）；行挂 `data-key`，键盘导航在 DOM 只剩可视切片时按数据 key 定位全集下标。
+- 调试台：Tree 预设新增「固定高度滚动」「缩进 28」「大数据虚拟滚动」（240 可见节点场景），TreeV2 预设与目录节点移除；`scripts/demo-categories.mjs`、`playground.ts`、`presets-extra.ts` 同步。
+- 守卫：`verify-governance.mjs` 的「旧组件不得复活」从 Select 单例扩展为清单（select-v2 / tree-v2），并断言 Tree spec 保留 `height`（防统一改造被架空）；「虚拟窗口统一守卫」清单加入 tree（core 不得 import virtual-window、不得直读虚拟化 prop，特性必须复用 shared/virtual-window）。
 - 文档数字：README 组件数 89→88；KNOWLEDGE / visual-audit / test-impact 的导出数 124→123、组件目录数 89→88。
 
 ### 44.2 验证
 
-- 组件用例：`tests/components/tree.spec.ts` 新增 height 用例（is-scrollable 类名 + 容器内联高度），移植自 tree-v2 用例；tree 全量用例绿。
+- 组件用例：`tests/components/tree.spec.ts` 新增 height 用例（is-scrollable 类名 + 容器内联高度），移植自 tree-v2 用例；虚拟滚动 6 条（窗口行数与占位高度 / 滚动切窗 / 阈值与 height 回退 / virtualized=false 强制全量 / ArrowDown 跨窗口按 data-key 落焦 / 窗口行勾选与点击仍走 core 出口）；tree 全量用例绿。
 - 本批为功能改造不新增缺陷编号；历史 F-98（tree-v2 无 ARIA/键盘）随组件移除闭环，缺陷清单仍记 113 条。
 - 门禁：合入 `main` 后由 integrator 重跑 `meta:demo` / `build:all` 刷新派生基线（sizes.json、demo/meta.json 不进任务分支），全量 `npm run quality`（13 阶段）把关。
