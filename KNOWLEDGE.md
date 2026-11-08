@@ -26,7 +26,7 @@ scripts/worktree-ports.mjs     并行工作树端口段：读 .env.workbuddy / �
 vitest.config.ts              environment: happy-dom，include: tests/components/**/*.spec.ts + 常驻的 findings.spec.ts，alias @ui-kit-full
 vitest.coverage.config.ts     同一批组件用例改走源码入口（.build/full/entry.ts），V8 覆盖率 + 四维阈值
 vitest.build.config.ts        environment: node，include: tests/build/**/*.spec.ts，pretest:build 先跑 build:all
-tests/components/<id>.spec.ts 组件用例（88 个组件目录各一份；全部为真实断言，无占位跳过；条数以 `npm run test` 输出为准）
+tests/components/<id>.spec.ts 组件用例（87 个组件目录各一份；全部为真实断言，无占位跳过；条数以 `npm run test` 输出为准）
 tests/components/feature-class-switch.spec.ts 特性开关类名跟随 props 的专项守卫（F-11 回归）：一组 SwitchCase 表驱动，正反各断言一次
 tests/components/style-attrs.spec.ts 字符串 / 数组 style 合并的单元锚点（F-30 回归）：happy-dom 看不到崩溃，但能看出 width 没落盘
 tests/components/floating-keyboard.spec.ts 浮层键盘通路与 Escape 登记栈（F-32 / F-33 回归）：Enter / Space / 分层 Escape
@@ -136,7 +136,7 @@ tests/browser/__snapshots__/pixels/<platform>/*.png  按平台分桶的像素基
 
 `npm run audit:visual`（`scripts/visual-audit.mjs`，门禁第十段）补的是**能力**，不是又一批用例：
 
-- **可计算的视觉契约**：真实 Chromium 加载 `?scene=gallery`，对 122 个导出组件（123 个导出里 1 个是抽象层）、21 个可见原生控件逐条查 `getComputedStyle` 与矩形，把"肉眼可见的丑"翻译成客观事实——双层边框（`nested-border`，阻断）、内层不透明底色、内层额外内边距、字体与外壳错配、文本被裁切、渲染缺口。不读源码、不比快照，所以能发现"现在就错"，跨主题跨 profile 都成立。
+- **可计算的视觉契约**：真实 Chromium 加载 `?scene=gallery`，对 121 个导出组件（122 个导出里 1 个是抽象层）、21 个可见原生控件逐条查 `getComputedStyle` 与矩形，把"肉眼可见的丑"翻译成客观事实——双层边框（`nested-border`，阻断）、内层不透明底色、内层额外内边距、字体与外壳错配、文本被裁切、渲染缺口。不读源码、不比快照，所以能发现"现在就错"，跨主题跨 profile 都成立。
 - **看得见的产物**：`visual-report/` 下每个组件一张元素截图、6 个重点场景一张首屏，`index.html` 是可直接打开的画廊，阻断项标红并写明命中规则。**改样式后必须亲眼看图**（助手用图像查看能力打开对应 PNG）再宣告修复；这一步写进 §5.1 第 5 道闸，防止"断言绿了但界面还是歪的"。
 - **自守卫 + 第二现场（F-67 之后）**：`verify:governance` 静态核对门禁必须含 `visual` 段、规则集不少于 6 条、`NON_VISUAL` 豁免清单覆盖 harness 的 `GALLERY_SKIP`、重点场景都在 harness 登记、脚本按 error 数决定退出码；体检器自身还有反向守卫：豁免清单里的组件哪天渲染出可见根节点就报错。**源码画廊全绿不等于用户看到的界面正确**：`node_modules/@demo` 软链在并行工作树里可能指向另一棵树的旧 dist，所以 `examples/consumer/vite.config.mjs` 用 alias 把 20 份 JS / CSS 钉到本工作树 `dist/<id>/`，体检器另起调试台服务打开 5 个组件页复用同一套契约，异常以 `consumer/<页面>` 记入画廊；治理校验静态锁死 alias 与页面清单。样式改动后除了看逐组件图，还要看画廊「消费方真实界面」区块。
 - **大数据现场（§24 起）**：同一个体检器还会点开调试台 `#/c/select` 的「大数据虚拟列表（1 万条）」场景并展开面板，断言虚拟层存在、渲染节点 ≤ 30、占位高 ≥ 100000px，截图进画廊。理由是「窗口化有没有真的生效」在单测里只能看节点数量，看不到面板是否被撑爆或滚不动；治理校验静态锁死场景 id 与产物键名，防合并时被架空。
@@ -157,7 +157,7 @@ npm run snap:layout   # 重新录入布局基线（改动样式/布局后按需�
 npm run snap:pixels   # 重新录入像素基线（改动颜色/字号/圆角等视觉后按需执行）
 npm run test:all      # 历史别名（= npm run quality），仅本机调试用，不作为门禁口径
 npm run verify:governance # 治理校验：影响面清单 / 特性裁剪静态守卫 / 文档数字对齐（秒级）
-npm run audit:visual # 视觉体检：123 个导出组件的计算样式契约 + 122 张逐组件截图（visual-report/index.html）
+npm run audit:visual # 视觉体检：122 个导出组件的计算样式契约 + 121 张逐组件截图（visual-report/index.html）
 npm run quality       # 唯一门禁（十三段）：先 build 一次 → 格式 → 类型 → lint → 库级校验 → 治理校验 → 五层用例 → 视觉体检 → 消费方校验
 npm run ci            # quality 的 CI 别名（同一条命令），服务端流水线直接调用，逐段给结论与耗时并落机读的 ci-report.json
 npm run ci:fast       # 秒级五段并行（格式 / 类型 / lint / 库级校验 / 治理校验），不触发构建；实测约 6s
@@ -166,7 +166,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 
 ## 7. 未覆盖 / 待办
 
-- 五层用例：组件侧（`tests/components/**`，`npm run test`）、构建器侧（`tests/build/**`，`npm run test:build`）、profile 运行时（`tests/profiles/**`，`npm run test:profiles`）、浏览器层（`tests/browser/**`，`npm run test:browser`）、覆盖率层（同一批组件用例在源码入口重放并卡四维阈值，`npm run test:coverage`）；各层条数不写进文档，以命令输出与 `ci-report.json` 的阶段记录为准。88 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
+- 五层用例：组件侧（`tests/components/**`，`npm run test`）、构建器侧（`tests/build/**`，`npm run test:build`）、profile 运行时（`tests/profiles/**`，`npm run test:profiles`）、浏览器层（`tests/browser/**`，`npm run test:browser`）、覆盖率层（同一批组件用例在源码入口重放并卡四维阈值，`npm run test:coverage`）；各层条数不写进文档，以命令输出与 `ci-report.json` 的阶段记录为准。87 个组件目录已全部有专属单元用例，原先把「只有浏览器能证」的 6 条固钉 / 回顶 / 引导场景也从占位改成真实用例
 - 第四批已交付（分支 `feature/20261107-quality-gate`）：真实浏览器层的定位 / 滚动 / 拖拽 / 表格 / 树性能 / 键盘断言、控制台告警归零、属性落盘扫描、布局指纹基线、用例侧类型检查，全部收进 `npm run quality`，详见 `REQUIREMENTS.md` §9 与本文 §9、§10
 - 第五批已交付（分支 `feature/20261107-every-profile-runtime`）：20 份 profile 的运行时挂载校验（`tests/profiles/**`）与门禁阶段化运行器 + 提交钩子（`scripts/ci.mjs`、`.githooks/`），详见 `REQUIREMENTS.md` §10 与本文 §11
 - 第六批已交付（分支 `feature/20261107-tests-batch6`）：剩余 63 个组件目录全量接入用例，配套 `tests/profiles/props-documented.spec.ts` 的 41 条双向回查，详见 `REQUIREMENTS.md` §11；收口时 15 条 `feature/*` 与 `fix/*` 分支全部合入 `main`，Gitee issue 均 closed、PR #1/#2 均 merged
@@ -191,7 +191,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - **`meta.json` 是"上次构建"的事实，不是"当前源码"的事实**：`profile-contract.spec.ts` 里 `selection` 用例专门用当前 `registry.mjs` 重算一遍再比对，产物过期会直接红；同理 `sizes.json` 与 `dist/<profile>/meta.json` 逐字段对齐，只改一边会挂
 - **体积阈值按"带"不按"点"**：gzip 对拼接串不满足可加性（core 的 `js+css` 合并 gzip 反而比两文件 gzip 之和大 108 字节），所以自洽用例只能重算 `zlib.gzipSync(js+css, {level:9})` 再逐字节比，不能写成"合并值 ≤ 分量之和"
 - **前缀长度本身就是体积变量**：`rewritePrefix` 会把 `ui-` 换成 profile 前缀，`chinese`（7 字符）比 `antd`（4 字符）CSS 大近 4 kB，主题之间的差异只能按"前缀 + 皮肤"两个来源解释，不能假设同尺寸
-- **裁剪判定不能只看类名是否存在**：`shared/floating.css` 会给全部 88 个组件枚举 `.ui-*-panel__dropdown`，未选中组件的类名照样在包里。判"这个组件没进包"要用它的私有 BEM 选择器（`_helpers.ts` 的 `ownElementSelector`，取该组件 CSS 里没出现在共享 CSS 的那个 `__element`）加 `create<Id>` 在 JS 里缺席，两条一起才算证据
+- **裁剪判定不能只看类名是否存在**：`shared/floating.css` 会给全部 87 个组件枚举 `.ui-*-panel__dropdown`，未选中组件的类名照样在包里。判"这个组件没进包"要用它的私有 BEM 选择器（`_helpers.ts` 的 `ownElementSelector`，取该组件 CSS 里没出现在共享 CSS 的那个 `__element`）加 `create<Id>` 在 JS 里缺席，两条一起才算证据
 - **令牌裁剪判"没有 var() 消费者"**：`pruneUnusedThemeVars` 只裁 `:root` 里"包内无 `var()` 引用、且被未选中组件引用"的声明。取证据要用未选中组件 CSS 里的 `var(--ui-x-…)` 名单，再排除选中组件与 `shared/*.css` 仍在引用的项——直接拿 `--ui-dialog-*` 的全部出现位置去断言会误伤（`shared/theme.css` 里是声明不是消费）
 - **固定行高窗口只有一个算法来源（§25）**：一律走 `shared/virtual-window.ts` 的 `computeVirtualRange` / `alignVirtualScrollTop`，组件里不要再写 `Math.floor(scrollTop / itemHeight) - overscan` 这类算术。历史上 Select / Cascader / CascaderPanel / VirtualList 各一套，overscan 是 5/4/4，clamp 写法全不一样，同一种「滚到末尾算错一屏」会在不同组件里反复出现。`virtual-list` 是标准实现，`scrollable=false + scrollTop + viewportHeight` 是「外层容器滚动、内部只渲染窗口」的受控模式（Select 的浮层面板就用它）。**Table 例外**：它是变量行高 + 前缀和 + 贴底锁，属于另一种算法，不要套固定行高内核
 - **虚拟实现必须待在特性目录里，判据看边际体积**：`select/core.ts` 只允许有 `featureHook` 扩展点，虚拟渲染与 VirtualList 的引用只能在 `features/select-virtualized/`。改造前该特性边际值只有 441B（说明代码在 core、根本没被裁），改造后 2499B；治理校验在低于 1500B 时直接报红。`cascader` / `cascader-panel` 也已在 W2.1 收进各自 `features/virtualized/`（边际 240B/258B → 1782B/1622B），core 只留 `featureHook`；守卫会拦下 core 里重新出现虚拟 import 或直接读 `virtualScroll` / `itemSize`。`transfer.virtualized` 因零实现已于 W2.2 删除，双列表虚拟化若要做按新功能单独立项

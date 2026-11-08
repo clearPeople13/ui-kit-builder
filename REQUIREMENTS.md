@@ -1326,7 +1326,7 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - 新增 `tree.virtualized` 特性（大数据虚拟滚动）：`virtualized`（默认开）+ `virtualThreshold`（默认 100）+ `itemSize`（行高兜底 30，运行时按首行实测）；需配合 `height`，低于阈值或未设 height 自动回退全量渲染。窗口算术只引用 `shared/virtual-window`，渲染复用 VirtualList 受控窗口模式（滚动容器仍是 `.ui-tree__nodes`），单行渲染经 core 暴露的 `renderNodeRow` 回到 core——展开/勾选/点击语义全量与窗口两种模式同一出口。core 侧为此新增三个特性扩展点：`renderNodeWindow`（接管节点区渲染）、`onNodesScroll`（转发容器滚动）、`focusAdapter`（窗口化后键盘聚焦先滚后焦）；行挂 `data-key`，键盘导航在 DOM 只剩可视切片时按数据 key 定位全集下标。
 - 调试台：Tree 预设新增「固定高度滚动」「缩进 28」「大数据虚拟滚动」（240 可见节点场景），TreeV2 预设与目录节点移除；`scripts/demo-categories.mjs`、`playground.ts`、`presets-extra.ts` 同步。
 - 守卫：`verify-governance.mjs` 的「旧组件不得复活」从 Select 单例扩展为清单（select-v2 / tree-v2），并断言 Tree spec 保留 `height`（防统一改造被架空）；「虚拟窗口统一守卫」清单加入 tree（core 不得 import virtual-window、不得直读虚拟化 prop，特性必须复用 shared/virtual-window）。
-- 文档数字：README 组件数 89→88；KNOWLEDGE / visual-audit / test-impact 的导出数 124→123、组件目录数 89→88。
+- 文档数字：README 组件数 88→87；KNOWLEDGE / visual-audit / test-impact 的导出数 123→122、组件目录数 88→87（与 Result 移除批次合计：89→87 / 124→122）。
 
 ### 44.2 验证
 
