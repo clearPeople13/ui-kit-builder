@@ -40,6 +40,19 @@ async function clickNative(node: HTMLElement | null | undefined) {
   await nextTick()
 }
 
+// 键盘路径一律派发真实 keydown：只有真事件的 target 才是被按键的元素，
+// 才能同时验证"输入框按键冒泡到触发区后被挡掉"这类分流语义
+async function keydownOn(node: Element | null | undefined, key: string) {
+  node?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  await nextTick()
+}
+
+// 焦点落点断言只认"activeElement 是不是某个日格"，不锁实现里的查找顺序细节
+function activeCell() {
+  const active = document.activeElement as HTMLElement | null
+  return active?.classList?.contains('ui-date-picker__cell') ? active : null
+}
+
 function inputValue(wrapper: ReturnType<typeof mountPicker>) {
   return (wrapper.find('input').element as HTMLInputElement).value
 }
@@ -524,6 +537,309 @@ describe('DatePicker 日期选择', () => {
     await open(wrapper)
     expect(inputValue(wrapper)).toBe('')
     expect(cells().filter((cell) => cell.className.includes('is-selected'))).toHaveLength(0)
+  })
+})
+
+describe('DatePicker 键盘操作', () => {
+  beforeEach(freezeToday)
+
+  it('触发区 Enter / ArrowDown 打开面板并把焦点落到已选日', async () => {
+    const wrapper = mountPicker({ modelValue: '2026-11-15' })
+    const trigger = wrapper.find('.ui-date-picker__trigger')
+    await keydownOn(trigger.element, 'Enter')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
+    expect(activeCell()?.textContent).toBe('15')
+    expect(activeCell()?.className).toContain('is-selected')
+
+    await keydownOn(activeCell(), 'Escape')
+    await nextTick()
+    expect(panel()).toBeNull()
+    expect(trigger.attributes('aria-expanded')).toBe('false')
+
+    // ArrowDown 与 Enter 等价：再次打开仍落在已选日上
+    await keydownOn(trigger.element, 'ArrowDown')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+    expect(activeCell()?.textContent).toBe('15')
+  })
+
+  it('没有已选日时焦点落到今天', async () => {
+    const wrapper = mountPicker({ modelValue: '' })
+    await keydownOn(wrapper.find('.ui-date-picker__trigger').element, 'Enter')
+    await nextTick()
+    expect(activeCell()?.textContent).toBe('6')
+    expect(activeCell()?.className).toContain('is-today')
+  })
+
+  it('今天与已选日都被禁用时焦点落到首个可用日格', async () => {
+    const wrapper = mountPicker({ modelValue: '', disabledDate: (date: Date) => date.getDate() !== 20 })
+    await keydownOn(wrapper.find('.ui-date-picker__trigger').element, 'ArrowDown')
+    await nextTick()
+    expect(activeCell()?.textContent).toBe('20')
+    expect(activeCell()?.className).not.toContain('is-disabled')
+  })
+
+  it('网格 ←→↑↓ 漫游，↑↓ 按整周跳，Home / End 到两端', async () => {
+    const wrapper = mountPicker({ modelValue: '2026-11-06' })
+    await keydownOn(wrapper.find('.ui-date-picker__trigger').element, 'Enter')
+    await nextTick()
+    const index = () => cells().indexOf(document.activeElement as HTMLElement)
+    const start = index()
+    expect(start).toBeGreaterThan(0)
+
+    await keydownOn(document.activeElement, 'ArrowRight')
+    expect(index()).toBe(start + 1)
+    await keydownOn(document.activeElement, 'ArrowDown')
+    expect(index()).toBe(start + 8)
+    await keydownOn(document.activeElement, 'ArrowLeft')
+    expect(index()).toBe(start + 7)
+    await keydownOn(document.activeElement, 'ArrowUp')
+    expect(index()).toBe(start)
+    await keydownOn(document.activeElement, 'Home')
+    expect(index()).toBe(0)
+    await keydownOn(document.activeElement, 'End')
+    expect(index()).toBe(cells().length - 1)
+  })
+
+  it('方向键漫游跳过禁用日格', async () => {
+    const wrapper = mountPicker({ modelValue: '2026-11-15', disabledDate: (date: Date) => date.getDate() === 16 })
+    await keydownOn(wrapper.find('.ui-date-picker__trigger').element, 'Enter')
+    await nextTick()
+    expect(activeCell()?.textContent).toBe('15')
+    await keydownOn(document.activeElement, 'ArrowRight')
+    expect(activeCell()?.textContent).toBe('17')
+  })
+
+  it('Escape 收起面板并把焦点归还触发区', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.find('.ui-date-picker__trigger')
+    // 真实键盘路径：焦点先落在触发区，再按键打开
+    trigger.element.focus()
+    await keydownOn(trigger.element, 'Enter')
+    await nextTick()
+    expect(activeCell()?.textContent).toBe('6')
+
+    await keydownOn(activeCell(), 'Escape')
+    await nextTick()
+    expect(panel()).toBeNull()
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    expect(document.activeElement).toBe(trigger.element)
+  })
+
+  it('触发区上 Escape 同样收起面板并归还焦点', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.find('.ui-date-picker__trigger')
+    trigger.element.focus()
+    await wrapper.find('.ui-date-picker__trigger').trigger('click')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+
+    await keydownOn(trigger.element, 'Escape')
+    await nextTick()
+    expect(panel()).toBeNull()
+    expect(document.activeElement).toBe(trigger.element)
+  })
+
+  it('外部点击收起面板时不抢回焦点', async () => {
+    const wrapper = mountPicker()
+    const trigger = wrapper.find('.ui-date-picker__trigger')
+    trigger.element.focus()
+    await keydownOn(trigger.element, 'ArrowDown')
+    await nextTick()
+    expect(activeCell()?.textContent).toBe('6')
+
+    document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+    await nextTick()
+    expect(panel()).toBeNull()
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    expect(document.activeElement).not.toBe(trigger.element)
+  })
+
+  it('输入框草稿未改动时 Enter 打开面板，有改动时只提交不重开', async () => {
+    const wrapper = mountPicker()
+    const input = wrapper.find('input')
+    await keydownOn(input.element, 'Enter')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+    expect(activeCell()?.textContent).toBe('6')
+
+    // 面板内 Escape 收起后，草稿改动再回车：走提交路径，且不会再被触发区处理器重开
+    await keydownOn(input.element, 'Escape')
+    await nextTick()
+    expect(panel()).toBeNull()
+    await input.setValue('2026-12-25')
+    await input.trigger('keydown', { key: 'Enter' })
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([['2026-12-25']])
+    expect(panel()).toBeNull()
+
+    // 草稿已提交、面板保持收起时，ArrowDown 仍可重新打开
+    await keydownOn(input.element, 'ArrowDown')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+  })
+
+  it('区间字段 Enter 打开双面板，焦点落在区间开始日', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: ['2026-11-01', '2026-11-06'] })
+    const fields = wrapper.findAll('.ui-date-picker__field')
+    await keydownOn(fields[0].element, 'Enter')
+    await nextTick()
+    expect(panel()!.querySelectorAll('.ui-date-picker__panel')).toHaveLength(2)
+    expect(fields.map((field) => field.attributes('aria-expanded'))).toEqual(['true', 'true'])
+    expect(activeCell()?.textContent).toBe('1')
+    expect(activeCell()?.className).toContain('is-selected')
+  })
+
+  it('区间字段 Escape 收起面板并把焦点归还该字段', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: ['2026-11-01', '2026-11-06'] })
+    const fields = wrapper.findAll('.ui-date-picker__field')
+    fields[0].element.focus()
+    await keydownOn(fields[0].element, 'ArrowDown')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+
+    await keydownOn(activeCell(), 'Escape')
+    await nextTick()
+    expect(panel()).toBeNull()
+    expect(document.activeElement).toBe(fields[0].element)
+  })
+
+  it('区间草稿回车整段提交并收起', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: ['2026-11-01', '2026-11-06'] })
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('2026-11-03')
+    await inputs[0].trigger('keydown', { key: 'Enter' })
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([[['2026-11-03', '2026-11-06']]])
+    expect(panel()).toBeNull()
+  })
+})
+
+describe('DatePicker 面板细粒度交互', () => {
+  beforeEach(freezeToday)
+
+  function timeItem(lists: HTMLElement[], column: number, index: number) {
+    return lists[column].querySelectorAll<HTMLElement>('.ui-date-picker__time-item')[index]
+  }
+
+  it('datetime 面板的时分秒列点选即刻写回且不收起', async () => {
+    const wrapper = mountPicker({ type: 'datetime', modelValue: '2026-11-06 08:30:00' })
+    await open(wrapper)
+    const lists = Array.from(panel()!.querySelectorAll('.ui-date-picker__time-list')) as HTMLElement[]
+    expect(lists).toHaveLength(3)
+    await clickNative(timeItem(lists, 0, 10))
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([['2026-11-06 10:30:00']])
+    await clickNative(timeItem(lists, 1, 5))
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([['2026-11-06 10:05:00']])
+    await clickNative(timeItem(lists, 2, 7))
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([['2026-11-06 10:05:07']])
+    expect(panel()).not.toBeNull()
+  })
+
+  it('datetime 的禁用时分秒列项标灰且点击不写回', async () => {
+    const wrapper = mountPicker({
+      type: 'datetime',
+      modelValue: '2026-11-06 08:30:00',
+      disabledHours: () => [9],
+      disabledMinutes: () => [31],
+      disabledSeconds: () => [32]
+    })
+    await open(wrapper)
+    const lists = Array.from(panel()!.querySelectorAll('.ui-date-picker__time-list')) as HTMLElement[]
+    const marks: HTMLElement[] = [timeItem(lists, 0, 9), timeItem(lists, 1, 31), timeItem(lists, 2, 32)]
+    expect(marks.map((item) => item.className.includes('is-disabled'))).toEqual([true, true, true])
+    expect(marks.map((item) => item.disabled)).toEqual([true, true, true])
+    for (const mark of marks) {
+      await clickNative(mark)
+    }
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('unlinkPanels 时两块面板各自翻月', async () => {
+    const wrapper = mountPicker({ isRange: true, unlinkPanels: true, modelValue: ['2026-11-01', '2026-12-06'] })
+    await wrapper.findAll('.ui-date-picker__field')[0].trigger('click')
+    await nextTick()
+    const titles = () =>
+      Array.from(panel()!.querySelectorAll('.ui-date-picker__title.is-static')).map((title) => title.textContent)
+    expect(titles()).toEqual(['2026年11月', '2026年12月'])
+
+    const panels = Array.from(panel()!.querySelectorAll('.ui-date-picker__panel')) as HTMLElement[]
+    await clickNative(panels[0].querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="下一页"]'))
+    expect(titles()).toEqual(['2026年12月', '2026年12月'])
+    await clickNative(panels[1].querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="上一页"]'))
+    expect(titles()).toEqual(['2026年12月', '2026年11月'])
+  })
+
+  it('showWeekNumber 渲染每周周号', async () => {
+    const wrapper = mountPicker({ showWeekNumber: true })
+    await open(wrapper)
+    const weeks = Array.from(panel()!.querySelectorAll('.ui-date-picker__week-num')) as HTMLElement[]
+    expect(weeks.map((week) => week.textContent)).toEqual(['W44', 'W45', 'W46', 'W47', 'W48', 'W49'])
+    expect(weeks[0].getAttribute('title')).toBe('第 44 周')
+    expect(panel()!.querySelectorAll('.ui-date-picker__weekday')).toHaveLength(8)
+    expect(cells()).toHaveLength(42)
+  })
+
+  it('年份表与月份表按页翻动', async () => {
+    const wrapper = mountPicker()
+    await open(wrapper)
+    const titles = () => Array.from(panel()!.querySelectorAll('.ui-date-picker__title')) as HTMLElement[]
+    const yearCells = () =>
+      Array.from(panel()!.querySelectorAll('.ui-date-picker__month-cell')).map((cell) => cell.textContent)
+
+    await clickNative(titles()[0])
+    expect(yearCells()[0]).toBe('2016')
+    // 年份表一次翻一页（12 年），十年窗口按 12 年对齐重排
+    await clickNative(panel()!.querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="下一页"]'))
+    expect(titles()[0].textContent).toBe('2038年')
+    expect(yearCells()[0]).toBe('2028')
+
+    // 月份表翻页按整年滚动
+    await clickNative(titles()[1])
+    expect(yearCells()).toHaveLength(12)
+    await clickNative(panel()!.querySelector<HTMLElement>('.ui-date-picker__nav[aria-label="下一页"]'))
+    expect(titles()[0].textContent).toBe('2039年')
+  })
+
+  it('点输入框同样展开面板', async () => {
+    const wrapper = mountPicker()
+    await wrapper.find('input').trigger('click')
+    await nextTick()
+    expect(panel()).not.toBeNull()
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
+  })
+
+  it('区间草稿缺一端时只落一端，两端颠倒时提交前互换', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: [] })
+    const inputs = wrapper.findAll('input')
+    await inputs[0].setValue('2026-11-20')
+    await inputs[0].trigger('keydown', { key: 'Enter' })
+    await nextTick()
+    // 只填了开始位：先记下这一端，等第二次选择，不抛值
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+
+    await inputs[1].setValue('2026-11-10')
+    await inputs[0].trigger('keydown', { key: 'Enter' })
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([[['2026-11-10', '2026-11-20']]])
+  })
+
+  it('多选面板的「今天」把今天并入勾选且保持展开', async () => {
+    const wrapper = mountPicker({ type: 'dates', modelValue: [] })
+    await open(wrapper)
+    const todayAction = () =>
+      Array.from(panel()!.querySelectorAll('.ui-date-picker__action')).find(
+        (action) => action.textContent === '今天'
+      ) as HTMLElement
+    await clickNative(todayAction())
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([[['2026-11-06']]])
+    expect(panel()).not.toBeNull()
+    // 已勾选今天时不重复抛值
+    await clickNative(todayAction())
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
   })
 })
 

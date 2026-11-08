@@ -102,6 +102,19 @@ async function clickNode(node: HTMLElement | null | undefined) {
   await flush()
 }
 
+// 键盘路径一律派发真实 keydown：只有真事件的 target 才是被按键的元素，
+// 才能同时验证"输入框按键冒泡到触发字段后被挡掉"这类分流语义
+async function keydownOn(node: Element | null | undefined, key: string) {
+  node?.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))
+  await flush()
+}
+
+// 焦点落点断言只认"activeElement 是不是列项"，不锁实现里的查找顺序细节
+function activeItem() {
+  const active = document.activeElement as HTMLElement | null
+  return active?.classList?.contains('ui-time-picker__time-item') ? active : null
+}
+
 async function clickField(wrapper: ReturnType<typeof mountPicker>, index: number) {
   fieldNodes(wrapper)[index].dispatchEvent(new MouseEvent('click', { bubbles: true }))
   await flush()
@@ -490,6 +503,197 @@ describe('TimePicker 时间选择', () => {
       wrapper.unmount()
       document.body.innerHTML = ''
     }
+  })
+
+  it('点秒项写回，disabledSeconds 的列项标灰且点击不写回', async () => {
+    const wrapper = mountPicker({ disabledSeconds: () => [6] })
+    await open(wrapper)
+    expect(columnItems(2)[6].className).toContain('is-disabled')
+    await clickNode(columnItems(2)[6])
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    await clickNode(columnItems(2)[5])
+    expect(wrapper.emitted('update:modelValue')).toEqual([['09:24:05']])
+  })
+
+  it('区间清空把两端都置空并同步输入框', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: ['09:00', '18:30'] })
+    await flush()
+    await wrapper.find('.ui-time-picker__clear').trigger('click')
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[['', '']]])
+    expect(triggerInputs(wrapper).map((input) => input.value)).toEqual(['', ''])
+  })
+
+  it('editable 关掉后键入的值在失焦时被回退', async () => {
+    const wrapper = mountPicker({ editable: false })
+    await flush()
+    const input = wrapper.find('input')
+    await input.setValue('11:22:33')
+    await input.trigger('blur')
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(triggerText(wrapper)).toBe('09:24:36')
+  })
+
+  it('defaultTime / defaultValue 支持 Date 实例', async () => {
+    const withTime = mountPicker({ modelValue: '', defaultTime: new Date(2026, 0, 1, 7, 5, 9) })
+    await open(withTime)
+    expect(selected()).toEqual(['07', '05', '09'])
+    withTime.unmount()
+    document.body.innerHTML = ''
+
+    const withDefault = mountPicker({ modelValue: '', defaultValue: new Date(2026, 0, 1, 6, 4, 2) })
+    await open(withDefault)
+    expect(selected()).toEqual(['06', '04', '02'])
+  })
+
+  it('无法解析的 modelValue 原样回显', async () => {
+    const wrapper = mountPicker({ modelValue: 'not-a-time' })
+    await flush()
+    expect(triggerText(wrapper)).toBe('not-a-time')
+  })
+})
+
+describe('TimePicker 键盘操作', () => {
+  it('触发区 Enter / ArrowDown 打开面板并把焦点落到首列选中项', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const trigger = wrapper.find('.ui-time-picker__trigger')
+    await keydownOn(trigger.element, 'Enter')
+    expect(dropdown()).not.toBeNull()
+    expect(trigger.attributes('aria-expanded')).toBe('true')
+    expect(activeItem()?.textContent).toBe('09')
+    expect(activeItem()?.parentElement?.className).toBe('ui-time-picker__list')
+
+    await keydownOn(activeItem(), 'Escape')
+    expect(dropdown()).toBeNull()
+
+    await keydownOn(trigger.element, 'ArrowDown')
+    expect(dropdown()).not.toBeNull()
+    expect(activeItem()?.textContent).toBe('09')
+  })
+
+  it('选中项被禁用时焦点退到首个可用项', async () => {
+    const wrapper = mountPicker({ disabledHours: () => [9, 0, 1] })
+    await flush()
+    await keydownOn(wrapper.find('.ui-time-picker__trigger').element, 'ArrowDown')
+    expect(dropdown()).not.toBeNull()
+    expect(activeItem()?.textContent).toBe('02')
+  })
+
+  it('列内 ArrowDown / ArrowUp 只在当列漫游，不跨列', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    await keydownOn(wrapper.find('.ui-time-picker__trigger').element, 'Enter')
+    expect(activeItem()?.textContent).toBe('09')
+    await keydownOn(document.activeElement, 'ArrowDown')
+    expect(activeItem()?.textContent).toBe('10')
+    await keydownOn(document.activeElement, 'ArrowUp')
+    expect(activeItem()?.textContent).toBe('09')
+
+    // 分钟列同样按列内序号移动：24 → 25
+    await keydownOn(columnItems(1)[24], 'ArrowDown')
+    expect(activeItem()?.textContent).toBe('25')
+    expect(activeItem()?.parentElement).toBe(columnItems(1)[25].parentElement)
+  })
+
+  it('漫游跳过禁用项，到列尾不再移动', async () => {
+    const wrapper = mountPicker({ modelValue: '09:24:36', disabledHours: () => [10] })
+    await flush()
+    await keydownOn(wrapper.find('.ui-time-picker__trigger').element, 'Enter')
+    await keydownOn(document.activeElement, 'ArrowDown')
+    expect(activeItem()?.textContent).toBe('11')
+    wrapper.unmount()
+    document.body.innerHTML = ''
+
+    // 下一格被禁用且已到列尾：焦点留在原处，不越界
+    const tail = mountPicker({ modelValue: '22:24:36', disabledHours: () => [23] })
+    await flush()
+    await keydownOn(tail.find('.ui-time-picker__trigger').element, 'Enter')
+    expect(activeItem()?.textContent).toBe('22')
+    await keydownOn(document.activeElement, 'ArrowDown')
+    expect(activeItem()?.textContent).toBe('22')
+  })
+
+  it('键盘聚焦的列项是原生 button，Enter 触发的 click 直接写回', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    await keydownOn(wrapper.find('.ui-time-picker__trigger').element, 'ArrowDown')
+    await keydownOn(document.activeElement, 'ArrowDown')
+    const item = activeItem()!
+    expect(item.tagName).toBe('BUTTON')
+    expect(item.getAttribute('type')).toBe('button')
+    // 原生按钮在 Enter 上的默认动作是 click，这里直接派发该 click 验证提交结果
+    await clickNode(item)
+    expect(wrapper.emitted('update:modelValue')).toEqual([['10:24:36']])
+    expect(selected()).toEqual(['10', '24', '36'])
+    expect(dropdown()).not.toBeNull()
+  })
+
+  it('面板内 Escape 收起面板并把焦点归还触发字段', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const trigger = wrapper.find('.ui-time-picker__trigger')
+    trigger.element.focus()
+    await keydownOn(trigger.element, 'Enter')
+    expect(activeItem()?.textContent).toBe('09')
+
+    await keydownOn(activeItem(), 'Escape')
+    expect(dropdown()).toBeNull()
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    expect(document.activeElement).toBe(trigger.element)
+  })
+
+  it('输入框上 Escape 只收起面板，焦点留在输入框', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    await wrapper.find('.ui-time-picker__trigger').trigger('click')
+    await flush()
+    expect(dropdown()).not.toBeNull()
+    const input = triggerInputs(wrapper)[0]
+    input.focus()
+
+    await keydownOn(input, 'Escape')
+    expect(dropdown()).toBeNull()
+    expect(document.activeElement).toBe(input)
+  })
+
+  it('输入框草稿未改动时 Enter 打开面板，有改动时只提交不重开', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const input = wrapper.find('input')
+    await keydownOn(input.element, 'Enter')
+    expect(dropdown()).not.toBeNull()
+    expect(activeItem()?.textContent).toBe('09')
+    await keydownOn(activeItem(), 'Escape')
+    expect(dropdown()).toBeNull()
+
+    await input.setValue('11:22:33')
+    await input.trigger('keydown', { key: 'Enter' })
+    await flush()
+    expect(wrapper.emitted('update:modelValue')?.slice(-1)).toEqual([['11:22:33']])
+    expect(dropdown()).toBeNull()
+
+    // 草稿已提交、面板保持收起时，ArrowDown 仍可重新打开
+    await keydownOn(input.element, 'ArrowDown')
+    expect(dropdown()).not.toBeNull()
+  })
+
+  it('区间字段 Enter 打开对应一侧并落焦该侧选中项', async () => {
+    const wrapper = mountPicker({ isRange: true, modelValue: ['09:00', '18:30'] })
+    await flush()
+    const fields = fieldNodes(wrapper)
+    await keydownOn(fields[1], 'Enter')
+    expect(dropdown()).not.toBeNull()
+    expect(caption()).toBe('结束时间')
+    expect(fields.map((field) => field.getAttribute('aria-expanded'))).toEqual(['false', 'true'])
+    expect(activeItem()?.textContent).toBe('18')
+
+    // 焦点仍在字段上时 Escape：走字段处理器，收起后归还到该字段
+    fields[1].focus()
+    await keydownOn(fields[1], 'Escape')
+    expect(dropdown()).toBeNull()
+    expect(document.activeElement).toBe(fields[1])
   })
 })
 
