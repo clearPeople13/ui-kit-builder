@@ -201,19 +201,6 @@ export default {
             }
           ]
         },
-        "mention.password": {
-          "title": "密码可见切换",
-          "description": "密码可见切换：showPassword",
-          "module": "packages/ui-kit/src/components/mention/features/password/index.ts",
-          "exportName": "mentionPasswordFeature",
-          "requires": [],
-          "props": [
-            {
-              "name": "showPassword",
-              "type": "boolean"
-            }
-          ]
-        },
         "mention.word-limit": {
           "title": "字数统计",
           "description": "字数统计：showWordLimit、wordLimitPosition",

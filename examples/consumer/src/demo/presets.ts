@@ -405,13 +405,6 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       values: { prefixIcon: 'mail', suffixIcon: 'bell' }
     },
     {
-      id: 'password',
-      label: '密码',
-      requires: 'mention.password',
-      hint: 'type=password 时出现眼睛按钮，点击切换明文',
-      values: { type: 'password', showPassword: true, modelValue: 'secret-demo' }
-    },
-    {
       id: 'top',
       label: '上方弹出',
       requires: 'mention.popper',

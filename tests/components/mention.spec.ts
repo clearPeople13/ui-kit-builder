@@ -314,7 +314,7 @@ describe('Mention 提及输入', () => {
     reset()
   })
 
-  it('clearable / password 特性：清空与密码可见切换', async () => {
+  it('clearable 特性：清空', async () => {
     const clearable = mountMention({ modelValue: 'hi', clearable: true })
     expect(clearable.classes()).toContain('ui-mention--clearable')
     const clear = clearable.find('.ui-mention__clear')
@@ -326,16 +326,6 @@ describe('Mention 提及输入', () => {
     expect(clearable.emitted('clear')).toHaveLength(1)
     const vm = clearable.vm as unknown as Record<string, unknown>
     expect(typeof vm.clear).toBe('function')
-    reset()
-
-    const password = mountMention({ modelValue: 'pw', type: 'password', showPassword: true, options })
-    const toggle = password.find('.ui-mention__password')
-    expect(password.find('input').attributes('type')).toBe('password')
-    expect(toggle.attributes('aria-label')).toBe('Show password')
-    await toggle.trigger('click')
-    await nextTick()
-    expect(password.find('input').attributes('type')).toBe('text')
-    expect(toggle.attributes('aria-label')).toBe('Hide password')
     reset()
 
     const disabledClear = mountMention({ modelValue: 'hi', clearable: true, disabled: true })

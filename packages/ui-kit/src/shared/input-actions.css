@@ -3,8 +3,7 @@
 .ui-input__password,
 .ui-autocomplete__clear,
 .ui-autocomplete__password,
-.ui-mention__clear,
-.ui-mention__password {
+.ui-mention__clear {
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -22,8 +21,7 @@
 }
 
 .ui-input__password,
-.ui-autocomplete__password,
-.ui-mention__password {
+.ui-autocomplete__password {
   color: var(--ui-text-color-placeholder);
 }
 
@@ -54,8 +52,7 @@
 }
 
 .ui-input__password:hover,
-.ui-autocomplete__password:hover,
-.ui-mention__password:hover {
+.ui-autocomplete__password:hover {
   color: var(--ui-text-color-regular);
   background: rgba(0, 0, 0, 0.05);
 }
@@ -64,8 +61,7 @@
 .ui-input__password:focus-visible,
 .ui-autocomplete__clear:focus-visible,
 .ui-autocomplete__password:focus-visible,
-.ui-mention__clear:focus-visible,
-.ui-mention__password:focus-visible {
+.ui-mention__clear:focus-visible {
   outline: 2px solid var(--ui-focus-ring);
   outline-offset: 1px;
 }
