@@ -165,7 +165,7 @@ const RELATIVE_SPEC_RE = /['"](\.{1,2}\/[^'"]+)['"]/g
 
 /**
  * 组件目录里的相对 import 引用到哪些兄弟组件目录。
- * table / tree / tree-v2 / transfer 都 `import { createCheckbox } from '../checkbox/core'`：
+ * table / tree / transfer 都 `import { createCheckbox } from '../checkbox/core'`：
  * 指纹只算"选中目录 + shared"时，改 checkbox 不会让含 table 的 profile / table 组件缓存失效，
  * 门禁会复用到陈旧产物（A2）。
  */

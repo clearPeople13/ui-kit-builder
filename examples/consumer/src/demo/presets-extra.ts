@@ -21,12 +21,7 @@ const TREE_DATA = [
     label: '数据组件',
     children: [
       { id: 'table', label: 'Table' },
-      { id: 'tree', label: 'Tree' },
-      {
-        id: 'tree-v2',
-        label: 'TreeV2',
-        children: [{ id: 'tree-v2-basic', label: '基础树' }]
-      }
+      { id: 'tree', label: 'Tree' }
     ]
   }
 ]
@@ -1153,52 +1148,17 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
       label: '自定义展开图标',
       requires: 'tree.icons',
       values: { data: TREE_DATA, icon: 'star', defaultExpandAll: true }
-    }
-  ],
-  TreeV2: [
-    {
-      id: 'base',
-      label: '展开全部',
-      values: {
-        data: TREE_DATA,
-        defaultExpandAll: true
-      }
-    },
-    {
-      id: 'collapsed',
-      label: '默认收起',
-      values: {
-        data: TREE_DATA
-      }
     },
     {
       id: 'height',
-      label: '固定高度',
-      values: {
-        data: TREE_DATA,
-        defaultExpandAll: true,
-        height: 240
-      }
+      label: '固定高度滚动',
+      hint: 'height 固定视口高度，超出部分在容器内滚动',
+      values: { data: TREE_DATA, defaultExpandAll: true, height: 240 }
     },
     {
       id: 'indent',
       label: '缩进 28',
-      values: {
-        data: TREE_DATA,
-        defaultExpandAll: true,
-        indent: 28
-      }
-    },
-    {
-      id: 'check',
-      label: '复选树',
-      requires: 'tree-v2.check',
-      values: {
-        data: TREE_DATA,
-        defaultExpandAll: true,
-        showCheckbox: true,
-        defaultCheckedKeys: ['button']
-      }
+      values: { data: TREE_DATA, defaultExpandAll: true, indent: 28 }
     }
   ],
   VirtualList: [

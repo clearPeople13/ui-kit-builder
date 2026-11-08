@@ -7,6 +7,7 @@ import { createUiComponent } from '../../shared/component'
 import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { collectDescendantKeys, collectTreeKeys, normalizeTreeNodes } from '../../shared/tree'
+import { addUnit } from '../../shared/utils'
 import type { UiTreeNode } from '../../shared/tree'
 import { createCheckbox } from '../checkbox/core'
 import './core.css'
@@ -28,6 +29,7 @@ const treeBaseProps = {
   filterNodeMethod: { type: Function },
   accordion: { type: Boolean },
   indent: { type: Number, default: 18 },
+  height: { type: [String, Number], default: '' },
   expandOnClickNode: { type: Boolean, default: true },
   checkOnClickNode: { type: Boolean },
   checkStrictly: { type: Boolean }
@@ -408,6 +410,7 @@ export function createTree(features: UiFeature[] = []) {
           renderNodes
         }
       },
+      classes: (props) => [props.height ? 'is-scrollable' : ''],
       content: ({ props, state, states }) => {
         if (!state.nodes.length) {
           return h('div', { class: 'ui-tree__empty' }, props.emptyText || state.locale.value.emptyText)
@@ -419,7 +422,11 @@ export function createTree(features: UiFeature[] = []) {
           : undefined
         return h(
           'div',
-          { class: 'ui-tree__nodes', onKeydown: state.handleNodesKeydown },
+          {
+            class: 'ui-tree__nodes',
+            style: { height: addUnit(props.height) },
+            onKeydown: state.handleNodesKeydown
+          },
           state.renderNodes(state.nodes, extend)
         )
       }

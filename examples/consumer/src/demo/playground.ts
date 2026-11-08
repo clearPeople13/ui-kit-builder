@@ -234,8 +234,6 @@ const SAMPLE_PROP_VALUES: Record<string, unknown> = {
   'Tree.data': TREE_DATA,
   'TreeSelect.data': TREE_DATA,
   'TreeSelect.modelValue': 'button',
-  'TreeV2.data': TREE_DATA,
-  'TreeV2.height': 280,
   'Transfer.data': TRANSFER_DATA,
   'Transfer.modelValue': ['a'],
   'Select.modelValue': 'shanghai',
@@ -353,7 +351,6 @@ const BOOLEAN_INITIALS: Record<string, boolean> = {
   'Switch.modelValue': true,
   'Tree.defaultExpandAll': true,
   'TreeSelect.defaultExpandAll': true,
-  'TreeV2.defaultExpandAll': true,
   'AvatarGroup.collapseAvatars': true
 }
 
@@ -376,7 +373,6 @@ const INITIAL_ENABLED: Record<string, string[]> = {
   Table: ['data'],
   Tree: ['data'],
   TreeSelect: ['data', 'modelValue'],
-  TreeV2: ['data'],
   Transfer: ['data', 'modelValue'],
   Select: ['modelValue'],
   Cascader: ['options', 'modelValue'],

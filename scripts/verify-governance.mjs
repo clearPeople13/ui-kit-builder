@@ -208,10 +208,21 @@ for (const id of componentIds) {
 }
 notes.push(`特性裁剪静态守卫：扫描 ${componentIds.length} 个组件目录`)
 
-// 2.1 Select 统一守卫（第十一批 §22）
-// 只保留一个选择器：源码、profile、配置、示例与测试里不许再出现旧虚拟列表选择器的名字。
-// 历史缺陷登记（REQUIREMENTS.md / KNOWLEDGE.md 的 F-38、F-47）与第三方参考目录不在扫描范围内。
-const LEGACY_NAME = /select-v2|SelectV2/i
+// 2.1 旧组件不得复活守卫（第十一批 §22 起；§44 扩展为通用清单）
+// 统一改造只保留一个组件：源码、profile、配置、示例与测试里不许再出现旧组件的名字。
+// 历史缺陷登记（REQUIREMENTS.md / KNOWLEDGE.md 的 F-38、F-47、F-98）与第三方参考目录不在扫描范围内。
+const LEGACY_COMPONENTS = [
+  {
+    dir: 'select-v2',
+    pattern: /select-v2|SelectV2/i,
+    reintro: '旧虚拟列表选择器被重新引入（第十一批已统一为 Select）'
+  },
+  {
+    dir: 'tree-v2',
+    pattern: /tree-v2|TreeV2/i,
+    reintro: 'TreeV2 被重新引入（§44 已合入 Tree，只保留一棵树）'
+  }
+]
 const LEGACY_SCAN_PREFIXES = [
   'packages/ui-kit/src/',
   'profiles/',
@@ -228,12 +239,14 @@ const candidateFiles = git(['ls-files']).filter(
     LEGACY_SCAN_PREFIXES.some((prefix) => file.startsWith(prefix)) &&
     LEGACY_TEXT.test(file)
 )
-const legacyHits = candidateFiles.filter((file) => LEGACY_NAME.test(read(file)))
-if (legacyHits.length) {
-  fail(`旧虚拟列表选择器被重新引入（第十一批已统一为 Select）：${legacyHits.join(', ')}`)
-}
-if (componentIds.includes('select-v2')) {
-  fail('组件目录里又出现了 select-v2，Select 统一改造被回退')
+for (const legacy of LEGACY_COMPONENTS) {
+  const legacyHits = candidateFiles.filter((file) => legacy.pattern.test(read(file)))
+  if (legacyHits.length) {
+    fail(`${legacy.reintro}：${legacyHits.join(', ')}`)
+  }
+  if (componentIds.includes(legacy.dir)) {
+    fail(`组件目录里又出现了 ${legacy.dir}，统一改造被回退`)
+  }
 }
 if (!read(`${SRC}/components/select/spec.mjs`).includes('select.select-virtualized')) {
   fail('Select 缺少 select.select-virtualized 特性，大数据能力没有被保留')
@@ -241,7 +254,10 @@ if (!read(`${SRC}/components/select/spec.mjs`).includes('select.select-virtualiz
 if (!read('examples/consumer/src/demo/meta.json').includes('select.select-virtualized')) {
   fail('demo/meta.json 没有登记新特性，请先重跑 build:all / meta:demo')
 }
-notes.push(`Select 统一守卫：扫描 ${candidateFiles.length} 个跟踪文件，旧组件零残留`)
+if (!read(`${SRC}/components/tree/spec.mjs`).includes(`name: 'height'`)) {
+  fail('Tree 缺少 height 属性，TreeV2 的固定高度能力没有被保留（§44）')
+}
+notes.push(`旧组件不得复活守卫：扫描 ${candidateFiles.length} 个跟踪文件，${LEGACY_COMPONENTS.length} 个旧组件零残留`)
 
 // 2.2 虚拟窗口统一守卫（§25）
 // 第十一批把旧虚拟列表选择器合并进 Select 时，窗口算术留在了 select/core.ts 里：

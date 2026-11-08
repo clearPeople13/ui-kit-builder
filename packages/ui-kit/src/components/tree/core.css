@@ -9,6 +9,11 @@
   padding: 4px 0;
 }
 
+.ui-tree.is-scrollable .ui-tree__nodes {
+  overflow: auto;
+  box-sizing: border-box;
+}
+
 .ui-tree__node {
   display: flex;
   align-items: center;

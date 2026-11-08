@@ -76,6 +76,12 @@ export default {
           description: 'indent'
         },
         {
+          name: 'height',
+          type: 'string | number',
+          default: '',
+          description: 'height'
+        },
+        {
           name: 'expandOnClickNode',
           type: 'boolean',
           default: true,

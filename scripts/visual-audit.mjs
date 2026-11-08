@@ -134,7 +134,7 @@ function inspectInPage({ nonVisual }) {
 
     const hostBox = host.getBoundingClientRect()
     // 文档坐标：整页只截一次，逐组件图由 Node 侧按这个矩形裁出来，
-    // 避免 124 次 element.screenshot（每次都要滚动 + 等稳定，门禁会多跑四分钟）
+    // 避免 123 次 element.screenshot（每次都要滚动 + 等稳定，门禁会多跑四分钟）
     const clip = [
       Math.max(0, Math.round(hostBox.left + window.scrollX)),
       Math.max(0, Math.round(hostBox.top + window.scrollY)),
@@ -457,7 +457,7 @@ async function main() {
     result = await page.evaluate(inspectInPage, { nonVisual: NON_VISUAL })
     process.stdout.write(`体检完成：${result.components.length} 个组件，开始截图\n`)
 
-    // 整页只截一次，逐组件图按文档坐标裁出来：124 次 element.screenshot 会让门禁多跑四分钟
+    // 整页只截一次，逐组件图按文档坐标裁出来：123 次 element.screenshot 会让门禁多跑四分钟
     const galleryPng = PNG.sync.read(await page.screenshot({ fullPage: true, timeout: 30_000 }))
     const blank = new PNG({ width: 240, height: 32 })
     for (let i = 0; i < blank.data.length; i += 4) {

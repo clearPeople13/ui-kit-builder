@@ -93,6 +93,13 @@ describe('Tree', () => {
     expect(nodes(wrapper)[1].attributes('style')).toContain('padding-left: 34px')
   })
 
+  it('height 存在时挂 is-scrollable 并写容器高度', async () => {
+    const wrapper = mountTree({ defaultExpandAll: true, height: 200 })
+    await nextTick()
+    expect(wrapper.classes()).toContain('is-scrollable')
+    expect(wrapper.find('.ui-tree__nodes').attributes('style') ?? '').toContain('height: 200px')
+  })
+
   it('defaultExpandedKeys 精确控制展开项', async () => {
     const wrapper = mountTree({ defaultExpandedKeys: [3] })
     await nextTick()

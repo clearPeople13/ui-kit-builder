@@ -46,7 +46,7 @@ describe('构建缓存失效（A10 / C2 / C3）', () => {
   })
 
   it('改被引用但未被该组件选中的兄弟组件源码：引用方（table）与 profile 的缓存键都变化（A2）', () => {
-    // table/tree/tree-v2/transfer 都 import checkbox/core：闭包外的兄弟组件源码变化
+    // table/tree/transfer 都 import checkbox/core：闭包外的兄弟组件源码变化
     // 必须让引用方的组件级缓存键与含它的 profile 缓存键失效，否则门禁复用陈旧产物。
     const dir = path.join(repoRoot, 'packages/ui-kit/src/components/checkbox')
     const probe = path.join(dir, '__cache_probe.tmp')

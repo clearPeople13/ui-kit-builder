@@ -57,7 +57,6 @@ export const CATEGORY_GROUPS = [
     ids: [
       'table',
       'tree',
-      'tree-v2',
       'tree-select',
       'pagination',
       'tag',
