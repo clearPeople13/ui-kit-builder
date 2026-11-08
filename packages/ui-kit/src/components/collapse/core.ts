@@ -116,6 +116,7 @@ export function createCollapseItem(features: UiFeature[] = []) {
           {
             class: 'ui-collapse-item__header',
             type: 'button',
+            'aria-label': props.title ? undefined : 'Collapse item',
             disabled: Boolean(props.disabled),
             onClick: () => state.toggle()
           },

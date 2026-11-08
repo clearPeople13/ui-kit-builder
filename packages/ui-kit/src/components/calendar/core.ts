@@ -219,13 +219,27 @@ export function createCalendar(features: UiFeature[] = []) {
       ],
       content: ({ state }) => [
         h('div', { class: 'ui-calendar__header' }, [
-          h('button', { class: 'ui-calendar__nav', type: 'button', onClick: () => state.changeMonth(-1) }, [
-            renderIcon(ChevronLeft)
-          ]),
+          h(
+            'button',
+            {
+              class: 'ui-calendar__nav',
+              type: 'button',
+              'aria-label': 'Previous month',
+              onClick: () => state.changeMonth(-1)
+            },
+            [renderIcon(ChevronLeft)]
+          ),
           h('span', { class: 'ui-calendar__title' }, state.title),
-          h('button', { class: 'ui-calendar__nav', type: 'button', onClick: () => state.changeMonth(1) }, [
-            renderIcon(ChevronRight)
-          ])
+          h(
+            'button',
+            {
+              class: 'ui-calendar__nav',
+              type: 'button',
+              'aria-label': 'Next month',
+              onClick: () => state.changeMonth(1)
+            },
+            [renderIcon(ChevronRight)]
+          )
         ]),
         state.hasRange ? h('div', { class: 'ui-calendar__range-tip' }, state.rangeText) : null,
         h(

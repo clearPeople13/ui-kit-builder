@@ -192,6 +192,7 @@ export function createTooltip(features: UiFeature[] = []) {
                 visible ? null : { display: 'none' }
               ],
               role: 'tooltip',
+              'aria-label': typeof props.content === 'string' ? props.content : 'Tooltip',
               onMouseenter: () => {
                 if (props.enterable !== false) {
                   clearTimers()

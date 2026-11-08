@@ -19,6 +19,7 @@ export function createTimeline(features: UiFeature[] = []) {
   return createUiComponent(
     {
       ...base,
+      attrs: () => ({ role: 'list' }),
       classes: (props, state) => [...(base.classes?.(props, state) ?? []), props.reverse ? 'is-reverse' : '']
     },
     features

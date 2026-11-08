@@ -181,6 +181,7 @@ export function createTransfer(features: UiFeature[] = []) {
               {
                 class: ['ui-transfer__button', buttons[0] ? 'is-text' : ''],
                 type: 'button',
+                'aria-label': buttons[0] ? undefined : 'Move right',
                 disabled: !state.leftChecked.value.size,
                 onClick: () => state.moveToRight()
               },
@@ -191,6 +192,7 @@ export function createTransfer(features: UiFeature[] = []) {
               {
                 class: ['ui-transfer__button', buttons[1] ? 'is-text' : ''],
                 type: 'button',
+                'aria-label': buttons[1] ? undefined : 'Move left',
                 disabled: !state.rightChecked.value.size,
                 onClick: () => state.moveToLeft()
               },

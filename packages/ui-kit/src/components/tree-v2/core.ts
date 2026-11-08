@@ -274,7 +274,7 @@ export function createTreeV2(features: UiFeature[] = []) {
           'div',
           {
             class: 'ui-tree-v2__nodes',
-            role: 'tree',
+            role: state.nodes.length ? 'tree' : undefined,
             style: { height: sizeStyle(props.height) },
             onKeydown: state.handleKeydown
           },

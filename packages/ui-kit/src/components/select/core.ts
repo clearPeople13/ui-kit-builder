@@ -481,7 +481,7 @@ export function createSelect(features: UiFeature[] = []) {
             name: props.name,
             tabindex: props.tabindex,
             role: 'combobox',
-            'aria-label': props.ariaLabel,
+            'aria-label': props.ariaLabel ?? 'Select',
             'aria-expanded': open.value,
             onInput: handleFilterInput,
             onFocus: openPanel,
@@ -661,7 +661,7 @@ export function createSelect(features: UiFeature[] = []) {
             role: 'combobox',
             tabindex: props.filterable || props.disabled ? undefined : props.tabindex,
             'aria-expanded': state.open,
-            'aria-label': props.ariaLabel,
+            'aria-label': props.ariaLabel ?? 'Select',
             onClick: () => {
               if (props.filterable) {
                 if (!state.open) {

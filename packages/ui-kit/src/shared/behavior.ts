@@ -1311,6 +1311,7 @@ export function rateConfig(options: { name: string; baseClass: string; props: An
       return {
         ...baseAttrs(props),
         role: 'slider',
+        'aria-label': props.ariaLabel ?? 'Rating',
         tabindex: props.disabled ? undefined : 0,
         'aria-valuemin': 0,
         'aria-valuemax': max,

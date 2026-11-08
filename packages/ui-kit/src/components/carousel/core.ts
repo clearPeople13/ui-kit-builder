@@ -247,12 +247,26 @@ export function createCarousel(features: UiFeature[] = []) {
             },
             [slots.default?.() ?? null]
           ),
-          h('button', { class: 'ui-carousel__arrow is-left', type: 'button', onClick: () => state.prev() }, [
-            renderIcon(ChevronLeft)
-          ]),
-          h('button', { class: 'ui-carousel__arrow is-right', type: 'button', onClick: () => state.next() }, [
-            renderIcon(ChevronRight)
-          ]),
+          h(
+            'button',
+            {
+              class: 'ui-carousel__arrow is-left',
+              type: 'button',
+              'aria-label': 'Previous slide',
+              onClick: () => state.prev()
+            },
+            [renderIcon(ChevronLeft)]
+          ),
+          h(
+            'button',
+            {
+              class: 'ui-carousel__arrow is-right',
+              type: 'button',
+              'aria-label': 'Next slide',
+              onClick: () => state.next()
+            },
+            [renderIcon(ChevronRight)]
+          ),
           indicators
         ]
       }

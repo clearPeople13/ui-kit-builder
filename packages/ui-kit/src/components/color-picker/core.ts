@@ -565,7 +565,7 @@ export function createColorPicker(features: UiFeature[] = []) {
               tabindex: props.disabled ? undefined : props.tabindex,
               role: 'combobox',
               'aria-expanded': state.open,
-              'aria-label': props.ariaLabel,
+              'aria-label': props.ariaLabel ?? 'Color picker',
               onClick: state.togglePanel,
               onKeydown: (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {

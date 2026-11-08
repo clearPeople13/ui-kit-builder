@@ -15,32 +15,24 @@ const scenes = ['gallery', 'floating', 'table', 'tree', 'a11y', 'color'] as cons
 
 const WHITELIST: Record<string, Record<string, string>> = {
   gallery: {
-    'aria-allowed-attr': '浮层组件的触发器把 aria-expanded 加在非对应 role 的元素上，待统一 role 方案',
-    'aria-command-name': '通用 popper 触发器缺少可访问名，需要组件侧补 aria-label 策略',
-    'aria-input-field-name': '触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名',
-    'aria-required-children': '级联面板列在空数据下渲染无 role 的子节点',
-    'aria-tooltip-name': '通用 popper 内容区没有 role=tooltip 文案，属 Tooltip 专项',
-    'button-name': '仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 aria-label',
+    'aria-allowed-attr':
+      '浮层组件的触发器把 aria-expanded 加在非对应 role 的元素上；触发器可能包裹用户可交互内容，不能一律加 role=button',
+    'button-name': '画廊用空 props 渲染 Button，图标按钮的可访问名由消费方提供，属探针场景',
     'color-contrast': '主题色对比度由 20 套主题令牌统一治理，单批只记录不修',
     'image-alt': '画廊用空 props 渲染 Image，占位图没有 alt 属探针场景',
     label: '探针场景没有给输入框配 label，库不强制生成 aria-label',
-    listitem: 'Dropdown / Timeline 列表项用的围栏 role 与 axe 预期不一致，待统一语义'
+    listitem: 'TimelineItem 在画廊里孤立渲染，缺少外层 role=list 容器，属探针场景'
   },
   floating: {
-    'aria-allowed-attr': 'Popover / Dropdown 触发器把 aria-expanded 加在非对应 role 的元素上',
-    'aria-input-field-name': '浮层场景里的 Select 触发器未提供可访问名'
+    'aria-allowed-attr':
+      'Popover / Dropdown 触发器把 aria-expanded 加在非对应 role 的元素上；触发器可能包裹用户可交互内容'
   },
-  table: {
-    'scrollable-region-focusable': '可横向滚动的表格容器没有 tabindex，键盘用户无法滚动，属 Table 专项'
-  },
+  table: {},
   a11y: {
-    'aria-allowed-attr': 'Dropdown 触发器 aria-expanded 的 role 不匹配',
-    'button-name': '场景里的仅图标按钮缺 aria-label',
+    'aria-allowed-attr': 'Dropdown 触发器 aria-expanded 的 role 不匹配；触发器可能包裹用户可交互内容',
     label: '滑块 / 数字输入 / 开关没有配 label，属探针场景'
   },
-  color: {
-    'aria-input-field-name': 'ColorPicker 触发器未提供可访问名'
-  },
+  color: {},
   tree: {}
 }
 

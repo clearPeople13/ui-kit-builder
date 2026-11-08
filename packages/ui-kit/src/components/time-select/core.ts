@@ -234,6 +234,7 @@ export function createTimeSelect(features: UiFeature[] = []) {
               class: 'ui-time-select__trigger',
               tabindex: props.disabled ? undefined : 0,
               role: 'combobox',
+              'aria-label': props.ariaLabel ?? 'Time select',
               'aria-expanded': state.open,
               onClick: state.togglePanel,
               onKeydown: (event: KeyboardEvent) => {

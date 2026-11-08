@@ -809,15 +809,14 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 21.4 axe 白名单（按场景 × 规则）
 
-| 规则                                           | 涉及场景                   | 理由 / 归属                                                              |
-| ---------------------------------------------- | -------------------------- | ------------------------------------------------------------------------ |
-| `aria-allowed-attr`                            | gallery / floating / a11y  | 浮层触发器把 `aria-expanded` 加在 role 不匹配的元素上，待统一 role 方案  |
-| `aria-command-name` / `aria-input-field-name`  | gallery / floating / color | 触发器类输入（Cascader / ColorPicker / Rate / Select）未提供默认可访问名 |
-| `aria-required-children` / `aria-tooltip-name` | gallery                    | 空数据级联面板与通用 popper 内容区缺语义 role，属对应组件专项            |
-| `button-name`                                  | gallery / a11y             | 仅图标按钮（日历翻页 / 轮播箭头 / 折叠头 / 穿梭按钮）缺 `aria-label`     |
-| `color-contrast`                               | gallery                    | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题                 |
-| `image-alt` / `label` / `listitem`             | gallery / a11y             | 探针场景用空 props 渲染，没有 alt / label；列表 role 语义待统一          |
-| `scrollable-region-focusable`                  | table                      | 横向滚动容器无 tabindex，键盘用户无法滚动，属 Table 专项                 |
+| 规则                              | 涉及场景          | 理由 / 归属                                                                                   |
+| --------------------------------- | ----------------- | --------------------------------------------------------------------------------------------- |
+| `aria-allowed-attr`               | gallery / floating / a11y | 浮层触发器可能包裹用户自己的可交互内容，不能一律加 `role=button`；`aria-expanded` 暂随触发器输出 |
+| `button-name`                     | gallery           | 画廊用空 props 渲染 Button，可访问名由消费方提供，属探针场景                                  |
+| `color-contrast`                  | gallery           | 主题色对比度统一由 20 套主题令牌治理，单批只记录不改主题                                      |
+| `image-alt` / `label` / `listitem` | gallery / a11y    | 探针场景用空 props 渲染，没有 alt / label；TimelineItem 在画廊里孤立渲染缺少 list 容器         |
+
+> W3.1/W3.2 已收口：Cascader / ColorPicker / Rate / Select / TimeSelect 补默认 `aria-label`；Popper 触发器与内容区补可访问名；日历翻页、轮播箭头、折叠头、穿梭按钮补 `aria-label`；空数据级联列补 `role=option`；TreeV2 空态不再挂 `role=tree`；Table 滚动容器补 `tabindex=0`。`aria-command-name`、`aria-input-field-name`、`aria-required-children`、`aria-tooltip-name`、`scrollable-region-focusable` 已从白名单删除。
 
 白名单按「场景 + 规则」登记，新增未登记的 serious / critical 会直接报红。
 

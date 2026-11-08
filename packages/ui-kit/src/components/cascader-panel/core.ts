@@ -477,7 +477,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
             children = [
               h(
                 'div',
-                { class: 'ui-cascader-panel__empty' },
+                { class: 'ui-cascader-panel__empty', role: 'option', 'aria-disabled': 'true' },
                 level === 0 && rootLoading.value ? locale.value.loading : locale.value.noData
               )
             ]

@@ -928,7 +928,9 @@ export function createCascader(features: UiFeature[] = []) {
           const children: VNodeChild[] = []
           if (!column.length) {
             const emptyText = level === 0 && rootLoading.value ? locale.value.loading : locale.value.noData
-            children.push(h('div', { class: 'ui-floating-panel__empty' }, emptyText))
+            children.push(
+              h('div', { class: 'ui-floating-panel__empty', role: 'option', 'aria-disabled': 'true' }, emptyText)
+            )
           } else if (!virtual) {
             for (let index = 0; index < column.length; index += 1) {
               children.push(renderNode(column[index], level, tabStop))
@@ -1220,6 +1222,7 @@ export function createCascader(features: UiFeature[] = []) {
               class: 'ui-cascader__trigger',
               tabindex: props.disabled ? undefined : 0,
               role: 'combobox',
+              'aria-label': props.ariaLabel ?? 'Cascader',
               'aria-expanded': state.open,
               onClick: () => {
                 if (props.filterable && state.open) {

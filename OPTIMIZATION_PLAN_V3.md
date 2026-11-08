@@ -108,8 +108,8 @@ npm run quality
 - **第 1 波（已完成）**：W0.1（`cedb99f`）+ W1.1（`a9fc051`）。55 条公开 slot 缺口已登记，双向守卫已生效。
 - **第 2 波（已完成）**：W1.2a、W1.2b、W1.2c、W1.2d 四路并行合入，23 条 BASELINE 缺口清空。
 - **第 4 波（当前）**：W2.2 已删除 transfer 空壳；W2.1 cascader / cascader-panel 特性化待启动。
-- **第 4 波**：W1.3b → W3.1 → W3.2 串行（共享基座），W2.1 / W2.2 可与组件车道并行。
-- **第 5 波**：W3.3 + W4.1 并行，最后 W4.2 / W5.1 收口。
+- **第 4 波（已完成）**：W2.2 删除 transfer 空壳；W3.1 / W3.2 / W3.3 一次性收口并通过 6 个 axe 场景。
+- **第 5 波（当前）**：W4.1 覆盖率补盲待启动，最后 W4.2 / W5.1 收口。
 
 > 历史教训：单个 agent 超过 12–16 文件或同时跨多个共享文件，产出会明显下降；本计划按组件族拆，不按“大而全”拆。
 
@@ -249,9 +249,9 @@ W5.1 ─────────────────────────
 | W1.3d | done | w13d-tree-node | `feat/20261108-tree-node-slot` | `.worktrees/tree-node-slot` | 已合入 `70626e7`；default 节点插槽（node/data/level），优先于 renderContent |
 | W2.1 | ready | — | `refactor/20261108-cascader-virtualized` | 待建 | 可启动；cascader / cascader-panel 窗口逻辑搬进特性目录 |
 | W2.2 | done | w22-transfer-virtualized | `refactor/20261108-transfer-virtualized` | `.worktrees/transfer-virtualized` | 已删除零实现特性、白名单与文档同步；README 特性数 175→174 |
-| W3.1 | blocked | — | `fix/20261108-a11y-names` | — | 等 W1.3b |
-| W3.2 | blocked | — | `fix/20261108-a11y-roles` | — | 等 W3.1 |
-| W3.3 | blocked | — | `fix/20261108-a11y-icon-buttons` | — | 等 W3.1 |
+| W3.1 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 触发器 / 输入默认可访问名，`aria-command-name` / `aria-input-field-name` 白名单已删 |
+| W3.2 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 空数据级联列、TreeV2 空态、Tooltip/Popper 名称、Table 滚动可达收口 |
+| W3.3 | done | w31-a11y-names | `fix/20261108-a11y-names` | `.worktrees/a11y` | 日历 / 轮播 / 折叠 / 穿梭图标按钮补 `aria-label` |
 | W4.1 | blocked | — | `test/20261108-coverage-drag` | — | 等 W2/W3 |
 | W4.2 | blocked | — | `test/20261108-coverage-floor` | — | 等 W4.1 |
 | W5.1 | ready | — | `perf/20261108-ci-fast` | — | 可随时启动 |

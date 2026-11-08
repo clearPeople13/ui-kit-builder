@@ -1584,7 +1584,7 @@ export function createTable(features: UiFeature[] = []) {
 
         const bodyWrapper = h(
           'div',
-          { ref: wrapper, class: 'ui-table__wrapper' },
+          { ref: wrapper, class: 'ui-table__wrapper', tabindex: '0' },
           autoLayout
             ? renderInner(tableRef, [renderColgroup(), header, body, footer])
             : renderInner(tableRef, [renderColgroup(), body])

@@ -20,7 +20,7 @@ export function createPopper(features: UiFeature[] = []) {
         props: popperBaseProps,
         defaultTag: 'div'
       }),
-      attrs: (props) => ({ role: props.role || 'tooltip' }),
+      attrs: (props) => ({ role: props.role || 'tooltip', 'aria-label': 'Popper' }),
       styles: (props) =>
         ({
           position: props.strategy === 'fixed' ? 'fixed' : 'absolute',
@@ -117,7 +117,7 @@ export function createPopperContent(features: UiFeature[] = []) {
       attrs: (props) => ({
         id: props.id,
         role: 'tooltip',
-        'aria-label': props.ariaLabel,
+        'aria-label': props.ariaLabel ?? (typeof props.content === 'string' ? props.content : 'Tooltip'),
         'aria-hidden': props.visible === false ? 'true' : undefined
       }),
       content: ({ slots, props }) =>
@@ -137,7 +137,8 @@ const popperTriggerBaseProps = {
   virtualTriggering: { type: Boolean },
   onClick: { type: Function },
   id: { type: String },
-  expanded: { type: Boolean }
+  expanded: { type: Boolean },
+  ariaLabel: { type: String }
 }
 
 export function createPopperTrigger(features: UiFeature[] = []) {
@@ -151,6 +152,7 @@ export function createPopperTrigger(features: UiFeature[] = []) {
       attrs: (props) => ({
         id: props.id,
         role: 'button',
+        'aria-label': props.ariaLabel ?? 'Trigger',
         'aria-expanded': Boolean(props.expanded),
         'aria-hidden': props.virtualTriggering ? 'true' : undefined,
         onClick: (event: Event) => {
