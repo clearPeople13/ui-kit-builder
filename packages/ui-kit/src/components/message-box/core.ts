@@ -1,8 +1,9 @@
 import type { VNodeChild } from 'vue'
-import { Teleport, computed, h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { getFocusableElements } from '../../shared/focus'
 import { renderIcon } from '../../shared/icon'
 import { useScrollLock } from '../../shared/scroll-lock'
 import { nextZIndex } from '../../shared/z-index'
@@ -29,6 +30,9 @@ const messageBoxBaseProps = {
   appendTo: { type: String, default: 'body' }
 }
 
+// aria-labelledby 的标题锚点 id 按实例递增，避免同页多个弹窗互相串引用
+let messageBoxTitleSeq = 0
+
 export function createMessageBox(features: UiFeature[] = []) {
   return createUiComponent(
     {
@@ -38,6 +42,9 @@ export function createMessageBox(features: UiFeature[] = []) {
       setup(props, { emit }) {
         const inputError = ref('')
         const zIndex = ref(0)
+        // 打开前的活动元素（触发元素），关闭后归还焦点；titleId 供 aria-labelledby 锚定标题
+        let previousActive: HTMLElement | null = null
+        const titleId = `ui-message-box-title-${++messageBoxTitleSeq}`
 
         const visible = computed(() => Boolean(props.modelValue))
 
@@ -52,6 +59,74 @@ export function createMessageBox(features: UiFeature[] = []) {
         )
 
         useScrollLock(() => visible.value && props.lockScroll === true)
+
+        function getPanel(): HTMLElement | undefined {
+          return document.querySelector<HTMLElement>('.ui-message-box__panel') ?? undefined
+        }
+
+        function focusFirst() {
+          if (!visible.value) {
+            return
+          }
+          const panel = getPanel()
+          if (!panel) {
+            return
+          }
+          const focusable = getFocusableElements(panel)
+          ;(focusable[0] ?? panel).focus({ preventScroll: true })
+        }
+
+        function restoreFocus() {
+          const target = previousActive
+          previousActive = null
+          target?.focus({ preventScroll: true })
+        }
+
+        // 面板 teleport 到 body，不在组件根内，可聚焦元素只能从 document 上的面板取
+        function handleTabKeydown(event: KeyboardEvent) {
+          if (event.key !== 'Tab' || !visible.value) {
+            return
+          }
+          const panel = getPanel()
+          if (!panel) {
+            return
+          }
+          const focusable = getFocusableElements(panel)
+          if (!focusable.length) {
+            event.preventDefault()
+            panel.focus({ preventScroll: true })
+            return
+          }
+          const first = focusable[0]
+          const last = focusable[focusable.length - 1]
+          const active = document.activeElement as HTMLElement | null
+          const outside = !active || !panel.contains(active)
+          if (event.shiftKey) {
+            if (outside || active === first) {
+              event.preventDefault()
+              last.focus({ preventScroll: true })
+            }
+            return
+          }
+          if (outside || active === last) {
+            event.preventDefault()
+            first.focus({ preventScroll: true })
+          }
+        }
+
+        watch(
+          visible,
+          (open) => {
+            if (open) {
+              const active = document.activeElement
+              previousActive = active instanceof HTMLElement ? active : null
+              nextTick(focusFirst)
+            } else {
+              restoreFocus()
+            }
+          },
+          { immediate: true }
+        )
 
         function finish(action: 'confirm' | 'cancel' | 'close') {
           if (typeof props.beforeClose === 'function') {
@@ -94,8 +169,16 @@ export function createMessageBox(features: UiFeature[] = []) {
           }
         }
 
-        onMounted(() => document.addEventListener('keydown', handleKeydown))
-        onBeforeUnmount(() => document.removeEventListener('keydown', handleKeydown))
+        onMounted(() => {
+          document.addEventListener('keydown', handleKeydown)
+          window.addEventListener('keydown', handleTabKeydown, true)
+        })
+        onBeforeUnmount(() => {
+          document.removeEventListener('keydown', handleKeydown)
+          window.removeEventListener('keydown', handleTabKeydown, true)
+          // 打开期间直接卸载（路由切换等）也要归还焦点
+          restoreFocus()
+        })
 
         function renderPanel(): VNodeChild {
           if (!visible.value) {
@@ -104,7 +187,7 @@ export function createMessageBox(features: UiFeature[] = []) {
           const header =
             props.title || props.showClose
               ? h('header', { class: 'ui-message-box__header' }, [
-                  h('span', { class: 'ui-message-box__title' }, props.title),
+                  h('span', { class: 'ui-message-box__title', id: props.title ? titleId : undefined }, props.title),
                   props.showClose
                     ? h(
                         'button',
@@ -172,6 +255,7 @@ export function createMessageBox(features: UiFeature[] = []) {
               ],
               role: 'dialog',
               'aria-modal': 'true',
+              'aria-labelledby': props.title ? titleId : undefined,
               style: zIndex.value ? { zIndex: zIndex.value + 1 } : undefined
             },
             [header, h('div', { class: 'ui-message-box__body' }, bodyChildren), footer]

@@ -1,8 +1,9 @@
 import type { Component, CSSProperties, VNode, VNodeChild } from 'vue'
-import { Teleport, computed, h, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Loader, Plus, Star, Upload as UploadIcon, X } from './icons'
 import type { UiComponentConfig, UiComponentContext } from './component'
 import { collectFeatureHooks } from './feature'
+import { getFocusableElements } from './focus'
 import { renderIcon } from './icon'
 import { useFloatingPanel } from './panel'
 import { useScrollLock } from './scroll-lock'
@@ -1480,6 +1481,9 @@ function resolveVisible(props: AnyProps, visibleKey: string, defaultVisible?: bo
   return defaultVisible !== false
 }
 
+// aria-labelledby 的标题锚点 id 按实例递增，避免同页多个浮层互相串引用
+let overlayPanelTitleSeq = 0
+
 export function overlayConfig(options: {
   name: string
   baseClass: string
@@ -1492,6 +1496,7 @@ export function overlayConfig(options: {
   useMask?: boolean
   maskKey?: string
   defaultVisible?: boolean
+  focusLoop?: boolean
 }): UiComponentConfig {
   const titleKey = options.titleKey ?? 'title'
   const closeKey = options.closeKey ?? 'showClose'
@@ -1501,8 +1506,11 @@ export function overlayConfig(options: {
     baseClass: options.baseClass,
     props: options.props,
     tag: () => 'div',
-    setup(props, { emit }) {
+    setup(props, { emit, root }) {
       const zIndex = ref(0)
+      // 打开前的活动元素（触发元素），关闭后归还焦点；panelTitleId 供 aria-labelledby 锚定标题
+      let previousActive: HTMLElement | null = null
+      const panelTitleId = `${options.baseClass}-panel-title-${++overlayPanelTitleSeq}`
       watch(
         () => resolveVisible(props, visibleKey, options.defaultVisible),
         (visible) => {
@@ -1543,10 +1551,101 @@ export function overlayConfig(options: {
         }
         requestClose()
       }
-      onMounted(() => window.addEventListener('keydown', handleKeydown))
-      onBeforeUnmount(() => window.removeEventListener('keydown', handleKeydown))
+
+      function getPanel(): HTMLElement | undefined {
+        const rootEl = root.value as HTMLElement | undefined
+        return rootEl?.querySelector<HTMLElement>(`.${options.panelClass}`) ?? rootEl
+      }
+
+      function focusFirst() {
+        if (!options.focusLoop || !resolveVisible(props, visibleKey, options.defaultVisible)) {
+          return
+        }
+        const panel = getPanel()
+        if (!panel) {
+          return
+        }
+        const focusable = getFocusableElements(panel)
+        ;(focusable[0] ?? panel).focus({ preventScroll: true })
+      }
+
+      function restoreFocus() {
+        const target = previousActive
+        previousActive = null
+        target?.focus({ preventScroll: true })
+      }
+
+      // Tab / Shift+Tab 在面板内循环；与 dialog 原实现同口径，Escape 仍走上面的 handleKeydown
+      function handleTabKeydown(event: KeyboardEvent) {
+        if (!options.focusLoop || event.key !== 'Tab') {
+          return
+        }
+        if (!resolveVisible(props, visibleKey, options.defaultVisible)) {
+          return
+        }
+        const panel = getPanel()
+        if (!panel) {
+          return
+        }
+        const focusable = getFocusableElements(panel)
+        if (!focusable.length) {
+          event.preventDefault()
+          panel.focus({ preventScroll: true })
+          return
+        }
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        const active = document.activeElement as HTMLElement | null
+        const outside = !active || !panel.contains(active)
+        if (event.shiftKey) {
+          if (outside || active === first) {
+            event.preventDefault()
+            last.focus({ preventScroll: true })
+          }
+          return
+        }
+        if (outside || active === last) {
+          event.preventDefault()
+          first.focus({ preventScroll: true })
+        }
+      }
+
+      watch(
+        () => resolveVisible(props, visibleKey, options.defaultVisible),
+        (open) => {
+          if (!options.focusLoop) {
+            return
+          }
+          if (open) {
+            const active = document.activeElement
+            previousActive = active instanceof HTMLElement ? active : null
+            nextTick(focusFirst)
+          } else {
+            restoreFocus()
+          }
+        },
+        { immediate: true }
+      )
+
+      onMounted(() => {
+        window.addEventListener('keydown', handleKeydown)
+        if (options.focusLoop) {
+          window.addEventListener('keydown', handleTabKeydown, true)
+        }
+      })
+      onBeforeUnmount(() => {
+        window.removeEventListener('keydown', handleKeydown)
+        if (options.focusLoop) {
+          // 打开期间直接卸载（路由切换等）也要归还焦点
+          window.removeEventListener('keydown', handleTabKeydown, true)
+          restoreFocus()
+        }
+      })
       return {
         requestClose,
+        get panelTitleId() {
+          return panelTitleId
+        },
         get zIndex() {
           return zIndex.value
         }
@@ -1608,7 +1707,14 @@ export function overlayConfig(options: {
         props[titleKey] || slots.header || closeEnabled || icon
           ? h('header', { class: `${options.panelClass}__header` }, [
               icon,
-              h('span', { class: `${options.panelClass}__title` }, slots.header?.() ?? props[titleKey]),
+              h(
+                'span',
+                {
+                  class: `${options.panelClass}__title`,
+                  id: options.focusLoop && (props[titleKey] || slots.header) ? state.panelTitleId : undefined
+                },
+                slots.header?.() ?? props[titleKey]
+              ),
               closeEnabled
                 ? h(
                     'button',
@@ -1662,6 +1768,8 @@ export function overlayConfig(options: {
             class: options.panelClass,
             style: panelStyle,
             role: props.role || 'dialog',
+            'aria-modal': options.focusLoop ? 'true' : undefined,
+            'aria-labelledby': options.focusLoop && (props[titleKey] || slots.header) ? state.panelTitleId : undefined,
             onClick: typeof props.onClick === 'function' ? (event: MouseEvent) => props.onClick(event) : undefined,
             ...panelMountProps
           },

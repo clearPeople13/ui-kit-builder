@@ -2,16 +2,8 @@ import type { PropType } from 'vue'
 import { nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { getFocusableElements } from '../../shared/focus'
 import './core.css'
-
-const focusableSelector = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])'
-].join(',')
 
 type FocusStart = HTMLElement | 'container' | 'first' | 'last' | undefined
 
@@ -23,15 +15,6 @@ const focusTrapBaseProps = {
     type: [Object, String] as PropType<FocusStart>,
     default: 'first'
   }
-}
-
-function isVisible(element: HTMLElement) {
-  return element.offsetWidth > 0 || element.offsetHeight > 0 || element === document.activeElement
-}
-
-/** dialog 等浮层接入焦点闭环时复用同一套可聚焦元素收集逻辑，保证口径一致 */
-export function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter((element) => isVisible(element))
 }
 
 export function createFocusTrap(features: UiFeature[] = []) {

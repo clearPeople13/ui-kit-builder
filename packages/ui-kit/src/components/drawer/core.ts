@@ -25,7 +25,8 @@ export function createDrawer(features: UiFeature[] = []) {
       panelClass: 'ui-drawer__panel',
       visibleKey: 'modelValue',
       useMask: true,
-      defaultVisible: false
+      defaultVisible: false,
+      focusLoop: true
     }),
     features
   )
