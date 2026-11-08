@@ -47,7 +47,7 @@ npm run build:all                        # 首次统一构建 20 份 profile（q
 # 启动构建器（http://localhost:5173；并行工作树可用 .env.workbuddy 换成独立端口段）
 npm run dev
 
-# 构建全部 profile 到 dist/（20 份正式包；174 个特性边际试算走 .build/，构建后清理）
+# 构建全部 profile 到 dist/（20 份正式包；173 个特性边际试算走 .build/，构建后清理）
 npm run build:all
 
 # 生成调试台元数据（组件、属性、包体积）
@@ -67,7 +67,7 @@ npm run demo:consumer
 - `scripts/build-lib.mjs` 按配置生成入口文件，只 import 选中的特性，未选中的代码与样式不会进入产物
 - 产物中的 `meta.json` 记录组件清单、特性矩阵、文件体积与 gzip 体积，可直接被构建器与调试台消费
 
-`sizes.json` 里"单个特性的边际体积"来自 174 份「full 去掉该特性」的试算产物：它们只写 `.build/feature-deltas/`，构建结束（含失败退出）即清理，不会混进 `dist/`。20 份正式 profile 与试算产物都按 6 路并发构建；试算结果按源码内容哈希缓存在 `.build/feature-size-cache.json`，源码、profiles、`registry.mjs` 与构建器都没变时直接复用——冷启动约 10 分钟，命中缓存约 1 分钟。需要强制重算时设 `UIKIT_NO_BUILD_CACHE=1`。
+`sizes.json` 里"单个特性的边际体积"来自 173 份「full 去掉该特性」的试算产物：它们只写 `.build/feature-deltas/`，构建结束（含失败退出）即清理，不会混进 `dist/`。20 份正式 profile 与试算产物都按 6 路并发构建；试算结果按源码内容哈希缓存在 `.build/feature-size-cache.json`，源码、profiles、`registry.mjs` 与构建器都没变时直接复用——冷启动约 10 分钟，命中缓存约 1 分钟。需要强制重算时设 `UIKIT_NO_BUILD_CACHE=1`。
 
 ## 质量检查
 

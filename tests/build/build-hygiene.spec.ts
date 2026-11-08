@@ -15,7 +15,7 @@ const { delta, sourceFingerprint, staleDistDirs } = buildAllModule
 /**
  * 构建流水线自身的卫生契约。
  *
- * build:all 除了 20 份正式 profile，还要为 174 个特性各试算一次「full 减去该特性」。
+ * build:all 除了 20 份正式 profile，还要为 173 个特性各试算一次「full 减去该特性」。
  * 这些试算产物只是体积测量脚手架，用例守住五件事：
  * 1. dist/ 只留 20 份可安装的 profile 与 `custom/` 命名空间，其余陈旧目录构建后必须消失；
  * 2. 试算目录与 `.build/feat-*` 入口目录在构建结束后必须清空；
