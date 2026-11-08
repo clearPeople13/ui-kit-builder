@@ -49,14 +49,13 @@ export default mergeConfig(
           branches: 74,
           functions: 88,
           lines: 81,
-          // 组件级下限：取当前实测最小值向下取整（tree draggable 7.01% / branches 3.84%），
-          // 任一组件文件跌破就失败；等低覆盖清单逐项补齐后再抬线（B4）。
-          // A20 重基线：v5 测量下组件级 branches 实测最小为 0，该项暂时形同虚设，
-          // 全局 branches 阈值仍兜底；补齐低覆盖后应优先抬回组件级 branches 线。
+          // 组件级下限：glob 命中文件聚合计算（未开 perFile），聚合比例跌破任一项就失败。
+          // W4 实测组件聚合 88.00 / 79.98 / 93.67 / 87.94（stmts/branches/funcs/lines），
+          // 拖拽/测量四文件补齐后按计划抬到 30/40/30，留足非 flaky 余量。
           'packages/ui-kit/src/components/**': {
-            statements: 7,
-            branches: 0,
-            lines: 7
+            statements: 30,
+            branches: 40,
+            lines: 30
           }
         }
       }

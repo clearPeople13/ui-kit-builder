@@ -4,7 +4,12 @@ import type { UiTreeNode } from '../../../../shared/tree'
 import { collectDescendantKeys } from '../../../../shared/tree'
 import './style.css'
 
-type DropType = 'prev' | 'next' | 'inner'
+export type DropType = 'prev' | 'next' | 'inner'
+
+interface CanDropOptions {
+  draggable: boolean
+  allowDrop?: (source: any, target: any, type: DropType) => unknown
+}
 
 const SOURCE_CLASS = 'is-drag-source'
 const DROP_CLASSES: Record<DropType, string> = {
@@ -33,16 +38,53 @@ function applyLevel(node: UiTreeNode, level: number): void {
   }
 }
 
-function resolveDropType(event: DragEvent, element: HTMLElement): DropType {
-  const rect = element.getBoundingClientRect()
-  if (!rect.height) {
+export function resolveDropType(clientY: number, top: number, height: number): DropType {
+  if (!height) {
     return 'inner'
   }
-  const ratio = (event.clientY - rect.top) / rect.height
+  const ratio = (clientY - top) / height
   if (ratio < 0.25) {
     return 'prev'
   }
   return ratio > 0.75 ? 'next' : 'inner'
+}
+
+export function canDropNode(source: UiTreeNode, target: UiTreeNode, type: DropType, options: CanDropOptions): boolean {
+  if (!options.draggable || source.key === target.key || target.disabled) {
+    return false
+  }
+  if (collectDescendantKeys(source).includes(target.key)) {
+    return false
+  }
+  return options.allowDrop ? options.allowDrop(source.raw, target.raw, type) !== false : true
+}
+
+export function moveNode(
+  treeNodes: UiTreeNode[],
+  source: UiTreeNode,
+  target: UiTreeNode,
+  type: DropType,
+  expand: (key: string | number) => void
+): boolean {
+  const sourceList = findList(treeNodes, source.key)
+  if (!sourceList) {
+    return false
+  }
+  const targetList = type === 'inner' ? target.children : findList(treeNodes, target.key)
+  if (!targetList) {
+    return false
+  }
+  sourceList.splice(sourceList.indexOf(source), 1)
+  if (type === 'inner') {
+    target.children.push(source)
+    applyLevel(source, target.level + 1)
+    expand(target.key)
+  } else {
+    const index = targetList.indexOf(target)
+    targetList.splice(type === 'prev' ? index : index + 1, 0, source)
+    applyLevel(source, target.level)
+  }
+  return true
 }
 
 export const treeDraggableFeature: UiFeature = {
@@ -82,13 +124,10 @@ export const treeDraggableFeature: UiFeature = {
     }
 
     function canDrop(source: UiTreeNode, target: UiTreeNode, type: DropType): boolean {
-      if (!props.draggable || source.key === target.key || target.disabled) {
-        return false
-      }
-      if (collectDescendantKeys(source).includes(target.key)) {
-        return false
-      }
-      return props.allowDrop ? props.allowDrop(source.raw, target.raw, type) !== false : true
+      return canDropNode(source, target, type, {
+        draggable: Boolean(props.draggable),
+        allowDrop: props.allowDrop
+      })
     }
 
     function expand(key: string | number): void {
@@ -108,26 +147,11 @@ export const treeDraggableFeature: UiFeature = {
     }
 
     function move(source: UiTreeNode, target: UiTreeNode, type: DropType): boolean {
-      const sourceList = findList(nodes(), source.key)
-      if (!sourceList) {
-        return false
+      const moved = moveNode(nodes(), source, target, type, expand)
+      if (moved) {
+        refresh()
       }
-      const targetList = type === 'inner' ? target.children : findList(nodes(), target.key)
-      if (!targetList) {
-        return false
-      }
-      sourceList.splice(sourceList.indexOf(source), 1)
-      if (type === 'inner') {
-        target.children.push(source)
-        applyLevel(source, target.level + 1)
-        expand(target.key)
-      } else {
-        const index = targetList.indexOf(target)
-        targetList.splice(type === 'prev' ? index : index + 1, 0, source)
-        applyLevel(source, target.level)
-      }
-      refresh()
-      return true
+      return moved
     }
 
     function onDragStart(event: DragEvent, node: UiTreeNode): void {
@@ -152,7 +176,8 @@ export const treeDraggableFeature: UiFeature = {
       if (!element) {
         return
       }
-      const type = resolveDropType(event, element)
+      const rect = element.getBoundingClientRect()
+      const type = resolveDropType(event.clientY, rect.top, rect.height)
       if (!canDrop(dragNode, node, type)) {
         clearDropMarks()
         return
@@ -180,7 +205,8 @@ export const treeDraggableFeature: UiFeature = {
         return
       }
       const element = event.currentTarget as HTMLElement | null
-      const type = element ? resolveDropType(event, element) : 'inner'
+      const rect = element?.getBoundingClientRect()
+      const type = rect ? resolveDropType(event.clientY, rect.top, rect.height) : 'inner'
       const accepted = canDrop(source, node, type)
       if (accepted) {
         event.preventDefault()

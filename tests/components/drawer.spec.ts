@@ -2,6 +2,13 @@ import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Drawer } from '@ui-kit-full'
+import {
+  drawerResizeSign,
+  enableDrawerResize,
+  isHorizontalDirection,
+  maxDrawerSize,
+  resolveDrawerSize
+} from '../../packages/ui-kit/src/components/drawer/features/draggable/resize'
 
 const mounted: ReturnType<typeof mount>[] = []
 
@@ -281,5 +288,185 @@ describe('Drawer 抽屉', () => {
     await wrapper.setProps({ modelValue: false })
     await nextTick()
     expect(panel()).toBeNull()
+  })
+
+  describe('拖拽与缩放', () => {
+    function pointer(type: string, init: PointerEventInit = {}) {
+      return new PointerEvent(type, { bubbles: true, cancelable: true, button: 0, ...init })
+    }
+
+    function createPanel(width = '300px', height = '200px') {
+      const element = document.createElement('div')
+      element.style.width = width
+      element.style.height = height
+      document.body.appendChild(element)
+      vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({
+        width: Number.parseFloat(width),
+        height: Number.parseFloat(height),
+        top: 0,
+        bottom: Number.parseFloat(height),
+        left: 0,
+        right: Number.parseFloat(width),
+        x: 0,
+        y: 0,
+        toJSON: () => ({})
+      } as DOMRect)
+      return element
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks()
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    })
+
+    it('方向归一：左右横向、rtl/btt 取反向符号', () => {
+      expect(isHorizontalDirection('rtl')).toBe(true)
+      expect(isHorizontalDirection('ltr')).toBe(true)
+      expect(isHorizontalDirection('ttb')).toBe(false)
+      expect(isHorizontalDirection('btt')).toBe(false)
+      expect(drawerResizeSign('rtl')).toBe(-1)
+      expect(drawerResizeSign('btt')).toBe(-1)
+      expect(drawerResizeSign('ltr')).toBe(1)
+      expect(drawerResizeSign('ttb')).toBe(1)
+    })
+
+    it('尺寸钳制：默认最小 200，最大为视口减两侧 8px', () => {
+      expect(maxDrawerSize(1000)).toBe(984)
+      expect(maxDrawerSize(100)).toBe(200)
+      expect(resolveDrawerSize(300, 50, 'rtl', 1000)).toBe(250)
+      expect(resolveDrawerSize(300, 50, 'ltr', 1000)).toBe(350)
+      expect(resolveDrawerSize(300, 50, 'btt', 1000)).toBe(250)
+      expect(resolveDrawerSize(300, 50, 'ttb', 1000)).toBe(350)
+      expect(resolveDrawerSize(210, -100, 'ltr', 1000)).toBe(200)
+      expect(resolveDrawerSize(900, 500, 'ltr', 1000)).toBe(984)
+      expect(resolveDrawerSize(300, 0, 'rtl', 100)).toBe(200)
+    })
+
+    it('rtl 横向拖拽按反向增量写宽度，pointerup 后不再响应', () => {
+      const element = createPanel()
+      vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000)
+      const dispose = enableDrawerResize(element, { enabled: () => true, direction: () => 'rtl' })
+      const handle = element.querySelector('.ui-drawer__resizer') as HTMLElement
+      expect(handle).not.toBeNull()
+
+      handle.dispatchEvent(pointer('pointerdown', { clientX: 500, clientY: 100 }))
+      expect(document.body.style.cursor).toBe('col-resize')
+      expect(document.body.style.userSelect).toBe('none')
+      window.dispatchEvent(pointer('pointermove', { clientX: 450 }))
+      expect(element.style.width).toBe('350px')
+      window.dispatchEvent(pointer('pointerup'))
+      expect(document.body.style.cursor).toBe('')
+      expect(document.body.style.userSelect).toBe('')
+      window.dispatchEvent(pointer('pointermove', { clientX: 600 }))
+      expect(element.style.width).toBe('350px')
+      dispose()
+    })
+
+    it('ttb 纵向拖拽写高度并在 pointercancel 后停止', () => {
+      const element = createPanel()
+      const dispose = enableDrawerResize(element, { enabled: () => true, direction: () => 'ttb' })
+      const handle = element.querySelector('.ui-drawer__resizer') as HTMLElement
+      handle.dispatchEvent(pointer('pointerdown', { clientX: 100, clientY: 200 }))
+      expect(document.body.style.cursor).toBe('row-resize')
+      window.dispatchEvent(pointer('pointermove', { clientY: 250 }))
+      expect(element.style.height).toBe('250px')
+      window.dispatchEvent(pointer('pointercancel'))
+      expect(document.body.style.cursor).toBe('')
+      window.dispatchEvent(pointer('pointermove', { clientY: 400 }))
+      expect(element.style.height).toBe('250px')
+      dispose()
+    })
+
+    it('禁用态、非左键不启动手势', () => {
+      const element = createPanel()
+      let enabled = false
+      const dispose = enableDrawerResize(element, { enabled: () => enabled, direction: () => 'ltr' })
+      const handle = element.querySelector('.ui-drawer__resizer') as HTMLElement
+      handle.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+      expect(document.body.style.cursor).toBe('')
+      window.dispatchEvent(pointer('pointermove', { clientX: 200 }))
+      expect(element.style.width).toBe('300px')
+
+      enabled = true
+      handle.dispatchEvent(pointer('pointerdown', { button: 1, clientX: 100 }))
+      expect(document.body.style.cursor).toBe('')
+      dispose()
+    })
+
+    it('卸载清理：恢复初始尺寸、移除把手与进行中的手势', () => {
+      const element = createPanel('320px', '240px')
+      vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(1000)
+      const dispose = enableDrawerResize(element, { enabled: () => true, direction: () => 'ltr' })
+      const handle = element.querySelector('.ui-drawer__resizer') as HTMLElement
+      handle.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+      window.dispatchEvent(pointer('pointermove', { clientX: 150 }))
+      expect(element.style.width).toBe('370px')
+      dispose()
+      expect(element.querySelector('.ui-drawer__resizer')).toBeNull()
+      expect(element.style.width).toBe('320px')
+      expect(element.style.height).toBe('240px')
+      expect(document.body.style.cursor).toBe('')
+      expect(document.body.style.userSelect).toBe('')
+      window.dispatchEvent(pointer('pointermove', { clientX: 300 }))
+      expect(element.style.width).toBe('320px')
+    })
+
+    it('抽屉头部拖拽改变 translate 并被视口边界钳制，关闭按钮不触发', async () => {
+      mountDrawer({ draggable: true })
+      await nextTick()
+      const header = document.querySelector('.ui-drawer__panel__header') as HTMLElement
+      const panelEl = panel() as HTMLElement
+      vi.spyOn(panelEl, 'getBoundingClientRect').mockReturnValue({
+        left: 20,
+        top: 20,
+        right: 320,
+        bottom: 520,
+        width: 300,
+        height: 500,
+        x: 20,
+        y: 20,
+        toJSON: () => ({})
+      } as DOMRect)
+
+      header.dispatchEvent(pointer('pointerdown', { clientX: 100, clientY: 100 }))
+      window.dispatchEvent(pointer('pointermove', { clientX: 150, clientY: 140 }))
+      expect(panelEl.style.transform).toBe('translate3d(50px, 40px, 0)')
+
+      window.dispatchEvent(pointer('pointermove', { clientX: -1000, clientY: -1000 }))
+      expect(panelEl.style.transform).toBe('translate3d(-12px, -12px, 0)')
+      window.dispatchEvent(pointer('pointerup'))
+      expect(document.body.style.cursor).toBe('')
+
+      const close = document.querySelector('.ui-drawer__panel__close') as HTMLElement
+      close.dispatchEvent(pointer('pointerdown', { clientX: 500, clientY: 500 }))
+      window.dispatchEvent(pointer('pointermove', { clientX: 600, clientY: 600 }))
+      expect(panelEl.style.transform).toBe('translate3d(-12px, -12px, 0)')
+      window.dispatchEvent(pointer('pointerup'))
+      await mounted.pop()?.unmount()
+      expect(panelEl.style.transform).toBe('')
+    })
+
+    it('未开启 draggable / 全屏时头部拖拽不改变位置', async () => {
+      mountDrawer()
+      await nextTick()
+      const plainHeader = document.querySelector('.ui-drawer__panel__header') as HTMLElement
+      plainHeader.dispatchEvent(pointer('pointerdown', { clientX: 100, clientY: 100 }))
+      window.dispatchEvent(pointer('pointermove', { clientX: 200, clientY: 200 }))
+      expect(panel()?.style.transform ?? '').toBe('')
+      window.dispatchEvent(pointer('pointerup'))
+      mounted.pop()?.unmount()
+      document.body.innerHTML = ''
+
+      mountDrawer({ draggable: true, fullscreen: true })
+      await nextTick()
+      const fullHeader = document.querySelector('.ui-drawer__panel__header') as HTMLElement
+      fullHeader.dispatchEvent(pointer('pointerdown', { clientX: 100, clientY: 100 }))
+      window.dispatchEvent(pointer('pointermove', { clientX: 200, clientY: 200 }))
+      expect(panel()?.style.transform ?? '').toBe('')
+      window.dispatchEvent(pointer('pointerup'))
+      mounted.pop()?.unmount()
+      document.body.innerHTML = ''
+    })
   })
 })

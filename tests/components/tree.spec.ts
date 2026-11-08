@@ -1,7 +1,40 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Tree, ConfigProvider } from '@ui-kit-full'
+import { normalizeTreeNodes } from '../../packages/ui-kit/src/shared/tree'
+import { canDropNode, moveNode, resolveDropType } from '../../packages/ui-kit/src/components/tree/features/draggable'
+
+function dragEvent(
+  type: string,
+  init: { clientY?: number; dataTransfer?: Record<string, any>; relatedTarget?: EventTarget | null } = {}
+) {
+  const event = new Event(type, { bubbles: true, cancelable: true })
+  if (init.clientY !== undefined) {
+    Object.defineProperty(event, 'clientY', { value: init.clientY })
+  }
+  if ('relatedTarget' in init) {
+    Object.defineProperty(event, 'relatedTarget', { value: init.relatedTarget })
+  }
+  if (init.dataTransfer) {
+    Object.defineProperty(event, 'dataTransfer', { value: init.dataTransfer })
+  }
+  return event as unknown as DragEvent
+}
+
+function stubRect(element: Element, top = 0, height = 100) {
+  vi.spyOn(element, 'getBoundingClientRect').mockReturnValue({
+    top,
+    height,
+    bottom: top + height,
+    left: 0,
+    right: 100,
+    width: 100,
+    x: 0,
+    y: top,
+    toJSON: () => ({})
+  } as DOMRect)
+}
 
 /** findAll('input') 拿到的是 VueNode<Element>，勾选与半选态要按 HTMLInputElement 读 */
 function inputOf(node: { element: Element }): HTMLInputElement {
@@ -483,6 +516,200 @@ describe('Tree', () => {
       await nextTick()
       expect(down.defaultPrevented).toBe(true)
       expect(document.activeElement).toBe(nodes(wrapper)[1].element)
+    })
+  })
+
+  describe('拖拽', () => {
+    it('落点判定按纵向比例切三段，高度未知时按内部投放', () => {
+      expect(resolveDropType(0, 0, 0)).toBe('inner')
+      expect(resolveDropType(10, 0, 100)).toBe('prev')
+      expect(resolveDropType(25, 0, 100)).toBe('inner')
+      expect(resolveDropType(75, 0, 100)).toBe('inner')
+      expect(resolveDropType(80, 0, 100)).toBe('next')
+      expect(resolveDropType(110, 100, 100)).toBe('prev')
+      expect(resolveDropType(190, 100, 100)).toBe('next')
+    })
+
+    it('canDropNode 拒绝未开启拖拽、自身、禁用目标、后代目标与 allowDrop=false', () => {
+      const source = normalizeTreeNodes([{ id: 1, label: '甲', children: [{ id: 2, label: '甲一' }] }])[0]
+      const disabled = normalizeTreeNodes([{ id: 3, label: '乙', disabled: true }])[0]
+      const sibling = normalizeTreeNodes([{ id: 4, label: '丙' }])[0]
+
+      expect(canDropNode(source, sibling, 'prev', { draggable: false })).toBe(false)
+      expect(canDropNode(source, source, 'inner', { draggable: true })).toBe(false)
+      expect(canDropNode(source, disabled, 'inner', { draggable: true })).toBe(false)
+      expect(canDropNode(source, source.children[0], 'inner', { draggable: true })).toBe(false)
+      expect(canDropNode(source, sibling, 'prev', { draggable: true, allowDrop: () => false })).toBe(false)
+      expect(canDropNode(source, sibling, 'prev', { draggable: true, allowDrop: () => undefined })).toBe(true)
+      expect(canDropNode(source, sibling, 'prev', { draggable: true })).toBe(true)
+    })
+
+    it('moveNode 支持 prev/next/inner，并重算层级与展开目标', () => {
+      const make = () =>
+        normalizeTreeNodes([
+          { id: 1, label: '甲', children: [{ id: 2, label: '甲一' }] },
+          { id: 3, label: '乙' }
+        ])
+      const expanded: Array<string | number> = []
+
+      const next = make()
+      expect(moveNode(next, next[1], next[0], 'prev', (key) => expanded.push(key))).toBe(true)
+      expect(next.map((node) => node.key)).toEqual([3, 1])
+
+      const prev = make()
+      expect(moveNode(prev, prev[0], prev[1], 'next', (key) => expanded.push(key))).toBe(true)
+      expect(prev.map((node) => node.key)).toEqual([3, 1])
+
+      const inner = make()
+      expect(moveNode(inner, inner[0], inner[1], 'inner', (key) => expanded.push(key))).toBe(true)
+      expect(inner[0].key).toBe(3)
+      expect(inner[0].children.map((node) => [node.key, node.level])).toEqual([[1, 1]])
+      expect(inner[0].children[0].children.map((node) => [node.key, node.level])).toEqual([[2, 2]])
+      expect(expanded).toEqual([3])
+    })
+
+    it('moveNode 源或目标不在树中时返回 false 且不改动', () => {
+      const tree = normalizeTreeNodes([{ id: 1, label: '甲' }])
+      const stranger = normalizeTreeNodes([{ id: 9, label: '外部' }])[0]
+      expect(moveNode(tree, stranger, tree[0], 'prev', () => undefined)).toBe(false)
+      expect(moveNode(tree, tree[0], stranger, 'next', () => undefined)).toBe(false)
+      expect(tree.map((node) => node.key)).toEqual([1])
+    })
+
+    it('完整拖拽链路：dragstart → dragover → drop 抛事件并移动节点', async () => {
+      const wrapper = mountTree({ draggable: true })
+      await nextTick()
+      const all = nodes(wrapper)
+      const sourceEl = all[0].element as HTMLElement
+      const targetEl = all[1].element as HTMLElement
+      const dataTransfer = { effectAllowed: '', dropEffect: '', setData: vi.fn() }
+
+      sourceEl.dispatchEvent(dragEvent('dragstart', { dataTransfer }))
+      expect(sourceEl.classList.contains('is-drag-source')).toBe(true)
+      expect(dataTransfer.effectAllowed).toBe('move')
+      expect(dataTransfer.setData).toHaveBeenCalledWith('text/plain', '1')
+      expect(wrapper.emitted('node-drag-start')?.[0]).toEqual([treeData[0]])
+
+      stubRect(targetEl)
+      targetEl.dispatchEvent(dragEvent('dragover', { clientY: 90, dataTransfer }))
+      expect(dataTransfer.dropEffect).toBe('move')
+      expect(targetEl.classList.contains('is-drop-next')).toBe(true)
+
+      const drop = dragEvent('drop', { clientY: 90 })
+      targetEl.dispatchEvent(drop)
+      expect(drop.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('node-drop')?.[0]).toEqual([treeData[0], treeData[1], 'next'])
+      expect(wrapper.emitted('node-drag-end')?.[0]).toEqual([treeData[0], treeData[1], 'next'])
+      await nextTick()
+      expect(wrapper.findAll('.ui-tree__label').map((item) => item.text())).toEqual(['一级 2', '一级 1'])
+      expect(sourceEl.classList.contains('is-drag-source')).toBe(false)
+    })
+
+    it('内部投放把源节点挂到目标子级并展开目标', async () => {
+      const wrapper = mountTree({ draggable: true })
+      await nextTick()
+      const all = nodes(wrapper)
+      const targetEl = all[1].element as HTMLElement
+      all[0].element.dispatchEvent(dragEvent('dragstart', { dataTransfer: { setData: vi.fn() } }))
+      stubRect(targetEl)
+      targetEl.dispatchEvent(dragEvent('dragover', { clientY: 50 }))
+      expect(targetEl.classList.contains('is-drop-inner')).toBe(true)
+      targetEl.dispatchEvent(dragEvent('drop', { clientY: 50 }))
+      expect(wrapper.emitted('node-drop')?.[0]).toEqual([treeData[0], treeData[1], 'inner'])
+      await nextTick()
+      expect(wrapper.findAll('.ui-tree__label').map((item) => item.text())).toEqual(['一级 2', '二级 2-1', '一级 1'])
+    })
+
+    it('同节点/禁用目标/后代目标/allowDrop=false 都不落标记也不移动', async () => {
+      const wrapper = mountTree({
+        draggable: true,
+        defaultExpandAll: true,
+        allowDrop: (source: { id: number }, target: { id: number }) => target.id !== 4 && source.id !== 3
+      })
+      await nextTick()
+      const all = nodes(wrapper)
+      all[0].element.dispatchEvent(dragEvent('dragstart', { dataTransfer: { setData: vi.fn() } }))
+
+      const self = all[0].element as HTMLElement
+      stubRect(self)
+      self.dispatchEvent(dragEvent('dragover', { clientY: 10 }))
+      expect(self.classList.contains('is-drop-prev')).toBe(false)
+
+      const descendant = all[1].element as HTMLElement
+      stubRect(descendant)
+      descendant.dispatchEvent(dragEvent('dragover', { clientY: 10 }))
+      expect(descendant.className).not.toContain('is-drop-')
+
+      const blocked = all[3].element as HTMLElement
+      stubRect(blocked)
+      blocked.dispatchEvent(dragEvent('dragover', { clientY: 50 }))
+      expect(blocked.className).not.toContain('is-drop-')
+      expect(wrapper.emitted('node-drop')).toBeUndefined()
+    })
+
+    it('allowDrag=false 或禁用节点不能开始拖拽', async () => {
+      const blocked = mountTree({ draggable: true, allowDrag: () => false })
+      await nextTick()
+      const event = dragEvent('dragstart', { dataTransfer: { setData: vi.fn() } })
+      nodes(blocked)[0].element.dispatchEvent(event)
+      expect(event.defaultPrevented).toBe(true)
+      expect(nodes(blocked)[0].classes()).not.toContain('is-drag-source')
+      expect(blocked.emitted('node-drag-start')).toBeUndefined()
+
+      const disabled = mountTree({
+        draggable: true,
+        data: [{ id: 1, label: '禁用', disabled: true }]
+      })
+      await nextTick()
+      expect(nodes(disabled)[0].attributes('draggable')).toBeUndefined()
+      expect(nodes(disabled)[0].attributes('data-tree-key')).toBeUndefined()
+    })
+
+    it('dragleave 移到节点内部保留标记，移出才清除；无 dataTransfer 不报错', async () => {
+      const wrapper = mountTree({ draggable: true })
+      await nextTick()
+      const all = nodes(wrapper)
+      const sourceEl = all[0].element as HTMLElement
+      const targetEl = all[1].element as HTMLElement
+      sourceEl.dispatchEvent(dragEvent('dragstart'))
+      expect(sourceEl.classList.contains('is-drag-source')).toBe(true)
+
+      stubRect(targetEl)
+      targetEl.dispatchEvent(dragEvent('dragover', { clientY: 10 }))
+      expect(targetEl.classList.contains('is-drop-prev')).toBe(true)
+      const inner = targetEl.querySelector('.ui-tree__label') as HTMLElement
+      targetEl.dispatchEvent(dragEvent('dragleave', { relatedTarget: inner }))
+      expect(targetEl.classList.contains('is-drop-prev')).toBe(true)
+      targetEl.dispatchEvent(dragEvent('dragleave'))
+      expect(targetEl.classList.contains('is-drop-prev')).toBe(false)
+    })
+
+    it('没有拖拽源时的 dragover/drop/dragend 均为空操作', async () => {
+      const wrapper = mountTree({ draggable: true })
+      await nextTick()
+      const targetEl = nodes(wrapper)[1].element as HTMLElement
+      stubRect(targetEl)
+      const over = dragEvent('dragover', { clientY: 10 })
+      targetEl.dispatchEvent(over)
+      expect(over.defaultPrevented).toBe(false)
+      const drop = dragEvent('drop', { clientY: 10 })
+      targetEl.dispatchEvent(drop)
+      expect(drop.defaultPrevented).toBe(false)
+      targetEl.dispatchEvent(dragEvent('dragend'))
+      expect(wrapper.emitted('node-drop')).toBeUndefined()
+      expect(wrapper.emitted('node-drag-end')).toBeUndefined()
+    })
+
+    it('dragend 在 drop 之前触发时补发 null 落点，且不重复触发', async () => {
+      const wrapper = mountTree({ draggable: true })
+      await nextTick()
+      const sourceEl = nodes(wrapper)[0].element as HTMLElement
+      sourceEl.dispatchEvent(dragEvent('dragstart', { dataTransfer: { setData: vi.fn() } }))
+      sourceEl.dispatchEvent(dragEvent('dragend'))
+      expect(wrapper.emitted('node-drag-end')?.[0]).toEqual([treeData[0], null, null])
+      expect(sourceEl.classList.contains('is-drag-source')).toBe(false)
+      sourceEl.dispatchEvent(dragEvent('dragend'))
+      expect(wrapper.emitted('node-drag-end')).toHaveLength(1)
     })
   })
 })

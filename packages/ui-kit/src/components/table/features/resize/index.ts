@@ -9,6 +9,16 @@ interface ResizeSession {
   edge: 'left' | 'right'
 }
 
+export function resolveColumnWidth(startWidth: number, delta: number, minColumnWidth: unknown): number | null {
+  // 点按或 1px 内的微抖不落地覆盖：序号列宽 56 小于 minColumnWidth 60，
+  // 不拦截的话点按手柄就会被钳制逻辑顶宽
+  if (Math.abs(delta) < 2) {
+    return null
+  }
+  const minimum = Number(minColumnWidth) || 40
+  return Math.max(minimum, Math.round(startWidth + delta))
+}
+
 export const tableResizeFeature: UiFeature = {
   id: 'table.resize',
   props: {
@@ -35,13 +45,10 @@ export const tableResizeFeature: UiFeature = {
         return
       }
       const raw = session.edge === 'left' ? session.startX - event.clientX : event.clientX - session.startX
-      // 点按或 1px 内的微抖不落地覆盖：序号列宽 56 小于 minColumnWidth 60，
-      // 不拦截的话点按手柄就会被钳制逻辑顶宽
-      if (Math.abs(raw) < 2) {
+      const width = resolveColumnWidth(session.startWidth, raw, props.minColumnWidth)
+      if (width === null) {
         return
       }
-      const minimum = Number(props.minColumnWidth) || 40
-      const width = Math.max(minimum, Math.round(session.startWidth + raw))
       const next = new Map(overrides.value)
       next.set(session.key, width)
       overrides.value = next

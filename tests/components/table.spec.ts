@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick, toRaw } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Table, TableColumn, ConfigProvider } from '@ui-kit-full'
+import { resolveColumnWidth } from '../../packages/ui-kit/src/components/table/features/resize'
 
 const rows = [
   { id: 1, name: 'A', age: 20 },
@@ -508,5 +509,150 @@ describe('Table slot 契约', () => {
     // 未提供插槽的列回退 label 与行字段原值
     expect(wrapper.findAll('thead th')[1].text()).toBe('年龄')
     expect(wrapper.findAll('tbody tr')[0].findAll('td')[1].text()).toBe('20')
+  })
+})
+
+describe('Table 列宽拖拽', () => {
+  function pointer(type: string, init: PointerEventInit = {}) {
+    return new PointerEvent(type, { bubbles: true, cancelable: true, button: 0, ...init })
+  }
+
+  function stubCellWidth(resizer: Element, width = 120) {
+    const cell = resizer.parentElement as HTMLElement
+    vi.spyOn(cell, 'getBoundingClientRect').mockReturnValue({
+      width,
+      height: 40,
+      top: 0,
+      bottom: 40,
+      left: 0,
+      right: width,
+      x: 0,
+      y: 0,
+      toJSON: () => ({})
+    } as DOMRect)
+    return cell
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+    document.body.innerHTML = ''
+  })
+
+  it('宽度归一：微抖返回 null，最小宽度兜底并按四舍五入取整', () => {
+    expect(resolveColumnWidth(100, 0, 60)).toBeNull()
+    expect(resolveColumnWidth(100, 1, 60)).toBeNull()
+    expect(resolveColumnWidth(100, -1, 60)).toBeNull()
+    expect(resolveColumnWidth(100, 2, 60)).toBe(102)
+    expect(resolveColumnWidth(100, -100, 60)).toBe(60)
+    expect(resolveColumnWidth(100, 50, undefined)).toBe(150)
+    expect(resolveColumnWidth(100, 50, 0)).toBe(150)
+    expect(resolveColumnWidth(100, 50, '80')).toBe(150)
+    expect(resolveColumnWidth(100, 50, 'oops')).toBe(150)
+    expect(resolveColumnWidth(100.4, 10.2, 60)).toBe(111)
+    expect(resolveColumnWidth(100, 2, 200)).toBe(200)
+  })
+
+  it('拖拽写入列宽并在 pointerup 抛出 resize-change', async () => {
+    const wrapper = await setup({ resizable: true })
+    const resizer = wrapper.find('.ui-table__resizer')
+    expect(resizer.exists()).toBe(true)
+    stubCellWidth(resizer.element)
+
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    expect(document.body.style.cursor).toBe('col-resize')
+    expect(document.body.style.userSelect).toBe('none')
+    window.dispatchEvent(pointer('pointermove', { clientX: 150 }))
+    await nextTick()
+    expect(wrapper.findAll('.ui-table__header-view colgroup col')[0].attributes('style')).toContain('width: 170px')
+    window.dispatchEvent(pointer('pointerup'))
+    expect(wrapper.emitted('resize-change')?.[0]).toEqual([{ key: 'id:0', width: 170 }])
+    expect(document.body.style.cursor).toBe('')
+    expect(document.body.style.userSelect).toBe('')
+  })
+
+  it('反向/越界拖拽被最小列宽钳制', async () => {
+    const wrapper = await setup({ resizable: true, minColumnWidth: 100 })
+    const resizer = wrapper.find('.ui-table__resizer')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    window.dispatchEvent(pointer('pointermove', { clientX: 0 }))
+    window.dispatchEvent(pointer('pointerup'))
+    expect(wrapper.emitted('resize-change')?.[0]).toEqual([{ key: 'id:0', width: 100 }])
+  })
+
+  it('1px 内微抖不落地，pointerup 不抛 resize-change', async () => {
+    const wrapper = await setup({ resizable: true })
+    const resizer = wrapper.find('.ui-table__resizer')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    window.dispatchEvent(pointer('pointermove', { clientX: 101 }))
+    window.dispatchEvent(pointer('pointerup'))
+    expect(wrapper.emitted('resize-change')).toBeUndefined()
+  })
+
+  it('双击手柄恢复默认列宽并抛 width=null', async () => {
+    const wrapper = await setup({ resizable: true })
+    const resizer = wrapper.find('.ui-table__resizer')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    window.dispatchEvent(pointer('pointermove', { clientX: 130 }))
+    window.dispatchEvent(pointer('pointerup'))
+    await nextTick()
+    expect(wrapper.emitted('resize-change')?.at(-1)).toEqual([{ key: 'id:0', width: 150 }])
+
+    resizer.element.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+    await nextTick()
+    expect(wrapper.emitted('resize-change')?.at(-1)).toEqual([{ key: 'id:0', width: null }])
+    expect(wrapper.findAll('.ui-table__header-view colgroup col')[0].attributes('style')).toContain('width: 60px')
+    resizer.element.dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))
+    expect(wrapper.emitted('resize-change')).toHaveLength(2)
+  })
+
+  it('非左键、resizable=false 不启动拖拽', async () => {
+    const disabled = await setup({ resizable: false })
+    expect(disabled.find('.ui-table__resizer').exists()).toBe(false)
+
+    const wrapper = await setup({ resizable: true })
+    const resizer = wrapper.find('.ui-table__resizer')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { button: 2, clientX: 100 }))
+    window.dispatchEvent(pointer('pointermove', { clientX: 200 }))
+    window.dispatchEvent(pointer('pointerup'))
+    expect(document.body.style.cursor).toBe('')
+    expect(wrapper.emitted('resize-change')).toBeUndefined()
+  })
+
+  it('右冻结列把手放到左缘并按反向增量计算', async () => {
+    const wrapper = await setup(
+      { resizable: true },
+      {
+        default: () => [
+          h(TableColumn, { prop: 'name', label: '名称', fixed: 'right' }),
+          h(TableColumn, { prop: 'age', label: '年龄' })
+        ]
+      }
+    )
+    const resizer = wrapper.find('.ui-table__resizer')
+    expect(resizer.classes()).toContain('is-left')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    window.dispatchEvent(pointer('pointermove', { clientX: 50 }))
+    window.dispatchEvent(pointer('pointerup'))
+    expect(wrapper.emitted('resize-change')?.[0]).toEqual([{ key: 'name:0', width: 170 }])
+  })
+
+  it('拖拽中卸载会清理监听与 body 光标', async () => {
+    const wrapper = await setup({ resizable: true })
+    const resizer = wrapper.find('.ui-table__resizer')
+    stubCellWidth(resizer.element)
+    resizer.element.dispatchEvent(pointer('pointerdown', { clientX: 100 }))
+    expect(document.body.style.cursor).toBe('col-resize')
+    wrapper.unmount()
+    expect(document.body.style.cursor).toBe('')
+    expect(document.body.style.userSelect).toBe('')
+    window.dispatchEvent(pointer('pointermove', { clientX: 200 }))
+    expect(wrapper.emitted('resize-change')).toBeUndefined()
   })
 })

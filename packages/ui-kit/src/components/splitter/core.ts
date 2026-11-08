@@ -50,7 +50,7 @@ function panelElementsOf(container: Element | null): HTMLElement[] {
   return Array.from(container.children).filter((child) => child.classList.contains(PANEL_CLASS)) as HTMLElement[]
 }
 
-function resolveLimit(value: unknown, total: number, fallback: number): number {
+export function resolveLimit(value: unknown, total: number, fallback: number): number {
   if (value === undefined || value === null || value === '') {
     return fallback
   }
@@ -63,6 +63,36 @@ function resolveLimit(value: unknown, total: number, fallback: number): number {
   }
   const parsed = Number.parseFloat(text)
   return Number.isFinite(parsed) ? parsed : fallback
+}
+
+export function resolveDragRange(
+  minA: number,
+  minB: number,
+  maxA: number,
+  maxB: number,
+  startA: number,
+  startB: number
+): { minDelta: number; maxDelta: number } {
+  return {
+    minDelta: Math.max(minA - startA, startB - maxB),
+    maxDelta: Math.min(maxA - startA, startB - minB)
+  }
+}
+
+export function resolveKeyboardDelta(horizontal: boolean, key: string): number {
+  if (horizontal && key === 'ArrowLeft') {
+    return -KEYBOARD_STEP
+  }
+  if (horizontal && key === 'ArrowRight') {
+    return KEYBOARD_STEP
+  }
+  if (!horizontal && key === 'ArrowUp') {
+    return -KEYBOARD_STEP
+  }
+  if (!horizontal && key === 'ArrowDown') {
+    return KEYBOARD_STEP
+  }
+  return 0
 }
 
 export function createSplitter(features: UiFeature[] = []) {
@@ -109,9 +139,7 @@ export function createSplitter(features: UiFeature[] = []) {
           const minB = resolveLimit(metas[index + 1]?.min(), total, 0)
           const maxA = resolveLimit(metas[index]?.max(), total, Number.POSITIVE_INFINITY)
           const maxB = resolveLimit(metas[index + 1]?.max(), total, Number.POSITIVE_INFINITY)
-          const minDelta = Math.max(minA - startSizes[index], startSizes[index + 1] - maxB)
-          const maxDelta = Math.min(maxA - startSizes[index], startSizes[index + 1] - minB)
-          return { minDelta, maxDelta }
+          return resolveDragRange(minA, minB, maxA, maxB, startSizes[index], startSizes[index + 1])
         }
 
         function restoreCollapsed(index: number, container: HTMLElement, startSizes: number[]) {
@@ -224,16 +252,7 @@ export function createSplitter(features: UiFeature[] = []) {
 
         function handleKeydown(index: number, event: KeyboardEvent) {
           const horizontal = isHorizontal()
-          let delta = 0
-          if (horizontal && event.key === 'ArrowLeft') {
-            delta = -KEYBOARD_STEP
-          } else if (horizontal && event.key === 'ArrowRight') {
-            delta = KEYBOARD_STEP
-          } else if (!horizontal && event.key === 'ArrowUp') {
-            delta = -KEYBOARD_STEP
-          } else if (!horizontal && event.key === 'ArrowDown') {
-            delta = KEYBOARD_STEP
-          }
+          const delta = resolveKeyboardDelta(horizontal, event.key)
           if (!delta) {
             return
           }

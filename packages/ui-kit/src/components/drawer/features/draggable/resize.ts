@@ -8,6 +8,22 @@ export interface DrawerResizeOptions {
   direction: () => string
 }
 
+export function isHorizontalDirection(direction: string): boolean {
+  return direction === 'rtl' || direction === 'ltr'
+}
+
+export function drawerResizeSign(direction: string): 1 | -1 {
+  return direction === 'rtl' || direction === 'btt' ? -1 : 1
+}
+
+export function maxDrawerSize(viewportSize: number): number {
+  return Math.max(MIN_SIZE, viewportSize - VIEWPORT_MARGIN * 2)
+}
+
+export function resolveDrawerSize(startSize: number, delta: number, direction: string, viewportSize: number): number {
+  return clamp(startSize + delta * drawerResizeSign(direction), MIN_SIZE, maxDrawerSize(viewportSize))
+}
+
 export function enableDrawerResize(panel: HTMLElement, options: DrawerResizeOptions): () => void {
   const handle = document.createElement('div')
   handle.className = 'ui-drawer__resizer'
@@ -23,14 +39,12 @@ export function enableDrawerResize(panel: HTMLElement, options: DrawerResizeOpti
     }
     event.preventDefault()
     const direction = options.direction()
-    const horizontal = direction === 'rtl' || direction === 'ltr'
+    const horizontal = isHorizontalDirection(direction)
     const rect = panel.getBoundingClientRect()
     const startX = event.clientX
     const startY = event.clientY
     const startSize = horizontal ? rect.width : rect.height
     const viewportSize = horizontal ? window.innerWidth : window.innerHeight
-    const maxSize = Math.max(MIN_SIZE, viewportSize - VIEWPORT_MARGIN * 2)
-    const sign = direction === 'rtl' || direction === 'btt' ? -1 : 1
     const body = document.body
     const previousCursor = body.style.cursor
     const previousUserSelect = body.style.userSelect
@@ -39,7 +53,7 @@ export function enableDrawerResize(panel: HTMLElement, options: DrawerResizeOpti
 
     function onPointerMove(moveEvent: PointerEvent): void {
       const delta = horizontal ? moveEvent.clientX - startX : moveEvent.clientY - startY
-      const size = clamp(startSize + delta * sign, MIN_SIZE, maxSize)
+      const size = resolveDrawerSize(startSize, delta, direction, viewportSize)
       if (horizontal) {
         panel.style.width = `${Math.round(size)}px`
       } else {
