@@ -53,7 +53,6 @@ const RENDERED_VIA_NOTES: Record<string, string> = {}
 const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: string }> = {
   affix: { slots: ['default'], reason: 'C 类，children 容器' },
   anchor: { slots: ['default'], reason: 'C 类，children 容器' },
-  autocomplete: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
   breadcrumb: { slots: ['default'], reason: 'C 类，子项容器' },
   carousel: { slots: ['default'], reason: 'C 类，子项容器' },
   col: { slots: ['default'], reason: 'C 类，children 容器' },
@@ -64,7 +63,6 @@ const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: strin
   container: { slots: ['default'], reason: 'C 类，children 容器' },
   descriptions: { slots: ['default'], reason: 'C 类，子项容器' },
   link: { slots: ['default'], reason: 'C 类，文本内容容器' },
-  mention: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
   overlay: { slots: ['default'], reason: 'C 类，内部浮层包装' },
   popper: { slots: ['default'], reason: 'D 类，内部浮层容器' },
   'roving-focus-group': { slots: ['default'], reason: 'D 类，内部件' },
@@ -195,13 +193,13 @@ function slotsInterfaceBlock(types: string, exportName: string): string | null {
 }
 
 describe('spec schema：registry 解析与校验', () => {
-  it('合法的 slots 声明原样通过，registry 里 input 暴露 append', () => {
+  it('合法的 slots 声明原样通过，registry 里 input 暴露四向插槽', () => {
     const slots = [{ name: 'append', scope: null, fallback: false, description: '后置内容' }]
     expect(validateExportSlots('probe', 'Probe', slots)).toBe(slots)
     expect(validateExportSlots('probe', 'Probe', undefined)).toBeUndefined()
 
     const input = registry.components.input.exports[0]
-    expect(input.slots?.map((slot) => slot.name)).toEqual(['append'])
+    expect(input.slots?.map((slot) => slot.name)).toEqual(['prepend', 'prefix', 'suffix', 'append'])
   })
 
   it('schema 错误报出组件/导出/slot 三级定位的清晰信息', () => {

@@ -243,8 +243,8 @@ W5.1 ─────────────────────────
 | W1.2c | done | w12c-slot-nav | `refactor/20261108-slot-nav` | `.worktrees/slot-nav` | 已合入 `50fc798`；3 组件 / 63 用例 |
 | W1.2d | done | w12d-slot-feedback | `refactor/20261108-slot-feedback` | `.worktrees/slot-feedback` | 已合入 `0728d6d`；9 组件 / 173 用例 |
 | W1.2e | done | w12e-slot-base | `refactor/20261108-slot-base` | `.worktrees/slot-base` | 已合入 `57be1cf`；7 个 A 类组件，101 条用例，C/D 保留台账理由 |
-| W1.3a | blocked | — | `feat/20261108-input-slots` | — | 等共享车道 |
-| W1.3b | blocked | — | `feat/20261108-overlay-close-slot` | — | 等 W1.3a |
+| W1.3a | done | w13a-input-slots | `feat/20261108-input-slots` | `.worktrees/input-slots` | 已合入 `531496e`；input 四插槽 + autocomplete/mention append，62 条用例 |
+| W1.3b | ready | — | `feat/20261108-overlay-close-slot` | 待建 | 共享车道；dialog/drawer close 插槽 |
 | W1.3c | blocked | — | `feat/20261108-upload-slots` | — | 等 W1.1 |
 | W1.3d | blocked | — | `feat/20261108-tree-node-slot` | — | 等 W1.1 |
 | W2.1 | blocked | — | `refactor/20261108-cascader-virtualized` | — | 等 W1.1 |
