@@ -25,6 +25,21 @@ import {
  * 当源码合入。全部用例以临时目录为 root，不碰真实仓库台账。
  */
 
+// 临时仓库的 git 调用要剥掉钩子注入的 GIT_*：pre-push 的 GIT_DIR 会让 init/commit 落到真实仓库（F-115）
+const gitEnvSansHook = () => {
+  const env = { ...process.env }
+  for (const key of [
+    'GIT_DIR',
+    'GIT_WORK_TREE',
+    'GIT_INDEX_FILE',
+    'GIT_OBJECT_DIRECTORY',
+    'GIT_ALTERNATE_OBJECT_DIRECTORIES'
+  ]) {
+    delete env[key]
+  }
+  return env
+}
+
 let root: string
 
 const claimArgs = (over: Record<string, unknown> = {}) => ({
@@ -211,7 +226,7 @@ describe('gc TTL 回收', () => {
   it('过期但 worktree 有未提交改动：置 aborted 且保留在 active', () => {
     const worktree = path.join(root, '.worktrees', 't1')
     mkdirSync(worktree, { recursive: true })
-    execFileSync('git', ['init'], { cwd: worktree, stdio: 'ignore' })
+    execFileSync('git', ['init'], { cwd: worktree, stdio: 'ignore', env: gitEnvSansHook() })
     writeFileSync(path.join(worktree, 'dirty.txt'), 'not committed')
     claim(claimArgs({ claimedAt, ttl: 5, worktree }))
     const result = gc({ root, now: Date.now() })
@@ -222,10 +237,32 @@ describe('gc TTL 回收', () => {
     expect(() => readFileSync(path.join(worktree, 'dirty.txt'))).not.toThrow()
   })
 
+  it('F-115 回归：钩子 GIT_DIR 环境注入不串扰临时 worktree 的脏判定', () => {
+    const decoy = path.join(root, 'decoy-repo')
+    mkdirSync(decoy, { recursive: true })
+    execFileSync('git', ['init'], { cwd: decoy, stdio: 'ignore', env: gitEnvSansHook() })
+    execFileSync(
+      'git',
+      ['-C', decoy, '-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '--allow-empty', '-m', 'init'],
+      { stdio: 'ignore', env: gitEnvSansHook() }
+    )
+    // pre-push 等钩子上下文全程注入 GIT_DIR；不剥掉时 claim 会把 baseCommit 解析成钩子仓库的 HEAD、verify-branch 假绿
+    const saved = process.env.GIT_DIR
+    process.env.GIT_DIR = path.join(decoy, '.git')
+    try {
+      claim(claimArgs({ base: null }))
+      const result = verifyBranch({ root, id: 't1' })
+      expect(String(result.error)).toContain('baseCommit')
+    } finally {
+      if (saved === undefined) delete process.env.GIT_DIR
+      else process.env.GIT_DIR = saved
+    }
+  })
+
   it('过期且 worktree 干净（git init 后无改动）release', () => {
     const worktree = path.join(root, '.worktrees', 't1')
     mkdirSync(worktree, { recursive: true })
-    execFileSync('git', ['init'], { cwd: worktree, stdio: 'ignore' })
+    execFileSync('git', ['init'], { cwd: worktree, stdio: 'ignore', env: gitEnvSansHook() })
     claim(claimArgs({ claimedAt, ttl: 5, worktree }))
     const result = gc({ root, now: Date.now() })
     expect(result.released).toEqual(['t1'])

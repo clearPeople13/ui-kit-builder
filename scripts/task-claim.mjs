@@ -174,12 +174,28 @@ export function checkOverlap(options) {
   return { ok: conflicts.length === 0, conflicts, owns: validated.owns }
 }
 
+// git 子进程必须剥掉钩子注入的 GIT_*：pre-push 上下文 GIT_DIR 指向真实仓库，-C 指定的临时目录会被当成那个仓库（F-115）
+function gitEnv() {
+  const env = { ...process.env }
+  for (const key of [
+    'GIT_DIR',
+    'GIT_WORK_TREE',
+    'GIT_INDEX_FILE',
+    'GIT_OBJECT_DIRECTORY',
+    'GIT_ALTERNATE_OBJECT_DIRECTORIES'
+  ]) {
+    delete env[key]
+  }
+  return env
+}
+
 /** 取当前 HEAD（不在 git 仓库时返回 null，不阻塞临时目录场景） */
 function resolveBaseCommit(root) {
   try {
     return execFileSync('git', ['-C', root, 'rev-parse', 'HEAD'], {
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore']
+      stdio: ['ignore', 'pipe', 'ignore'],
+      env: gitEnv()
     }).trim()
   } catch {
     return null
@@ -333,7 +349,7 @@ function isWorktreeClean(root, task) {
     return true
   }
   try {
-    const out = execFileSync('git', ['-C', dir, 'status', '--porcelain'], { encoding: 'utf8' })
+    const out = execFileSync('git', ['-C', dir, 'status', '--porcelain'], { encoding: 'utf8', env: gitEnv() })
     return out.trim() === ''
   } catch {
     // 不是 git 仓库：无法用 git 判定，保守视为不干净，保留任务
@@ -357,7 +373,8 @@ export function verifyBranch(options) {
   try {
     files = execFileSync('git', ['-C', cwd, 'diff', '--name-only', `${task.baseCommit}...HEAD`], {
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: gitEnv()
     })
       .split('\n')
       .map((f) => f.trim())
