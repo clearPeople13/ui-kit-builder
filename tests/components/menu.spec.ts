@@ -169,6 +169,27 @@ describe('Menu 菜单', () => {
     expect(wrapper.find('.ui-menu-item-group__list').text()).toBe('退款申请')
   })
 
+  it('default 与 title 插槽内容分别渲染到菜单项、分组列表与子菜单标题', async () => {
+    const wrapper = mountMenu({ defaultOpeneds: ['s1'] }, () => [
+      h(MenuItem, { index: '1' }, () => h('b', { class: 'my-label' }, '自定义菜单项')),
+      h(
+        SubMenu,
+        { index: 's1' },
+        {
+          title: () => h('i', { class: 'my-title' }, '自定义标题'),
+          default: () => [
+            h(MenuItemGroup, { title: '分组' }, { default: () => h(MenuItem, { index: '2' }, () => '子项') })
+          ]
+        }
+      )
+    ])
+    await nextTick()
+    expect(wrapper.find('.ui-menu-item__inner .my-label').text()).toBe('自定义菜单项')
+    expect(wrapper.find('.ui-sub-menu__title .my-title').text()).toBe('自定义标题')
+    expect(wrapper.find('.ui-sub-menu__body .ui-menu-item__inner').text()).toBe('子项')
+    expect(wrapper.find('.ui-menu-item-group__list').text()).toBe('子项')
+  })
+
   it('uniqueOpened 展开新的同级子菜单时收起旧的并抛 close', async () => {
     const wrapper = mountMenu({ uniqueOpened: true }, () => [
       h(SubMenu, { index: 'a' }, { title: () => '甲组', default: () => h(MenuItem, { index: 'a1' }, () => '甲项') }),

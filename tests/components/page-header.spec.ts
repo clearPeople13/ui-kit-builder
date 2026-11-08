@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { PageHeader } from '@ui-kit-full'
 
@@ -68,6 +69,28 @@ describe('PageHeader 页头', () => {
     const wrapper = mountPageHeader({}, { extra: () => '按钮组' })
     expect(wrapper.find('.ui-page-header__extra').exists()).toBe(true)
     expect(wrapper.find('.ui-page-header__extra').text()).toBe('按钮组')
+  })
+
+  it('四个插槽分别渲染到标题、说明、操作区与正文节点', () => {
+    const wrapper = mountPageHeader(
+      {},
+      {
+        title: () => h('b', { class: 'my-title' }, '插槽标题'),
+        content: () => h('span', { class: 'my-content' }, '插槽说明'),
+        extra: () => h('button', { class: 'my-extra' }, '插槽操作'),
+        default: () => h('div', { class: 'my-body' }, '插槽正文')
+      }
+    )
+    expect(wrapper.find('.ui-page-header__title .my-title').text()).toBe('插槽标题')
+    expect(wrapper.find('.ui-page-header__content .my-content').text()).toBe('插槽说明')
+    expect(wrapper.find('.ui-page-header__extra .my-extra').text()).toBe('插槽操作')
+    expect(wrapper.find('.ui-page-header__body .my-body').text()).toBe('插槽正文')
+  })
+
+  it('未传 title / content 插槽时回退到同名属性', () => {
+    const wrapper = mountPageHeader({ title: '属性标题', content: '属性说明' })
+    expect(wrapper.find('.ui-page-header__title').text()).toBe('属性标题')
+    expect(wrapper.find('.ui-page-header__content').text()).toBe('属性说明')
   })
 
   it('默认插槽渲染 body，缺省不渲染', () => {

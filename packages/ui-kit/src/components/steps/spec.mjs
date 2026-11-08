@@ -33,6 +33,20 @@ export default {
           "description": "icon"
         }
       ],
+      "slots": [
+        {
+          "name": "title",
+          "scope": null,
+          "fallback": true,
+          "description": "步骤标题，渲染在 ui-step__title 内，无 slot 时回退 title 属性"
+        },
+        {
+          "name": "description",
+          "scope": null,
+          "fallback": true,
+          "description": "步骤描述，渲染在 ui-step__description 内，无 slot 时回退 description 属性"
+        }
+      ],
       "features": {
         "steps.icons": {
           "title": "图标",
@@ -88,6 +102,14 @@ export default {
           "type": "string",
           "default": "process",
           "description": "processStatus"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "步骤子项容器，渲染在 ui-steps__list 内，无默认内容"
         }
       ],
       "features": {}

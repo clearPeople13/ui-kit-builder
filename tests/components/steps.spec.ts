@@ -73,6 +73,19 @@ describe('Steps / Step', () => {
     expect(wrapper.find('.ui-step__title').text()).toBe('插槽标题')
   })
 
+  it('description 插槽覆盖描述文本', () => {
+    const wrapper = mountSteps({}, [
+      h(Step, { description: '原说明' }, { description: () => h('em', { class: 'my-desc' }, '插槽说明') })
+    ])
+    expect(wrapper.find('.ui-step__description .my-desc').text()).toBe('插槽说明')
+  })
+
+  it('未传 title / description 插槽时回退到同名属性', () => {
+    const first = stepNodes(mountSteps())[0]
+    expect(first.find('.ui-step__title').text()).toBe('甲')
+    expect(first.find('.ui-step__description').text()).toBe('说明甲')
+  })
+
   it('finish 步骤默认显示对勾图标', () => {
     const wrapper = mountSteps({ active: 1 })
     expect(wrapper.findAll('.ui-step')[0].find('svg').exists()).toBe(true)

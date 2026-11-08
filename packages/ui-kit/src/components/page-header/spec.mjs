@@ -21,6 +21,32 @@ export default {
           "description": "标题下方的一行说明文字，也可用 content 插槽自定义"
         }
       ],
+      "slots": [
+        {
+          "name": "title",
+          "scope": null,
+          "fallback": true,
+          "description": "标题内容，渲染在 ui-page-header__title 内，无 slot 时回退 title 属性"
+        },
+        {
+          "name": "content",
+          "scope": null,
+          "fallback": true,
+          "description": "说明内容，渲染在 ui-page-header__content 内，无 slot 时回退 content 属性"
+        },
+        {
+          "name": "extra",
+          "scope": null,
+          "fallback": false,
+          "description": "标题行右侧操作区，渲染在 ui-page-header__extra 内，无 slot 时不渲染"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "页头正文区，渲染在 ui-page-header__body 内，无 slot 时不渲染"
+        }
+      ],
       "features": {
         "page-header.icons": {
           "title": "图标",

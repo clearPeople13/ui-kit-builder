@@ -64,6 +64,14 @@ export default {
           "description": "鼠标移出多少毫秒后自动收起悬停展开的子菜单；点击展开的子菜单不会自动收起"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "菜单子项容器，渲染在 ui-menu__list 内，无默认内容"
+        }
+      ],
       "features": {}
     },
     {
@@ -83,6 +91,14 @@ export default {
           "description": "禁用菜单项：置灰且不响应点击激活"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "菜单项内容，渲染在 ui-menu-item__inner 内，无默认内容"
+        }
+      ],
       "features": {}
     },
     {
@@ -94,6 +110,14 @@ export default {
           "name": "title",
           "type": "string",
           "description": "分组小标题；留空时不渲染标题行"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "分组子项容器，渲染在 ui-menu-item-group__list 内，无默认内容"
         }
       ],
       "features": {}
@@ -123,6 +147,20 @@ export default {
           "name": "hideTimeout",
           "type": "number",
           "description": "本项移出收起延迟（ms），未设置时跟随 Menu.hideTimeout"
+        }
+      ],
+      "slots": [
+        {
+          "name": "title",
+          "scope": null,
+          "fallback": false,
+          "description": "子菜单标题内容，渲染在 ui-sub-menu__title 内、箭头图标之前，无默认内容"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "子菜单展开后的子项容器，渲染在 ui-sub-menu__body 内，无默认内容"
         }
       ],
       "features": {
