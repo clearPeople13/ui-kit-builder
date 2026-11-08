@@ -1,7 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { ColorPicker, ColorPickerPanel } from '@ui-kit-full'
+import { ColorPicker, ColorPickerPanel, ConfigProvider } from '@ui-kit-full'
+import type { ConfigProviderProps } from '@ui-kit-full'
+
+// config-provider 的 locale 元数据未收录新命名空间，用例只验证注入行为
+function localeOf(payload: Record<string, unknown>): NonNullable<ConfigProviderProps['locale']> {
+  return payload as unknown as NonNullable<ConfigProviderProps['locale']>
+}
 
 const mounted: ReturnType<typeof mount>[] = []
 
@@ -681,6 +687,48 @@ describe('ColorPicker 颜色选择', () => {
     await flush()
     expect(wrapper.emitted('visible-change')).toBeUndefined()
     expect(visible()).toBe(false)
+  })
+
+  it('文案与滑杆 aria 文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const provider = mount(ConfigProvider, {
+      props: {
+        locale: localeOf({ colorPicker: { confirm: 'Apply', svValueFormat: 'Sat {saturation}% / Val {value}%' } })
+      },
+      slots: { default: () => h(ColorPicker, { modelValue: '', showAlpha: true }) },
+      attachTo: document.body
+    })
+    mounted.push(provider)
+    await flush()
+    // 无值时占位与清空、色相、不透明度等未注入键回退中文
+    expect(triggerText(provider)).toBe('选择颜色')
+
+    await open(provider)
+    expect(actionButtons().map((button) => button.textContent)).toEqual(['清空', 'Apply'])
+    const sv = dropdown()!.querySelector('.ui-color-picker__sv')!
+    expect(sv.getAttribute('aria-label')).toBe('饱和度与明度')
+    expect(sv.getAttribute('aria-valuetext')).toBe('Sat 75% / Val 100%')
+    expect(dropdown()!.querySelector('.ui-color-picker__hue')!.getAttribute('aria-label')).toBe('色相')
+    expect(dropdown()!.querySelector('.ui-color-picker__alpha')!.getAttribute('aria-label')).toBe('不透明度')
+
+    // 切换注入的 locale 立即反映到已展开的面板与触发区
+    await provider.setProps({
+      locale: localeOf({
+        colorPicker: {
+          placeholder: 'Pick color',
+          clear: 'Clear',
+          confirm: 'OK',
+          saturationBrightness: 'S/B',
+          hue: 'Hue',
+          opacity: 'Alpha',
+          svValueFormat: '{saturation}-{value}'
+        }
+      })
+    })
+    await flush()
+    expect(triggerText(provider)).toBe('Pick color')
+    expect(actionButtons().map((button) => button.textContent)).toEqual(['Clear', 'OK'])
+    expect(dropdown()!.querySelector('.ui-color-picker__sv')!.getAttribute('aria-valuetext')).toBe('75-100')
+    expect(dropdown()!.querySelector('.ui-color-picker__alpha')!.getAttribute('aria-label')).toBe('Alpha')
   })
 })
 

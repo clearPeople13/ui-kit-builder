@@ -4,6 +4,7 @@ import { ChevronDown, X } from '../../shared/icons'
 import chroma from 'chroma-js'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { clamp } from '../../shared/utils'
@@ -42,6 +43,7 @@ export function createColorPicker(features: UiFeature[] = []) {
       baseClass: 'ui-color-picker',
       props: colorPickerBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('colorPicker')
         const open = ref(false)
         const hsv = ref<HsvState>({ h: 210, s: 0.75, v: 1, a: 1 })
         const triggerRef = ref<HTMLElement>()
@@ -371,11 +373,14 @@ export function createColorPicker(features: UiFeature[] = []) {
                 style: svStyle(),
                 role: 'slider',
                 tabindex: props.disabled ? undefined : 0,
-                'aria-label': '饱和度与明度',
+                'aria-label': locale.value.saturationBrightness,
                 'aria-valuemin': 0,
                 'aria-valuemax': 100,
                 'aria-valuenow': Math.round(hsv.value.s * 100),
-                'aria-valuetext': `饱和度 ${Math.round(hsv.value.s * 100)}%，明度 ${Math.round(hsv.value.v * 100)}%`,
+                'aria-valuetext': formatLocale(locale.value.svValueFormat, {
+                  saturation: Math.round(hsv.value.s * 100),
+                  value: Math.round(hsv.value.v * 100)
+                }),
                 'aria-disabled': props.disabled ? 'true' : undefined,
                 onPointerdown: (event: PointerEvent) => startDrag('sv', event),
                 onKeydown: (event: KeyboardEvent) => stepSlider('sv', event)
@@ -390,7 +395,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                 style: { background: HUE_GRADIENT },
                 role: 'slider',
                 tabindex: props.disabled ? undefined : 0,
-                'aria-label': '色相',
+                'aria-label': locale.value.hue,
                 'aria-valuemin': 0,
                 'aria-valuemax': 360,
                 'aria-valuenow': Math.round(hsv.value.h),
@@ -411,7 +416,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                   class: 'ui-color-picker__slider ui-color-picker__alpha',
                   role: 'slider',
                   tabindex: props.disabled ? undefined : 0,
-                  'aria-label': '不透明度',
+                  'aria-label': locale.value.opacity,
                   'aria-valuemin': 0,
                   'aria-valuemax': 100,
                   'aria-valuenow': Math.round(hsv.value.a * 100),
@@ -466,7 +471,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                     closePanel()
                   }
                 },
-                '清空'
+                locale.value.clear
               )
             )
           }
@@ -481,7 +486,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                   closePanel()
                 }
               },
-              '确定'
+              locale.value.confirm
             )
           )
           body.push(h('div', { class: 'ui-color-picker__footer' }, actions))
@@ -502,6 +507,7 @@ export function createColorPicker(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           triggerRef,
           panelRef,
           get open() {
@@ -586,7 +592,7 @@ export function createColorPicker(features: UiFeature[] = []) {
                 {
                   class: state.hasValue ? 'ui-color-picker__value' : 'ui-color-picker__placeholder'
                 },
-                state.hasValue ? state.displayText : '选择颜色'
+                state.hasValue ? state.displayText : state.locale.value.placeholder
               ),
               h('span', { class: 'ui-color-picker__actions' }, actions)
             ]

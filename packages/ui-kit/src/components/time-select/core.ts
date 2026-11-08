@@ -3,6 +3,7 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref } from
 import { ChevronDown, Clock, X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { formatDateValue, parseTimeValue } from '../../shared/date'
@@ -72,6 +73,7 @@ export function createTimeSelect(features: UiFeature[] = []) {
       baseClass: 'ui-time-select',
       props: timeSelectBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('timeSelect')
         const open = ref(false)
         const triggerRef = ref<HTMLElement>()
         const panelRef = ref<HTMLElement>()
@@ -166,7 +168,7 @@ export function createTimeSelect(features: UiFeature[] = []) {
                   formatTime(time, props.format)
                 )
               )
-            : [h('div', { class: 'ui-floating-panel__empty' }, '无可选时间')]
+            : [h('div', { class: 'ui-floating-panel__empty' }, locale.value.empty)]
           const panel = h(
             'div',
             {
@@ -185,6 +187,7 @@ export function createTimeSelect(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           triggerRef,
           get open() {
             return open.value
@@ -244,7 +247,9 @@ export function createTimeSelect(features: UiFeature[] = []) {
               h(
                 'span',
                 { class: state.hasValue ? 'ui-time-select__value' : 'ui-time-select__placeholder' },
-                state.hasValue ? formatTime(props.modelValue, props.format) : props.placeholder || '选择时间'
+                state.hasValue
+                  ? formatTime(props.modelValue, props.format)
+                  : props.placeholder || state.locale.value.placeholder
               ),
               h('span', { class: 'ui-time-select__actions' }, actions)
             ]

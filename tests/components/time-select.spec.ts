@@ -1,7 +1,13 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { TimeSelect } from '@ui-kit-full'
+import { ConfigProvider, TimeSelect } from '@ui-kit-full'
+import type { ConfigProviderProps } from '@ui-kit-full'
+
+// config-provider 的 locale 元数据未收录新命名空间，用例只验证注入行为
+function localeOf(payload: Record<string, unknown>): NonNullable<ConfigProviderProps['locale']> {
+  return payload as unknown as NonNullable<ConfigProviderProps['locale']>
+}
 
 /**
  * TimeSelect 时间选择器：触发器 + teleport 到 body 的选项浮层，选项由 start/end/step/minTime/maxTime 生成。
@@ -318,5 +324,25 @@ describe('TimeSelect 时间选择器', () => {
     await wrapper.setProps({ modelValue: '' })
     expect(displayText()).toBe('选择时间')
     expect(document.querySelector('.ui-time-select__clear')).toBeNull()
+  })
+
+  it('占位与空态文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const provider = mount(ConfigProvider, {
+      // 只注入 empty，placeholder 未注入应落回默认中文
+      props: { locale: localeOf({ timeSelect: { empty: 'No slots' } }) },
+      slots: { default: () => h(TimeSelect, { start: '09:00', end: '09:00' }) },
+      attachTo: document.body
+    })
+    mounted.push(provider)
+    await nextTick()
+    expect(displayText()).toBe('选择时间')
+
+    await open(provider)
+    expect(dropdown()?.querySelector('.ui-floating-panel__empty')?.textContent).toBe('No slots')
+
+    await provider.setProps({ locale: localeOf({ timeSelect: { empty: 'Nichts', placeholder: 'Zeit' } }) })
+    await nextTick()
+    expect(displayText()).toBe('Zeit')
+    expect(dropdown()?.querySelector('.ui-floating-panel__empty')?.textContent).toBe('Nichts')
   })
 })

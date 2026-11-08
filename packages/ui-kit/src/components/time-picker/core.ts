@@ -3,6 +3,7 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch
 import { ChevronDown, Clock, X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import type { TimeParts } from '../../shared/date'
@@ -40,6 +41,7 @@ export function createTimePicker(features: UiFeature[] = []) {
       baseClass: 'ui-time-picker',
       props: timePickerBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('timePicker')
         const open = ref(false)
         const activeSide = ref(0)
         const activeTrigger = ref<HTMLElement>()
@@ -558,7 +560,7 @@ export function createTimePicker(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: selectNow
                 },
-                '此刻'
+                locale.value.now
               )
             )
           }
@@ -571,7 +573,7 @@ export function createTimePicker(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: confirmPanel
                 },
-                '确定'
+                locale.value.confirm
               )
             )
           }
@@ -586,15 +588,21 @@ export function createTimePicker(features: UiFeature[] = []) {
             return null
           }
           const columns: VNodeChild[] = [
-            renderColumn('时', 24, hours.value, isHourDisabled, pickHour),
-            renderColumn('分', 60, minutes.value, isMinuteDisabled, pickMinute)
+            renderColumn(locale.value.hour, 24, hours.value, isHourDisabled, pickHour),
+            renderColumn(locale.value.minute, 60, minutes.value, isMinuteDisabled, pickMinute)
           ]
           if (showSeconds.value) {
-            columns.push(renderColumn('秒', 60, seconds.value, isSecondDisabled, pickSecond))
+            columns.push(renderColumn(locale.value.second, 60, seconds.value, isSecondDisabled, pickSecond))
           }
           const body: VNodeChild[] = []
           if (range.value) {
-            body.push(h('div', { class: 'ui-time-picker__caption' }, activeSide.value === 0 ? '开始时间' : '结束时间'))
+            body.push(
+              h(
+                'div',
+                { class: 'ui-time-picker__caption' },
+                activeSide.value === 0 ? locale.value.startPlaceholder : locale.value.endPlaceholder
+              )
+            )
           }
           body.push(h('div', { class: 'ui-time-picker__columns' }, columns))
           body.push(renderFooter())
@@ -719,6 +727,7 @@ export function createTimePicker(features: UiFeature[] = []) {
           get canEdit() {
             return canEdit.value
           },
+          locale,
           fieldRefs,
           toggleSide,
           openSide,
@@ -793,8 +802,9 @@ export function createTimePicker(features: UiFeature[] = []) {
                 autocomplete: 'off',
                 value: state.draftAt(index),
                 placeholder: state.range
-                  ? [props.startPlaceholder, props.endPlaceholder][index] || ['开始时间', '结束时间'][index]
-                  : props.placeholder || '选择时间',
+                  ? [props.startPlaceholder, props.endPlaceholder][index] ||
+                    [state.locale.value.startPlaceholder, state.locale.value.endPlaceholder][index]
+                  : props.placeholder || state.locale.value.placeholder,
                 readonly: !state.canEdit,
                 disabled: Boolean(props.disabled),
                 id: state.idAt(index),
@@ -811,7 +821,7 @@ export function createTimePicker(features: UiFeature[] = []) {
         const fields = state.range
           ? h('div', { class: 'ui-time-picker__fields' }, [
               renderField(0),
-              h('span', { class: 'ui-time-picker__separator' }, props.rangeSeparator || '至'),
+              h('span', { class: 'ui-time-picker__separator' }, props.rangeSeparator || state.locale.value.separator),
               renderField(1),
               renderActions()
             ])

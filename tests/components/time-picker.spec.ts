@@ -1,9 +1,15 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { TimePicker, TimeSelect } from '@ui-kit-full'
+import { ConfigProvider, TimePicker, TimeSelect } from '@ui-kit-full'
+import type { ConfigProviderProps } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
+
+// config-provider 的 locale 元数据未收录新命名空间，用例只验证注入行为
+function localeOf(payload: Record<string, unknown>): NonNullable<ConfigProviderProps['locale']> {
+  return payload as unknown as NonNullable<ConfigProviderProps['locale']>
+}
 
 // 此刻一类行为依赖系统时钟，统一冻结到 2026-11-06 09:08:07
 function freezeAt(hour: number, minute: number, second: number) {
@@ -694,6 +700,58 @@ describe('TimePicker 键盘操作', () => {
     await keydownOn(fields[1], 'Escape')
     expect(dropdown()).toBeNull()
     expect(document.activeElement).toBe(fields[1])
+  })
+
+  it('文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const provider = mount(ConfigProvider, {
+      props: { locale: localeOf({ timePicker: { confirm: 'OK', hour: 'HR' } }) },
+      slots: { default: () => h(TimePicker, { modelValue: ['', ''], isRange: true }) },
+      attachTo: document.body
+    })
+    mounted.push(provider)
+    await flush()
+
+    // 未注入 startPlaceholder / endPlaceholder：占位回退默认中文
+    expect(
+      Array.from(document.querySelectorAll('.ui-time-picker__placeholder')).map((node) =>
+        node.getAttribute('placeholder')
+      )
+    ).toEqual(['开始时间', '结束时间'])
+
+    await clickNode(document.querySelector<HTMLElement>('.ui-time-picker__field'))
+    // 注入键生效；分 / 秒 / 此刻 等未注入键落回中文
+    expect(columns().map((column) => column.querySelector('.ui-time-picker__column-title')?.textContent)).toEqual([
+      'HR',
+      '分',
+      '秒'
+    ])
+    expect(actions().map((action) => action.textContent)).toEqual(['此刻', 'OK'])
+    expect(caption()).toBe('开始时间')
+    // rangeSeparator 带默认值时 props 优先，locale.separator 只在 props 缺省时兜底
+    expect(document.querySelector('.ui-time-picker__separator')?.textContent).toBe('-')
+
+    // 切换注入的 locale 立即反映到已展开的面板
+    await provider.setProps({
+      locale: localeOf({
+        timePicker: {
+          confirm: 'Apply',
+          hour: 'H',
+          minute: 'M',
+          second: 'S',
+          now: 'Now',
+          startPlaceholder: 'From',
+          endPlaceholder: 'To'
+        }
+      })
+    })
+    await flush()
+    expect(columns().map((column) => column.querySelector('.ui-time-picker__column-title')?.textContent)).toEqual([
+      'H',
+      'M',
+      'S'
+    ])
+    expect(actions().map((action) => action.textContent)).toEqual(['Now', 'Apply'])
+    expect(caption()).toBe('From')
   })
 })
 
