@@ -43,6 +43,18 @@ async function click(node: Element | null | undefined) {
   await nextTick()
 }
 
+/** 键盘驱动统一走可取消的冒泡 keydown；两次 nextTick 因为子列可能是按键里 nextTick 才新建的 */
+const pressKey = async (element: Element | null | undefined, key: string) => {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })
+  element?.dispatchEvent(event)
+  await nextTick()
+  await nextTick()
+  return event
+}
+
+const tabStopIndex = () => nodes().findIndex((node) => node.getAttribute('tabindex') === '0')
+const activeText = () => (document.activeElement as HTMLElement | null)?.textContent ?? ''
+
 afterEach(() => {
   reset()
   vi.useRealTimers()
@@ -289,6 +301,10 @@ describe('CascaderPanel 级联面板', () => {
     await nextTick()
     expect(columns()).toHaveLength(1)
     expect(wrapper.find('.ui-cascader-panel__empty').text()).toBe('无数据')
+
+    // 连 options 都不传时走 prop 默认值
+    reset()
+    expect(mountPanel().find('.ui-cascader-panel__empty').text()).toBe('无数据')
   })
 
   it('特性类名跟随开关：multiple / lazy / selection / border', async () => {
@@ -320,5 +336,175 @@ describe('CascaderPanel 级联面板', () => {
     await nextTick()
     expect(columns()[0].getAttribute('aria-label')).toBe('L1')
     expect(wrapper.find('.ui-cascader-panel__empty').text()).toBe('无数据')
+  })
+
+  describe('键盘可操作', () => {
+    it('整面板单一 Tab 停靠点：禁用节点退出 Tab 序，停靠键跟随点击', async () => {
+      mountPanel({
+        options: [
+          { value: 'x', label: '禁用项', disabled: true },
+          { value: 'y', label: '可选项' }
+        ]
+      })
+      await nextTick()
+      expect(nodes()[0].hasAttribute('tabindex')).toBe(false)
+      expect(nodes()[1].getAttribute('tabindex')).toBe('0')
+      expect(tabStopIndex()).toBe(1)
+
+      reset()
+      mountPanel({ options: tree })
+      await nextTick()
+      expect(nodes().filter((node) => node.getAttribute('tabindex') === '0')).toHaveLength(1)
+      await click(nodes()[1])
+      expect(tabStopIndex()).toBe(1)
+      // 子列首项也是 -1，整面板仍只有一个 Tab 位
+      expect(nodes().filter((node) => node.getAttribute('tabindex') === '0')).toHaveLength(1)
+
+      reset()
+      mountPanel({ options: tree, multiple: true, modelValue: [['js', 'nj']] })
+      await nextTick()
+      // 多选回填展开路径，停靠点仍兜底第一列首个非禁用节点
+      expect(columns()).toHaveLength(2)
+      expect(tabStopIndex()).toBe(0)
+    })
+
+    it('↓/↑ 同列移动跳过禁用节点，列首列尾停住', async () => {
+      mountPanel({
+        options: [
+          { value: 'zj', label: '浙江', children: [{ value: 'hz', label: '杭州' }] },
+          { value: 'ah', label: '安徽', disabled: true },
+          { value: 'js', label: '江苏', children: [{ value: 'nj', label: '南京' }] }
+        ]
+      })
+      await nextTick()
+      nodes()[0].focus()
+      const down = await pressKey(nodes()[0], 'ArrowDown')
+      expect(down.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('江苏')
+      expect(tabStopIndex()).toBe(2)
+      await pressKey(nodes()[2], 'ArrowDown')
+      expect(activeText()).toBe('江苏')
+
+      const up = await pressKey(nodes()[2], 'ArrowUp')
+      expect(up.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('浙江')
+      await pressKey(nodes()[0], 'ArrowUp')
+      expect(activeText()).toBe('浙江')
+    })
+
+    it('→ 展开并进入子列首项，← 在父列收起子列、在子列回父级', async () => {
+      mountPanel({ options: tree })
+      await nextTick()
+      nodes()[0].focus()
+      const right = await pressKey(nodes()[0], 'ArrowRight')
+      expect(right.defaultPrevented).toBe(true)
+      expect(columns()).toHaveLength(2)
+      expect(activeText()).toBe('杭州')
+      expect(tabStopIndex()).toBe(2)
+
+      const left = await pressKey(nodes()[0], 'ArrowLeft')
+      expect(left.defaultPrevented).toBe(true)
+      expect(columns()).toHaveLength(1)
+      expect(activeText()).toBe('浙江')
+
+      reset()
+      mountPanel({ options: tree, modelValue: ['zj'] })
+      await nextTick()
+      nodes()[3].focus()
+      await pressKey(nodes()[3], 'ArrowLeft')
+      expect(document.activeElement).toBe(nodes()[0])
+      expect(tabStopIndex()).toBe(0)
+
+      // 叶子上的 → 没有子列可进，焦点原地不动
+      nodes()[2].focus()
+      const leafRight = await pressKey(nodes()[2], 'ArrowRight')
+      expect(leafRight.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('杭州')
+      expect(columns()).toHaveLength(2)
+    })
+
+    it('Home / End 跳到本列首末的非禁用节点', async () => {
+      mountPanel({ options: tree })
+      await nextTick()
+      nodes()[0].focus()
+      const end = await pressKey(nodes()[0], 'End')
+      expect(end.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('江苏')
+      expect(tabStopIndex()).toBe(1)
+      const home = await pressKey(nodes()[1], 'Home')
+      expect(home.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('浙江')
+    })
+
+    it('Enter / Space 等同点击：叶子抛 update:modelValue 与 change', async () => {
+      const wrapper = mountPanel({ options: tree, modelValue: ['zj'] })
+      await nextTick()
+      const enter = await pressKey(nodes()[2], 'Enter')
+      expect(enter.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['zj', 'hz']])
+      expect(wrapper.emitted('change')?.at(-1)).toEqual([['zj', 'hz']])
+
+      reset()
+      const multiple = mountPanel({ options: tree, multiple: true, modelValue: [] })
+      await nextTick()
+      await click(nodes()[1])
+      const space = await pressKey(nodes()[2], ' ')
+      expect(space.defaultPrevented).toBe(true)
+      expect(multiple.emitted('update:modelValue')?.at(-1)).toEqual([[['js', 'nj']]])
+    })
+
+    it('根 disabled 时整面板退出 Tab 序与键盘导航', async () => {
+      const wrapper = mountPanel({ options: tree, disabled: true })
+      await nextTick()
+      expect(nodes().every((node) => !node.hasAttribute('tabindex'))).toBe(true)
+      expect(tabStopIndex()).toBe(-1)
+      // 按键仍被接管（不再落到页面滚动），但不产生选中与下钻
+      const enter = await pressKey(nodes()[0], 'Enter')
+      expect(enter.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      await pressKey(nodes()[0], 'ArrowRight')
+      expect(columns()).toHaveLength(1)
+    })
+
+    it('禁用节点、列容器与非导航键都不参与漫游', async () => {
+      mountPanel({
+        options: [
+          { value: 'x', label: '禁用项', disabled: true },
+          { value: 'y', label: '可选项' }
+        ]
+      })
+      await nextTick()
+      const onDisabled = await pressKey(nodes()[0], 'ArrowDown')
+      expect(onDisabled.defaultPrevented).toBe(false)
+      // Home 跳过列首禁用项落到唯一可选项
+      const home = await pressKey(nodes()[1], 'Home')
+      expect(home.defaultPrevented).toBe(true)
+      expect(document.activeElement).toBe(nodes()[1])
+
+      const onColumn = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true })
+      columns()[0].dispatchEvent(onColumn)
+      await nextTick()
+      expect(onColumn.defaultPrevented).toBe(false)
+      const tab = await pressKey(nodes()[1], 'Tab')
+      expect(tab.defaultPrevented).toBe(false)
+    })
+
+    it('虚拟列滚动重算窗口区间，同一滚动位置不再触发渲染', async () => {
+      const many = Array.from({ length: 50 }, (_unused, index) => ({ value: 'v' + index, label: '选项' + index }))
+      mountPanel({ options: many, height: 120, itemSize: 30 })
+      await nextTick()
+      const rows = () => Array.from(document.querySelectorAll<HTMLElement>('.ui-cascader-panel__row'))
+      expect(rows()[0].getAttribute('style')).toBe('top: 0px;')
+
+      columns()[0].scrollTop = 600
+      columns()[0].dispatchEvent(new Event('scroll', { bubbles: true }))
+      await nextTick()
+      // start = floor(600 / 30) - overscan 4
+      expect(rows()[0].getAttribute('style')).toBe('top: 480px;')
+      const count = rows().length
+      columns()[0].dispatchEvent(new Event('scroll', { bubbles: true }))
+      await nextTick()
+      expect(rows()).toHaveLength(count)
+    })
   })
 })

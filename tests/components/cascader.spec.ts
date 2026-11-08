@@ -48,6 +48,18 @@ const openByClick = async (wrapper: any) => {
   await nextTick()
 }
 
+/** 键盘驱动统一走可取消的冒泡 keydown；两次 nextTick 因为列可能是按键里 nextTick 才新建的 */
+const pressKey = async (element: Element | null | undefined, key: string) => {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })
+  element?.dispatchEvent(event)
+  await nextTick()
+  await nextTick()
+  return event
+}
+
+const tabStopIndex = () => nodesOf().findIndex((node) => node.getAttribute('tabindex') === '0')
+const activeText = () => (document.activeElement as HTMLElement | null)?.textContent ?? ''
+
 describe('Cascader', () => {
   afterEach(() => {
     reset()
@@ -188,6 +200,16 @@ describe('Cascader', () => {
     const multiple = mountCascader({ options: tree, modelValue: [['zj', 'hz']], multiple: true, clearable: true })
     await multiple.find('.ui-cascader__clear').trigger('click')
     expect(multiple.emitted('update:modelValue')?.at(-1)).toEqual([[]])
+
+    reset()
+    const fn = mountCascader({
+      options: tree,
+      modelValue: ['zj', 'hz'],
+      clearable: true,
+      valueOnClear: () => 'empty'
+    })
+    await fn.find('.ui-cascader__clear').trigger('click')
+    expect(fn.emitted('update:modelValue')?.at(-1)).toEqual(['empty'])
   })
 
   it('multiple 渲染标签，点关闭移除对应路径', async () => {
@@ -245,6 +267,16 @@ describe('Cascader', () => {
       '浙江 / 宁波',
       '江苏 / 南京'
     ])
+    // 浮层内点击不冒泡出去，不会被当成触发器交互
+    document.querySelector('.ui-cascader__tag-popover')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    await nextTick()
+    expect(wrapper.classes()).not.toContain('is-open')
+    await more.trigger('mouseleave')
+    // 未到期又移回：取消已排队的关闭
+    await more.trigger('mouseenter')
+    await vi.advanceTimersByTimeAsync(200)
+    expect(document.querySelector('.ui-cascader__tag-popover')?.className).toContain('is-open')
+    await more.trigger('mouseleave')
     await more.trigger('mouseleave')
     await vi.advanceTimersByTimeAsync(149)
     expect(document.querySelector('.ui-cascader__tag-popover')?.className).toContain('is-open')
@@ -495,6 +527,427 @@ describe('Cascader', () => {
     await openByClick(wrapper)
     expect(document.querySelector('.ui-floating-panel__empty')?.textContent).toBe('无数据')
     expect(columnsOf()).toHaveLength(1)
+
+    // 连 options 都不传时走 prop 默认值，同样落到无数据占位
+    reset()
+    const defaults = mountCascader()
+    await openByClick(defaults)
+    expect(document.querySelector('.ui-floating-panel__empty')?.textContent).toBe('无数据')
+  })
+
+  describe('键盘可操作', () => {
+    const triggerEl = (wrapper: any) => wrapper.find('.ui-cascader__trigger').element as HTMLElement
+
+    it('trigger 上 Enter / Space 开合，Spacebar 旧键名同样生效', async () => {
+      const wrapper = mountCascader({ options: tree })
+      const enter = await pressKey(triggerEl(wrapper), 'Enter')
+      expect(enter.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('visible-change')?.at(-1)).toEqual([true])
+      // 打开即把焦点交给唯一 Tab 停靠点
+      expect(document.activeElement).toBe(nodesOf()[0])
+      expect(tabStopIndex()).toBe(0)
+
+      const space = await pressKey(triggerEl(wrapper), ' ')
+      expect(space.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('visible-change')?.at(-1)).toEqual([false])
+      expect(wrapper.classes()).not.toContain('is-open')
+
+      await pressKey(triggerEl(wrapper), 'Spacebar')
+      expect(wrapper.classes()).toContain('is-open')
+    })
+
+    it('内层 button / input 的 Enter 不重复 toggle，普通字符键不拦截', async () => {
+      const wrapper = mountCascader({ options: tree, modelValue: ['zj', 'hz'], clearable: true })
+      await openByClick(wrapper)
+      const opened = wrapper.emitted('visible-change')?.length
+      const letter = await pressKey(triggerEl(wrapper), 'a')
+      expect(letter.defaultPrevented).toBe(false)
+      expect(wrapper.classes()).toContain('is-open')
+
+      const clear = wrapper.find('.ui-cascader__clear')
+      expect(clear.element.tagName).toBe('BUTTON')
+      const enter = await pressKey(clear.element, 'Enter')
+      expect(enter.defaultPrevented).toBe(false)
+      expect(wrapper.classes()).toContain('is-open')
+      expect(wrapper.emitted('visible-change')?.length).toBe(opened)
+    })
+
+    it('filterable 输入框 Enter 选首个非禁用命中，无命中时放行', async () => {
+      const filtered = [
+        {
+          value: 'g',
+          label: '组',
+          children: [
+            { value: 'off', label: '禁用宁', disabled: true },
+            { value: 'on', label: '可用宁' }
+          ]
+        }
+      ]
+      const wrapper = mountCascader({ options: filtered, filterable: true, debounce: 0 })
+      const input = wrapper.find('.ui-cascader__input')
+      await input.trigger('focus')
+      const el = input.element as HTMLInputElement
+      el.value = '宁'
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      await nextTick()
+      expect(nodesOf().map((node) => node.textContent)).toEqual(['组 / 禁用宁', '组 / 可用宁'])
+
+      const enter = await pressKey(el, 'Enter')
+      expect(enter.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['g', 'on']])
+
+      el.value = '不存在'
+      el.dispatchEvent(new Event('input', { bubbles: true }))
+      await nextTick()
+      const none = await pressKey(el, 'Enter')
+      expect(none.defaultPrevented).toBe(false)
+      expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
+
+      // 展开中的 filterable 触发器不再被点击 / Enter 反复开合
+      await click(triggerEl(wrapper))
+      expect(wrapper.classes()).toContain('is-open')
+      const onTrigger = await pressKey(triggerEl(wrapper), 'Enter')
+      expect(onTrigger.defaultPrevented).toBe(true)
+      expect(wrapper.classes()).toContain('is-open')
+    })
+
+    it('filterable 输入框 Escape 关面板并丢掉未到期的过滤，连续输入只认最后一次', async () => {
+      const wrapper = mountCascader({ options: tree, filterable: true, debounce: 20 })
+      const input = wrapper.find('.ui-cascader__input')
+      await input.trigger('focus')
+      await nextTick()
+      const el = input.element as HTMLInputElement
+      const type = async (text: string) => {
+        el.value = text
+        el.dispatchEvent(new Event('input', { bubbles: true }))
+        await nextTick()
+      }
+
+      await type('杭')
+      const escape = await pressKey(el, 'Escape')
+      expect(escape.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('visible-change')?.at(-1)).toEqual([false])
+      // 面板已关，待触发的 debounce 必须一起丢掉，否则迟到一拍又把搜索结果铺回来
+      await new Promise((resolve) => setTimeout(resolve, 40))
+      expect(wrapper.classes()).not.toContain('is-open')
+      expect(nodesOf().map((node) => node.textContent)).toEqual(['浙江', '江苏'])
+
+      await type('杭')
+      await type('宁')
+      await new Promise((resolve) => setTimeout(resolve, 40))
+      await nextTick()
+      expect(nodesOf().map((node) => node.textContent)).toEqual(['浙江 / 宁波'])
+    })
+
+    it('面板单一 Tab 停靠点：禁用节点退出 Tab 序，停靠键失效时兜底第一列首个非禁用', async () => {
+      const wrapper = mountCascader({
+        options: [
+          { value: 'x', label: '禁用项', disabled: true },
+          { value: 'y', label: '可选项' }
+        ]
+      })
+      await openByClick(wrapper)
+      expect(nodesOf()[0].hasAttribute('tabindex')).toBe(false)
+      expect(nodesOf()[1].getAttribute('tabindex')).toBe('0')
+      expect(tabStopIndex()).toBe(1)
+      expect(document.activeElement).toBe(nodesOf()[1])
+
+      reset()
+      const deep = mountCascader({ options: tree, modelValue: ['zj', 'hz'] })
+      await openByClick(deep)
+      // 回显路径落在第二列，停靠点仍只有一个且兜底到第一列首个非禁用节点
+      expect(nodesOf().filter((node) => node.getAttribute('tabindex') === '0')).toHaveLength(1)
+      expect(tabStopIndex()).toBe(0)
+      expect(document.activeElement).toBe(nodesOf()[0])
+    })
+
+    it('↓/↑ 同列移动跳过禁用节点，列首列尾停住', async () => {
+      const wrapper = mountCascader({
+        options: [
+          { value: 'zj', label: '浙江', children: [{ value: 'hz', label: '杭州' }] },
+          { value: 'ah', label: '安徽', disabled: true },
+          { value: 'js', label: '江苏', children: [{ value: 'nj', label: '南京' }] }
+        ]
+      })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      const down = await pressKey(nodesOf()[0], 'ArrowDown')
+      expect(down.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('江苏')
+      expect(tabStopIndex()).toBe(2)
+
+      await pressKey(nodesOf()[2], 'ArrowDown')
+      expect(activeText()).toBe('江苏')
+      const up = await pressKey(nodesOf()[2], 'ArrowUp')
+      expect(up.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('浙江')
+      await pressKey(nodesOf()[0], 'ArrowUp')
+      expect(activeText()).toBe('浙江')
+    })
+
+    it('→ 展开并进入子列首项，← 在父列收起子列、在子列回父级', async () => {
+      const wrapper = mountCascader({ options: tree })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      const right = await pressKey(nodesOf()[0], 'ArrowRight')
+      expect(right.defaultPrevented).toBe(true)
+      expect(columnsOf()).toHaveLength(2)
+      expect(activeText()).toBe('杭州')
+      expect(tabStopIndex()).toBe(2)
+
+      const left = await pressKey(nodesOf()[0], 'ArrowLeft')
+      expect(left.defaultPrevented).toBe(true)
+      expect(columnsOf()).toHaveLength(1)
+      expect(wrapper.emitted('expand-change')?.at(-1)).toEqual([[]])
+      expect(activeText()).toBe('浙江')
+      // 第一列且无子列可收，← 无处可退
+      await pressKey(nodesOf()[0], 'ArrowLeft')
+      expect(activeText()).toBe('浙江')
+
+      reset()
+      const parent = mountCascader({ options: tree, modelValue: ['zj'] })
+      await openByClick(parent)
+      nodesOf()[3].focus()
+      await pressKey(nodesOf()[3], 'ArrowLeft')
+      expect(document.activeElement).toBe(nodesOf()[0])
+      expect(tabStopIndex()).toBe(0)
+
+      reset()
+      const blocked = mountCascader({
+        options: [{ value: 'p', label: '父', children: [{ value: 'c', label: '子', disabled: true }] }]
+      })
+      await openByClick(blocked)
+      nodesOf()[0].focus()
+      await pressKey(nodesOf()[0], 'ArrowRight')
+      // 子列首项是禁用项，没有可落点，焦点留在父级
+      expect(columnsOf()).toHaveLength(2)
+      expect(document.activeElement).toBe(nodesOf()[0])
+    })
+
+    it('Home / End 跳到本列首末的非禁用节点', async () => {
+      const wrapper = mountCascader({ options: tree })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      const end = await pressKey(nodesOf()[0], 'End')
+      expect(end.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('江苏')
+      expect(tabStopIndex()).toBe(1)
+      const home = await pressKey(nodesOf()[1], 'Home')
+      expect(home.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('浙江')
+    })
+
+    it('Enter / Space 等同点击：选中叶子、收起面板并把焦点归还 trigger', async () => {
+      const wrapper = mountCascader({ options: tree })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      await pressKey(nodesOf()[0], 'ArrowRight')
+      const enter = await pressKey(nodesOf()[2], 'Enter')
+      expect(enter.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([['zj', 'hz']])
+      expect(wrapper.classes()).not.toContain('is-open')
+      expect(document.activeElement).toBe(triggerEl(wrapper))
+
+      reset()
+      const space = mountCascader({ options: tree, modelValue: ['zj'] })
+      await openByClick(space)
+      const pressed = await pressKey(nodesOf()[2], ' ')
+      expect(pressed.defaultPrevented).toBe(true)
+      expect(space.emitted('update:modelValue')?.at(-1)).toEqual([['zj', 'hz']])
+      expect(space.emitted('visible-change')?.at(-1)).toEqual([false])
+    })
+
+    it('multiple 下 Enter 选中后保持展开；复选框 / checkStrictly 用 Space 拨勾选不下来', async () => {
+      const wrapper = mountCascader({ options: tree, multiple: true, modelValue: [] })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      await pressKey(nodesOf()[0], 'ArrowRight')
+      await pressKey(nodesOf()[2], 'Enter')
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[['zj', 'hz']]])
+      expect(wrapper.classes()).toContain('is-open')
+
+      reset()
+      const checkbox = mountCascader({ options: tree, multiple: true, checkbox: true, modelValue: [] })
+      await openByClick(checkbox)
+      nodesOf()[0].focus()
+      const cascade = await pressKey(nodesOf()[0], ' ')
+      expect(cascade.defaultPrevented).toBe(true)
+      expect(checkbox.emitted('update:modelValue')?.at(-1)).toEqual([
+        [
+          ['zj', 'hz'],
+          ['zj', 'nb']
+        ]
+      ])
+      expect(columnsOf()).toHaveLength(1)
+
+      reset()
+      const strict = mountCascader({ options: tree, multiple: true, checkStrictly: true, modelValue: [] })
+      await openByClick(strict)
+      nodesOf()[0].focus()
+      await pressKey(nodesOf()[0], ' ')
+      expect(strict.emitted('update:modelValue')?.at(-1)).toEqual([[['zj']]])
+    })
+
+    it('multiple 下已选项再按 Enter 取消；叶子上的 → 不会凭空建列', async () => {
+      const wrapper = mountCascader({ options: tree, multiple: true, modelValue: [] })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      await pressKey(nodesOf()[0], 'ArrowRight')
+      expect(activeText()).toBe('杭州')
+
+      const leafRight = await pressKey(nodesOf()[2], 'ArrowRight')
+      expect(leafRight.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('杭州')
+      expect(columnsOf()).toHaveLength(2)
+
+      await pressKey(nodesOf()[2], 'Enter')
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[['zj', 'hz']]])
+      await wrapper.setProps({ modelValue: [['zj', 'hz']] })
+      await pressKey(nodesOf()[2], 'Enter')
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[]])
+    })
+
+    it('checkbox 模式：叶子全禁用的父级与禁用行复选框都不写值', async () => {
+      const wrapper = mountCascader({
+        options: [
+          { value: 'p', label: '父', children: [{ value: 'c', label: '子', disabled: true }] },
+          { value: 'x', label: '禁用项', disabled: true }
+        ],
+        multiple: true,
+        checkbox: true,
+        modelValue: []
+      })
+      await openByClick(wrapper)
+      const boxes = Array.from(document.querySelectorAll<HTMLElement>('.ui-cascader__checkbox'))
+      expect(boxes).toHaveLength(2)
+      await click(boxes[0])
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      expect(boxes[1].className).toContain('is-disabled')
+      await click(boxes[1])
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+
+    it('关闭态 Escape 为空操作，面板内 pointerdown 不算外部点击，展开时回灌同步列', async () => {
+      const wrapper = mountCascader({ options: tree, modelValue: ['zj'] })
+      const escape = await pressKey(triggerEl(wrapper), 'Escape')
+      expect(escape.defaultPrevented).toBe(false)
+      expect(wrapper.emitted('visible-change')).toBeUndefined()
+      // 关闭态的外部 pointerdown 也无需处理
+      document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+      await nextTick()
+      expect(wrapper.emitted('visible-change')).toBeUndefined()
+
+      await openByClick(wrapper)
+      triggerEl(wrapper).dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+      panel()?.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+      await nextTick()
+      expect(wrapper.classes()).toContain('is-open')
+      expect(wrapper.emitted('visible-change')?.at(-1)).toEqual([true])
+
+      await wrapper.setProps({ modelValue: ['js', 'nj'] })
+      await nextTick()
+      expect(nodesOf().map((node) => node.textContent)).toEqual(['浙江', '江苏', '南京'])
+      expect(nodesOf()[2].className).toContain('is-active')
+    })
+
+    it('面板节点上 Escape 关闭并归还焦点，关闭后不再响应', async () => {
+      const wrapper = mountCascader({ options: tree })
+      await openByClick(wrapper)
+      nodesOf()[0].focus()
+      const escape = await pressKey(nodesOf()[0], 'Escape')
+      expect(escape.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('visible-change')?.at(-1)).toEqual([false])
+      expect(document.activeElement).toBe(triggerEl(wrapper))
+
+      const silent = await pressKey(nodesOf()[0], 'Escape')
+      expect(silent.defaultPrevented).toBe(false)
+      expect(wrapper.emitted('visible-change')).toHaveLength(2)
+    })
+
+    it('禁用节点、列容器与非导航键都不参与漫游', async () => {
+      const wrapper = mountCascader({
+        options: [
+          { value: 'x', label: '禁用项', disabled: true },
+          { value: 'y', label: '可选项' }
+        ]
+      })
+      await openByClick(wrapper)
+      expect(activeText()).toBe('可选项')
+      const onDisabled = await pressKey(nodesOf()[0], 'ArrowUp')
+      expect(onDisabled.defaultPrevented).toBe(false)
+      expect(activeText()).toBe('可选项')
+      // Home 跳过列首禁用项落到唯一可选项
+      const home = await pressKey(nodesOf()[1], 'Home')
+      expect(home.defaultPrevented).toBe(true)
+      expect(activeText()).toBe('可选项')
+
+      const onColumn = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true })
+      columnsOf()[0].dispatchEvent(onColumn)
+      await nextTick()
+      expect(onColumn.defaultPrevented).toBe(false)
+      const tab = await pressKey(nodesOf()[1], 'Tab')
+      expect(tab.defaultPrevented).toBe(false)
+
+      reset()
+      const tail = mountCascader({
+        options: [
+          { value: 'y', label: '可选项' },
+          { value: 'x', label: '禁用项', disabled: true }
+        ]
+      })
+      await openByClick(tail)
+      expect(activeText()).toBe('可选项')
+      await pressKey(nodesOf()[0], 'ArrowDown')
+      expect(activeText()).toBe('可选项')
+    })
+
+    it('clear 与 tag-close 是原生 button，键盘合成 click 走同一条清除路径', async () => {
+      const wrapper = mountCascader({
+        options: tree,
+        multiple: true,
+        clearable: true,
+        modelValue: [
+          ['zj', 'hz'],
+          ['js', 'nj']
+        ]
+      })
+      const tagClose = wrapper.find('.ui-cascader__tag-close')
+      const clear = wrapper.find('.ui-cascader__clear')
+      expect(tagClose.element.tagName).toBe('BUTTON')
+      expect(clear.element.tagName).toBe('BUTTON')
+      expect(tagClose.attributes('type')).toBe('button')
+      expect(clear.attributes('type')).toBe('button')
+
+      // 冒泡到 trigger 的 Enter 被内层控件守卫吞掉，不会顺手开合面板
+      const guarded = await pressKey(tagClose.element, 'Enter')
+      expect(guarded.defaultPrevented).toBe(false)
+      expect(wrapper.emitted('visible-change')).toBeUndefined()
+
+      // 浏览器对聚焦中的原生 button 按 Enter/Space 会合成 click
+      await click(tagClose.element)
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[['js', 'nj']]])
+      await click(wrapper.find('.ui-cascader__clear').element)
+      expect(wrapper.emitted('clear')).toHaveLength(1)
+    })
+
+    it('虚拟列滚动重算窗口区间，同一滚动位置不再触发渲染', async () => {
+      const many = Array.from({ length: 60 }, (_unused, index) => ({ value: 'v' + index, label: '选项' + index }))
+      const wrapper = mountCascader({ options: many, virtualScroll: true, itemSize: 40, height: 120 })
+      await openByClick(wrapper)
+      const column = columnsOf()[0]
+      const rows = () => Array.from(document.querySelectorAll<HTMLElement>('.ui-cascader__row'))
+      expect(rows()[0].style.top).toBe('0px')
+
+      column.scrollTop = 800
+      column.dispatchEvent(new Event('scroll', { bubbles: true }))
+      await nextTick()
+      // start = floor(800 / 40) - overscan 4
+      expect(rows()[0].style.top).toBe('640px')
+      const count = rows().length
+      column.dispatchEvent(new Event('scroll', { bubbles: true }))
+      await nextTick()
+      expect(rows()).toHaveLength(count)
+    })
   })
 
   it('文案走 ConfigProvider 注入的 locale，未注入的键回退中文', async () => {
