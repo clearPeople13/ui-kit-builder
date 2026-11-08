@@ -104,6 +104,24 @@ export default {
       ],
       slots: [
         {
+          name: 'prepend',
+          scope: null,
+          fallback: false,
+          description: '输入框前置块，渲染在 input/textarea 之前，带底色与右分隔线（无默认内容）'
+        },
+        {
+          name: 'prefix',
+          scope: null,
+          fallback: false,
+          description: '输入框前置内容，渲染在 input/textarea 之前、前置块之后（无默认内容）'
+        },
+        {
+          name: 'suffix',
+          scope: null,
+          fallback: false,
+          description: '输入框后置内容，渲染在 input/textarea 之后、功能图标之前（无默认内容）'
+        },
+        {
           name: 'append',
           scope: null,
           fallback: false,

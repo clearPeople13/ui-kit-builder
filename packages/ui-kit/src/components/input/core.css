@@ -1,1 +1,18 @@
 @import '../../shared/controls.css';
+
+.ui-input__prepend,
+.ui-input__slot-prefix,
+.ui-input__slot-suffix {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  color: var(--ui-text-color-secondary);
+}
+
+.ui-input__prepend {
+  align-self: stretch;
+  padding: 0 8px;
+  border-right: 1px solid var(--ui-border-color);
+  border-radius: calc(var(--ui-input-radius, 4px) - 1px) 0 0 calc(var(--ui-input-radius, 4px) - 1px);
+  background: var(--ui-fill-color);
+}

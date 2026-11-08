@@ -162,6 +162,14 @@ export default {
           "description": "loopNavigation"
         }
       ],
+      "slots": [
+        {
+          "name": "append",
+          "scope": null,
+          "fallback": false,
+          "description": "输入框后置内容，渲染在输入控件之后、下拉面板之前（无默认内容）"
+        }
+      ],
       "features": {
         "autocomplete.clearable": {
           "title": "可清空",

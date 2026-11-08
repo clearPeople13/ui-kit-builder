@@ -194,15 +194,20 @@ export function inputConfig(options: { name: string; baseClass: string; props: A
         tabindex: props.tabindex,
         ...modelEvents(emit)
       }
+      const prepend = slots.prepend
+        ? h('span', { class: `${options.baseClass}__prepend` }, [slots.prepend()])
+        : null
+      const prefix = slots.prefix ? h('span', { class: `${options.baseClass}__slot-prefix` }, [slots.prefix()]) : null
+      const suffix = slots.suffix ? h('span', { class: `${options.baseClass}__slot-suffix` }, [slots.suffix()]) : null
       if (props.type === 'textarea') {
         shared.rows = props.rows ?? 2
         if (typeof props.resize === 'string' && props.resize) {
           shared.style = { resize: props.resize }
         }
-        return [h('textarea', shared), slots.append?.()]
+        return [prepend, prefix, h('textarea', shared), suffix, slots.append?.()]
       }
       shared.type = type
-      return [h('input', shared), slots.append?.()]
+      return [prepend, prefix, h('input', shared), suffix, slots.append?.()]
     }
   }
 }

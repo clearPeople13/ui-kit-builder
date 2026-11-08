@@ -171,6 +171,14 @@ export default {
           "description": "props"
         }
       ],
+      "slots": [
+        {
+          "name": "append",
+          "scope": null,
+          "fallback": false,
+          "description": "输入框后置内容，渲染在输入控件之后、提及面板之前（无默认内容）"
+        }
+      ],
       "features": {
         "mention.clearable": {
           "title": "可清空",

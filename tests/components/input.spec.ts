@@ -157,8 +157,52 @@ describe('Input', () => {
     expect(wrapper.find('.ui-input__suffix').exists()).toBe(true)
   })
 
-  it('append 插槽渲染在输入框之后', () => {
-    const wrapper = mount(Input, { props: { modelValue: 'a' }, slots: { append: () => 'https://' } })
-    expect(wrapper.text()).toContain('https://')
+  it('prepend / prefix / suffix / append 四个插槽按顺序渲染', () => {
+    const wrapper = mount(Input, {
+      props: { modelValue: 'a' },
+      slots: {
+        prepend: () => 'https://',
+        prefix: () => '用户',
+        suffix: () => '.com',
+        append: () => '后置'
+      }
+    })
+    expect(wrapper.find('.ui-input__prepend').text()).toBe('https://')
+    expect(wrapper.find('.ui-input__slot-prefix').text()).toBe('用户')
+    expect(wrapper.find('.ui-input__slot-suffix').text()).toBe('.com')
+    expect(wrapper.text()).toBe('https://用户.com后置')
+  })
+
+  it('textarea 同样支持四个插槽', () => {
+    const wrapper = mount(Input, {
+      props: { type: 'textarea', modelValue: '内容' },
+      slots: { prepend: () => '前', prefix: () => 'P', suffix: () => 'S', append: () => '后' }
+    })
+    expect(wrapper.find('textarea.ui-input__inner').exists()).toBe(true)
+    expect(wrapper.find('.ui-input__prepend').text()).toBe('前')
+    expect(wrapper.find('.ui-input__slot-prefix').text()).toBe('P')
+    expect(wrapper.find('.ui-input__slot-suffix').text()).toBe('S')
+    expect(wrapper.text()).toContain('后')
+  })
+
+  it('prefix / suffix 与 clearable / password / suffixIcon / word-limit 共存', () => {
+    const wrapper = mount(Input, {
+      props: {
+        modelValue: 'secret',
+        type: 'password',
+        showPassword: true,
+        clearable: true,
+        suffixIcon: 'Star',
+        maxlength: 20,
+        showWordLimit: true
+      },
+      slots: { prefix: () => 'P', suffix: () => 'S' }
+    })
+    expect(wrapper.find('.ui-input__slot-prefix').text()).toBe('P')
+    expect(wrapper.find('.ui-input__slot-suffix').text()).toBe('S')
+    expect(wrapper.find('.ui-input__suffix').exists()).toBe(true)
+    expect(wrapper.find('.ui-input__clear').exists()).toBe(true)
+    expect(wrapper.find('.ui-input__password').exists()).toBe(true)
+    expect(wrapper.find('.ui-input__count').text()).toBe('6/20')
   })
 })
