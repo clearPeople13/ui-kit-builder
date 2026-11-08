@@ -161,6 +161,11 @@ export default {
           name: 'expanded',
           type: 'boolean',
           description: 'expanded'
+        },
+        {
+          name: 'ariaLabel',
+          type: 'string',
+          description: 'ariaLabel'
         }
       ],
       features: {}
