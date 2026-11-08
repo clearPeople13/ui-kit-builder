@@ -1173,3 +1173,44 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 - 交叉消费方已排查：tooltip 的 show/hide 无组件内/演示台监听者；menu `collapsed` 仅 tests/spec/demo 消费；popper `expanded` 仅 playground-preview/presets-extra 消费。
 - 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
 - 缺陷口径：F-1…F-106 全部修复（无已登记存量待改项），三处文档同步为 106 条。
+
+## 36. 注释规范与注释风格守卫（RULES.md §1 机器化）（分支 `refactor/20261108-comment-sweep`）
+
+> 触发：用户要求"注释干净、少、明了，后面要有规范"。规则落进 `RULES.md` §1（默认不写、只写 why、一条一行、禁复述/文档块/改码历史/占位/英文横幅）。全库审计先行：2083 条注释里约 95% 是承重 why（虚拟滚动中位数锚定、贴底锁、Boolean 归一化陷阱等），真正机械噪音只有分隔横幅一类，不做大清洗（避免毁掉承重知识）。
+
+### 36.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-107 | `scripts/{test-impact,verify-governance}.mjs`、`packages/ui-kit/src/components/{form,select}/core.ts`、`tests/build/dev-api.spec.ts` | 分隔横幅式注释（`// ---- xxx ----`）13 处：文字有信息、横杠纯装饰；注释规范无机器守门，噪音会再生 | 早期用横幅当小节标题的习惯 | 横幅去横杠改普通注释（编号小节标题保留数字）；新增 `tests/build/comment-guard.spec.ts` 常驻守卫：分隔横幅 / TODO-FIXME-XXX-HACK 占位 / 空注释行三类全库零命中（不配 BASELINE，命中就改），合成源自测证明三模式会咬人；`--stage` 这类双横线开头的普通说明经精确正则豁免 |
+
+### 36.2 验证
+
+- worktree 全绿：comment-guard 3 用例（含合成源咬人自测）+ naming-guard 6 用例不回归；prettier/eslint 零告警。
+- 审计结论回写 RULES.md §1.2（横幅入禁令）与 §1 例外（测试文件顶部契约头一块）。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-107 全部修复，三处文档同步为 107 条。
+## 37. G6 结构性决策拍板记录（A17–A20）（roadmap 收官项）
+
+> 触发：`OPTIMIZATION_PLAN_V2.md` G6「结构性决策，最后做且需逐项拍板」。四项全部有实测证据支撑，决策记录如下；本批不新增缺陷编号（属决策非缺陷）。
+
+### 37.1 A17 特性裁剪收益有限 → 决策：文档明示「逻辑不裁」
+
+- 证据（2026-11-08 实测 sizes.json）：175 个特性总边际 85187B（gzip ~19KB），139/175 特性边际 <500B，160/175 <1KB；最大五个为 image.preview 6082B / table.tree 4494B / tree.draggable 4165B / drawer.draggable 3128B / button.appearance 3004B。core(569926B)→full(650054B) 差 ~78KB。
+- 结论：把 <500B 的逻辑真迁 feature（每个特性要拆 setup/render/css 三处并回归 20 份 profile）是纯负收益。
+- 口径（写进裁剪文档与本节）：特性裁剪的价值 = props/类名/CSS 开关按特性集开关 + d.ts 按 profile 收缩；逻辑默认留 core，边际体积以 sizes.json 自证为准，不再追求「关掉即零字节」。
+
+### 37.2 A18 d.ts 双事实源 → 决策：spec 维持单源，不引入 vue-tsc 抽取
+
+- 证据：d.ts 已由 `scripts/build-lib.mjs` 的 generateTypes 从 spec.mjs（props/features/emits/slots 契约中枢）单源生成；`tests/profiles/props-documented.spec.ts` 双向守卫（运行时 prop ↔ 字典）×20 份 profile 已把「spec 撒谎」机器化，F-53 类漂移不会再无声漏过。
+- 结论：vue-tsc 抽取会与 spec 生成形成第二事实源，两套对齐成本 > 收益。spec 单源 + 双向守卫就是收敛出口。
+
+### 37.3 A19 发布链缺位 → 决策：延后至 1.0 前再议，暂不产品化
+
+- 证据：0.x 未发布、本地零成本个人项目，无 consumers；package.json 已对齐 version/license/engines。
+- 结论：workspaces + changesets + publish 现在落地是纯维护成本。触发条件：出现第一个外部消费者或定 1.0 计划时重启（届时 A25 第三刀的破坏性改名也要趁那个窗口前做完）。
+
+### 37.4 A20 依赖 audit → 决策：dev-only 风险书面记录，升级单独立项
+
+- 证据（2026-11-08 `npm audit --registry=https://registry.npmjs.org`）：生产依赖 0 漏洞；16 个漏洞全部 dev toolchain——critical 2（vitest 5.1.0 修、tinypool）、high 1（glob）、moderate 13（@typescript-eslint 8.36.0、@vue/test-utils 2.4.11、js-beautify、editorconfig 等）。修复路径 = vitest 3→5 大跳 + typescript-eslint 8 升。
+- 结论：dev-only 不进入产物与用户面，风险可接受；但 vitest 5 大跳会波及 5 份 vitest 配置与 browser/provider API，必须单独分支评估（已登记任务 #23），不与任何功能波次混批。
