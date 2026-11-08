@@ -23,6 +23,10 @@ const colorPickerBaseProps = {
 
 const FALLBACK_COLOR = '#409eff'
 const HUE_GRADIENT = 'linear-gradient(to right, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)'
+// 键盘步进精度与指针拖拽口径分离：方向键一次走 1%（色相为 1°），拖动仍按像素反算
+const SV_KEY_STEP = 0.01
+const HUE_KEY_STEP = 1
+const ALPHA_KEY_STEP = 0.01
 
 interface HsvState {
   h: number
@@ -270,10 +274,42 @@ export function createColorPicker(features: UiFeature[] = []) {
           applyColor((event.target as HTMLInputElement).value)
         }
 
+        function stepSlider(kind: 'sv' | 'hue' | 'alpha', event: KeyboardEvent) {
+          if (props.disabled) {
+            return
+          }
+          const horizontal = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+          const vertical = event.key === 'ArrowUp' ? 1 : event.key === 'ArrowDown' ? -1 : 0
+          if (!horizontal && !vertical) {
+            return
+          }
+          event.preventDefault()
+          const state = hsv.value
+          if (kind === 'sv') {
+            hsv.value = {
+              ...state,
+              s: clamp(state.s + horizontal * SV_KEY_STEP, 0, 1),
+              v: clamp(state.v + vertical * SV_KEY_STEP, 0, 1)
+            }
+          } else if (kind === 'hue') {
+            hsv.value = { ...state, h: clamp(state.h + (horizontal || vertical) * HUE_KEY_STEP, 0, 360) }
+          } else {
+            hsv.value = { ...state, a: clamp(state.a + (horizontal || vertical) * ALPHA_KEY_STEP, 0, 1) }
+          }
+          commitColor()
+        }
+
+        function focusPanel() {
+          // 面板 teleport 到 body，键盘打开后必须把焦点送进面板，Tab 才能顺着滑杆走完取色链路；
+          // setTimeout 而非 nextTick：探针页跨 Vue 调度器时 kit 侧 nextTick 可能挂在不冲刷的 flush 承诺上
+          setTimeout(() => svRef.value?.focus({ preventScroll: true }), 0)
+        }
+
         function handleKeydown(event: KeyboardEvent) {
           if (event.key === 'Escape' && open.value) {
             event.preventDefault()
             closePanel()
+            triggerRef.value?.focus({ preventScroll: true })
           }
         }
 
@@ -333,7 +369,16 @@ export function createColorPicker(features: UiFeature[] = []) {
                 ref: svRef,
                 class: 'ui-color-picker__sv',
                 style: svStyle(),
-                onPointerdown: (event: PointerEvent) => startDrag('sv', event)
+                role: 'slider',
+                tabindex: props.disabled ? undefined : 0,
+                'aria-label': '饱和度与明度',
+                'aria-valuemin': 0,
+                'aria-valuemax': 100,
+                'aria-valuenow': Math.round(hsv.value.s * 100),
+                'aria-valuetext': `饱和度 ${Math.round(hsv.value.s * 100)}%，明度 ${Math.round(hsv.value.v * 100)}%`,
+                'aria-disabled': props.disabled ? 'true' : undefined,
+                onPointerdown: (event: PointerEvent) => startDrag('sv', event),
+                onKeydown: (event: KeyboardEvent) => stepSlider('sv', event)
               },
               [h('span', { class: 'ui-color-picker__sv-cursor', style: cursorStyle() })]
             ),
@@ -343,7 +388,16 @@ export function createColorPicker(features: UiFeature[] = []) {
                 ref: hueRef,
                 class: 'ui-color-picker__slider ui-color-picker__hue',
                 style: { background: HUE_GRADIENT },
-                onPointerdown: (event: PointerEvent) => startDrag('hue', event)
+                role: 'slider',
+                tabindex: props.disabled ? undefined : 0,
+                'aria-label': '色相',
+                'aria-valuemin': 0,
+                'aria-valuemax': 360,
+                'aria-valuenow': Math.round(hsv.value.h),
+                'aria-valuetext': `${Math.round(hsv.value.h)}°`,
+                'aria-disabled': props.disabled ? 'true' : undefined,
+                onPointerdown: (event: PointerEvent) => startDrag('hue', event),
+                onKeydown: (event: KeyboardEvent) => stepSlider('hue', event)
               },
               [h('span', { class: 'ui-color-picker__slider-cursor', style: hueCursorStyle() })]
             )
@@ -355,7 +409,16 @@ export function createColorPicker(features: UiFeature[] = []) {
                 {
                   ref: alphaRef,
                   class: 'ui-color-picker__slider ui-color-picker__alpha',
-                  onPointerdown: (event: PointerEvent) => startDrag('alpha', event)
+                  role: 'slider',
+                  tabindex: props.disabled ? undefined : 0,
+                  'aria-label': '不透明度',
+                  'aria-valuemin': 0,
+                  'aria-valuemax': 100,
+                  'aria-valuenow': Math.round(hsv.value.a * 100),
+                  'aria-valuetext': `${Math.round(hsv.value.a * 100)}%`,
+                  'aria-disabled': props.disabled ? 'true' : undefined,
+                  onPointerdown: (event: PointerEvent) => startDrag('alpha', event),
+                  onKeydown: (event: KeyboardEvent) => stepSlider('alpha', event)
                 },
                 [
                   h('span', {
@@ -457,6 +520,7 @@ export function createColorPicker(features: UiFeature[] = []) {
           closePanel,
           clearValue,
           renderPanel,
+          focusPanel,
           swatchStyle: () => ({ background: hasValue.value ? displayText.value : 'transparent' })
         }
       },
@@ -500,6 +564,16 @@ export function createColorPicker(features: UiFeature[] = []) {
               onKeydown: (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
                   state.closePanel()
+                  return
+                }
+                // 纯 div 触发器靠 Enter/Space 打开，口径对齐 triggerConfig 的键盘映射
+                if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+                  return
+                }
+                event.preventDefault()
+                state.togglePanel()
+                if (state.open) {
+                  state.focusPanel()
                 }
               }
             },

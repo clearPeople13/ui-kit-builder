@@ -168,6 +168,13 @@
   touch-action: none;
 }
 
+.ui-color-picker__sv:focus-visible,
+.ui-color-picker__slider:focus-visible {
+  outline: none;
+  border-radius: var(--ui-radius-small);
+  box-shadow: 0 0 0 3px var(--ui-focus-ring-soft);
+}
+
 .ui-color-picker__sv-cursor {
   position: absolute;
   width: 12px;

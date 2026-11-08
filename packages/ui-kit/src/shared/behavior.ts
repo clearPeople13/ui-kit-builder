@@ -2298,6 +2298,8 @@ export function triggerConfig(options: {
   closeOnPanelClick?: boolean | ((props: AnyProps) => boolean)
   enterable?: (props: AnyProps) => boolean
   autoClose?: (props: AnyProps) => number
+  /** 触发器 aria-haspopup 取值（如下拉菜单对齐面板 role），缺省不输出该属性 */
+  ariaHaspopup?: (props: AnyProps) => string | undefined
 }): UiComponentConfig {
   return {
     name: options.name,
@@ -2638,7 +2640,8 @@ export function triggerConfig(options: {
             id: props.id,
             tabindex: props.tabindex,
             'aria-label': props.ariaLabel,
-            'aria-expanded': panelVisible
+            'aria-expanded': panelVisible,
+            'aria-haspopup': options.ariaHaspopup?.(props)
           },
           [slots.default?.() ?? null]
         ),
