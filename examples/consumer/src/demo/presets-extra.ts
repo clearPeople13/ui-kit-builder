@@ -154,12 +154,6 @@ const DISPLAY_PRESETS: Record<string, ScenePreset[]> = {
   Carousel: [
     { id: 'base', label: '基础', values: {} },
     {
-      id: 'images',
-      label: '图片轮播',
-      hint: '4 张在线实景图铺满轮播区（object-fit: cover），自动播放、箭头与指示器沿用基础交互',
-      values: {}
-    },
-    {
       id: 'card',
       label: '卡片模式',
       hint: '当前卡居中、左右各露出相邻卡的一角并压暗，其余卡片隐藏',

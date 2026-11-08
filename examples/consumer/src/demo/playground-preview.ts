@@ -19,7 +19,7 @@ import * as CORE_KIT from '@demo/ui-kit-core'
 import * as CUTE_KIT from '@demo/ui-kit-cute'
 import * as FULL_KIT from '@demo/ui-kit-full'
 import { FORM_CITY_OPTIONS } from './form-data'
-import { SAMPLE_AVATAR_LIST, SAMPLE_PHOTOS } from './sample-image'
+import { SAMPLE_AVATAR_LIST, SAMPLE_IMAGE_SRC, SAMPLE_PHOTOS } from './sample-image'
 import { TableColumnDemo, TableSceneDemo } from './table-demo'
 
 type SampleSlot = (scope?: Record<string, unknown>) => VNodeChild
@@ -2150,25 +2150,6 @@ const TabsEditableDemo = defineComponent({
   }
 })
 
-const CarouselImagesDemo = defineComponent({
-  name: 'CarouselImagesDemo',
-  props: {
-    carousel: { type: Object as PropType<Component>, required: true },
-    item: { type: Object as PropType<Component>, required: true },
-    values: { type: Object as PropType<Record<string, unknown>>, required: true }
-  },
-  setup(props) {
-    return () =>
-      h(props.carousel, props.values, () =>
-        SAMPLE_PHOTOS.map((photo) =>
-          h(props.item, { key: photo.title }, () =>
-            h('img', { class: 'pg-slide-img', src: photo.src, alt: photo.title })
-          )
-        )
-      )
-  }
-})
-
 const TIMELINE_PHOTO_DATES = ['2026-10-23', '2026-10-24', '2026-10-25', '2026-10-26']
 
 interface AccountMenuItem {
@@ -3089,13 +3070,14 @@ function createSampleSlots(kit: MenuKit): Record<string, SampleSlots> {
     },
     TimelineItem: { default: () => '事件内容' },
     Carousel: {
-      default: () => [
-        h(kit('CarouselItem'), null, () => h('div', { class: 'pg-slide' }, '01')),
-        h(kit('CarouselItem'), null, () => h('div', { class: 'pg-slide pg-slide--alt' }, '02')),
-        h(kit('CarouselItem'), null, () => h('div', { class: 'pg-slide pg-slide--deep' }, '03'))
-      ]
+      default: () =>
+        SAMPLE_PHOTOS.map((photo) =>
+          h(kit('CarouselItem'), { key: photo.title }, () =>
+            h('img', { class: 'pg-slide-img', src: photo.src, alt: photo.title })
+          )
+        )
     },
-    CarouselItem: { default: () => h('div', { class: 'pg-slide' }, '幻灯片') },
+    CarouselItem: { default: () => h('img', { class: 'pg-slide-img', src: SAMPLE_IMAGE_SRC, alt: '示例图片' }) },
     Upload: { default: () => h(kit('Button'), null, () => '点击上传') },
     Tooltip: { default: () => h(kit('Button'), null, () => '悬停查看') },
     Popover: {
@@ -3297,14 +3279,6 @@ export default defineComponent({
           key: String(attrs.key),
           tabs: target,
           pane: module.TabPane ?? kitOf(props.packageId)('TabPane')
-        })
-      }
-      if (props.exportName === 'Carousel' && props.sceneId === 'images') {
-        return h(CarouselImagesDemo, {
-          key: String(attrs.key),
-          carousel: target,
-          item: module.CarouselItem ?? kitOf(props.packageId)('CarouselItem'),
-          values: attrs
         })
       }
       if (props.exportName === 'Timeline' && props.sceneId === 'photos') {
