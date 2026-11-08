@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T14:35:31.457Z",
+  "generatedAt": "2026-11-08T15:42:32.018Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -65,7 +65,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -91,7 +90,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -156,7 +154,6 @@
         "progress": [],
         "radio": [],
         "rate": [],
-        "result": [],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [],
@@ -182,7 +179,6 @@
         "transfer": [],
         "tree": [],
         "tree-select": [],
-        "tree-v2": [],
         "upload": [],
         "virtual-list": [],
         "watermark": []
@@ -693,22 +689,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -939,19 +919,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608179,
-          "gzipBytes": 148238
+          "bytes": 602068,
+          "gzipBytes": 147234
         },
         {
           "file": "ui-kit.css",
-          "bytes": 227868,
-          "gzipBytes": 31568
+          "bytes": 225360,
+          "gzipBytes": 31278
         }
       ],
-      "jsBytes": 608179,
-      "cssBytes": 227868,
-      "totalBytes": 836047,
-      "gzipBytes": 179713
+      "jsBytes": 602068,
+      "cssBytes": 225360,
+      "totalBytes": 827428,
+      "gzipBytes": 178445
     },
     "full": {
       "name": "full",
@@ -1017,7 +997,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -1043,7 +1022,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -1253,9 +1231,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -1356,15 +1331,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -1481,7 +1454,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -1542,11 +1514,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -2056,22 +2028,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -2302,19 +2258,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691415,
-          "gzipBytes": 168281
+          "bytes": 687537,
+          "gzipBytes": 168186
         },
         {
           "file": "ui-kit.css",
-          "bytes": 247619,
-          "gzipBytes": 34287
+          "bytes": 246447,
+          "gzipBytes": 34181
         }
       ],
-      "jsBytes": 691415,
-      "cssBytes": 247619,
-      "totalBytes": 939034,
-      "gzipBytes": 202637
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202460
     },
     "branded": {
       "name": "branded",
@@ -2380,7 +2336,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -2406,7 +2361,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -2616,9 +2570,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -2719,15 +2670,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -2844,7 +2793,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -2905,11 +2853,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -3419,22 +3367,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -3665,19 +3597,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168261
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259683,
-          "gzipBytes": 35054
+          "bytes": 258459,
+          "gzipBytes": 34937
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 259683,
-      "totalBytes": 952940,
-      "gzipBytes": 203509
+      "jsBytes": 689361,
+      "cssBytes": 258459,
+      "totalBytes": 947820,
+      "gzipBytes": 203318
     },
     "chinese": {
       "name": "chinese",
@@ -3743,7 +3675,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -3769,7 +3700,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -3979,9 +3909,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -4082,15 +4009,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -4207,7 +4132,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -4268,11 +4192,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -4782,22 +4706,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -5028,19 +4936,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168488
+          "bytes": 692097,
+          "gzipBytes": 168389
         },
         {
           "file": "ui-kit.css",
-          "bytes": 295675,
-          "gzipBytes": 38739
+          "bytes": 294373,
+          "gzipBytes": 38592
         }
       ],
-      "jsBytes": 696020,
-      "cssBytes": 295675,
-      "totalBytes": 991695,
-      "gzipBytes": 207382
+      "jsBytes": 692097,
+      "cssBytes": 294373,
+      "totalBytes": 986470,
+      "gzipBytes": 207162
     },
     "cute": {
       "name": "cute",
@@ -5106,7 +5014,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -5132,7 +5039,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -5342,9 +5248,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -5445,15 +5348,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -5570,7 +5471,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -5631,11 +5531,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -6145,22 +6045,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -6391,19 +6275,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168350
+          "bytes": 689361,
+          "gzipBytes": 168259
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275134,
-          "gzipBytes": 38008
+          "bytes": 273910,
+          "gzipBytes": 37884
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 275134,
-      "totalBytes": 968391,
-      "gzipBytes": 206475
+      "jsBytes": 689361,
+      "cssBytes": 273910,
+      "totalBytes": 963271,
+      "gzipBytes": 206281
     },
     "antd": {
       "name": "antd",
@@ -6469,7 +6353,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -6495,7 +6378,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -6705,9 +6587,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -6808,15 +6687,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -6933,7 +6810,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -6994,11 +6870,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -7508,22 +7384,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -7754,19 +7614,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168256
         },
         {
           "file": "ui-kit.css",
-          "bytes": 279890,
-          "gzipBytes": 38165
+          "bytes": 278666,
+          "gzipBytes": 38040
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 279890,
-      "totalBytes": 973147,
-      "gzipBytes": 206627
+      "jsBytes": 689361,
+      "cssBytes": 278666,
+      "totalBytes": 968027,
+      "gzipBytes": 206433
     },
     "arco": {
       "name": "arco",
@@ -7832,7 +7692,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -7858,7 +7717,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -8068,9 +7926,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -8171,15 +8026,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -8296,7 +8149,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -8357,11 +8209,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -8871,22 +8723,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -9117,19 +8953,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168257
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260055,
-          "gzipBytes": 35151
+          "bytes": 258831,
+          "gzipBytes": 35032
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 260055,
-      "totalBytes": 953312,
-      "gzipBytes": 203607
+      "jsBytes": 689361,
+      "cssBytes": 258831,
+      "totalBytes": 948192,
+      "gzipBytes": 203416
     },
     "tdesign": {
       "name": "tdesign",
@@ -9195,7 +9031,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -9221,7 +9056,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -9431,9 +9265,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -9534,15 +9365,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -9659,7 +9488,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -9720,11 +9548,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -10234,22 +10062,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -10480,19 +10292,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168482
+          "bytes": 692097,
+          "gzipBytes": 168387
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276381,
-          "gzipBytes": 35577
+          "bytes": 275079,
+          "gzipBytes": 35440
         }
       ],
-      "jsBytes": 696020,
-      "cssBytes": 276381,
-      "totalBytes": 972401,
-      "gzipBytes": 204205
+      "jsBytes": 692097,
+      "cssBytes": 275079,
+      "totalBytes": 967176,
+      "gzipBytes": 203993
     },
     "naive": {
       "name": "naive",
@@ -10558,7 +10370,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -10584,7 +10395,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -10794,9 +10604,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -10897,15 +10704,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -11022,7 +10827,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -11083,11 +10887,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -11597,22 +11401,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -11843,19 +11631,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694178,
-          "gzipBytes": 168403
+          "bytes": 690273,
+          "gzipBytes": 168302
         },
         {
           "file": "ui-kit.css",
-          "bytes": 265372,
-          "gzipBytes": 35205
+          "bytes": 264122,
+          "gzipBytes": 35099
         }
       ],
-      "jsBytes": 694178,
-      "cssBytes": 265372,
-      "totalBytes": 959550,
-      "gzipBytes": 203730
+      "jsBytes": 690273,
+      "cssBytes": 264122,
+      "totalBytes": 954395,
+      "gzipBytes": 203546
     },
     "viewui": {
       "name": "viewui",
@@ -11921,7 +11709,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -11947,7 +11734,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -12157,9 +11943,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -12260,15 +12043,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -12385,7 +12166,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -12446,11 +12226,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -12960,22 +12740,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -13206,19 +12970,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168448
+          "bytes": 691185,
+          "gzipBytes": 168344
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270875,
-          "gzipBytes": 35396
+          "bytes": 269599,
+          "gzipBytes": 35292
         }
       ],
-      "jsBytes": 695099,
-      "cssBytes": 270875,
-      "totalBytes": 965974,
-      "gzipBytes": 203982
+      "jsBytes": 691185,
+      "cssBytes": 269599,
+      "totalBytes": 960784,
+      "gzipBytes": 203790
     },
     "vant": {
       "name": "vant",
@@ -13284,7 +13048,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -13310,7 +13073,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -13520,9 +13282,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -13623,15 +13382,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -13748,7 +13505,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -13809,11 +13565,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -14323,22 +14079,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -14569,19 +14309,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168352
+          "bytes": 689361,
+          "gzipBytes": 168260
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260195,
-          "gzipBytes": 35158
+          "bytes": 258971,
+          "gzipBytes": 35039
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 260195,
-      "totalBytes": 953452,
-      "gzipBytes": 203613
+      "jsBytes": 689361,
+      "cssBytes": 258971,
+      "totalBytes": 948332,
+      "gzipBytes": 203423
     },
     "varlet": {
       "name": "varlet",
@@ -14647,7 +14387,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -14673,7 +14412,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -14883,9 +14621,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -14986,15 +14721,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -15111,7 +14844,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -15172,11 +14904,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -15686,22 +15418,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -15932,19 +15648,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168460
+          "bytes": 691185,
+          "gzipBytes": 168358
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270915,
-          "gzipBytes": 35410
+          "bytes": 269639,
+          "gzipBytes": 35306
         }
       ],
-      "jsBytes": 695099,
-      "cssBytes": 270915,
-      "totalBytes": 966014,
-      "gzipBytes": 204005
+      "jsBytes": 691185,
+      "cssBytes": 269639,
+      "totalBytes": 960824,
+      "gzipBytes": 203817
     },
     "semi": {
       "name": "semi",
@@ -16010,7 +15726,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -16036,7 +15751,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -16246,9 +15960,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -16349,15 +16060,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -16474,7 +16183,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -16535,11 +16243,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -17049,22 +16757,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -17295,19 +16987,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168352
+          "bytes": 689361,
+          "gzipBytes": 168260
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259751,
-          "gzipBytes": 35043
+          "bytes": 258527,
+          "gzipBytes": 34922
         }
       ],
-      "jsBytes": 693257,
-      "cssBytes": 259751,
-      "totalBytes": 953008,
-      "gzipBytes": 203493
+      "jsBytes": 689361,
+      "cssBytes": 258527,
+      "totalBytes": 947888,
+      "gzipBytes": 203301
     },
     "material3": {
       "name": "material3",
@@ -17373,7 +17065,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -17399,7 +17090,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -17609,9 +17299,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -17712,15 +17399,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -17837,7 +17522,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -17898,11 +17582,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -18412,22 +18096,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -18658,19 +18326,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 697862,
-          "gzipBytes": 168547
+          "bytes": 693921,
+          "gzipBytes": 168454
         },
         {
           "file": "ui-kit.css",
-          "bytes": 288310,
-          "gzipBytes": 36119
+          "bytes": 286956,
+          "gzipBytes": 36015
         }
       ],
-      "jsBytes": 697862,
-      "cssBytes": 288310,
-      "totalBytes": 986172,
-      "gzipBytes": 204811
+      "jsBytes": 693921,
+      "cssBytes": 286956,
+      "totalBytes": 980877,
+      "gzipBytes": 204650
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -18736,7 +18404,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -18762,7 +18429,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -18972,9 +18638,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -19075,15 +18738,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -19200,7 +18861,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -19261,11 +18921,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -19775,22 +19435,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -20021,19 +19665,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 697862,
-          "gzipBytes": 168546
+          "bytes": 693921,
+          "gzipBytes": 168452
         },
         {
           "file": "ui-kit.css",
-          "bytes": 287650,
-          "gzipBytes": 35845
+          "bytes": 286296,
+          "gzipBytes": 35742
         }
       ],
-      "jsBytes": 697862,
-      "cssBytes": 287650,
-      "totalBytes": 985512,
-      "gzipBytes": 204527
+      "jsBytes": 693921,
+      "cssBytes": 286296,
+      "totalBytes": 980217,
+      "gzipBytes": 204369
     },
     "shadcn": {
       "name": "shadcn",
@@ -20099,7 +19743,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -20125,7 +19768,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -20335,9 +19977,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -20438,15 +20077,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -20563,7 +20200,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -20624,11 +20260,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -21138,22 +20774,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -21384,19 +21004,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168462
+          "bytes": 691185,
+          "gzipBytes": 168360
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271280,
-          "gzipBytes": 35493
+          "bytes": 270004,
+          "gzipBytes": 35390
         }
       ],
-      "jsBytes": 695099,
-      "cssBytes": 271280,
-      "totalBytes": 966379,
-      "gzipBytes": 204090
+      "jsBytes": 691185,
+      "cssBytes": 270004,
+      "totalBytes": 961189,
+      "gzipBytes": 203901
     },
     "fluent": {
       "name": "fluent",
@@ -21462,7 +21082,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -21488,7 +21107,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -21698,9 +21316,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -21801,15 +21416,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -21926,7 +21539,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -21987,11 +21599,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -22501,22 +22113,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -22747,19 +22343,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168453
+          "bytes": 691185,
+          "gzipBytes": 168349
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270831,
-          "gzipBytes": 35407
+          "bytes": 269555,
+          "gzipBytes": 35302
         }
       ],
-      "jsBytes": 695099,
-      "cssBytes": 270831,
-      "totalBytes": 965930,
-      "gzipBytes": 203997
+      "jsBytes": 691185,
+      "cssBytes": 269555,
+      "totalBytes": 960740,
+      "gzipBytes": 203808
     },
     "carbon": {
       "name": "carbon",
@@ -22825,7 +22421,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -22851,7 +22446,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -23061,9 +22655,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -23164,15 +22755,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -23289,7 +22878,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -23350,11 +22938,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -23864,22 +23452,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -24110,19 +23682,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168459
+          "bytes": 691185,
+          "gzipBytes": 168356
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270920,
-          "gzipBytes": 35430
+          "bytes": 269644,
+          "gzipBytes": 35325
         }
       ],
-      "jsBytes": 695099,
-      "cssBytes": 270920,
-      "totalBytes": 966019,
-      "gzipBytes": 204024
+      "jsBytes": 691185,
+      "cssBytes": 269644,
+      "totalBytes": 960829,
+      "gzipBytes": 203832
     },
     "mantine": {
       "name": "mantine",
@@ -24188,7 +23760,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -24214,7 +23785,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -24424,9 +23994,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -24527,15 +24094,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -24652,7 +24217,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -24713,11 +24277,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -25227,22 +24791,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -25473,19 +25021,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168488
+          "bytes": 692097,
+          "gzipBytes": 168390
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276820,
-          "gzipBytes": 35709
+          "bytes": 275518,
+          "gzipBytes": 35570
         }
       ],
-      "jsBytes": 696020,
-      "cssBytes": 276820,
-      "totalBytes": 972840,
-      "gzipBytes": 204344
+      "jsBytes": 692097,
+      "cssBytes": 275518,
+      "totalBytes": 967615,
+      "gzipBytes": 204133
     },
     "ios": {
       "name": "ios",
@@ -25551,7 +25099,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -25577,7 +25124,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -25787,9 +25333,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -25890,15 +25433,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -26015,7 +25556,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -26076,11 +25616,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -26590,22 +26130,6 @@
             }
           ]
         },
-        "result": {
-          "Result": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ]
-        },
         "select": {
           "Option": [
             {
@@ -26836,19 +26360,19 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692336,
-          "gzipBytes": 168310
+          "bytes": 688449,
+          "gzipBytes": 168219
         },
         {
           "file": "ui-kit.css",
-          "bytes": 254283,
-          "gzipBytes": 34943
+          "bytes": 253085,
+          "gzipBytes": 34815
         }
       ],
-      "jsBytes": 692336,
-      "cssBytes": 254283,
-      "totalBytes": 946619,
-      "gzipBytes": 203345
+      "jsBytes": 688449,
+      "cssBytes": 253085,
+      "totalBytes": 941534,
+      "gzipBytes": 203147
     }
   },
   "features": {
@@ -26858,7 +26382,7 @@
       "jsBytes": 442,
       "cssBytes": 0,
       "totalBytes": 442,
-      "gzipBytes": 148
+      "gzipBytes": 142
     },
     "alert.closable": {
       "title": "可关闭",
@@ -26866,7 +26390,7 @@
       "jsBytes": 613,
       "cssBytes": 421,
       "totalBytes": 1034,
-      "gzipBytes": 177
+      "gzipBytes": 188
     },
     "anchor.popper": {
       "title": "滚动偏移",
@@ -26874,7 +26398,7 @@
       "jsBytes": 151,
       "cssBytes": 0,
       "totalBytes": 151,
-      "gzipBytes": 31
+      "gzipBytes": 36
     },
     "autocomplete.clearable": {
       "title": "可清空",
@@ -26882,7 +26406,7 @@
       "jsBytes": 107,
       "cssBytes": 0,
       "totalBytes": 107,
-      "gzipBytes": 22
+      "gzipBytes": 12
     },
     "autocomplete.password": {
       "title": "密码可见切换",
@@ -26890,7 +26414,7 @@
       "jsBytes": 105,
       "cssBytes": 0,
       "totalBytes": 105,
-      "gzipBytes": 22
+      "gzipBytes": 13
     },
     "autocomplete.word-limit": {
       "title": "字数统计",
@@ -26898,7 +26422,7 @@
       "jsBytes": 109,
       "cssBytes": 0,
       "totalBytes": 109,
-      "gzipBytes": -10
+      "gzipBytes": -12
     },
     "autocomplete.icons": {
       "title": "图标",
@@ -26906,7 +26430,7 @@
       "jsBytes": 99,
       "cssBytes": 0,
       "totalBytes": 99,
-      "gzipBytes": 1
+      "gzipBytes": -10
     },
     "autocomplete.filterable": {
       "title": "筛选与远程搜索",
@@ -26914,7 +26438,7 @@
       "jsBytes": 225,
       "cssBytes": 0,
       "totalBytes": 225,
-      "gzipBytes": 38
+      "gzipBytes": 43
     },
     "autocomplete.popper": {
       "title": "浮层定位",
@@ -26922,7 +26446,7 @@
       "jsBytes": 550,
       "cssBytes": 0,
       "totalBytes": 550,
-      "gzipBytes": 65
+      "gzipBytes": 68
     },
     "avatar.icons": {
       "title": "图标",
@@ -26930,7 +26454,7 @@
       "jsBytes": 172,
       "cssBytes": 0,
       "totalBytes": 172,
-      "gzipBytes": 26
+      "gzipBytes": 33
     },
     "avatar.avatar-group-popper": {
       "title": "浮层定位",
@@ -26938,7 +26462,7 @@
       "jsBytes": 849,
       "cssBytes": 0,
       "totalBytes": 849,
-      "gzipBytes": 133
+      "gzipBytes": 137
     },
     "badge.popper": {
       "title": "徽章偏移",
@@ -26946,7 +26470,7 @@
       "jsBytes": 154,
       "cssBytes": 0,
       "totalBytes": 154,
-      "gzipBytes": 26
+      "gzipBytes": 34
     },
     "button.appearance": {
       "title": "外观变体",
@@ -26954,7 +26478,7 @@
       "jsBytes": 795,
       "cssBytes": 2209,
       "totalBytes": 3004,
-      "gzipBytes": 479
+      "gzipBytes": 477
     },
     "button.icon": {
       "title": "图标",
@@ -26962,7 +26486,7 @@
       "jsBytes": 227,
       "cssBytes": 156,
       "totalBytes": 383,
-      "gzipBytes": 51
+      "gzipBytes": 53
     },
     "button.loading": {
       "title": "加载状态",
@@ -26970,7 +26494,7 @@
       "jsBytes": 389,
       "cssBytes": 383,
       "totalBytes": 772,
-      "gzipBytes": 119
+      "gzipBytes": 122
     },
     "button.auto-insert-space": {
       "title": "两字自动空格",
@@ -26978,7 +26502,7 @@
       "jsBytes": 545,
       "cssBytes": 0,
       "totalBytes": 545,
-      "gzipBytes": 195
+      "gzipBytes": 186
     },
     "button.bg-color": {
       "title": "背景色",
@@ -26994,7 +26518,7 @@
       "jsBytes": 618,
       "cssBytes": 133,
       "totalBytes": 751,
-      "gzipBytes": 173
+      "gzipBytes": 166
     },
     "calendar.range": {
       "title": "范围选择",
@@ -27002,7 +26526,7 @@
       "jsBytes": 197,
       "cssBytes": 0,
       "totalBytes": 197,
-      "gzipBytes": 50
+      "gzipBytes": 48
     },
     "card.appearance": {
       "title": "外观变体",
@@ -27010,7 +26534,7 @@
       "jsBytes": 219,
       "cssBytes": 269,
       "totalBytes": 488,
-      "gzipBytes": 108
+      "gzipBytes": 106
     },
     "carousel.methods": {
       "title": "实例方法",
@@ -27018,7 +26542,7 @@
       "jsBytes": 179,
       "cssBytes": 0,
       "totalBytes": 179,
-      "gzipBytes": 62
+      "gzipBytes": 59
     },
     "cascader.clearable": {
       "title": "可清空",
@@ -27026,7 +26550,7 @@
       "jsBytes": 318,
       "cssBytes": 0,
       "totalBytes": 318,
-      "gzipBytes": 70
+      "gzipBytes": 76
     },
     "cascader.multiple": {
       "title": "多选",
@@ -27042,7 +26566,7 @@
       "jsBytes": 261,
       "cssBytes": 921,
       "totalBytes": 1182,
-      "gzipBytes": 122
+      "gzipBytes": 132
     },
     "cascader.filterable": {
       "title": "筛选与远程搜索",
@@ -27050,7 +26574,7 @@
       "jsBytes": 334,
       "cssBytes": 0,
       "totalBytes": 334,
-      "gzipBytes": 63
+      "gzipBytes": 68
     },
     "cascader.popper": {
       "title": "浮层定位",
@@ -27058,7 +26582,7 @@
       "jsBytes": 535,
       "cssBytes": 0,
       "totalBytes": 535,
-      "gzipBytes": 127
+      "gzipBytes": 125
     },
     "cascader.lazy": {
       "title": "懒加载与展开",
@@ -27066,15 +26590,15 @@
       "jsBytes": 193,
       "cssBytes": 0,
       "totalBytes": 193,
-      "gzipBytes": 28
+      "gzipBytes": 37
     },
     "cascader.virtualized": {
       "title": "虚拟滚动",
       "component": "cascader",
       "jsBytes": 1782,
-      "cssBytes": 0,
-      "totalBytes": 1782,
-      "gzipBytes": 636
+      "cssBytes": 616,
+      "totalBytes": 2398,
+      "gzipBytes": 747
     },
     "cascader.format": {
       "title": "格式化",
@@ -27082,7 +26606,7 @@
       "jsBytes": 199,
       "cssBytes": 0,
       "totalBytes": 199,
-      "gzipBytes": 31
+      "gzipBytes": 38
     },
     "cascader-panel.multiple": {
       "title": "多选",
@@ -27090,7 +26614,7 @@
       "jsBytes": 194,
       "cssBytes": 0,
       "totalBytes": 194,
-      "gzipBytes": 19
+      "gzipBytes": 26
     },
     "cascader-panel.lazy": {
       "title": "懒加载与展开",
@@ -27098,7 +26622,7 @@
       "jsBytes": 174,
       "cssBytes": 0,
       "totalBytes": 174,
-      "gzipBytes": 18
+      "gzipBytes": 24
     },
     "cascader-panel.selection": {
       "title": "高亮与勾选",
@@ -27106,15 +26630,15 @@
       "jsBytes": 311,
       "cssBytes": 0,
       "totalBytes": 311,
-      "gzipBytes": 67
+      "gzipBytes": 71
     },
     "cascader-panel.virtualized": {
       "title": "虚拟滚动",
       "component": "cascader-panel",
       "jsBytes": 1622,
-      "cssBytes": 0,
-      "totalBytes": 1622,
-      "gzipBytes": 249
+      "cssBytes": 113,
+      "totalBytes": 1735,
+      "gzipBytes": 274
     },
     "cascader-panel.appearance": {
       "title": "外观变体",
@@ -27122,7 +26646,7 @@
       "jsBytes": 228,
       "cssBytes": 74,
       "totalBytes": 302,
-      "gzipBytes": 24
+      "gzipBytes": 31
     },
     "checkbox.appearance": {
       "title": "外观变体",
@@ -27130,7 +26654,7 @@
       "jsBytes": 175,
       "cssBytes": 489,
       "totalBytes": 664,
-      "gzipBytes": 91
+      "gzipBytes": 89
     },
     "col.popper": {
       "title": "栅格偏移",
@@ -27138,7 +26662,7 @@
       "jsBytes": 142,
       "cssBytes": 0,
       "totalBytes": 142,
-      "gzipBytes": 21
+      "gzipBytes": 20
     },
     "collapse.collapse-item-icons": {
       "title": "图标",
@@ -27154,7 +26678,7 @@
       "jsBytes": 224,
       "cssBytes": 0,
       "totalBytes": 224,
-      "gzipBytes": 38
+      "gzipBytes": 43
     },
     "color-picker.popper": {
       "title": "浮层定位",
@@ -27162,7 +26686,7 @@
       "jsBytes": 410,
       "cssBytes": 0,
       "totalBytes": 410,
-      "gzipBytes": 55
+      "gzipBytes": 61
     },
     "color-picker.format": {
       "title": "格式化",
@@ -27170,7 +26694,7 @@
       "jsBytes": 211,
       "cssBytes": 0,
       "totalBytes": 211,
-      "gzipBytes": 32
+      "gzipBytes": 36
     },
     "color-picker-panel.appearance": {
       "title": "外观变体",
@@ -27178,7 +26702,7 @@
       "jsBytes": 222,
       "cssBytes": 147,
       "totalBytes": 369,
-      "gzipBytes": 37
+      "gzipBytes": 35
     },
     "date-picker.clearable": {
       "title": "可清空",
@@ -27186,7 +26710,7 @@
       "jsBytes": 277,
       "cssBytes": 0,
       "totalBytes": 277,
-      "gzipBytes": 35
+      "gzipBytes": 30
     },
     "date-picker.icons": {
       "title": "图标",
@@ -27194,7 +26718,7 @@
       "jsBytes": 198,
       "cssBytes": 0,
       "totalBytes": 198,
-      "gzipBytes": 32
+      "gzipBytes": 27
     },
     "date-picker.popper": {
       "title": "浮层定位",
@@ -27202,7 +26726,7 @@
       "jsBytes": 413,
       "cssBytes": 0,
       "totalBytes": 413,
-      "gzipBytes": 57
+      "gzipBytes": 54
     },
     "date-picker.editable": {
       "title": "可编辑",
@@ -27210,7 +26734,7 @@
       "jsBytes": 201,
       "cssBytes": 0,
       "totalBytes": 201,
-      "gzipBytes": 30
+      "gzipBytes": 27
     },
     "date-picker.format": {
       "title": "格式化",
@@ -27218,7 +26742,7 @@
       "jsBytes": 243,
       "cssBytes": 0,
       "totalBytes": 243,
-      "gzipBytes": 29
+      "gzipBytes": 26
     },
     "date-picker.range": {
       "title": "范围选择",
@@ -27226,7 +26750,7 @@
       "jsBytes": 397,
       "cssBytes": 0,
       "totalBytes": 397,
-      "gzipBytes": 44
+      "gzipBytes": 45
     },
     "date-picker-panel.clearable": {
       "title": "可清空",
@@ -27234,7 +26758,7 @@
       "jsBytes": 143,
       "cssBytes": 0,
       "totalBytes": 143,
-      "gzipBytes": 14
+      "gzipBytes": 11
     },
     "date-picker-panel.appearance": {
       "title": "外观变体",
@@ -27242,7 +26766,7 @@
       "jsBytes": 221,
       "cssBytes": 146,
       "totalBytes": 367,
-      "gzipBytes": 26
+      "gzipBytes": 27
     },
     "date-picker-panel.format": {
       "title": "格式化",
@@ -27250,7 +26774,7 @@
       "jsBytes": 125,
       "cssBytes": 0,
       "totalBytes": 125,
-      "gzipBytes": 12
+      "gzipBytes": 11
     },
     "date-picker-panel.range": {
       "title": "范围选择",
@@ -27258,7 +26782,7 @@
       "jsBytes": 164,
       "cssBytes": 0,
       "totalBytes": 164,
-      "gzipBytes": 11
+      "gzipBytes": 12
     },
     "descriptions.appearance": {
       "title": "外观变体",
@@ -27266,7 +26790,7 @@
       "jsBytes": 175,
       "cssBytes": 391,
       "totalBytes": 566,
-      "gzipBytes": 74
+      "gzipBytes": 73
     },
     "dialog.closable": {
       "title": "可关闭",
@@ -27274,7 +26798,7 @@
       "jsBytes": 346,
       "cssBytes": 0,
       "totalBytes": 346,
-      "gzipBytes": 14
+      "gzipBytes": 13
     },
     "dialog.popper": {
       "title": "浮层定位",
@@ -27290,7 +26814,7 @@
       "jsBytes": 615,
       "cssBytes": 120,
       "totalBytes": 735,
-      "gzipBytes": 91
+      "gzipBytes": 64
     },
     "dialog.modal": {
       "title": "遮罩与关闭行为",
@@ -27298,7 +26822,7 @@
       "jsBytes": 504,
       "cssBytes": 0,
       "totalBytes": 504,
-      "gzipBytes": 185
+      "gzipBytes": 186
     },
     "dialog.fullscreen": {
       "title": "全屏",
@@ -27306,7 +26830,7 @@
       "jsBytes": 183,
       "cssBytes": 130,
       "totalBytes": 313,
-      "gzipBytes": 34
+      "gzipBytes": 39
     },
     "drawer.closable": {
       "title": "可关闭",
@@ -27314,7 +26838,7 @@
       "jsBytes": 346,
       "cssBytes": 0,
       "totalBytes": 346,
-      "gzipBytes": 9
+      "gzipBytes": 14
     },
     "drawer.popper": {
       "title": "浮层定位",
@@ -27322,7 +26846,7 @@
       "jsBytes": 207,
       "cssBytes": 0,
       "totalBytes": 207,
-      "gzipBytes": 12
+      "gzipBytes": 14
     },
     "drawer.draggable": {
       "title": "拖拽与缩放",
@@ -27330,7 +26854,7 @@
       "jsBytes": 2669,
       "cssBytes": 603,
       "totalBytes": 3272,
-      "gzipBytes": 739
+      "gzipBytes": 741
     },
     "drawer.modal": {
       "title": "遮罩与关闭行为",
@@ -27338,7 +26862,7 @@
       "jsBytes": 330,
       "cssBytes": 0,
       "totalBytes": 330,
-      "gzipBytes": 17
+      "gzipBytes": 19
     },
     "drawer.fullscreen": {
       "title": "全屏",
@@ -27346,7 +26870,7 @@
       "jsBytes": 183,
       "cssBytes": 114,
       "totalBytes": 297,
-      "gzipBytes": 29
+      "gzipBytes": 32
     },
     "dropdown.popper": {
       "title": "浮层定位",
@@ -27362,7 +26886,7 @@
       "jsBytes": 211,
       "cssBytes": 0,
       "totalBytes": 211,
-      "gzipBytes": 27
+      "gzipBytes": 32
     },
     "form.validate": {
       "title": "表单校验",
@@ -27370,7 +26894,7 @@
       "jsBytes": 582,
       "cssBytes": 0,
       "totalBytes": 582,
-      "gzipBytes": 75
+      "gzipBytes": 79
     },
     "form.form-item-validate": {
       "title": "表单校验",
@@ -27378,7 +26902,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 40
+      "gzipBytes": 47
     },
     "image.loading": {
       "title": "加载状态",
@@ -27386,7 +26910,7 @@
       "jsBytes": 157,
       "cssBytes": 0,
       "totalBytes": 157,
-      "gzipBytes": 19
+      "gzipBytes": 25
     },
     "image.lazy": {
       "title": "懒加载与展开",
@@ -27394,7 +26918,7 @@
       "jsBytes": 150,
       "cssBytes": 0,
       "totalBytes": 150,
-      "gzipBytes": 26
+      "gzipBytes": 33
     },
     "image.preview": {
       "title": "图片预览",
@@ -27402,7 +26926,7 @@
       "jsBytes": 4180,
       "cssBytes": 1902,
       "totalBytes": 6082,
-      "gzipBytes": 1210
+      "gzipBytes": 1214
     },
     "image-viewer.popper": {
       "title": "浮层传送",
@@ -27410,7 +26934,7 @@
       "jsBytes": 164,
       "cssBytes": 0,
       "totalBytes": 164,
-      "gzipBytes": 12
+      "gzipBytes": 10
     },
     "image-viewer.modal": {
       "title": "遮罩与关闭行为",
@@ -27418,7 +26942,7 @@
       "jsBytes": 230,
       "cssBytes": 0,
       "totalBytes": 230,
-      "gzipBytes": 25
+      "gzipBytes": 23
     },
     "input.clearable": {
       "title": "可清空",
@@ -27426,7 +26950,7 @@
       "jsBytes": 86,
       "cssBytes": 0,
       "totalBytes": 86,
-      "gzipBytes": 12
+      "gzipBytes": 0
     },
     "input.password": {
       "title": "密码可见切换",
@@ -27434,7 +26958,7 @@
       "jsBytes": 84,
       "cssBytes": 0,
       "totalBytes": 84,
-      "gzipBytes": 13
+      "gzipBytes": 1
     },
     "input.word-limit": {
       "title": "字数统计",
@@ -27442,7 +26966,7 @@
       "jsBytes": 88,
       "cssBytes": 0,
       "totalBytes": 88,
-      "gzipBytes": 15
+      "gzipBytes": 4
     },
     "input.icons": {
       "title": "图标",
@@ -27450,7 +26974,7 @@
       "jsBytes": 78,
       "cssBytes": 0,
       "totalBytes": 78,
-      "gzipBytes": 14
+      "gzipBytes": 4
     },
     "input.methods": {
       "title": "实例方法",
@@ -27458,7 +26982,7 @@
       "jsBytes": 293,
       "cssBytes": 0,
       "totalBytes": 293,
-      "gzipBytes": 70
+      "gzipBytes": 80
     },
     "input-number.methods": {
       "title": "实例方法",
@@ -27466,7 +26990,7 @@
       "jsBytes": 252,
       "cssBytes": 0,
       "totalBytes": 252,
-      "gzipBytes": 48
+      "gzipBytes": 53
     },
     "input-tag.clearable": {
       "title": "可清空",
@@ -27474,7 +26998,7 @@
       "jsBytes": 1023,
       "cssBytes": 650,
       "totalBytes": 1673,
-      "gzipBytes": 313
+      "gzipBytes": 321
     },
     "input-tag.separator": {
       "title": "分隔符批量添加",
@@ -27482,7 +27006,7 @@
       "jsBytes": 1920,
       "cssBytes": 0,
       "totalBytes": 1920,
-      "gzipBytes": 426
+      "gzipBytes": 405
     },
     "input-tag.draggable": {
       "title": "拖拽排序",
@@ -27490,7 +27014,7 @@
       "jsBytes": 2366,
       "cssBytes": 303,
       "totalBytes": 2669,
-      "gzipBytes": 651
+      "gzipBytes": 630
     },
     "link.icons": {
       "title": "图标",
@@ -27498,7 +27022,7 @@
       "jsBytes": 229,
       "cssBytes": 0,
       "totalBytes": 229,
-      "gzipBytes": 41
+      "gzipBytes": 37
     },
     "link.appearance": {
       "title": "外观变体",
@@ -27506,7 +27030,7 @@
       "jsBytes": 354,
       "cssBytes": 0,
       "totalBytes": 354,
-      "gzipBytes": 90
+      "gzipBytes": 88
     },
     "mention.clearable": {
       "title": "可清空",
@@ -27514,7 +27038,7 @@
       "jsBytes": 92,
       "cssBytes": 0,
       "totalBytes": 92,
-      "gzipBytes": 17
+      "gzipBytes": 5
     },
     "mention.password": {
       "title": "密码可见切换",
@@ -27522,7 +27046,7 @@
       "jsBytes": 90,
       "cssBytes": 0,
       "totalBytes": 90,
-      "gzipBytes": 16
+      "gzipBytes": 5
     },
     "mention.word-limit": {
       "title": "字数统计",
@@ -27530,7 +27054,7 @@
       "jsBytes": 94,
       "cssBytes": 0,
       "totalBytes": 94,
-      "gzipBytes": 17
+      "gzipBytes": 5
     },
     "mention.icons": {
       "title": "图标",
@@ -27538,7 +27062,7 @@
       "jsBytes": 84,
       "cssBytes": 0,
       "totalBytes": 84,
-      "gzipBytes": 18
+      "gzipBytes": 5
     },
     "mention.loading": {
       "title": "加载状态",
@@ -27546,7 +27070,7 @@
       "jsBytes": 179,
       "cssBytes": 0,
       "totalBytes": 179,
-      "gzipBytes": 27
+      "gzipBytes": 22
     },
     "mention.popper": {
       "title": "浮层定位",
@@ -27554,7 +27078,7 @@
       "jsBytes": 535,
       "cssBytes": 0,
       "totalBytes": 535,
-      "gzipBytes": 39
+      "gzipBytes": 32
     },
     "menu.sub-menu-icons": {
       "title": "图标",
@@ -27562,7 +27086,7 @@
       "jsBytes": 378,
       "cssBytes": 0,
       "totalBytes": 378,
-      "gzipBytes": 53
+      "gzipBytes": 51
     },
     "message.icons": {
       "title": "图标",
@@ -27570,7 +27094,7 @@
       "jsBytes": 177,
       "cssBytes": 0,
       "totalBytes": 177,
-      "gzipBytes": 13
+      "gzipBytes": 10
     },
     "message.closable": {
       "title": "可关闭",
@@ -27578,7 +27102,7 @@
       "jsBytes": 258,
       "cssBytes": 0,
       "totalBytes": 258,
-      "gzipBytes": 20
+      "gzipBytes": 15
     },
     "message.popper": {
       "title": "浮层定位",
@@ -27586,7 +27110,7 @@
       "jsBytes": 190,
       "cssBytes": 0,
       "totalBytes": 190,
-      "gzipBytes": 28
+      "gzipBytes": 26
     },
     "message.appearance": {
       "title": "外观变体",
@@ -27594,7 +27118,7 @@
       "jsBytes": 171,
       "cssBytes": 90,
       "totalBytes": 261,
-      "gzipBytes": 65
+      "gzipBytes": 66
     },
     "message-box.input": {
       "title": "输入框",
@@ -27602,7 +27126,7 @@
       "jsBytes": 391,
       "cssBytes": 0,
       "totalBytes": 391,
-      "gzipBytes": 77
+      "gzipBytes": 71
     },
     "notification.icons": {
       "title": "图标",
@@ -27610,7 +27134,7 @@
       "jsBytes": 192,
       "cssBytes": 0,
       "totalBytes": 192,
-      "gzipBytes": 15
+      "gzipBytes": 13
     },
     "notification.closable": {
       "title": "可关闭",
@@ -27626,7 +27150,7 @@
       "jsBytes": 251,
       "cssBytes": 416,
       "totalBytes": 667,
-      "gzipBytes": 125
+      "gzipBytes": 118
     },
     "page-header.icons": {
       "title": "图标",
@@ -27634,7 +27158,7 @@
       "jsBytes": 209,
       "cssBytes": 0,
       "totalBytes": 209,
-      "gzipBytes": 28
+      "gzipBytes": 25
     },
     "pagination.icons": {
       "title": "图标",
@@ -27642,7 +27166,7 @@
       "jsBytes": 242,
       "cssBytes": 0,
       "totalBytes": 242,
-      "gzipBytes": 24
+      "gzipBytes": 22
     },
     "pagination.layout": {
       "title": "布局",
@@ -27650,7 +27174,7 @@
       "jsBytes": 210,
       "cssBytes": 1285,
       "totalBytes": 1495,
-      "gzipBytes": 248
+      "gzipBytes": 228
     },
     "popconfirm.icons": {
       "title": "图标",
@@ -27658,7 +27182,7 @@
       "jsBytes": 186,
       "cssBytes": 0,
       "totalBytes": 186,
-      "gzipBytes": 14
+      "gzipBytes": 17
     },
     "popconfirm.popper": {
       "title": "浮层定位",
@@ -27666,7 +27190,7 @@
       "jsBytes": 350,
       "cssBytes": 0,
       "totalBytes": 350,
-      "gzipBytes": 30
+      "gzipBytes": 29
     },
     "popover.popper": {
       "title": "浮层定位",
@@ -27674,7 +27198,7 @@
       "jsBytes": 563,
       "cssBytes": 0,
       "totalBytes": 563,
-      "gzipBytes": 36
+      "gzipBytes": 38
     },
     "radio.appearance": {
       "title": "外观变体",
@@ -27682,7 +27206,7 @@
       "jsBytes": 166,
       "cssBytes": 699,
       "totalBytes": 865,
-      "gzipBytes": 133
+      "gzipBytes": 132
     },
     "rate.clearable": {
       "title": "可清空",
@@ -27690,15 +27214,7 @@
       "jsBytes": 185,
       "cssBytes": 0,
       "totalBytes": 185,
-      "gzipBytes": 21
-    },
-    "result.icons": {
-      "title": "图标",
-      "component": "result",
-      "jsBytes": 169,
-      "cssBytes": 0,
-      "totalBytes": 169,
-      "gzipBytes": 12
+      "gzipBytes": 26
     },
     "scrollbar.methods": {
       "title": "实例方法",
@@ -27706,7 +27222,7 @@
       "jsBytes": 242,
       "cssBytes": 0,
       "totalBytes": 242,
-      "gzipBytes": 55
+      "gzipBytes": 58
     },
     "select.select-clearable": {
       "title": "可清空",
@@ -27714,7 +27230,7 @@
       "jsBytes": 273,
       "cssBytes": 620,
       "totalBytes": 893,
-      "gzipBytes": 94
+      "gzipBytes": 93
     },
     "select.select-icons": {
       "title": "图标",
@@ -27722,7 +27238,7 @@
       "jsBytes": 207,
       "cssBytes": 0,
       "totalBytes": 207,
-      "gzipBytes": 16
+      "gzipBytes": 23
     },
     "select.select-loading": {
       "title": "加载状态",
@@ -27730,7 +27246,7 @@
       "jsBytes": 226,
       "cssBytes": 0,
       "totalBytes": 226,
-      "gzipBytes": 21
+      "gzipBytes": 25
     },
     "select.select-multiple": {
       "title": "多选",
@@ -27738,7 +27254,7 @@
       "jsBytes": 423,
       "cssBytes": 0,
       "totalBytes": 423,
-      "gzipBytes": 59
+      "gzipBytes": 63
     },
     "select.select-filterable": {
       "title": "筛选与远程搜索",
@@ -27746,7 +27262,7 @@
       "jsBytes": 419,
       "cssBytes": 0,
       "totalBytes": 419,
-      "gzipBytes": 69
+      "gzipBytes": 72
     },
     "select.select-popper": {
       "title": "浮层定位",
@@ -27754,15 +27270,15 @@
       "jsBytes": 671,
       "cssBytes": 0,
       "totalBytes": 671,
-      "gzipBytes": 92
+      "gzipBytes": 93
     },
     "select.select-format": {
       "title": "清空回填",
       "component": "select",
-      "jsBytes": 207,
+      "jsBytes": 687537,
       "cssBytes": 0,
-      "totalBytes": 207,
-      "gzipBytes": 25
+      "totalBytes": 687537,
+      "gzipBytes": 168279
     },
     "select.select-virtualized": {
       "title": "大数据虚拟列表",
@@ -27770,7 +27286,7 @@
       "jsBytes": 2499,
       "cssBytes": 209,
       "totalBytes": 2708,
-      "gzipBytes": 791
+      "gzipBytes": 933
     },
     "select.methods": {
       "title": "实例方法",
@@ -27778,7 +27294,7 @@
       "jsBytes": 249,
       "cssBytes": 0,
       "totalBytes": 249,
-      "gzipBytes": 70
+      "gzipBytes": 74
     },
     "skeleton.loading": {
       "title": "加载状态",
@@ -27786,7 +27302,7 @@
       "jsBytes": 192,
       "cssBytes": 0,
       "totalBytes": 192,
-      "gzipBytes": 20
+      "gzipBytes": 24
     },
     "slider.popper": {
       "title": "浮层定位",
@@ -27794,7 +27310,7 @@
       "jsBytes": 192,
       "cssBytes": 0,
       "totalBytes": 192,
-      "gzipBytes": 22
+      "gzipBytes": 25
     },
     "slider.format": {
       "title": "格式化",
@@ -27802,7 +27318,7 @@
       "jsBytes": 150,
       "cssBytes": 0,
       "totalBytes": 150,
-      "gzipBytes": 21
+      "gzipBytes": 24
     },
     "slider.range": {
       "title": "范围选择",
@@ -27810,7 +27326,7 @@
       "jsBytes": 158,
       "cssBytes": 0,
       "totalBytes": 158,
-      "gzipBytes": 30
+      "gzipBytes": 33
     },
     "splitter.lazy": {
       "title": "懒加载与展开",
@@ -27818,7 +27334,7 @@
       "jsBytes": 157,
       "cssBytes": 0,
       "totalBytes": 157,
-      "gzipBytes": 30
+      "gzipBytes": 31
     },
     "splitter.splitter-panel-draggable": {
       "title": "拖拽与缩放",
@@ -27834,15 +27350,15 @@
       "jsBytes": 107,
       "cssBytes": 0,
       "totalBytes": 107,
-      "gzipBytes": 23
+      "gzipBytes": 22
     },
     "steps.icons": {
       "title": "图标",
       "component": "steps",
-      "jsBytes": 169,
-      "cssBytes": 0,
-      "totalBytes": 169,
-      "gzipBytes": 20
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "switch.icons": {
       "title": "图标",
@@ -27850,7 +27366,7 @@
       "jsBytes": 358,
       "cssBytes": 0,
       "totalBytes": 358,
-      "gzipBytes": 34
+      "gzipBytes": 36
     },
     "switch.loading": {
       "title": "加载状态",
@@ -27858,7 +27374,7 @@
       "jsBytes": 160,
       "cssBytes": 0,
       "totalBytes": 160,
-      "gzipBytes": 12
+      "gzipBytes": 14
     },
     "table.sort": {
       "title": "排序",
@@ -27874,7 +27390,7 @@
       "jsBytes": 3733,
       "cssBytes": 761,
       "totalBytes": 4494,
-      "gzipBytes": 1017
+      "gzipBytes": 1013
     },
     "table.resize": {
       "title": "列宽拖拽",
@@ -27882,23 +27398,23 @@
       "jsBytes": 2406,
       "cssBytes": 428,
       "totalBytes": 2834,
-      "gzipBytes": 662
+      "gzipBytes": 665
     },
     "table.span": {
       "title": "合并单元格",
       "component": "table",
-      "jsBytes": 265,
-      "cssBytes": 0,
-      "totalBytes": 265,
-      "gzipBytes": 37
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "table.loading": {
       "title": "加载状态",
       "component": "table",
-      "jsBytes": 537,
-      "cssBytes": 535,
-      "totalBytes": 1072,
-      "gzipBytes": 222
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "table.summary": {
       "title": "合计行",
@@ -27906,7 +27422,7 @@
       "jsBytes": 712,
       "cssBytes": 0,
       "totalBytes": 712,
-      "gzipBytes": 164
+      "gzipBytes": 167
     },
     "table.selection": {
       "title": "选择列配置",
@@ -27914,7 +27430,7 @@
       "jsBytes": 225,
       "cssBytes": 0,
       "totalBytes": 225,
-      "gzipBytes": 52
+      "gzipBytes": 47
     },
     "table.methods": {
       "title": "实例方法",
@@ -27922,7 +27438,7 @@
       "jsBytes": 2099,
       "cssBytes": 0,
       "totalBytes": 2099,
-      "gzipBytes": 518
+      "gzipBytes": 529
     },
     "table.column-sort": {
       "title": "列排序配置",
@@ -27930,7 +27446,7 @@
       "jsBytes": 251,
       "cssBytes": 0,
       "totalBytes": 251,
-      "gzipBytes": 44
+      "gzipBytes": 45
     },
     "tabs.closable": {
       "title": "可关闭",
@@ -27938,7 +27454,7 @@
       "jsBytes": 246,
       "cssBytes": 0,
       "totalBytes": 246,
-      "gzipBytes": 31
+      "gzipBytes": 32
     },
     "tabs.lazy": {
       "title": "面板懒渲染",
@@ -27946,23 +27462,23 @@
       "jsBytes": 102,
       "cssBytes": 0,
       "totalBytes": 102,
-      "gzipBytes": 29
+      "gzipBytes": 31
     },
     "tabs.editable": {
       "title": "编辑与新增",
       "component": "tabs",
       "jsBytes": 197,
-      "cssBytes": 0,
-      "totalBytes": 197,
-      "gzipBytes": 28
+      "cssBytes": 246447,
+      "totalBytes": 246644,
+      "gzipBytes": 34304
     },
     "tabs.tabs-closable": {
       "title": "可关闭",
       "component": "tabs",
-      "jsBytes": 256,
-      "cssBytes": 0,
-      "totalBytes": 256,
-      "gzipBytes": 30
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "tabs.tabs-editable": {
       "title": "编辑与新增",
@@ -27970,7 +27486,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 43
+      "gzipBytes": 44
     },
     "tag.closable": {
       "title": "可关闭",
@@ -27978,7 +27494,7 @@
       "jsBytes": 236,
       "cssBytes": 0,
       "totalBytes": 236,
-      "gzipBytes": 29
+      "gzipBytes": 31
     },
     "tag.appearance": {
       "title": "外观变体",
@@ -27986,7 +27502,7 @@
       "jsBytes": 239,
       "cssBytes": 159,
       "totalBytes": 398,
-      "gzipBytes": 118
+      "gzipBytes": 121
     },
     "time-picker.clearable": {
       "title": "可清空",
@@ -27994,7 +27510,7 @@
       "jsBytes": 533,
       "cssBytes": 0,
       "totalBytes": 533,
-      "gzipBytes": 300
+      "gzipBytes": 277
     },
     "time-picker.icons": {
       "title": "图标",
@@ -28002,7 +27518,7 @@
       "jsBytes": 198,
       "cssBytes": 0,
       "totalBytes": 198,
-      "gzipBytes": 26
+      "gzipBytes": 28
     },
     "time-picker.popper": {
       "title": "浮层定位",
@@ -28018,7 +27534,7 @@
       "jsBytes": 231,
       "cssBytes": 116,
       "totalBytes": 347,
-      "gzipBytes": 79
+      "gzipBytes": 55
     },
     "time-picker.format": {
       "title": "格式化",
@@ -28026,7 +27542,7 @@
       "jsBytes": 243,
       "cssBytes": 0,
       "totalBytes": 243,
-      "gzipBytes": 40
+      "gzipBytes": 42
     },
     "time-picker.range": {
       "title": "范围选择",
@@ -28034,7 +27550,7 @@
       "jsBytes": 316,
       "cssBytes": 0,
       "totalBytes": 316,
-      "gzipBytes": 60
+      "gzipBytes": 63
     },
     "time-select.clearable": {
       "title": "可清空",
@@ -28042,7 +27558,7 @@
       "jsBytes": 264,
       "cssBytes": 0,
       "totalBytes": 264,
-      "gzipBytes": 42
+      "gzipBytes": 46
     },
     "time-select.icons": {
       "title": "图标",
@@ -28050,7 +27566,7 @@
       "jsBytes": 198,
       "cssBytes": 0,
       "totalBytes": 198,
-      "gzipBytes": 27
+      "gzipBytes": 32
     },
     "time-select.popper": {
       "title": "浮层定位",
@@ -28058,7 +27574,7 @@
       "jsBytes": 282,
       "cssBytes": 0,
       "totalBytes": 282,
-      "gzipBytes": 35
+      "gzipBytes": 38
     },
     "time-select.editable": {
       "title": "编辑与新增",
@@ -28066,7 +27582,7 @@
       "jsBytes": 231,
       "cssBytes": 0,
       "totalBytes": 231,
-      "gzipBytes": 31
+      "gzipBytes": 36
     },
     "time-select.format": {
       "title": "格式化",
@@ -28074,23 +27590,23 @@
       "jsBytes": 208,
       "cssBytes": 0,
       "totalBytes": 208,
-      "gzipBytes": 30
+      "gzipBytes": 34
     },
     "tooltip.delay": {
       "title": "延迟显示",
       "component": "tooltip",
-      "jsBytes": 281,
-      "cssBytes": 0,
-      "totalBytes": 281,
-      "gzipBytes": 56
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "tooltip.popper": {
       "title": "弹出层配置",
       "component": "tooltip",
-      "jsBytes": 357,
-      "cssBytes": 0,
-      "totalBytes": 357,
-      "gzipBytes": 36
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "tour.closable": {
       "title": "可关闭",
@@ -28098,7 +27614,7 @@
       "jsBytes": 305,
       "cssBytes": 0,
       "totalBytes": 305,
-      "gzipBytes": 26
+      "gzipBytes": 22
     },
     "tour.popper": {
       "title": "浮层定位",
@@ -28106,7 +27622,7 @@
       "jsBytes": 306,
       "cssBytes": 0,
       "totalBytes": 306,
-      "gzipBytes": 32
+      "gzipBytes": 27
     },
     "tour.validate": {
       "title": "滚动定位",
@@ -28114,7 +27630,7 @@
       "jsBytes": 188,
       "cssBytes": 0,
       "totalBytes": 188,
-      "gzipBytes": 22
+      "gzipBytes": 24
     },
     "tour.modal": {
       "title": "遮罩与关闭行为",
@@ -28122,7 +27638,7 @@
       "jsBytes": 158,
       "cssBytes": 0,
       "totalBytes": 158,
-      "gzipBytes": 26
+      "gzipBytes": 30
     },
     "tour.tour-step-closable": {
       "title": "可关闭",
@@ -28130,7 +27646,7 @@
       "jsBytes": 329,
       "cssBytes": 0,
       "totalBytes": 329,
-      "gzipBytes": 30
+      "gzipBytes": 26
     },
     "tour.tour-step-popper": {
       "title": "浮层定位",
@@ -28143,10 +27659,10 @@
     "tour.tour-step-validate": {
       "title": "滚动定位",
       "component": "tour",
-      "jsBytes": 209,
-      "cssBytes": 0,
-      "totalBytes": 209,
-      "gzipBytes": 20
+      "jsBytes": 687537,
+      "cssBytes": 246447,
+      "totalBytes": 933984,
+      "gzipBytes": 202440
     },
     "transfer.filterable": {
       "title": "筛选与远程搜索",
@@ -28154,7 +27670,7 @@
       "jsBytes": 193,
       "cssBytes": 0,
       "totalBytes": 193,
-      "gzipBytes": 37
+      "gzipBytes": 38
     },
     "tree.icons": {
       "title": "图标",
@@ -28162,7 +27678,7 @@
       "jsBytes": 168,
       "cssBytes": 0,
       "totalBytes": 168,
-      "gzipBytes": 29
+      "gzipBytes": 20
     },
     "tree.draggable": {
       "title": "拖拽排序",
@@ -28170,7 +27686,7 @@
       "jsBytes": 3966,
       "cssBytes": 396,
       "totalBytes": 4362,
-      "gzipBytes": 1206
+      "gzipBytes": 1200
     },
     "tree.selection": {
       "title": "高亮与勾选",
@@ -28178,7 +27694,15 @@
       "jsBytes": 300,
       "cssBytes": 0,
       "totalBytes": 300,
-      "gzipBytes": 65
+      "gzipBytes": 69
+    },
+    "tree.virtualized": {
+      "title": "大数据虚拟滚动",
+      "component": "tree",
+      "jsBytes": 2679,
+      "cssBytes": 607,
+      "totalBytes": 3286,
+      "gzipBytes": 1065
     },
     "tree.methods": {
       "title": "实例方法",
@@ -28186,7 +27710,7 @@
       "jsBytes": 524,
       "cssBytes": 0,
       "totalBytes": 524,
-      "gzipBytes": 157
+      "gzipBytes": 137
     },
     "tree-select.multiple": {
       "title": "多选",
@@ -28194,7 +27718,7 @@
       "jsBytes": 243,
       "cssBytes": 0,
       "totalBytes": 243,
-      "gzipBytes": 35
+      "gzipBytes": 29
     },
     "tree-select.filterable": {
       "title": "可筛选",
@@ -28202,7 +27726,7 @@
       "jsBytes": 203,
       "cssBytes": 0,
       "totalBytes": 203,
-      "gzipBytes": 29
+      "gzipBytes": 27
     },
     "tree-select.popper": {
       "title": "弹层配置",
@@ -28210,15 +27734,7 @@
       "jsBytes": 412,
       "cssBytes": 0,
       "totalBytes": 412,
-      "gzipBytes": 71
-    },
-    "tree-v2.check": {
-      "title": "复选框",
-      "component": "tree-v2",
-      "jsBytes": 277,
-      "cssBytes": 0,
-      "totalBytes": 277,
-      "gzipBytes": 48
+      "gzipBytes": 68
     },
     "upload.multiple": {
       "title": "多选",
@@ -28226,7 +27742,7 @@
       "jsBytes": 173,
       "cssBytes": 0,
       "totalBytes": 173,
-      "gzipBytes": 25
+      "gzipBytes": 24
     },
     "upload.methods": {
       "title": "实例方法",
@@ -28234,7 +27750,7 @@
       "jsBytes": 154,
       "cssBytes": 0,
       "totalBytes": 154,
-      "gzipBytes": 41
+      "gzipBytes": 38
     },
     "watermark.popper": {
       "title": "水印偏移",
@@ -28242,7 +27758,7 @@
       "jsBytes": 147,
       "cssBytes": 0,
       "totalBytes": 147,
-      "gzipBytes": 28
+      "gzipBytes": 30
     }
   }
 }

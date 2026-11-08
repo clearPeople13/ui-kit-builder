@@ -7243,68 +7243,6 @@
       ]
     },
     {
-      "id": "result",
-      "title": "Result 结果",
-      "description": "对齐主流组件库的 Result，基础 props 与可选特性拆分。",
-      "order": 10,
-      "category": "反馈",
-      "exports": [
-        {
-          "name": "Result",
-          "coreProps": [
-            {
-              "name": "title",
-              "type": "string",
-              "default": "",
-              "description": "标题文本"
-            },
-            {
-              "name": "subTitle",
-              "type": "string",
-              "default": "",
-              "description": "副标题"
-            },
-            {
-              "name": "tag",
-              "type": "string",
-              "default": null,
-              "description": "根节点标签，缺省为 div"
-            }
-          ],
-          "slots": [
-            {
-              "name": "default",
-              "scope": null,
-              "fallback": false,
-              "description": "额外操作区，渲染在副标题之后（无默认内容）"
-            },
-            {
-              "name": "icon",
-              "scope": null,
-              "fallback": true,
-              "description": "图标区，未提供时按 icon 属性渲染内置图标"
-            }
-          ],
-          "features": [
-            {
-              "id": "result.icons",
-              "title": "图标",
-              "description": "图标：icon",
-              "props": [
-                {
-                  "name": "icon",
-                  "type": "string",
-                  "default": "info",
-                  "description": "图标"
-                }
-              ]
-            }
-          ],
-          "methods": []
-        }
-      ]
-    },
-    {
       "id": "roving-focus-group",
       "title": "RovingFocusGroup 焦点组",
       "description": "对齐主流组件库的 RovingFocusGroup / RovingFocusItem，基础 props 与可选特性拆分。",
@@ -10445,6 +10383,12 @@
               "description": "相邻级节点水平缩进（像素）"
             },
             {
+              "name": "height",
+              "type": "string | number",
+              "default": "",
+              "description": "高度"
+            },
+            {
               "name": "expandOnClickNode",
               "type": "boolean",
               "default": true,
@@ -10519,6 +10463,31 @@
                   "type": "boolean",
                   "default": true,
                   "description": "点击叶子节点即完成选中"
+                }
+              ]
+            },
+            {
+              "id": "tree.virtualized",
+              "title": "大数据虚拟滚动",
+              "description": "大数据虚拟滚动：virtualized、itemSize、virtualThreshold（需配合 height 固定视口，超过阈值才窗口化）",
+              "props": [
+                {
+                  "name": "virtualized",
+                  "type": "boolean",
+                  "default": true,
+                  "description": "是否允许窗口化（低于阈值或未设 height 时自动回退全量渲染）"
+                },
+                {
+                  "name": "itemSize",
+                  "type": "number",
+                  "default": 30,
+                  "description": "行高兜底值，运行时优先按首行实测高度计算窗口"
+                },
+                {
+                  "name": "virtualThreshold",
+                  "type": "number",
+                  "default": 100,
+                  "description": "可见节点数超过该阈值才进入窗口化"
                 }
               ]
             },
@@ -10688,105 +10657,6 @@
                   "type": "string",
                   "default": "follow",
                   "description": "滚动策略：follow 跟随 / close 关闭"
-                }
-              ]
-            }
-          ],
-          "methods": []
-        }
-      ]
-    },
-    {
-      "id": "tree-v2",
-      "title": "TreeV2 虚拟化树形控件",
-      "description": "对齐主流组件库的 TreeV2，基础 props 与可选特性拆分。",
-      "order": 10,
-      "category": "数据展示",
-      "exports": [
-        {
-          "name": "TreeV2",
-          "coreProps": [
-            {
-              "name": "data",
-              "type": "any[]",
-              "description": "展示数据"
-            },
-            {
-              "name": "props",
-              "type": "Record<string, any>",
-              "default": {},
-              "description": "配置选项字段映射"
-            },
-            {
-              "name": "emptyText",
-              "type": "string",
-              "default": "暂无数据",
-              "description": "空数据提示文本"
-            },
-            {
-              "name": "height",
-              "type": "string | number",
-              "default": "",
-              "description": "高度"
-            },
-            {
-              "name": "indent",
-              "type": "number",
-              "default": 16,
-              "description": "相邻级节点水平缩进（像素）"
-            },
-            {
-              "name": "defaultExpandAll",
-              "type": "boolean",
-              "description": "默认展开全部节点"
-            },
-            {
-              "name": "defaultExpandedKeys",
-              "type": "any[]",
-              "description": "默认展开的节点 key 列表"
-            },
-            {
-              "name": "expandOnClickNode",
-              "type": "boolean",
-              "default": true,
-              "description": "点击节点是否展开/收起"
-            },
-            {
-              "name": "accordion",
-              "type": "boolean",
-              "description": "是否手风琴模式（仅展开一项）"
-            },
-            {
-              "name": "highlightCurrent",
-              "type": "boolean",
-              "description": "是否高亮当前节点"
-            }
-          ],
-          "features": [
-            {
-              "id": "tree-v2.check",
-              "title": "复选框",
-              "description": "复选框：showCheckbox、defaultCheckedKeys、checkStrictly、checkOnClickNode",
-              "props": [
-                {
-                  "name": "showCheckbox",
-                  "type": "boolean",
-                  "description": "勾选框显隐（布尔值整体控制，函数可按行控制，隐藏行不入选）"
-                },
-                {
-                  "name": "defaultCheckedKeys",
-                  "type": "any[]",
-                  "description": "默认勾选的节点 key 列表"
-                },
-                {
-                  "name": "checkStrictly",
-                  "type": "boolean",
-                  "description": "树形多选是否严格（true 父子不联动，false 父子联动并显示半选）"
-                },
-                {
-                  "name": "checkOnClickNode",
-                  "type": "boolean",
-                  "description": "点击节点即勾选"
                 }
               ]
             }
@@ -11155,7 +11025,6 @@
         "progress": [],
         "radio": [],
         "rate": [],
-        "result": [],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [],
@@ -11181,7 +11050,6 @@
         "transfer": [],
         "tree": [],
         "tree-select": [],
-        "tree-v2": [],
         "upload": [],
         "virtual-list": [],
         "watermark": []
@@ -11246,7 +11114,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -11272,7 +11139,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -11337,7 +11203,6 @@
         "progress": [],
         "radio": [],
         "rate": [],
-        "result": [],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [],
@@ -11363,7 +11228,6 @@
         "transfer": [],
         "tree": [],
         "tree-select": [],
-        "tree-v2": [],
         "upload": [],
         "virtual-list": [],
         "watermark": []
@@ -11371,20 +11235,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608179,
-          "gzipBytes": 148238
+          "bytes": 602068,
+          "gzipBytes": 147234
         },
         {
           "file": "ui-kit.css",
-          "bytes": 227868,
-          "gzipBytes": 31568
+          "bytes": 225360,
+          "gzipBytes": 31278
         }
       ],
       "sizes": {
-        "js": 608179,
-        "css": 227868,
-        "total": 836047,
-        "gzip": 179713
+        "js": 602068,
+        "css": 225360,
+        "total": 827428,
+        "gzip": 178445
       }
     },
     {
@@ -11498,7 +11362,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -11559,11 +11422,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -11773,9 +11636,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -11876,15 +11736,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -11955,7 +11813,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -11981,7 +11838,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -12191,9 +12047,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -12294,15 +12147,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -12316,20 +12167,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691415,
-          "gzipBytes": 168281
+          "bytes": 687537,
+          "gzipBytes": 168186
         },
         {
           "file": "ui-kit.css",
-          "bytes": 247619,
-          "gzipBytes": 34287
+          "bytes": 246447,
+          "gzipBytes": 34181
         }
       ],
       "sizes": {
-        "js": 691415,
-        "css": 247619,
-        "total": 939034,
-        "gzip": 202637
+        "js": 687537,
+        "css": 246447,
+        "total": 933984,
+        "gzip": 202460
       }
     },
     {
@@ -12443,7 +12294,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -12504,11 +12354,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -12718,9 +12568,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -12821,15 +12668,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -12900,7 +12745,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -12926,7 +12770,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -13136,9 +12979,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -13239,15 +13079,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -13261,20 +13099,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168261
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259683,
-          "gzipBytes": 35054
+          "bytes": 258459,
+          "gzipBytes": 34937
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 259683,
-        "total": 952940,
-        "gzip": 203509
+        "js": 689361,
+        "css": 258459,
+        "total": 947820,
+        "gzip": 203318
       }
     },
     {
@@ -13388,7 +13226,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -13449,11 +13286,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -13663,9 +13500,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -13766,15 +13600,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -13845,7 +13677,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -13871,7 +13702,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -14081,9 +13911,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -14184,15 +14011,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -14206,20 +14031,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168488
+          "bytes": 692097,
+          "gzipBytes": 168389
         },
         {
           "file": "ui-kit.css",
-          "bytes": 295675,
-          "gzipBytes": 38739
+          "bytes": 294373,
+          "gzipBytes": 38592
         }
       ],
       "sizes": {
-        "js": 696020,
-        "css": 295675,
-        "total": 991695,
-        "gzip": 207382
+        "js": 692097,
+        "css": 294373,
+        "total": 986470,
+        "gzip": 207162
       }
     },
     {
@@ -14333,7 +14158,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -14394,11 +14218,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -14608,9 +14432,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -14711,15 +14532,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -14790,7 +14609,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -14816,7 +14634,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -15026,9 +14843,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -15129,15 +14943,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -15151,20 +14963,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168350
+          "bytes": 689361,
+          "gzipBytes": 168259
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275134,
-          "gzipBytes": 38008
+          "bytes": 273910,
+          "gzipBytes": 37884
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 275134,
-        "total": 968391,
-        "gzip": 206475
+        "js": 689361,
+        "css": 273910,
+        "total": 963271,
+        "gzip": 206281
       }
     },
     {
@@ -15278,7 +15090,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -15339,11 +15150,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -15553,9 +15364,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -15656,15 +15464,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -15735,7 +15541,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -15761,7 +15566,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -15971,9 +15775,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -16074,15 +15875,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -16096,20 +15895,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168256
         },
         {
           "file": "ui-kit.css",
-          "bytes": 279890,
-          "gzipBytes": 38165
+          "bytes": 278666,
+          "gzipBytes": 38040
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 279890,
-        "total": 973147,
-        "gzip": 206627
+        "js": 689361,
+        "css": 278666,
+        "total": 968027,
+        "gzip": 206433
       }
     },
     {
@@ -16223,7 +16022,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -16284,11 +16082,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -16498,9 +16296,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -16601,15 +16396,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -16680,7 +16473,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -16706,7 +16498,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -16916,9 +16707,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -17019,15 +16807,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -17041,20 +16827,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168353
+          "bytes": 689361,
+          "gzipBytes": 168257
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260055,
-          "gzipBytes": 35151
+          "bytes": 258831,
+          "gzipBytes": 35032
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 260055,
-        "total": 953312,
-        "gzip": 203607
+        "js": 689361,
+        "css": 258831,
+        "total": 948192,
+        "gzip": 203416
       }
     },
     {
@@ -17168,7 +16954,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -17229,11 +17014,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -17443,9 +17228,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -17546,15 +17328,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -17625,7 +17405,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -17651,7 +17430,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -17861,9 +17639,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -17964,15 +17739,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -17986,20 +17759,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168482
+          "bytes": 692097,
+          "gzipBytes": 168387
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276381,
-          "gzipBytes": 35577
+          "bytes": 275079,
+          "gzipBytes": 35440
         }
       ],
       "sizes": {
-        "js": 696020,
-        "css": 276381,
-        "total": 972401,
-        "gzip": 204205
+        "js": 692097,
+        "css": 275079,
+        "total": 967176,
+        "gzip": 203993
       }
     },
     {
@@ -18113,7 +17886,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -18174,11 +17946,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -18388,9 +18160,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -18491,15 +18260,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -18570,7 +18337,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -18596,7 +18362,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -18806,9 +18571,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -18909,15 +18671,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -18931,20 +18691,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694178,
-          "gzipBytes": 168403
+          "bytes": 690273,
+          "gzipBytes": 168302
         },
         {
           "file": "ui-kit.css",
-          "bytes": 265372,
-          "gzipBytes": 35205
+          "bytes": 264122,
+          "gzipBytes": 35099
         }
       ],
       "sizes": {
-        "js": 694178,
-        "css": 265372,
-        "total": 959550,
-        "gzip": 203730
+        "js": 690273,
+        "css": 264122,
+        "total": 954395,
+        "gzip": 203546
       }
     },
     {
@@ -19058,7 +18818,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -19119,11 +18878,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -19333,9 +19092,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -19436,15 +19192,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -19515,7 +19269,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -19541,7 +19294,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -19751,9 +19503,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -19854,15 +19603,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -19876,20 +19623,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168448
+          "bytes": 691185,
+          "gzipBytes": 168344
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270875,
-          "gzipBytes": 35396
+          "bytes": 269599,
+          "gzipBytes": 35292
         }
       ],
       "sizes": {
-        "js": 695099,
-        "css": 270875,
-        "total": 965974,
-        "gzip": 203982
+        "js": 691185,
+        "css": 269599,
+        "total": 960784,
+        "gzip": 203790
       }
     },
     {
@@ -20003,7 +19750,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -20064,11 +19810,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -20278,9 +20024,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -20381,15 +20124,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -20460,7 +20201,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -20486,7 +20226,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -20696,9 +20435,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -20799,15 +20535,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -20821,20 +20555,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168352
+          "bytes": 689361,
+          "gzipBytes": 168260
         },
         {
           "file": "ui-kit.css",
-          "bytes": 260195,
-          "gzipBytes": 35158
+          "bytes": 258971,
+          "gzipBytes": 35039
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 260195,
-        "total": 953452,
-        "gzip": 203613
+        "js": 689361,
+        "css": 258971,
+        "total": 948332,
+        "gzip": 203423
       }
     },
     {
@@ -20948,7 +20682,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -21009,11 +20742,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -21223,9 +20956,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -21326,15 +21056,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -21405,7 +21133,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -21431,7 +21158,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -21641,9 +21367,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -21744,15 +21467,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -21766,20 +21487,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168460
+          "bytes": 691185,
+          "gzipBytes": 168358
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270915,
-          "gzipBytes": 35410
+          "bytes": 269639,
+          "gzipBytes": 35306
         }
       ],
       "sizes": {
-        "js": 695099,
-        "css": 270915,
-        "total": 966014,
-        "gzip": 204005
+        "js": 691185,
+        "css": 269639,
+        "total": 960824,
+        "gzip": 203817
       }
     },
     {
@@ -21893,7 +21614,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -21954,11 +21674,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -22168,9 +21888,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -22271,15 +21988,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -22350,7 +22065,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -22376,7 +22090,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -22586,9 +22299,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -22689,15 +22399,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -22711,20 +22419,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693257,
-          "gzipBytes": 168352
+          "bytes": 689361,
+          "gzipBytes": 168260
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259751,
-          "gzipBytes": 35043
+          "bytes": 258527,
+          "gzipBytes": 34922
         }
       ],
       "sizes": {
-        "js": 693257,
-        "css": 259751,
-        "total": 953008,
-        "gzip": 203493
+        "js": 689361,
+        "css": 258527,
+        "total": 947888,
+        "gzip": 203301
       }
     },
     {
@@ -22838,7 +22546,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -22899,11 +22606,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -23113,9 +22820,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -23216,15 +22920,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -23295,7 +22997,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -23321,7 +23022,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -23531,9 +23231,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -23634,15 +23331,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -23656,20 +23351,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 697862,
-          "gzipBytes": 168547
+          "bytes": 693921,
+          "gzipBytes": 168454
         },
         {
           "file": "ui-kit.css",
-          "bytes": 288310,
-          "gzipBytes": 36119
+          "bytes": 286956,
+          "gzipBytes": 36015
         }
       ],
       "sizes": {
-        "js": 697862,
-        "css": 288310,
-        "total": 986172,
-        "gzip": 204811
+        "js": 693921,
+        "css": 286956,
+        "total": 980877,
+        "gzip": 204650
       }
     },
     {
@@ -23783,7 +23478,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -23844,11 +23538,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -24058,9 +23752,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -24161,15 +23852,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -24240,7 +23929,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -24266,7 +23954,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -24476,9 +24163,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -24579,15 +24263,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -24601,20 +24283,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 697862,
-          "gzipBytes": 168546
+          "bytes": 693921,
+          "gzipBytes": 168452
         },
         {
           "file": "ui-kit.css",
-          "bytes": 287650,
-          "gzipBytes": 35845
+          "bytes": 286296,
+          "gzipBytes": 35742
         }
       ],
       "sizes": {
-        "js": 697862,
-        "css": 287650,
-        "total": 985512,
-        "gzip": 204527
+        "js": 693921,
+        "css": 286296,
+        "total": 980217,
+        "gzip": 204369
       }
     },
     {
@@ -24728,7 +24410,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -24789,11 +24470,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -25003,9 +24684,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -25106,15 +24784,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -25185,7 +24861,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -25211,7 +24886,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -25421,9 +25095,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -25524,15 +25195,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -25546,20 +25215,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168462
+          "bytes": 691185,
+          "gzipBytes": 168360
         },
         {
           "file": "ui-kit.css",
-          "bytes": 271280,
-          "gzipBytes": 35493
+          "bytes": 270004,
+          "gzipBytes": 35390
         }
       ],
       "sizes": {
-        "js": 695099,
-        "css": 271280,
-        "total": 966379,
-        "gzip": 204090
+        "js": 691185,
+        "css": 270004,
+        "total": 961189,
+        "gzip": 203901
       }
     },
     {
@@ -25673,7 +25342,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -25734,11 +25402,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -25948,9 +25616,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -26051,15 +25716,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -26130,7 +25793,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -26156,7 +25818,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -26366,9 +26027,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -26469,15 +26127,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -26491,20 +26147,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168453
+          "bytes": 691185,
+          "gzipBytes": 168349
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270831,
-          "gzipBytes": 35407
+          "bytes": 269555,
+          "gzipBytes": 35302
         }
       ],
       "sizes": {
-        "js": 695099,
-        "css": 270831,
-        "total": 965930,
-        "gzip": 203997
+        "js": 691185,
+        "css": 269555,
+        "total": 960740,
+        "gzip": 203808
       }
     },
     {
@@ -26618,7 +26274,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -26679,11 +26334,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -26893,9 +26548,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -26996,15 +26648,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -27075,7 +26725,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -27101,7 +26750,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -27311,9 +26959,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -27414,15 +27059,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -27436,20 +27079,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695099,
-          "gzipBytes": 168459
+          "bytes": 691185,
+          "gzipBytes": 168356
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270920,
-          "gzipBytes": 35430
+          "bytes": 269644,
+          "gzipBytes": 35325
         }
       ],
       "sizes": {
-        "js": 695099,
-        "css": 270920,
-        "total": 966019,
-        "gzip": 204024
+        "js": 691185,
+        "css": 269644,
+        "total": 960829,
+        "gzip": 203832
       }
     },
     {
@@ -27563,7 +27206,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -27624,11 +27266,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -27838,9 +27480,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -27941,15 +27580,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -28020,7 +27657,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -28046,7 +27682,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -28256,9 +27891,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -28359,15 +27991,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -28381,20 +28011,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696020,
-          "gzipBytes": 168488
+          "bytes": 692097,
+          "gzipBytes": 168390
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276820,
-          "gzipBytes": 35709
+          "bytes": 275518,
+          "gzipBytes": 35570
         }
       ],
       "sizes": {
-        "js": 696020,
-        "css": 276820,
-        "total": 972840,
-        "gzip": 204344
+        "js": 692097,
+        "css": 275518,
+        "total": 967615,
+        "gzip": 204133
       }
     },
     {
@@ -28508,7 +28138,6 @@
         "popover.popper",
         "radio.appearance",
         "rate.clearable",
-        "result.icons",
         "scrollbar.methods",
         "select.select-clearable",
         "select.select-icons",
@@ -28569,11 +28198,11 @@
         "tree.icons",
         "tree.draggable",
         "tree.selection",
+        "tree.virtualized",
         "tree.methods",
         "tree-select.multiple",
         "tree-select.filterable",
         "tree-select.popper",
-        "tree-v2.check",
         "upload.multiple",
         "upload.methods",
         "watermark.popper"
@@ -28783,9 +28412,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -28886,15 +28512,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -28965,7 +28589,6 @@
         "progress",
         "radio",
         "rate",
-        "result",
         "roving-focus-group",
         "row",
         "scrollbar",
@@ -28991,7 +28614,6 @@
         "transfer",
         "tree",
         "tree-select",
-        "tree-v2",
         "upload",
         "virtual-list",
         "watermark"
@@ -29201,9 +28823,6 @@
         "rate": [
           "rate.clearable"
         ],
-        "result": [
-          "result.icons"
-        ],
         "roving-focus-group": [],
         "row": [],
         "scrollbar": [
@@ -29304,15 +28923,13 @@
           "tree.icons",
           "tree.draggable",
           "tree.selection",
+          "tree.virtualized",
           "tree.methods"
         ],
         "tree-select": [
           "tree-select.multiple",
           "tree-select.filterable",
           "tree-select.popper"
-        ],
-        "tree-v2": [
-          "tree-v2.check"
         ],
         "upload": [
           "upload.multiple",
@@ -29326,20 +28943,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692336,
-          "gzipBytes": 168310
+          "bytes": 688449,
+          "gzipBytes": 168219
         },
         {
           "file": "ui-kit.css",
-          "bytes": 254283,
-          "gzipBytes": 34943
+          "bytes": 253085,
+          "gzipBytes": 34815
         }
       ],
       "sizes": {
-        "js": 692336,
-        "css": 254283,
-        "total": 946619,
-        "gzip": 203345
+        "js": 688449,
+        "css": 253085,
+        "total": 941534,
+        "gzip": 203147
       }
     }
   ]
