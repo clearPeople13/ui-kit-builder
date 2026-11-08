@@ -150,9 +150,15 @@ export default {
           "description": "split"
         },
         {
-          "name": "filterOption",
-          "type": "boolean | (...args: any[]) => any",
-          "description": "filterOption"
+          "name": "filterable",
+          "type": "boolean",
+          "default": true,
+          "description": "是否启用关键字过滤"
+        },
+        {
+          "name": "filterMethod",
+          "type": "(...args: any[]) => any",
+          "description": "自定义过滤方法：filterMethod(query, option) 返回 true 时保留该项"
         },
         {
           "name": "whole",

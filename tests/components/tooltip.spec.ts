@@ -43,14 +43,14 @@ describe('Tooltip 文字提示', () => {
     expect(popper()!.getAttribute('role')).toBe('tooltip')
   })
 
-  it('悬停立即展开并抛 visible-change 与 update:visible', async () => {
+  it('悬停立即展开并抛 visible-change 与 update:modelValue', async () => {
     const wrapper = mountTooltip()
     await wrapper.trigger('mouseenter')
     await nextTick()
     expect(isOpen()).toBe(true)
     expect(popper()!.querySelector('.ui-tooltip__content')!.textContent).toBe('这是一条提示')
     expect(wrapper.emitted('visible-change')).toEqual([[true]])
-    expect(wrapper.emitted('update:visible')).toEqual([[true]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
   })
 
   it('移出按 hideAfter 延时收起，hideAfter 为 0 时立即收起', async () => {
@@ -65,7 +65,7 @@ describe('Tooltip 文字提示', () => {
     vi.advanceTimersByTime(1)
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('update:visible')).toEqual([[true], [false]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true], [false]])
 
     wrapper.unmount()
     document.body.innerHTML = ''
@@ -140,7 +140,7 @@ describe('Tooltip 文字提示', () => {
     await nextTick()
     await wrapper.trigger('keydown', { key: 'Escape' })
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('update:visible')).toEqual([[true], [false]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true], [false]])
     // 未展开时按 Escape 不产生额外事件
     await wrapper.trigger('keydown', { key: 'Escape' })
     expect(wrapper.emitted('visible-change')?.filter((args) => args[0] === false)).toHaveLength(1)
@@ -214,14 +214,14 @@ describe('Tooltip 文字提示', () => {
     expect(wrapper.emitted()).not.toHaveProperty('visible-change')
   })
 
-  it('visible 受控展开与收起，缺省回到内部状态', async () => {
-    const wrapper = mountTooltip({ visible: true })
+  it('modelValue 受控展开与收起，缺省回到内部状态', async () => {
+    const wrapper = mountTooltip({ modelValue: true })
     await nextTick()
     expect(isOpen()).toBe(true)
     expect(wrapper.emitted('visible-change')).toBeUndefined()
-    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ modelValue: false })
     expect(isOpen()).toBe(false)
-    await wrapper.setProps({ visible: undefined })
+    await wrapper.setProps({ modelValue: undefined })
     await wrapper.trigger('mouseenter')
     await nextTick()
     expect(isOpen()).toBe(true)

@@ -11,7 +11,7 @@ const tooltipBaseProps = {
   effect: { type: String, default: 'dark' },
   disabled: Boolean,
   trigger: { type: [String, Array], default: 'hover' },
-  visible: { type: Boolean, default: undefined },
+  modelValue: { type: Boolean, default: undefined },
   showArrow: { type: Boolean, default: true },
   rawContent: Boolean,
   teleported: { type: Boolean, default: true },
@@ -25,8 +25,9 @@ export function createTooltip(features: UiFeature[] = []) {
       name: 'UiTooltip',
       baseClass: 'ui-tooltip',
       props: tooltipBaseProps,
+      emits: ['update:modelValue', 'visible-change'],
       setup(props, { emit }) {
-        const innerOpen = ref(Boolean(props.visible))
+        const innerOpen = ref(Boolean(props.modelValue))
         const triggerRef = ref<HTMLElement>()
         const panelRef = ref<HTMLElement>()
         let showTimer: ReturnType<typeof setTimeout> | null = null
@@ -79,7 +80,7 @@ export function createTooltip(features: UiFeature[] = []) {
             return
           }
           innerOpen.value = true
-          emit('update:visible', true)
+          emit('update:modelValue', true)
           emit('visible-change', true)
           const autoClose = Number(props.autoClose ?? 0)
           if (Number.isFinite(autoClose) && autoClose > 0) {
@@ -106,7 +107,7 @@ export function createTooltip(features: UiFeature[] = []) {
             return
           }
           innerOpen.value = false
-          emit('update:visible', false)
+          emit('update:modelValue', false)
           emit('visible-change', false)
         }
 
@@ -150,7 +151,7 @@ export function createTooltip(features: UiFeature[] = []) {
         }
 
         watch(
-          () => props.visible,
+          () => props.modelValue,
           (value) => {
             if (value === undefined) {
               hide()
