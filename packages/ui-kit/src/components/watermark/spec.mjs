@@ -53,6 +53,14 @@ export default {
           "description": "gap"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "水印覆盖的宿主内容，渲染在 ui-watermark__content（无默认内容）"
+        }
+      ],
       "features": {
         "watermark.popper": {
           "title": "水印偏移",

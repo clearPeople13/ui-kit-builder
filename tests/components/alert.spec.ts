@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
+import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { Alert } from '@ui-kit-full'
 
@@ -136,5 +137,21 @@ describe('Alert 警告提示', () => {
     const wrapper = mountAlert({ title: 'a', type: 'custom', showIcon: true })
     expect(wrapper.classes()).toContain('ui-alert--custom')
     expect(wrapper.find('svg').classes()).toContain('lucide-info')
+  })
+
+  it('slot 契约：title 与 default 插槽渲染自定义内容，缺省回退 props', () => {
+    const wrapper = mountAlert(
+      { title: '属性标题', description: '属性描述' },
+      {
+        title: () => h('strong', { class: 'slot-title' }, '插槽标题'),
+        default: () => h('em', { class: 'slot-description' }, '插槽描述')
+      }
+    )
+    expect(wrapper.find('.ui-alert__title .slot-title').text()).toBe('插槽标题')
+    expect(wrapper.find('.ui-alert__description .slot-description').text()).toBe('插槽描述')
+
+    const fallback = mountAlert({ title: '属性标题', description: '属性描述' })
+    expect(fallback.find('.ui-alert__title').text()).toBe('属性标题')
+    expect(fallback.find('.ui-alert__description').text()).toBe('属性描述')
   })
 })

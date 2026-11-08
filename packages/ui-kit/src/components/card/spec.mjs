@@ -52,6 +52,32 @@ export default {
           "description": "footerClass"
         }
       ],
+      "slots": [
+        {
+          "name": "cover",
+          "scope": null,
+          "fallback": true,
+          "description": "封面内容，渲染在 ui-card__cover-wrap；无插槽且 cover 属性非空时回退为封面图"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "卡片主体内容，渲染在 ui-card__body（无默认内容）"
+        },
+        {
+          "name": "footer",
+          "scope": null,
+          "fallback": true,
+          "description": "底部内容，渲染在 ui-card__footer；无插槽时回退 footer 属性"
+        },
+        {
+          "name": "header",
+          "scope": null,
+          "fallback": true,
+          "description": "头部内容，渲染在 ui-card__header；无插槽时回退 header 属性"
+        }
+      ],
       "features": {
         "card.appearance": {
           "title": "外观变体",

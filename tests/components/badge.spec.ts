@@ -1,5 +1,6 @@
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
+import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { Badge } from '@ui-kit-full'
 
@@ -102,5 +103,14 @@ describe('Badge 徽章', () => {
     expect(sup(wrapper).text()).toBe('99+')
     await wrapper.setProps({ hidden: true })
     expect(sup(wrapper).exists()).toBe(false)
+  })
+
+  it('slot 契约：default 插槽渲染包裹内容且不影响圆点', () => {
+    const wrapper = mount(Badge, {
+      props: { value: 5 },
+      slots: { default: () => h('span', { class: 'slot-content' }, '自定义内容') }
+    })
+    expect(wrapper.find('.slot-content').text()).toBe('自定义内容')
+    expect(sup(wrapper).text()).toBe('5')
   })
 })

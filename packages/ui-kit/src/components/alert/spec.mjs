@@ -39,6 +39,20 @@ export default {
           "description": "effect"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "描述内容，渲染在 ui-alert__description；无插槽时回退 description 属性"
+        },
+        {
+          "name": "title",
+          "scope": null,
+          "fallback": true,
+          "description": "标题内容，渲染在 ui-alert__title；无插槽时回退 title 属性"
+        }
+      ],
       "features": {
         "alert.icons": {
           "title": "图标",

@@ -21,6 +21,14 @@ export default {
           description: '倒序渲染节点'
         }
       ],
+      slots: [
+        {
+          name: 'default',
+          scope: null,
+          fallback: false,
+          description: '时间线子项容器，渲染在根节点内（无默认内容）'
+        }
+      ],
       features: {}
     },
     {
@@ -67,6 +75,14 @@ export default {
           name: 'hollow',
           type: 'boolean',
           description: '空心节点'
+        }
+      ],
+      slots: [
+        {
+          name: 'default',
+          scope: null,
+          fallback: false,
+          description: '节点正文内容，渲染在 ui-timeline-item__content（无默认内容）'
         }
       ],
       features: {}

@@ -89,4 +89,10 @@ describe('Statistic', () => {
   it('负数保留负号并参与分组', () => {
     expect(valueText(mountStatistic({ value: -1234567 }))).toBe('-1,234,567')
   })
+
+  it('slot 契约：default 插槽渲染到 footer 区', () => {
+    const wrapper = mountStatistic({ value: 1 }, { default: () => h('span', { class: 'slot-extra' }, '自定义补充') })
+    expect(wrapper.find('.ui-statistic__footer .slot-extra').text()).toBe('自定义补充')
+    expect(mountStatistic({ value: 1 }).find('.ui-statistic__footer').exists()).toBe(false)
+  })
 })

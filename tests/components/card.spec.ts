@@ -116,4 +116,25 @@ describe('Card 卡片', () => {
     const long = '内容'.repeat(50)
     expect(body(mountCard({}, { default: () => long })).text()).toBe(long)
   })
+
+  it('slot 契约：cover/header/default/footer 插槽渲染自定义内容，缺省回退 props', () => {
+    const wrapper = mountCard(
+      { header: '属性头', footer: '属性尾', cover: '/bg.png' },
+      {
+        cover: () => h('video', { class: 'slot-cover' }),
+        header: () => h('h2', { class: 'slot-header' }, '插槽头'),
+        default: () => h('p', { class: 'slot-body' }, '插槽体'),
+        footer: () => h('small', { class: 'slot-footer' }, '插槽尾')
+      }
+    )
+    expect(wrapper.find('.ui-card__cover-wrap .slot-cover').exists()).toBe(true)
+    expect(wrapper.find('.ui-card__header .slot-header').text()).toBe('插槽头')
+    expect(body(wrapper).find('.slot-body').text()).toBe('插槽体')
+    expect(wrapper.find('.ui-card__footer .slot-footer').text()).toBe('插槽尾')
+
+    const fallback = mountCard({ header: '属性头', footer: '属性尾', cover: '/bg.png' })
+    expect(fallback.find('.ui-card__header').text()).toBe('属性头')
+    expect(fallback.find('.ui-card__footer').text()).toBe('属性尾')
+    expect(fallback.find('img.ui-card__cover').attributes('src')).toBe('/bg.png')
+  })
 })

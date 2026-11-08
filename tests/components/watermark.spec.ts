@@ -111,4 +111,9 @@ describe('Watermark', () => {
   it('字符串 style 与内部定位样式合并到根节点', () => {
     expect(rootStyle(mountWatermark({ class: 'x' }))).toContain('position: relative')
   })
+
+  it('slot 契约：default 插槽渲染到内容层', () => {
+    const wrapper = mountWatermark({}, h('span', { class: 'slot-host' }, '宿主内容'))
+    expect(wrapper.find('.ui-watermark__content .slot-host').text()).toBe('宿主内容')
+  })
 })

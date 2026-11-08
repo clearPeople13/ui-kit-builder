@@ -110,4 +110,14 @@ describe('Timeline / TimelineItem', () => {
   it('class 透传与基类名共存', () => {
     expect(mountTimeline({ class: 'my-line' }).classes()).toEqual(expect.arrayContaining(['ui-timeline', 'my-line']))
   })
+
+  it('slot 契约：Timeline 与 TimelineItem 的 default 插槽渲染自定义内容', () => {
+    const wrapper = mountTimeline({}, [h(TimelineItem, {}, () => h('b', { class: 'slot-body' }, '节点正文'))])
+    expect(wrapper.find('.ui-timeline .slot-body').text()).toBe('节点正文')
+
+    const container = mount(Timeline, {
+      slots: { default: () => h('div', { class: 'slot-child' }, '子项内容') }
+    })
+    expect(container.find('.ui-timeline .slot-child').text()).toBe('子项内容')
+  })
 })

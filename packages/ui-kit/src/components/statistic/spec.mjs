@@ -55,6 +55,14 @@ export default {
           "description": "valueStyle"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "底部补充内容，渲染在 ui-statistic__footer（无默认内容）"
+        }
+      ],
       "features": {
         "statistic.format": {
           "title": "格式化",

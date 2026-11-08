@@ -49,6 +49,14 @@ export default {
           "description": "color"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "徽章包裹内容，渲染在圆点标记之前（无默认内容）"
+        }
+      ],
       "features": {
         "badge.popper": {
           "title": "徽章偏移",
