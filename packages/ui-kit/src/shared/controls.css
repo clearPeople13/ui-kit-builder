@@ -40,8 +40,14 @@
 .ui-floating-panel.ui-cascader__dropdown,
 .ui-floating-panel.ui-color-picker__dropdown,
 .ui-floating-panel.ui-date-picker__dropdown,
+.ui-floating-panel.ui-dropdown__panel,
 .ui-floating-panel.ui-time-picker__dropdown {
   max-height: none;
+}
+
+/* dropdown 外层只做被动盒子：滚动容器会把箭头/悬停桥探出底边的溢出计成可滚动区域，向上弹出冒出假滚动条 */
+.ui-floating-panel.ui-dropdown__panel {
+  overflow: visible;
 }
 
 .ui-floating-panel__empty {
