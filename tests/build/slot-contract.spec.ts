@@ -54,11 +54,8 @@ const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: strin
   affix: { slots: ['default'], reason: 'C 类，children 容器' },
   anchor: { slots: ['default'], reason: 'C 类，children 容器' },
   autocomplete: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
-  avatar: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
-  backtop: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
   breadcrumb: { slots: ['default'], reason: 'C 类，子项容器' },
   carousel: { slots: ['default'], reason: 'C 类，子项容器' },
-  'check-tag': { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
   col: { slots: ['default'], reason: 'C 类，children 容器' },
   collapse: { slots: ['default'], reason: 'C 类，子项容器' },
   'collapse-transition': { slots: ['default'], reason: 'D 类，内部过渡件' },
@@ -66,8 +63,6 @@ const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: strin
   'config-provider': { slots: ['default'], reason: 'C 类，children 容器' },
   container: { slots: ['default'], reason: 'C 类，children 容器' },
   descriptions: { slots: ['default'], reason: 'C 类，子项容器' },
-  divider: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
-  icon: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
   link: { slots: ['default'], reason: 'C 类，文本内容容器' },
   mention: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
   overlay: { slots: ['default'], reason: 'C 类，内部浮层包装' },
@@ -75,14 +70,12 @@ const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: strin
   'roving-focus-group': { slots: ['default'], reason: 'D 类，内部件' },
   row: { slots: ['default'], reason: 'C 类，children 容器' },
   scrollbar: { slots: ['default'], reason: 'C 类，children 容器' },
-  skeleton: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
   slot: { slots: ['default'], reason: 'D 类，内部件' },
   space: { slots: ['default'], reason: 'C 类，children 容器' },
   splitter: { slots: ['default'], reason: 'C 类，面板容器' },
   tabs: { slots: ['default'], reason: 'C 类，页签容器' },
   tag: { slots: ['default'], reason: 'C 类，文本内容容器' },
-  text: { slots: ['default'], reason: 'C 类，文本内容容器' },
-  'virtual-list': { slots: ['default'], reason: 'A 类，待 W1.2e 声明并带 { item, index } 作用域' }
+  text: { slots: ['default'], reason: 'C 类，文本内容容器' }
 }
 
 function detectedSlotNames(componentId: string): string[] {
