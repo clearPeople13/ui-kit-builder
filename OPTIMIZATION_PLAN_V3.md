@@ -106,8 +106,8 @@ npm run quality
 ### 4.2 并发节奏
 
 - **第 1 波（已完成）**：W0.1（`cedb99f`）+ W1.1（`a9fc051`）。55 条公开 slot 缺口已登记，双向守卫已生效。
-- **第 2 波（当前，最多 4 个执行者）**：W1.2a、W1.2b、W1.2c、W1.2d 并行；整合者同时做文档与门禁。
-- **第 3 波**：W1.2e + W1.3c + W1.3d 并行；共享车道先跑 W1.3a。
+- **第 2 波（已完成）**：W1.2a、W1.2b、W1.2c、W1.2d 四路并行合入，23 条 BASELINE 缺口清空。
+- **第 3 波（当前）**：W1.2e + W1.3c + W1.3d 并行；共享车道先跑 W1.3a。
 - **第 4 波**：W1.3b → W3.1 → W3.2 串行（共享基座），W2.1 / W2.2 可与组件车道并行。
 - **第 5 波**：W3.3 + W4.1 并行，最后 W4.2 / W5.1 收口。
 
@@ -238,10 +238,10 @@ W5.1 ─────────────────────────
 | --- | --- | --- | --- | --- | --- |
 | W0.1 | done | w0-naming-sync | `docs/20261108-naming-sync` | `.worktrees/naming-sync` | 已合入 `cedb99f`，治理绿 |
 | W1.1 | done | w1-slot-audit | `refactor/20261108-slot-audit` | `.worktrees/slot-audit` | 已合入 `a9fc051`，55 条缺口双向守卫，全量门禁绿 |
-| W1.2a | ready | — | `refactor/20261108-slot-info` | 待建 | 第 2 波，可立即认领 |
-| W1.2b | ready | — | `refactor/20261108-slot-data` | 待建 | 第 2 波，可立即认领 |
-| W1.2c | ready | — | `refactor/20261108-slot-nav` | 待建 | 第 2 波，可立即认领 |
-| W1.2d | ready | — | `refactor/20261108-slot-feedback` | 待建 | 第 2 波，可立即认领 |
+| W1.2a | done | w12a-slot-info | `refactor/20261108-slot-info` | `.worktrees/slot-info` | 已合入 `20940fd`；6 组件 / 99 用例 |
+| W1.2b | done | w12b-slot-data | `refactor/20261108-slot-data` | `.worktrees/slot-data` | 已合入 `aa4bdb3`；5 组件 / 138 用例 |
+| W1.2c | done | w12c-slot-nav | `refactor/20261108-slot-nav` | `.worktrees/slot-nav` | 已合入 `50fc798`；3 组件 / 63 用例 |
+| W1.2d | done | w12d-slot-feedback | `refactor/20261108-slot-feedback` | `.worktrees/slot-feedback` | 已合入 `0728d6d`；9 组件 / 173 用例 |
 | W1.2e | ready | — | `refactor/20261108-slot-base` | 待建 | 可紧随第 2 波或并行（所有权不相交） |
 | W1.3a | blocked | — | `feat/20261108-input-slots` | — | 等共享车道 |
 | W1.3b | blocked | — | `feat/20261108-overlay-close-slot` | — | 等 W1.3a |
