@@ -5,7 +5,7 @@ import { Drawer } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
 
-function mountDrawer(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
+function mountDrawer(props: Record<string, any> = {}, slots: Record<string, (scope?: any) => unknown> = {}) {
   // 打开时整块容器 teleport 到 body，wrapper 根节点只剩传送门占位，类名与结构都要从 body 读
   const wrapper = mount(Drawer, {
     props: { modelValue: true, title: '抽屉标题', ...props },
@@ -102,6 +102,29 @@ describe('Drawer 抽屉', () => {
     mountDrawer({}, { header: () => '自定义头', footer: () => '页脚操作' })
     expect(document.querySelector('.ui-drawer__panel__title')?.textContent).toBe('自定义头')
     expect(document.querySelector('.ui-drawer__panel__footer')?.textContent).toBe('页脚操作')
+  })
+
+  it('close 插槽替换关闭按钮内容，并通过作用域 close 回调关闭', async () => {
+    let closeFromSlot: (() => void) | undefined
+    const wrapper = mountDrawer(
+      {},
+      {
+        close: (scope: { close: () => void }) => {
+          closeFromSlot = scope.close
+          return h('span', { class: 'my-close' }, '自定义关闭')
+        }
+      }
+    )
+    const button = document.querySelector('.ui-drawer__panel__close')
+    expect(button?.querySelector('.my-close')?.textContent).toBe('自定义关闭')
+    closeFromSlot?.()
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+  })
+
+  it('提供 close 插槽时即使 showClose=false 也渲染关闭按钮', () => {
+    mountDrawer({ showClose: false }, { close: () => 'X' })
+    expect(document.querySelector('.ui-drawer__panel__close')?.textContent).toBe('X')
   })
 
   it('点击关闭按钮抛出 update:modelValue(false) 与 close', async () => {

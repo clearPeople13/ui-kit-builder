@@ -8,7 +8,7 @@ import { Dialog } from '@ui-kit-full'
 const proto = window.HTMLElement.prototype
 let originalDescriptor: PropertyDescriptor | undefined
 
-function mountDialog(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
+function mountDialog(props: Record<string, any> = {}, slots: Record<string, (scope?: any) => unknown> = {}) {
   // 打开时整块 teleport 到 body，wrapper.html() 只剩传送门注释，断言需要直接查 body
   const wrapper = mount(Dialog, {
     props: { modelValue: true, title: '提示', ...props },
@@ -89,6 +89,29 @@ describe('Dialog', () => {
   it('header 插槽覆盖标题文案', () => {
     mountDialog({}, { header: () => '自定义头' })
     expect(document.querySelector('.ui-dialog__panel__title')?.textContent).toBe('自定义头')
+  })
+
+  it('close 插槽替换关闭按钮内容，并通过作用域 close 回调关闭', async () => {
+    let closeFromSlot: (() => void) | undefined
+    const wrapper = mountDialog(
+      {},
+      {
+        close: (scope: { close: () => void }) => {
+          closeFromSlot = scope.close
+          return h('span', { class: 'my-close' }, '自定义关闭')
+        }
+      }
+    )
+    const button = document.querySelector('.ui-dialog__panel__close')
+    expect(button?.querySelector('.my-close')?.textContent).toBe('自定义关闭')
+    closeFromSlot?.()
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+  })
+
+  it('提供 close 插槽时即使 showClose=false 也渲染关闭按钮', () => {
+    mountDialog({ showClose: false }, { close: () => 'X' })
+    expect(document.querySelector('.ui-dialog__panel__close')?.textContent).toBe('X')
   })
 
   it('无插槽时正文为空', () => {

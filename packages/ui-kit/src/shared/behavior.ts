@@ -1694,8 +1694,9 @@ export function overlayConfig(options: {
         return null
       }
       const close = () => (state.requestClose as () => void)()
-      const closeEnabled =
-        props[closeKey] !== undefined
+      const closeEnabled = slots.close
+        ? true
+        : props[closeKey] !== undefined
           ? props[closeKey] !== false
           : props.closeIcon !== undefined || props.beforeClose !== undefined
       const closeIcon =
@@ -1729,7 +1730,7 @@ export function overlayConfig(options: {
                       'aria-label': 'Close',
                       onClick: close
                     },
-                    [renderIcon(closeIcon)]
+                    [slots.close ? slots.close({ close }) : renderIcon(closeIcon)]
                   )
                 : null
             ])

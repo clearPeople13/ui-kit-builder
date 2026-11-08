@@ -254,7 +254,9 @@ describe('slot 契约：产物 meta 与 d.ts', () => {
           if (scopeProps.length) {
             expect(block!, `${exportName}.${slot.name} 应有作用域 props`).toContain(`${slot.name}(props: {`)
             for (const [key, type] of scopeProps) {
-              expect(block!).toContain(`${key}: ${type}`)
+              // d.ts 生成器会把函数类型包一层括号（`() => void` → `(() => void)`），断言按同一口径归一
+              const expectedType = type.includes('=>') && !(type.startsWith('(') && type.endsWith(')')) ? `(${type})` : type
+              expect(block!).toContain(`${key}: ${expectedType}`)
             }
           } else {
             expect(block!, `${exportName}.${slot.name} 应为无作用域的 (): VNode[] 形态`).toContain(
