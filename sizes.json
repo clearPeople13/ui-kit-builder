@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T14:05:19.490Z",
+  "generatedAt": "2026-11-08T14:35:31.457Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -939,8 +939,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 609538,
-          "gzipBytes": 148480
+          "bytes": 608179,
+          "gzipBytes": 148238
         },
         {
           "file": "ui-kit.css",
@@ -948,10 +948,10 @@
           "gzipBytes": 31568
         }
       ],
-      "jsBytes": 609538,
+      "jsBytes": 608179,
       "cssBytes": 227868,
-      "totalBytes": 837406,
-      "gzipBytes": 179943
+      "totalBytes": 836047,
+      "gzipBytes": 179713
     },
     "full": {
       "name": "full",
@@ -2302,8 +2302,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689427,
-          "gzipBytes": 167293
+          "bytes": 691415,
+          "gzipBytes": 168281
         },
         {
           "file": "ui-kit.css",
@@ -2311,10 +2311,10 @@
           "gzipBytes": 34287
         }
       ],
-      "jsBytes": 689427,
+      "jsBytes": 691415,
       "cssBytes": 247619,
-      "totalBytes": 937046,
-      "gzipBytes": 201666
+      "totalBytes": 939034,
+      "gzipBytes": 202637
     },
     "branded": {
       "name": "branded",
@@ -3665,8 +3665,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167367
+          "bytes": 693257,
+          "gzipBytes": 168353
         },
         {
           "file": "ui-kit.css",
@@ -3674,10 +3674,10 @@
           "gzipBytes": 35054
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 259683,
-      "totalBytes": 950952,
-      "gzipBytes": 202541
+      "totalBytes": 952940,
+      "gzipBytes": 203509
     },
     "chinese": {
       "name": "chinese",
@@ -5028,8 +5028,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694032,
-          "gzipBytes": 167508
+          "bytes": 696020,
+          "gzipBytes": 168488
         },
         {
           "file": "ui-kit.css",
@@ -5037,10 +5037,10 @@
           "gzipBytes": 38739
         }
       ],
-      "jsBytes": 694032,
+      "jsBytes": 696020,
       "cssBytes": 295675,
-      "totalBytes": 989707,
-      "gzipBytes": 206409
+      "totalBytes": 991695,
+      "gzipBytes": 207382
     },
     "cute": {
       "name": "cute",
@@ -6391,8 +6391,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167364
+          "bytes": 693257,
+          "gzipBytes": 168350
         },
         {
           "file": "ui-kit.css",
@@ -6400,10 +6400,10 @@
           "gzipBytes": 38008
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 275134,
-      "totalBytes": 966403,
-      "gzipBytes": 205505
+      "totalBytes": 968391,
+      "gzipBytes": 206475
     },
     "antd": {
       "name": "antd",
@@ -7754,8 +7754,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167367
+          "bytes": 693257,
+          "gzipBytes": 168353
         },
         {
           "file": "ui-kit.css",
@@ -7763,10 +7763,10 @@
           "gzipBytes": 38165
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 279890,
-      "totalBytes": 971159,
-      "gzipBytes": 205656
+      "totalBytes": 973147,
+      "gzipBytes": 206627
     },
     "arco": {
       "name": "arco",
@@ -9117,8 +9117,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167367
+          "bytes": 693257,
+          "gzipBytes": 168353
         },
         {
           "file": "ui-kit.css",
@@ -9126,10 +9126,10 @@
           "gzipBytes": 35151
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 260055,
-      "totalBytes": 951324,
-      "gzipBytes": 202637
+      "totalBytes": 953312,
+      "gzipBytes": 203607
     },
     "tdesign": {
       "name": "tdesign",
@@ -10480,8 +10480,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694032,
-          "gzipBytes": 167503
+          "bytes": 696020,
+          "gzipBytes": 168482
         },
         {
           "file": "ui-kit.css",
@@ -10489,10 +10489,10 @@
           "gzipBytes": 35577
         }
       ],
-      "jsBytes": 694032,
+      "jsBytes": 696020,
       "cssBytes": 276381,
-      "totalBytes": 970413,
-      "gzipBytes": 203237
+      "totalBytes": 972401,
+      "gzipBytes": 204205
     },
     "naive": {
       "name": "naive",
@@ -11843,8 +11843,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692190,
-          "gzipBytes": 167409
+          "bytes": 694178,
+          "gzipBytes": 168403
         },
         {
           "file": "ui-kit.css",
@@ -11852,10 +11852,10 @@
           "gzipBytes": 35205
         }
       ],
-      "jsBytes": 692190,
+      "jsBytes": 694178,
       "cssBytes": 265372,
-      "totalBytes": 957562,
-      "gzipBytes": 202745
+      "totalBytes": 959550,
+      "gzipBytes": 203730
     },
     "viewui": {
       "name": "viewui",
@@ -13206,8 +13206,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693111,
-          "gzipBytes": 167456
+          "bytes": 695099,
+          "gzipBytes": 168448
         },
         {
           "file": "ui-kit.css",
@@ -13215,10 +13215,10 @@
           "gzipBytes": 35396
         }
       ],
-      "jsBytes": 693111,
+      "jsBytes": 695099,
       "cssBytes": 270875,
-      "totalBytes": 963986,
-      "gzipBytes": 202999
+      "totalBytes": 965974,
+      "gzipBytes": 203982
     },
     "vant": {
       "name": "vant",
@@ -14569,8 +14569,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167364
+          "bytes": 693257,
+          "gzipBytes": 168352
         },
         {
           "file": "ui-kit.css",
@@ -14578,10 +14578,10 @@
           "gzipBytes": 35158
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 260195,
-      "totalBytes": 951464,
-      "gzipBytes": 202641
+      "totalBytes": 953452,
+      "gzipBytes": 203613
     },
     "varlet": {
       "name": "varlet",
@@ -15932,8 +15932,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693111,
-          "gzipBytes": 167464
+          "bytes": 695099,
+          "gzipBytes": 168460
         },
         {
           "file": "ui-kit.css",
@@ -15941,10 +15941,10 @@
           "gzipBytes": 35410
         }
       ],
-      "jsBytes": 693111,
+      "jsBytes": 695099,
       "cssBytes": 270915,
-      "totalBytes": 964026,
-      "gzipBytes": 203020
+      "totalBytes": 966014,
+      "gzipBytes": 204005
     },
     "semi": {
       "name": "semi",
@@ -17295,8 +17295,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691269,
-          "gzipBytes": 167366
+          "bytes": 693257,
+          "gzipBytes": 168352
         },
         {
           "file": "ui-kit.css",
@@ -17304,10 +17304,10 @@
           "gzipBytes": 35043
         }
       ],
-      "jsBytes": 691269,
+      "jsBytes": 693257,
       "cssBytes": 259751,
-      "totalBytes": 951020,
-      "gzipBytes": 202525
+      "totalBytes": 953008,
+      "gzipBytes": 203493
     },
     "material3": {
       "name": "material3",
@@ -18658,8 +18658,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695874,
-          "gzipBytes": 167579
+          "bytes": 697862,
+          "gzipBytes": 168547
         },
         {
           "file": "ui-kit.css",
@@ -18667,10 +18667,10 @@
           "gzipBytes": 36119
         }
       ],
-      "jsBytes": 695874,
+      "jsBytes": 697862,
       "cssBytes": 288310,
-      "totalBytes": 984184,
-      "gzipBytes": 203852
+      "totalBytes": 986172,
+      "gzipBytes": 204811
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -20021,8 +20021,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695874,
-          "gzipBytes": 167579
+          "bytes": 697862,
+          "gzipBytes": 168546
         },
         {
           "file": "ui-kit.css",
@@ -20030,10 +20030,10 @@
           "gzipBytes": 35845
         }
       ],
-      "jsBytes": 695874,
+      "jsBytes": 697862,
       "cssBytes": 287650,
-      "totalBytes": 983524,
-      "gzipBytes": 203573
+      "totalBytes": 985512,
+      "gzipBytes": 204527
     },
     "shadcn": {
       "name": "shadcn",
@@ -21384,8 +21384,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693111,
-          "gzipBytes": 167468
+          "bytes": 695099,
+          "gzipBytes": 168462
         },
         {
           "file": "ui-kit.css",
@@ -21393,10 +21393,10 @@
           "gzipBytes": 35493
         }
       ],
-      "jsBytes": 693111,
+      "jsBytes": 695099,
       "cssBytes": 271280,
-      "totalBytes": 964391,
-      "gzipBytes": 203106
+      "totalBytes": 966379,
+      "gzipBytes": 204090
     },
     "fluent": {
       "name": "fluent",
@@ -22747,8 +22747,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693111,
-          "gzipBytes": 167458
+          "bytes": 695099,
+          "gzipBytes": 168453
         },
         {
           "file": "ui-kit.css",
@@ -22756,10 +22756,10 @@
           "gzipBytes": 35407
         }
       ],
-      "jsBytes": 693111,
+      "jsBytes": 695099,
       "cssBytes": 270831,
-      "totalBytes": 963942,
-      "gzipBytes": 203012
+      "totalBytes": 965930,
+      "gzipBytes": 203997
     },
     "carbon": {
       "name": "carbon",
@@ -24110,8 +24110,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693111,
-          "gzipBytes": 167465
+          "bytes": 695099,
+          "gzipBytes": 168459
         },
         {
           "file": "ui-kit.css",
@@ -24119,10 +24119,10 @@
           "gzipBytes": 35430
         }
       ],
-      "jsBytes": 693111,
+      "jsBytes": 695099,
       "cssBytes": 270920,
-      "totalBytes": 964031,
-      "gzipBytes": 203042
+      "totalBytes": 966019,
+      "gzipBytes": 204024
     },
     "mantine": {
       "name": "mantine",
@@ -25473,8 +25473,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694032,
-          "gzipBytes": 167508
+          "bytes": 696020,
+          "gzipBytes": 168488
         },
         {
           "file": "ui-kit.css",
@@ -25482,10 +25482,10 @@
           "gzipBytes": 35709
         }
       ],
-      "jsBytes": 694032,
+      "jsBytes": 696020,
       "cssBytes": 276820,
-      "totalBytes": 970852,
-      "gzipBytes": 203375
+      "totalBytes": 972840,
+      "gzipBytes": 204344
     },
     "ios": {
       "name": "ios",
@@ -26836,8 +26836,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690348,
-          "gzipBytes": 167326
+          "bytes": 692336,
+          "gzipBytes": 168310
         },
         {
           "file": "ui-kit.css",
@@ -26845,10 +26845,10 @@
           "gzipBytes": 34943
         }
       ],
-      "jsBytes": 690348,
+      "jsBytes": 692336,
       "cssBytes": 254283,
-      "totalBytes": 944631,
-      "gzipBytes": 202374
+      "totalBytes": 946619,
+      "gzipBytes": 203345
     }
   },
   "features": {
@@ -27042,7 +27042,7 @@
       "jsBytes": 261,
       "cssBytes": 921,
       "totalBytes": 1182,
-      "gzipBytes": 140
+      "gzipBytes": 122
     },
     "cascader.filterable": {
       "title": "筛选与远程搜索",
@@ -27050,7 +27050,7 @@
       "jsBytes": 334,
       "cssBytes": 0,
       "totalBytes": 334,
-      "gzipBytes": 62
+      "gzipBytes": 63
     },
     "cascader.popper": {
       "title": "浮层定位",
@@ -27058,7 +27058,7 @@
       "jsBytes": 535,
       "cssBytes": 0,
       "totalBytes": 535,
-      "gzipBytes": 88
+      "gzipBytes": 127
     },
     "cascader.lazy": {
       "title": "懒加载与展开",
@@ -27066,15 +27066,15 @@
       "jsBytes": 193,
       "cssBytes": 0,
       "totalBytes": 193,
-      "gzipBytes": 32
+      "gzipBytes": 28
     },
     "cascader.virtualized": {
       "title": "虚拟滚动",
       "component": "cascader",
-      "jsBytes": 240,
+      "jsBytes": 1782,
       "cssBytes": 0,
-      "totalBytes": 240,
-      "gzipBytes": 23
+      "totalBytes": 1782,
+      "gzipBytes": 636
     },
     "cascader.format": {
       "title": "格式化",
@@ -27082,7 +27082,7 @@
       "jsBytes": 199,
       "cssBytes": 0,
       "totalBytes": 199,
-      "gzipBytes": 33
+      "gzipBytes": 31
     },
     "cascader-panel.multiple": {
       "title": "多选",
@@ -27090,7 +27090,7 @@
       "jsBytes": 194,
       "cssBytes": 0,
       "totalBytes": 194,
-      "gzipBytes": 25
+      "gzipBytes": 19
     },
     "cascader-panel.lazy": {
       "title": "懒加载与展开",
@@ -27098,7 +27098,7 @@
       "jsBytes": 174,
       "cssBytes": 0,
       "totalBytes": 174,
-      "gzipBytes": 23
+      "gzipBytes": 18
     },
     "cascader-panel.selection": {
       "title": "高亮与勾选",
@@ -27106,15 +27106,15 @@
       "jsBytes": 311,
       "cssBytes": 0,
       "totalBytes": 311,
-      "gzipBytes": 71
+      "gzipBytes": 67
     },
     "cascader-panel.virtualized": {
       "title": "虚拟滚动",
       "component": "cascader-panel",
-      "jsBytes": 258,
+      "jsBytes": 1622,
       "cssBytes": 0,
-      "totalBytes": 258,
-      "gzipBytes": 19
+      "totalBytes": 1622,
+      "gzipBytes": 249
     },
     "cascader-panel.appearance": {
       "title": "外观变体",
@@ -27122,7 +27122,7 @@
       "jsBytes": 228,
       "cssBytes": 74,
       "totalBytes": 302,
-      "gzipBytes": 29
+      "gzipBytes": 24
     },
     "checkbox.appearance": {
       "title": "外观变体",
@@ -27314,7 +27314,7 @@
       "jsBytes": 346,
       "cssBytes": 0,
       "totalBytes": 346,
-      "gzipBytes": 13
+      "gzipBytes": 9
     },
     "drawer.popper": {
       "title": "浮层定位",
@@ -27327,10 +27327,10 @@
     "drawer.draggable": {
       "title": "拖拽与缩放",
       "component": "drawer",
-      "jsBytes": 2525,
+      "jsBytes": 2669,
       "cssBytes": 603,
-      "totalBytes": 3128,
-      "gzipBytes": 661
+      "totalBytes": 3272,
+      "gzipBytes": 739
     },
     "drawer.modal": {
       "title": "遮罩与关闭行为",
@@ -27338,7 +27338,7 @@
       "jsBytes": 330,
       "cssBytes": 0,
       "totalBytes": 330,
-      "gzipBytes": 16
+      "gzipBytes": 17
     },
     "drawer.fullscreen": {
       "title": "全屏",
@@ -27818,7 +27818,7 @@
       "jsBytes": 157,
       "cssBytes": 0,
       "totalBytes": 157,
-      "gzipBytes": 29
+      "gzipBytes": 30
     },
     "splitter.splitter-panel-draggable": {
       "title": "拖拽与缩放",
@@ -27826,7 +27826,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 53
+      "gzipBytes": 56
     },
     "statistic.format": {
       "title": "格式化",
@@ -27874,15 +27874,15 @@
       "jsBytes": 3733,
       "cssBytes": 761,
       "totalBytes": 4494,
-      "gzipBytes": 1033
+      "gzipBytes": 1017
     },
     "table.resize": {
       "title": "列宽拖拽",
       "component": "table",
-      "jsBytes": 2310,
+      "jsBytes": 2406,
       "cssBytes": 428,
-      "totalBytes": 2738,
-      "gzipBytes": 659
+      "totalBytes": 2834,
+      "gzipBytes": 662
     },
     "table.span": {
       "title": "合并单元格",
@@ -27890,7 +27890,7 @@
       "jsBytes": 265,
       "cssBytes": 0,
       "totalBytes": 265,
-      "gzipBytes": 38
+      "gzipBytes": 37
     },
     "table.loading": {
       "title": "加载状态",
@@ -27898,7 +27898,7 @@
       "jsBytes": 537,
       "cssBytes": 535,
       "totalBytes": 1072,
-      "gzipBytes": 224
+      "gzipBytes": 222
     },
     "table.summary": {
       "title": "合计行",
@@ -27906,7 +27906,7 @@
       "jsBytes": 712,
       "cssBytes": 0,
       "totalBytes": 712,
-      "gzipBytes": 171
+      "gzipBytes": 164
     },
     "table.selection": {
       "title": "选择列配置",
@@ -27914,7 +27914,7 @@
       "jsBytes": 225,
       "cssBytes": 0,
       "totalBytes": 225,
-      "gzipBytes": 40
+      "gzipBytes": 52
     },
     "table.methods": {
       "title": "实例方法",
@@ -27922,7 +27922,7 @@
       "jsBytes": 2099,
       "cssBytes": 0,
       "totalBytes": 2099,
-      "gzipBytes": 539
+      "gzipBytes": 518
     },
     "table.column-sort": {
       "title": "列排序配置",
@@ -27930,7 +27930,7 @@
       "jsBytes": 251,
       "cssBytes": 0,
       "totalBytes": 251,
-      "gzipBytes": 45
+      "gzipBytes": 44
     },
     "tabs.closable": {
       "title": "可关闭",
@@ -28162,15 +28162,15 @@
       "jsBytes": 168,
       "cssBytes": 0,
       "totalBytes": 168,
-      "gzipBytes": 26
+      "gzipBytes": 29
     },
     "tree.draggable": {
       "title": "拖拽排序",
       "component": "tree",
-      "jsBytes": 3769,
+      "jsBytes": 3966,
       "cssBytes": 396,
-      "totalBytes": 4165,
-      "gzipBytes": 1190
+      "totalBytes": 4362,
+      "gzipBytes": 1206
     },
     "tree.selection": {
       "title": "高亮与勾选",
@@ -28178,7 +28178,7 @@
       "jsBytes": 300,
       "cssBytes": 0,
       "totalBytes": 300,
-      "gzipBytes": 72
+      "gzipBytes": 65
     },
     "tree.methods": {
       "title": "实例方法",
