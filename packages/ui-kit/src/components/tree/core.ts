@@ -198,6 +198,123 @@ export function createTree(features: UiFeature[] = []) {
           emit('update:checked-keys', [...next])
         }
 
+        // 可见节点扁平序列：与 renderNodes 的渲染顺序一致（filter 命中 + 已展开才下钻），
+        // 键盘导航的「上一个/下一个可见节点」与 DOM 顺序共享同一份推导
+        function visibleNodes(): UiTreeNode[] {
+          const list: UiTreeNode[] = []
+          const walk = (source: UiTreeNode[]) => {
+            for (const node of source) {
+              if (!matchesFilter(node)) {
+                continue
+              }
+              list.push(node)
+              if (node.children.length && isExpanded(node)) {
+                walk(node.children)
+              }
+            }
+          }
+          walk(nodes.value)
+          return list
+        }
+
+        // roving tabindex 当前项：优先 currentKey（点击/currentNodeKey 已同步），
+        // 失效（被收起/过滤/禁用）时兜底落到首个可见非禁用节点，保证树始终有一个 Tab 停靠点
+        function rovingTabStopKey(visible: UiTreeNode[]): string | number {
+          const current = currentKey.value
+          if (current !== '' && visible.some((node) => !node.disabled && String(node.key) === String(current))) {
+            return current
+          }
+          return visible.find((node) => !node.disabled)?.key ?? ''
+        }
+
+        function focusVisibleNode(index: number, visible: UiTreeNode[], items: HTMLElement[]) {
+          items[index]?.focus({ preventScroll: true })
+          currentKey.value = visible[index].key
+        }
+
+        // WAI-ARIA Tree 键盘映射：↑↓ 在可见节点间移动（跳过禁用），→ 展开/进首个子节点，
+        // ← 收起/回父节点，Home/End 跳首末可见节点；容器层 roving 不抢 checkbox 的 Space
+        function handleNodesKeydown(event: KeyboardEvent) {
+          const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const container = event.currentTarget as HTMLElement
+          const items = Array.from(container.querySelectorAll<HTMLElement>('.ui-tree__node'))
+          const visible = visibleNodes()
+          if (!items.length || !visible.length) {
+            return
+          }
+          const target = (event.target as HTMLElement | null)?.closest('.ui-tree__node')
+          const currentIndex = target ? items.indexOf(target as HTMLElement) : -1
+          if (currentIndex < 0) {
+            return
+          }
+          const node = visible[currentIndex]
+          if (node.disabled) {
+            return
+          }
+          event.preventDefault()
+          const enabled = (index: number) => index >= 0 && index < visible.length && !visible[index].disabled
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const step = event.key === 'ArrowDown' ? 1 : -1
+            for (let offset = 1; offset < visible.length; offset += 1) {
+              const index = currentIndex + step * offset
+              if (index < 0 || index >= visible.length) {
+                break
+              }
+              if (enabled(index)) {
+                focusVisibleNode(index, visible, items)
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'Home' || event.key === 'End') {
+            const step = event.key === 'Home' ? 1 : -1
+            const edge = event.key === 'Home' ? 0 : visible.length - 1
+            for (let offset = 0; offset < visible.length; offset += 1) {
+              const index = (edge + step * offset + visible.length * offset) % visible.length
+              if (enabled(index)) {
+                focusVisibleNode(index, visible, items)
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'ArrowRight') {
+            if (node.children.length && !isExpanded(node)) {
+              toggleExpand(node)
+              return
+            }
+            // 已展开：进到第一个非禁用的直接子节点
+            for (
+              let index = currentIndex + 1;
+              index < visible.length && visible[index].level > node.level;
+              index += 1
+            ) {
+              if (visible[index].level === node.level + 1 && enabled(index)) {
+                focusVisibleNode(index, visible, items)
+                return
+              }
+            }
+            return
+          }
+          // ArrowLeft：已展开则收起；已收起则回到父节点
+          if (node.children.length && isExpanded(node)) {
+            toggleExpand(node)
+            return
+          }
+          for (let index = currentIndex - 1; index >= 0; index -= 1) {
+            if (visible[index].level < node.level) {
+              if (enabled(index)) {
+                focusVisibleNode(index, visible, items)
+              }
+              return
+            }
+          }
+        }
+
         function handleNodeClick(node: UiTreeNode) {
           if (node.disabled) {
             return
@@ -214,6 +331,7 @@ export function createTree(features: UiFeature[] = []) {
         }
 
         function renderNodes(list: UiTreeNode[], extend?: (node: UiTreeNode) => Record<string, any>): VNodeChild[] {
+          const tabStop = rovingTabStopKey(visibleNodes())
           return list.filter(matchesFilter).map((node) => {
             const expanded = isExpanded(node)
             const check = isChecked(node) ? 'checked' : checkState(node)
@@ -232,6 +350,8 @@ export function createTree(features: UiFeature[] = []) {
                     }
                   ],
                   style: { paddingLeft: `${node.level * indent + 4}px` },
+                  // roving tabindex：整棵树一个 Tab 停靠点，禁用节点移出 Tab 序
+                  tabindex: node.disabled ? undefined : String(tabStop) === String(node.key) ? 0 : -1,
                   onClick: () => handleNodeClick(node),
                   ...(extend?.(node) ?? {})
                 },
@@ -274,6 +394,7 @@ export function createTree(features: UiFeature[] = []) {
           checkedKeys,
           expandedKeys,
           applyCheckedKeys,
+          handleNodesKeydown,
           get nodes() {
             return nodes.value
           },
@@ -289,7 +410,11 @@ export function createTree(features: UiFeature[] = []) {
           ? (node: UiTreeNode) =>
               Object.assign({}, ...hooks.map((hook: (node: UiTreeNode) => Record<string, any>) => hook(node)))
           : undefined
-        return h('div', { class: 'ui-tree__nodes' }, state.renderNodes(state.nodes, extend))
+        return h(
+          'div',
+          { class: 'ui-tree__nodes', onKeydown: state.handleNodesKeydown },
+          state.renderNodes(state.nodes, extend)
+        )
       }
     },
     features
