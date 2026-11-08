@@ -52,6 +52,8 @@ export function createDropdown(features: UiFeature[] = []) {
         'div',
         {
           class: 'ui-dropdown__content',
+          // menuitem 必须有 role=menu 的合法父级，与 trigger 的 aria-haspopup 同源
+          role: props.role || 'menu',
           style: {
             maxHeight: sizeValue(props.maxHeight) ?? '240px',
             overflowY: 'auto'

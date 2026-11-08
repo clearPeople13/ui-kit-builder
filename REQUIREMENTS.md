@@ -1214,3 +1214,66 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 - 证据（2026-11-08 `npm audit --registry=https://registry.npmjs.org`）：生产依赖 0 漏洞；16 个漏洞全部 dev toolchain——critical 2（vitest 5.1.0 修、tinypool）、high 1（glob）、moderate 13（@typescript-eslint 8.36.0、@vue/test-utils 2.4.11、js-beautify、editorconfig 等）。修复路径 = vitest 3→5 大跳 + typescript-eslint 8 升。
 - 结论：dev-only 不进入产物与用户面，风险可接受；但 vitest 5 大跳会波及 5 份 vitest 配置与 browser/provider API，必须单独分支评估（已登记任务 #23），不与任何功能波次混批。
+
+## 38. a11y 批次第一刀：浮层焦点闭环（F-108）
+
+> 触发：目标关闭前终审复审（只读 a11y 审计，交互复杂组件逐行过）确认 8 个 GAP，本波修 message-box / drawer 焦点闭环两项；其余浮层键盘可达项另案（cascader 家族 / date-time picker / color-picker+dropdown）。
+
+### 38.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-108 | `packages/ui-kit/src/shared/behavior.ts`（overlayConfig）、`shared/focus.ts`（新增）、`components/{dialog,drawer,message-box,focus-trap}/core.ts`、`tests/browser/{drawer,message-box}.spec.ts` | 终审复审确认：message-box 与 drawer 有 `role=dialog` 但无初始聚焦 / Tab 圈禁 / 焦点归还（drawer 连 `aria-modal` 都没有）；dialog 里已有一套焦点三段实现，overlayConfig 体系内的 drawer / 后续浮层却接不上 | 焦点闭环停留在 dialog 单组件内，没有 shared 统一出口；可聚焦元素收集逻辑在 focus-trap 内重复一份 | overlayConfig 新增 `focusLoop` 开关统一收口：打开记录触发元素 + `nextTick` 初始聚焦、window capture 级 Tab/Shift+Tab 圈禁、关闭与卸载归还焦点，面板补 `aria-modal` 与按实例递增锚点的 `aria-labelledby`；dialog 删自带实现改走统一出口（行为逐行等价，既有浏览器契约不回归）；drawer 一行接入；message-box（teleport 到 body）按同款口径自实现；`getFocusableElements` 上收 `shared/focus.ts` 与 focus-trap 同源；新增 drawer / message-box 浏览器契约各 3 例（初始移焦 / Tab 回卷 / 关闭归还） |
+
+### 38.2 验证
+
+- worktree 全绿：全量单测 1638 条、浏览器契约 dialog/drawer/message-box 9 例、axe/console/a11y 影响面 16 例、comment-guard / naming-guard / writing-convergence 守卫零命中、tsc 双配置零报错。
+- 门禁：合入后在 `main` 统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-108 全部修复，三处文档同步为 108 条。
+
+## 39. a11y 批次第二刀：date/time-picker 键盘可达（F-109）
+
+> 触发：同 §38 终审复审，本波修 date-picker / time-picker「键盘打不开面板、网格/列内无方向键漫游」两项高严重度 GAP。
+
+### 39.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-109 | `packages/ui-kit/src/components/{date-picker,time-picker}/core.ts`、`tests/browser/{date-picker,time-picker}.spec.ts` | date-picker：trigger div keydown 仅 Escape，键盘打不开面板（面板只由 onClick 打开）；日格虽是原生 button 但到不了；日历网格内无方向键漫游。time-picker：field keydown 仅 Escape，input Enter 只提交草稿不打开面板；列项是原生 button 但面板键盘不可达，无方向键漫游（Tab 会穿 144 个按钮） | 浮层只实现了 pointer 打开路径，键盘路径与网格漫游从未实现 | trigger/field/input 三路 keydown 补 Enter/ArrowDown 打开（草稿未改动时 Enter 语义=打开，有改动保持原提交路径不破坏 F-57/F-58）；打开后焦点落进网格：date-picker 优先已选日→今天→首个非禁用日格，time-picker 落首列选中项（禁用退首个可用项）；日历网格 ←→↑↓（按 7 列整周跳）/Home/End、时间列 ArrowUp/Down，全部逐格扫描跳过 disabled（对齐 menu/tree skip-disabled 口径）；Escape 关闭并归还焦点（外点关闭不归还，避免抢焦点）；输入框 keydown 经 `closest('input')` 挡重；新增浏览器契约各 5 例 |
+
+### 39.2 验证
+
+- worktree 全绿：date-picker 32 + time-picker 40 + scenes 9 单测、新增浏览器契约 10 例、回归浏览器层 22 例（a11y/attributes/interaction/time-picker.scene）、comment-guard / naming-guard / writing-convergence 守卫零命中、typecheck 干净。
+- 门禁：合入后在 `main` 与其余 a11y 波次统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-109 全部修复，三处文档同步为 109 条。
+
+## 40. a11y 批次第三刀：cascader 家族键盘可操作（F-110）
+
+> 触发：同 §38 终审复审，本波修 cascader / cascader-panel「键盘完全无法操作」两项高严重度 GAP（含随行低severity项：clear 图标与多选 tag-close 键盘不可达）。
+
+### 40.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-110 | `packages/ui-kit/src/components/cascader/{core.ts,core.css}`、`components/cascader-panel/core.ts`、`tests/browser/cascader.spec.ts` | cascader：trigger div 的 onKeydown 只处理 Escape，键盘打不开面板；面板节点是不可聚焦 div，无 tabindex/keydown/role；filterable 输入框 Enter 不会选中搜索结果；clear 图标与多选 tag-close 是无 tabindex 的 span，键盘无法清除/删标签。cascader-panel：整文件无一个 keydown/tabindex，`role='option'` 节点不可聚焦，listbox 语义存在却无任何操作通道 | 浮层只实现了 pointer 路径，roving tabindex 与键盘映射从未实现 | trigger 接 Enter/Space 开合（triggerConfig 同款口径，内层 button/input 冒泡不重复 toggle），非 filterable 打开时焦点自动移入面板 roving 节点；面板 roving tabindex（整面板一个 Tab 停靠点，键盘/点击共用 focusKey 同步，失效兜底第一列首个非禁用节点，对齐 tree/menu 口径）；键位映射：↑↓ 同列移动（跳禁用、边界停住）、→ 展开并进子列首项（子列新建 DOM 须 nextTick 重新查询）、← 收起或回父级、Home/End 跳列首末、Enter/Space 等同点击（checkbox 模式 Space 拨动复选框）、Escape 收起归还 trigger；cascader-panel 同套 roving+键位挂组件根（与 menu 相同接法），根 disabled 整面板退出键盘导航；filterable Enter 选中首个非禁用搜索结果；clear/tag-close span 改原生 `<button type="button">`（message-box close 先例，CSS reset）；新增浏览器契约 8 例 |
+
+### 40.2 验证
+
+- worktree 全绿：cascader/cascader-panel 39 单测、浏览器契约 8 例、axe/console-clean 回归 9 例、comment-guard / naming-guard / writing-convergence 守卫零命中、verify-governance 场景覆盖确认、tsc/eslint/prettier 干净。
+- 门禁：合入后在 `main` 与其余 a11y 波次统一执行全量 `npm run quality`。
+- 缺陷口径：F-1…F-110 全部修复，三处文档同步为 110 条。
+
+## 41. a11y 批次第四刀：color-picker / dropdown 键盘可操作（F-111）
+
+> 触发：同 §38 终审复审，本波修 color-picker「键盘打不开面板且取色滑杆纯指针」与 dropdown「开得了选不了（item 无 tabindex/role、焦点不移入、无方向键）」两项 GAP。交付 agent 在最终验证前触顶中断，残稿由整合者核验后提交（门禁全量兜底）。
+
+### 41.1 缺陷登记
+
+| 编号 | 文件 | 现象 | 根因 | 修复 |
+| ---- | ---- | ---- | ---- | ---- |
+| F-111 | `packages/ui-kit/src/components/color-picker/{core.ts,core.css}`、`components/dropdown/core.ts`、`shared/behavior.ts`（triggerConfig）、`tests/browser/{color-picker,dropdown,a11y}.spec.ts` | color-picker：trigger onKeydown 仅 Escape，键盘打不开面板；SV/hue/alpha 滑杆是纯 pointerdown 拖拽 div，无 tabindex/role/方向键，取色本身键盘不可完成。dropdown：triggerConfig 已给 Enter/Space + aria-expanded，但 item 是 li、无 tabindex/role=menuitem，打开后焦点不移入面板、无方向键导航，trigger 缺 aria-haspopup | 浮层键盘路径与 roving 从未实现；aria-haspopup 未纳入 triggerConfig 口径 | color-picker：trigger 补 Enter/Space 打开（对齐 triggerConfig 映射）并把焦点送进面板，三个滑杆 role=slider + tabindex + aria-valuenow/min/max/text + 方向键步进（SV 1%、色相 1°、透明度 1%，与指针拖拽口径分离），focus-visible 焦点环补样式，Escape 关闭归还 trigger；dropdown：面板 onKeydown 收口 WAI-ARIA 菜单映射（↑↓ 循环、Home/End、Enter 同点击、Escape 归还 trigger），item 经 provide/inject 上下文接 roving tabindex（整组一个 Tab 停靠点，禁用退出、失效兜底首个可用项、点击同步停靠点），键盘打开才移交焦点（悬停/点击不抢），triggerConfig 新增 `ariaHaspopup` 选项并输出到 trigger（dropdown 取 role|'menu'）；a11y 浏览器场景同步升级为焦点移交 + 菜单漫游断言 |
+
+### 41.2 验证
+
+- 待全量门禁（`npm run quality`，13 阶段）在 `main` 统一验证；agent 侧未及跑完的自验由门禁覆盖。
+- 缺陷口径：F-1…F-111 全部修复，三处文档同步为 111 条。

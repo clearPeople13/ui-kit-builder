@@ -61,9 +61,12 @@ describe('变更范围选择器', () => {
     expect(result.filters['test:browser']).toEqual(['tests/browser/button-focus-trap.spec.ts'])
   })
 
-  it('有专属浏览器场景的组件（time-picker）改 core.ts 时只跑那一个场景文件', () => {
+  it('有专属浏览器场景的组件（time-picker）改 core.ts 时只跑该组件的全部场景文件', () => {
     const result = plan(['packages/ui-kit/src/components/time-picker/core.ts'])
-    expect(result.filters['test:browser']).toEqual(['tests/browser/time-picker.scene.spec.ts'])
+    expect(result.filters['test:browser']).toEqual([
+      'tests/browser/time-picker.scene.spec.ts',
+      'tests/browser/time-picker.spec.ts'
+    ])
   })
 
   it('改组件特性实现（非样式、非 DOM）不拉视觉体检与浏览器层', () => {
