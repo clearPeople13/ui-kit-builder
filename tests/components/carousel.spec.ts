@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Carousel, CarouselItem } from '@ui-kit-full'
+import { Carousel, CarouselItem, ConfigProvider } from '@ui-kit-full'
 
 interface ItemSpec {
   name?: string
@@ -103,6 +103,24 @@ describe('Carousel', () => {
     // F-24 回归：不再把自动生成的随机条目名（item-xxxx）交给读屏
     const wrapper = await mountCarousel({}, [{ text: 'A' }, { text: 'B' }])
     expect(indicators(wrapper).map((item) => item.attributes('aria-label'))).toEqual(['第 1 张', '第 2 张'])
+  })
+
+  it('指示器兜底文案来自 ConfigProvider 注入的 locale', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { carousel: { slideFormat: 'Slide {index}' } } },
+      slots: {
+        default: () =>
+          h(Carousel, null, {
+            default: () => [h(CarouselItem, null, () => 'A'), h(CarouselItem, null, () => 'B')]
+          })
+      },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(wrapper.findAll('.ui-carousel__indicator').map((item) => item.attributes('aria-label'))).toEqual([
+      'Slide 1',
+      'Slide 2'
+    ])
   })
 
   it('激活指示器标记 is-active 与 aria-current', async () => {

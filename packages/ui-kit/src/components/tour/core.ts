@@ -3,6 +3,7 @@ import { computed, h, inject, nextTick, onBeforeUnmount, onMounted, provide, ref
 import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { wrapperConfig } from '../../shared/behavior'
 import './core.css'
@@ -93,6 +94,7 @@ export function createTour(features: UiFeature[] = []) {
       baseClass: 'ui-tour',
       props: tourBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('tour')
         const steps = shallowRef<TourStepRecord[]>([])
         const currentIndex = ref(0)
         const rect = ref<TourRect | null>(null)
@@ -351,7 +353,7 @@ export function createTour(features: UiFeature[] = []) {
                   {
                     class: 'ui-tour__panel__close',
                     type: 'button',
-                    'aria-label': '关闭引导',
+                    'aria-label': locale.value.close,
                     onClick: close
                   },
                   [renderIcon(step?.props.closeIcon || props.closeIcon || X)]
@@ -378,7 +380,7 @@ export function createTour(features: UiFeature[] = []) {
                       type: 'button',
                       onClick: prev
                     },
-                    '上一步'
+                    locale.value.prev
                   )
                 : null,
               h(
@@ -388,7 +390,7 @@ export function createTour(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: next
                 },
-                currentIndex.value < stepsCount.value - 1 ? '下一步' : '完成'
+                currentIndex.value < stepsCount.value - 1 ? locale.value.next : locale.value.finish
               )
             ])
           ])

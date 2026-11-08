@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { defineComponent, h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Tour, TourStep } from '@ui-kit-full'
+import { ConfigProvider, Tour, TourStep } from '@ui-kit-full'
 
 // happy-dom 没有真实布局：目标元素 getBoundingClientRect 恒为 0×0，浮层坐标 / 高亮包围盒
 // 属于浏览器层断言（归 tests/browser/**）。本文件覆盖：展开收起与传送门、步骤注册聚合、
@@ -148,6 +148,31 @@ describe('Tour 漫游式引导', () => {
     expect(tour.emitted('close')).toEqual([[]])
     expect(tour.emitted('update:modelValue')).toEqual([[false]])
     expect(tour.emitted('finish')).toBeUndefined()
+  })
+
+  it('导航与关闭文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { tour: { next: 'Next' } } },
+      slots: {
+        default: () =>
+          h(
+            Tour,
+            { modelValue: true },
+            {
+              default: () => [h(TourStep, { title: '甲' }), h(TourStep, { title: '乙' })]
+            }
+          )
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    await nextTick()
+    expect(document.querySelector('.ui-tour__panel__close')?.getAttribute('aria-label')).toBe('关闭引导')
+    expect(action('Next')).toBeTruthy()
+    action('Next')!.click()
+    await nextTick()
+    expect(action('完成')).toBeTruthy()
   })
 
   it('showClose 为 false 去掉关闭按钮与 closable 特性类；closeIcon 可自定义', async () => {

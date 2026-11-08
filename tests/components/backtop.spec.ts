@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { nextTick } from 'vue'
-import { Backtop } from '@ui-kit-full'
+import { h, nextTick } from 'vue'
+import { Backtop, ConfigProvider } from '@ui-kit-full'
 
 // happy-dom 没有真实布局：getBoundingClientRect 恒为 0、无法真实滚动，
 // 因此本文件只覆盖非几何部分（显隐阈值的手动触发路径 / 类名 / 偏移归一化 / 插槽 / 按钮语义），
@@ -43,6 +43,15 @@ describe('Backtop 回到顶部', () => {
     expect(button.attributes('tabindex')).toBe('0')
     expect(button.attributes('aria-label')).toBe('回到顶部')
     expect(button.find('svg').classes()).toContain('lucide-chevron-up')
+  })
+
+  it('无障碍标签来自 ConfigProvider 注入的 locale', () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { backtop: { label: 'Back to top' } } },
+      slots: { default: () => h(Backtop) },
+      attachTo: document.body
+    })
+    expect(wrapper.find('.ui-backtop__button').attributes('aria-label')).toBe('Back to top')
   })
 
   it('window 滚动超过 visibilityHeight 阈值后浮现（手动触发显隐路径）', async () => {

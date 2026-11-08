@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { Popconfirm } from '@ui-kit-full'
+import { ConfigProvider, Popconfirm } from '@ui-kit-full'
 
 // Popconfirm 属 triggerConfig 家族：收起后面板 DOM 移除（persistent=false 缺省），
 // 面板 teleported 缺省 true 落在 body 上；几何坐标不在本层断言
@@ -108,6 +108,22 @@ describe('Popconfirm', () => {
     await open(wrapper)
     await click(document.querySelector('.ui-popconfirm__button.is-confirm'))
     expect(panel()).toBeNull()
+  })
+
+  it('标题与按钮文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { popconfirm: { title: 'Are you sure?', confirm: 'Yes' } } },
+      slots: {
+        default: () => h(Popconfirm, null, { default: () => h('button', { class: 'pc-trigger' }, '删除') })
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    await click(document.querySelector('.ui-popconfirm__trigger'))
+    expect(document.querySelector('.ui-popconfirm__title span:last-child')?.textContent).toBe('Are you sure?')
+    expect(document.querySelector('.ui-popconfirm__button.is-confirm')?.textContent).toBe('Yes')
+    expect(document.querySelector('.ui-popconfirm__button.is-cancel')?.textContent).toBe('取消')
   })
 
   it('按钮文案与类型类可覆盖', async () => {

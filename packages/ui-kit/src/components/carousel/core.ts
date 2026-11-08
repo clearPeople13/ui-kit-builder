@@ -2,6 +2,7 @@ import { h, onBeforeUnmount, ref, watch } from 'vue'
 import { ChevronLeft, ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { sizeValue } from '../../shared/behavior'
 import { renderIcon } from '../../shared/icon'
 import './core.css'
@@ -22,7 +23,7 @@ interface CarouselItemMeta {
 const CAROUSEL_CONTEXT = Symbol('ui-carousel-context')
 
 // 指示点读屏文案：优先 label，其次用户显式传入的 name，两者都没有时给可读兜底
-function indicatorLabel(item: CarouselItemMeta, index: number): string {
+function indicatorLabel(item: CarouselItemMeta, index: number, slideFormat: string): string {
   const label = String(item.label || '')
   if (label) {
     return label
@@ -30,7 +31,7 @@ function indicatorLabel(item: CarouselItemMeta, index: number): string {
   if (!item.autoName && item.name) {
     return item.name
   }
-  return `第 ${index + 1} 张`
+  return formatLocale(slideFormat, { index: index + 1 })
 }
 
 const carouselBaseProps = {
@@ -54,6 +55,7 @@ export function createCarousel(features: UiFeature[] = []) {
       props: carouselBaseProps,
       emits: ['update:modelValue', 'change'],
       setup(props, { provide, emit }) {
+        const locale = useLocale('carousel')
         const active = ref(0)
         const items = ref<CarouselItemMeta[]>([])
         let timer: ReturnType<typeof setInterval> | null = null
@@ -180,6 +182,7 @@ export function createCarousel(features: UiFeature[] = []) {
         onBeforeUnmount(stopTimer)
 
         return {
+          locale,
           get active() {
             return active.value
           },
@@ -214,7 +217,7 @@ export function createCarousel(features: UiFeature[] = []) {
                   key: item.name,
                   type: 'button',
                   class: ['ui-carousel__indicator', index === state.active ? 'is-active' : ''],
-                  'aria-label': indicatorLabel(item, index),
+                  'aria-label': indicatorLabel(item, index, state.locale.value.slideFormat),
                   'aria-current': index === state.active ? 'true' : undefined,
                   onMouseenter: () => {
                     if (props.trigger === 'hover') {

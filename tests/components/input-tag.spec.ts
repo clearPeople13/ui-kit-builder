@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
-import { nextTick } from 'vue'
-import { InputTag } from '@ui-kit-full'
+import { h, nextTick } from 'vue'
+import { ConfigProvider, InputTag } from '@ui-kit-full'
 
 /**
  * InputTag 标签输入框：受控模型 + 草稿态输入，标签增删都靠事件上行。
@@ -54,6 +54,23 @@ describe('InputTag 标签输入框', () => {
     expect(empty.findAll('.ui-input-tag__tag')).toHaveLength(0)
     expect(empty.find('input').attributes('placeholder')).toBe('请输入后回车')
     expect(mountTag({ placeholder: '按回车添加' }).find('input').attributes('placeholder')).toBe('按回车添加')
+  })
+
+  it('移除文案走 locale 插值，未注入的占位仍回退中文', () => {
+    const filled = mount(ConfigProvider, {
+      props: { locale: { inputTag: { removeFormat: 'Remove {label}' } } },
+      slots: { default: () => h(InputTag, { modelValue: ['a'] }) },
+      attachTo: document.body
+    })
+    mounted.push(filled)
+    expect(filled.find('.ui-input-tag__close').attributes('aria-label')).toBe('Remove a')
+    const empty = mount(ConfigProvider, {
+      props: { locale: { inputTag: { removeFormat: 'Remove {label}' } } },
+      slots: { default: () => h(InputTag) },
+      attachTo: document.body
+    })
+    mounted.push(empty)
+    expect(empty.find('input').attributes('placeholder')).toBe('请输入后回车')
   })
 
   it('size / effect / tagType 分别落到根节点与标签类名', () => {

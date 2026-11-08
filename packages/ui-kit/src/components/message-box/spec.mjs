@@ -46,14 +46,12 @@ export default {
         {
           "name": "confirmButtonText",
           "type": "string",
-          "description": "confirmButtonText",
-          "default": "确定"
+          "description": "confirmButtonText"
         },
         {
           "name": "cancelButtonText",
           "type": "string",
-          "description": "cancelButtonText",
-          "default": "取消"
+          "description": "cancelButtonText"
         },
         {
           "name": "closeOnClickModal",

@@ -2,6 +2,7 @@ import { h, ref } from 'vue'
 import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import './core.css'
 
@@ -47,6 +48,7 @@ export function createInputTag(features: UiFeature[] = []) {
         return classes
       },
       setup(props, { emit }) {
+        const locale = useLocale('inputTag')
         const draft = ref('')
         const inputRef = ref<HTMLInputElement | null>(null)
         const tags = () => (Array.isArray(props.modelValue) ? props.modelValue : [])
@@ -111,7 +113,7 @@ export function createInputTag(features: UiFeature[] = []) {
           inputRef.value?.focus()
         }
 
-        return { draft, inputRef, tags, commit, remove, handleKeydown, focusInput, canAccept }
+        return { locale, draft, inputRef, tags, commit, remove, handleKeydown, focusInput, canAccept }
       },
       attrs: (_props, state) => ({
         onClick: (event: MouseEvent) => {
@@ -143,7 +145,7 @@ export function createInputTag(features: UiFeature[] = []) {
                     {
                       class: 'ui-input-tag__close',
                       type: 'button',
-                      'aria-label': `移除 ${String(tag)}`,
+                      'aria-label': formatLocale(state.locale.value.removeFormat, { label: String(tag) }),
                       onClick: () => state.remove(index)
                     },
                     [renderIcon(X)]
@@ -161,7 +163,7 @@ export function createInputTag(features: UiFeature[] = []) {
           readonly: Boolean(props.readonly),
           tabindex: props.disabled ? undefined : props.tabindex,
           'aria-label': props.ariaLabel,
-          placeholder: state.tags().length ? '' : props.placeholder || '请输入后回车',
+          placeholder: state.tags().length ? '' : props.placeholder || state.locale.value.placeholder,
           autocomplete: props.autocomplete,
           maxlength: props.maxlength,
           minlength: props.minlength,

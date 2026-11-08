@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { MessageBox } from '@ui-kit-full'
+import { ConfigProvider, MessageBox } from '@ui-kit-full'
 
 // MessageBox 打开时把遮罩+面板 teleport 到 body，wrapper 根节点只剩传送门注释；
 // Escape 监听挂在 document（不是 window），断言需按事件实际挂载点派发
@@ -241,6 +241,28 @@ describe('MessageBox', () => {
     await click('.ui-message-box__button.is-primary')
     expect(wrapper.emitted('confirm')).toHaveLength(1)
     expect(document.querySelector('.ui-message-box__input-error')).toBeNull()
+  })
+
+  it('按钮与输入兜底文案来自 ConfigProvider 注入的 locale', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { messageBox: { confirm: 'OK', cancel: 'Dismiss' } } },
+      slots: {
+        default: () =>
+          h(MessageBox, {
+            modelValue: true,
+            showCancelButton: true,
+            showInput: true,
+            inputValidator: () => false
+          })
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(document.querySelector('.ui-message-box__button.is-primary')?.textContent).toBe('OK')
+    expect(document.querySelector('.ui-message-box__button.is-cancel')?.textContent).toBe('Dismiss')
+    await click('.ui-message-box__button.is-primary')
+    expect(document.querySelector('.ui-message-box__input-error')?.textContent).toBe('输入不合法')
   })
 
   it('inputType 透传到原生 input', async () => {

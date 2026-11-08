@@ -2,6 +2,7 @@ import type { CSSProperties } from 'vue'
 import { h, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { sizeValue } from '../../shared/behavior'
 import { ChevronUp } from '../../shared/icons'
 import { renderIcon } from '../../shared/icon'
@@ -29,6 +30,7 @@ export function createBacktop(features: UiFeature[] = []) {
       baseClass: 'ui-backtop',
       props: backtopBaseProps,
       setup(props) {
+        const locale = useLocale('backtop')
         const visible = ref(false)
         // target 容器可视区域相对视口右下方向的缺口，叠加 props 偏移即为按钮位置
         const shift = ref({ right: 0, bottom: 0 })
@@ -85,6 +87,7 @@ export function createBacktop(features: UiFeature[] = []) {
         watch(() => [props.target, props.visibilityHeight], bindContainer)
 
         return {
+          locale,
           get visible() {
             return visible.value
           },
@@ -110,7 +113,7 @@ export function createBacktop(features: UiFeature[] = []) {
             class: 'ui-backtop__button',
             role: 'button',
             tabindex: 0,
-            'aria-label': '回到顶部',
+            'aria-label': state.locale.value.label,
             onClick: state.scrollToTop,
             onKeydown: state.handleKeydown
           },

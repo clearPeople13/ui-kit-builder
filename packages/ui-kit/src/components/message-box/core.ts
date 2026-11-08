@@ -3,6 +3,7 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch
 import { X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { getFocusableElements } from '../../shared/focus'
 import { renderIcon } from '../../shared/icon'
 import { useScrollLock } from '../../shared/scroll-lock'
@@ -16,8 +17,8 @@ const messageBoxBaseProps = {
   type: { type: String, default: '' },
   showClose: { type: Boolean, default: true },
   showCancelButton: Boolean,
-  confirmButtonText: { type: String, default: '确定' },
-  cancelButtonText: { type: String, default: '取消' },
+  confirmButtonText: { type: String },
+  cancelButtonText: { type: String },
   closeOnClickModal: { type: Boolean, default: true },
   closeOnPressEscape: { type: Boolean, default: true },
   lockScroll: { type: Boolean, default: true },
@@ -40,6 +41,7 @@ export function createMessageBox(features: UiFeature[] = []) {
       baseClass: 'ui-message-box',
       props: messageBoxBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('messageBox')
         const inputError = ref('')
         const zIndex = ref(0)
         // 打开前的活动元素（触发元素），关闭后归还焦点；titleId 供 aria-labelledby 锚定标题
@@ -146,7 +148,8 @@ export function createMessageBox(features: UiFeature[] = []) {
           if (props.showInput && typeof props.inputValidator === 'function') {
             const result = props.inputValidator(props.inputValue)
             if (result !== true && result !== undefined && result !== '') {
-              inputError.value = typeof result === 'string' ? result : props.inputErrorMessage || '输入不合法'
+              inputError.value =
+                typeof result === 'string' ? result : props.inputErrorMessage || locale.value.inputErrorMessage
               return
             }
           }
@@ -231,7 +234,7 @@ export function createMessageBox(features: UiFeature[] = []) {
                     type: 'button',
                     onClick: cancel
                   },
-                  props.cancelButtonText
+                  props.cancelButtonText || locale.value.cancel
                 )
               : null,
             h(
@@ -241,7 +244,7 @@ export function createMessageBox(features: UiFeature[] = []) {
                 type: 'button',
                 onClick: confirm
               },
-              props.confirmButtonText
+              props.confirmButtonText || locale.value.confirm
             )
           ])
           const panel = h(

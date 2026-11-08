@@ -168,7 +168,13 @@ export function createTransfer(features: UiFeature[] = []) {
             )
           ])
         return [
-          panel('left', String(titles[0] ?? '列表 1'), state.leftItems(), state.leftChecked.value, state.leftQuery),
+          panel(
+            'left',
+            String(titles[0] ?? state.locale.value.titleLeft),
+            state.leftItems(),
+            state.leftChecked.value,
+            state.leftQuery
+          ),
           h('div', { class: 'ui-transfer__actions' }, [
             h(
               'button',
@@ -191,7 +197,13 @@ export function createTransfer(features: UiFeature[] = []) {
               [buttons[1] ?? renderIcon(ArrowLeft)]
             )
           ]),
-          panel('right', String(titles[1] ?? '列表 2'), state.rightItems(), state.rightChecked.value, state.rightQuery)
+          panel(
+            'right',
+            String(titles[1] ?? state.locale.value.titleRight),
+            state.rightItems(),
+            state.rightChecked.value,
+            state.rightQuery
+          )
         ]
       }
     },

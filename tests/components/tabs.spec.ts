@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { TabPane, Tabs } from '@ui-kit-full'
+import { ConfigProvider, TabPane, Tabs } from '@ui-kit-full'
 
 // 用例里会往里混入 closable / lazy 这类条目级开关，类型放宽到通用记录
 const panes: Record<string, any>[] = [
@@ -161,6 +161,26 @@ describe('Tabs', () => {
     expect(wrapper.findAll('.ui-tabs__nav-close')).toHaveLength(1)
     await wrapper.find('.ui-tabs__nav-close').trigger('click')
     expect(wrapper.emitted('tab-remove')?.[0]).toEqual(['a'])
+  })
+
+  it('关闭与新增文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { tabs: { add: 'Add tab' } } },
+      slots: {
+        default: () =>
+          h(
+            Tabs,
+            { modelValue: 'a', editable: true },
+            {
+              default: () => [h(TabPane, { label: '概览', name: 'a', closable: true }, () => '内容')]
+            }
+          )
+      },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(wrapper.find('.ui-tabs__nav-close').attributes('aria-label')).toBe('关闭 概览')
+    expect(wrapper.find('.ui-tabs__nav-add').attributes('aria-label')).toBe('Add tab')
   })
 
   it('editable + addable 渲染新增按钮', async () => {

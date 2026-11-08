@@ -222,6 +222,17 @@ describe('Transfer', () => {
     wrapper.unmount()
   })
 
+  it('面板标题来自 ConfigProvider 注入的 locale，未注入键回退中文', () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { transfer: { titleLeft: 'Source' } } },
+      slots: { default: () => h(Transfer, { data: [], modelValue: [] }) },
+      attachTo: document.body
+    })
+    expect(wrapper.find('.is-left .ui-transfer__header span').text()).toBe('Source')
+    expect(wrapper.find('.is-right .ui-transfer__header span').text()).toBe('列表 2')
+    wrapper.unmount()
+  })
+
   it('filterable 渲染两侧筛选输入框，filterPlaceholder 映射占位符', () => {
     const wrapper = mountTransfer({ filterable: true })
     expect(wrapper.findAll('.ui-transfer__filter')).toHaveLength(2)

@@ -2,6 +2,7 @@ import type { VNode } from 'vue'
 import { h, onBeforeUnmount, ref, watch } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import './core.css'
 
 interface TabPaneMeta {
@@ -133,6 +134,7 @@ export function createTabs(features: UiFeature[] = []) {
       baseClass: 'ui-tabs',
       props: tabsBaseProps,
       setup(props, { emit, provide }) {
+        const locale = useLocale('tabs')
         const panes = ref<TabPaneMeta[]>([])
         const active = ref<string | number>(props.modelValue ?? props.defaultValue ?? '')
         const removed = ref<Set<string>>(new Set())
@@ -336,6 +338,7 @@ export function createTabs(features: UiFeature[] = []) {
         })
 
         return {
+          locale,
           setActive,
           register,
           unregister,
@@ -417,7 +420,7 @@ export function createTabs(features: UiFeature[] = []) {
                         {
                           class: 'ui-tabs__nav-close',
                           role: 'button',
-                          'aria-label': `关闭 ${pane.label}`,
+                          'aria-label': formatLocale(state.locale.value.closeFormat, { label: pane.label }),
                           onClick: (event: MouseEvent) => {
                             event.stopPropagation()
                             state.removeTab(pane.name)
@@ -435,7 +438,7 @@ export function createTabs(features: UiFeature[] = []) {
                   {
                     type: 'button',
                     class: 'ui-tabs__nav-add',
-                    'aria-label': '新增标签',
+                    'aria-label': state.locale.value.add,
                     onClick: () => state.addTab()
                   },
                   '+'
