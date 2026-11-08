@@ -16,7 +16,7 @@ const dropdownBaseProps = {
   hideTimeout: { type: Number, default: 150 },
   // Boolean prop 必须显式 default: undefined，否则不传时 Vue 归一化成 false，
   // triggerConfig 会把"未受控"误判成"受控且强制收起"
-  visible: { type: Boolean, default: undefined },
+  modelValue: { type: Boolean, default: undefined },
   tabindex: { type: [Number, String], default: 0 },
   maxHeight: { type: [Number, String], default: '' },
   role: { type: String, default: 'menu' }

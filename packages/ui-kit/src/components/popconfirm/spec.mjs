@@ -54,9 +54,9 @@ export default {
           "description": "关闭延迟（毫秒）"
         },
         {
-          "name": "visible",
+          "name": "modelValue",
           "type": "boolean",
-          "description": "受控显示，true 常显 / false 强制收起"
+          "description": "受控显示（v-model），true 常显 / false 强制收起"
         },
         {
           "name": "effect",

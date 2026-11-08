@@ -18,7 +18,7 @@ const popconfirmBaseProps = {
   hideAfter: { type: Number, default: 200 },
   // Boolean prop 必须显式 default: undefined，否则不传时 Vue 归一化成 false，
   // triggerConfig 会把"未受控"误判成"受控且强制收起"
-  visible: { type: Boolean, default: undefined },
+  modelValue: { type: Boolean, default: undefined },
   effect: { type: String, default: 'light' },
   width: { type: [String, Number], default: 150 }
 }
@@ -75,6 +75,8 @@ export function createPopconfirm(features: UiFeature[] = []) {
   return createUiComponent(
     {
       ...popconfirmTrigger,
+      // cancel / confirm 是面板按钮的动作事件，必须显式声明，否则监听留在 attrs 形成双通道
+      emits: [...(popconfirmTrigger.emits ?? []), 'cancel', 'confirm'],
       setup(props, context) {
         // 直接挂到基座 state 上：展开态等取值是 getter，展开复制会丢响应性
         const state = baseSetup?.(props, context) ?? {}

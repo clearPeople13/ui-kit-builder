@@ -44,7 +44,7 @@ describe('Popover 浮层气泡', () => {
     expect(panel()!.style.display).toBe('none')
   })
 
-  it('点击展开后渲染标题与内容并抛 show', async () => {
+  it('点击展开后渲染标题与内容并抛 visible-change', async () => {
     const wrapper = mountPopover({ title: '浮层标题' })
     await wrapper.trigger('click')
     await nextTick()
@@ -52,11 +52,13 @@ describe('Popover 浮层气泡', () => {
     expect(isOpen()).toBe(true)
     expect(panel()!.querySelector('.ui-popover__title')!.textContent).toBe('浮层标题')
     expect(panel()!.querySelector('.ui-popover__content')!.textContent).toBe('浮层内容')
-    expect(wrapper.emitted('show')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
     await wrapper.trigger('click')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true], [false]])
   })
 
   it('未传 title 时不渲染标题行', async () => {
@@ -149,7 +151,7 @@ describe('Popover 浮层气泡', () => {
     vi.advanceTimersByTime(1)
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
   })
 
   it('面板内部点击不收起浮层', async () => {
@@ -159,7 +161,7 @@ describe('Popover 浮层气泡', () => {
     panel()!.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     await nextTick()
     expect(isOpen()).toBe(true)
-    expect(wrapper.emitted('hide')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
   })
 
   it('点击浮层外部区域收起', async () => {
@@ -171,33 +173,49 @@ describe('Popover 浮层气泡', () => {
     expect(isOpen()).toBe(false)
   })
 
-  it('disabled 与缺省 visible 的受控展开', async () => {
+  it('disabled 与缺省 modelValue 的受控展开', async () => {
     const blocked = mountPopover({ disabled: true })
     await blocked.trigger('click')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(blocked.emitted()).not.toHaveProperty('show')
+    expect(blocked.emitted()).not.toHaveProperty('visible-change')
     blocked.unmount()
     document.body.innerHTML = ''
 
-    const controlled = mountPopover({ visible: true })
+    const controlled = mountPopover({ modelValue: true })
     await nextTick()
     expect(isOpen()).toBe(true)
-    await controlled.setProps({ visible: false })
+    await controlled.setProps({ modelValue: false })
     expect(isOpen()).toBe(false)
-    expect(controlled.emitted('hide')).toEqual([[]])
+    expect(controlled.emitted('visible-change')).toEqual([[false]])
   })
 
-  it('visible=false 强制收起，交互不能把它重新打开', async () => {
+  it('modelValue=false 强制收起，交互不能把它重新打开', async () => {
     // F-14 回归：与 Dropdown 同一套 triggerConfig，受控为假时点击 / 悬停都不改写展开态
-    const wrapper = mountPopover({ visible: false })
+    const wrapper = mountPopover({ modelValue: false })
     await nextTick()
     expect(isOpen()).toBe(false)
     await wrapper.find('.ui-popover__trigger').trigger('click')
     await wrapper.find('.ui-popover__trigger').trigger('mouseenter')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('show')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
+  })
+
+  it('v-model 受控：点击只回写 update:modelValue(false)，父级落地后才收起', async () => {
+    const wrapper = mountPopover({ modelValue: true })
+    await nextTick()
+    expect(isOpen()).toBe(true)
+    await wrapper.trigger('click')
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false]])
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(isOpen()).toBe(true)
+    await wrapper.setProps({ modelValue: false })
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    expect(wrapper.emitted('visible-change')).toEqual([[false]])
   })
 
   it('className 与 popperClass 一起附加到面板', async () => {

@@ -926,7 +926,7 @@ const FORM_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'text', label: '加载文案', values: { text: '正在生成产物…' } },
     { id: 'color', label: '自定义颜色', values: { color: '#0f766e', text: '同步中' } },
     { id: 'large', label: '大尺寸', values: { size: 48, text: '加载中' } },
-    { id: 'hidden', label: '隐藏遮罩', values: { visible: false } },
+    { id: 'hidden', label: '隐藏遮罩', values: { modelValue: false } },
     {
       id: 'background',
       label: '深色背景',
@@ -1411,8 +1411,8 @@ const DATA_PRESETS: Record<string, ScenePreset[]> = {
     {
       id: 'persistent',
       label: '常显菜单',
-      hint: 'visible=true 受控常显，不受 hover/click 影响',
-      values: { visible: true }
+      hint: 'modelValue=true 受控常显（v-model），不受 hover/click 影响',
+      values: { modelValue: true }
     },
     { id: 'size-small', label: '小尺寸菜单', hint: 'size=small，面板与菜单项同步缩小', values: { size: 'small' } },
     { id: 'size-large', label: '大尺寸菜单', values: { size: 'large' } }

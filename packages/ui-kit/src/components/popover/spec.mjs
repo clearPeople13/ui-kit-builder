@@ -15,10 +15,10 @@ export default {
           "description": "disabled"
         },
         {
-          "name": "visible",
+          "name": "modelValue",
           "type": "boolean",
           "default": null,
-          "description": "visible"
+          "description": "受控显示（v-model），true 常显 / false 强制收起"
         },
         {
           "name": "showAfter",
