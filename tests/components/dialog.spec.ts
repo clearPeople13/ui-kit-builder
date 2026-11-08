@@ -1,9 +1,14 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Dialog } from '@ui-kit-full'
 
-function mountDialog(props: Record<string, any> = {}, slots: Record<string, () => string> = {}) {
+// happy-dom 没有布局引擎，offsetWidth 恒为 0，可聚焦判定会全部落空；
+// 与 focus-trap.spec.ts 同法：只在测试内让原型返回非零尺寸，断言对象仍是焦点落在哪个元素
+const proto = window.HTMLElement.prototype
+let originalDescriptor: PropertyDescriptor | undefined
+
+function mountDialog(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   // 打开时整块 teleport 到 body，wrapper.html() 只剩传送门注释，断言需要直接查 body
   const wrapper = mount(Dialog, {
     props: { modelValue: true, title: '提示', ...props },
@@ -42,6 +47,8 @@ const mounted: Array<ReturnType<typeof mount>> = []
 beforeEach(() => {
   document.body.innerHTML = ''
   document.documentElement.style.overflow = ''
+  originalDescriptor = Object.getOwnPropertyDescriptor(proto, 'offsetWidth')
+  Object.defineProperty(proto, 'offsetWidth', { configurable: true, get: () => 100 })
 })
 
 afterEach(async () => {
@@ -52,6 +59,9 @@ afterEach(async () => {
   }
   document.body.innerHTML = ''
   document.documentElement.style.overflow = ''
+  if (originalDescriptor) {
+    Object.defineProperty(proto, 'offsetWidth', originalDescriptor)
+  }
 })
 
 describe('Dialog', () => {
@@ -224,5 +234,54 @@ describe('Dialog', () => {
     await wrapper.setProps({ modelValue: false })
     await nextTick()
     expect(panel()).toBeNull()
+  })
+
+  // A9：dialog 接入 focus-trap 的焦点闭环
+  it('打开时焦点移入容器内第一个可交互元素', async () => {
+    const trigger = document.createElement('button')
+    trigger.className = 'dlg-trigger'
+    document.body.appendChild(trigger)
+    trigger.focus()
+    mountDialog(
+      {},
+      { default: () => [h('button', { class: 'dlg-first' }, '一'), h('button', { class: 'dlg-last' }, '二')] }
+    )
+    await nextTick()
+    // 完整特性下头部自带关闭按钮，它就是容器内第一个可交互元素
+    expect((document.activeElement as HTMLElement).className).toContain('ui-dialog__panel__close')
+  })
+
+  it('Tab / Shift+Tab 在容器内循环', async () => {
+    mountDialog(
+      {},
+      { default: () => [h('button', { class: 'dlg-first' }, '一'), h('button', { class: 'dlg-last' }, '二')] }
+    )
+    await nextTick()
+    const first = document.querySelector('.ui-dialog__panel__close') as HTMLElement
+    const last = document.querySelector('.dlg-last') as HTMLElement
+    last.focus()
+
+    const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    last.dispatchEvent(tab)
+    expect(tab.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(first)
+
+    const shift = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true })
+    first.dispatchEvent(shift)
+    expect(shift.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(last)
+  })
+
+  it('关闭后焦点归还触发元素', async () => {
+    const trigger = document.createElement('button')
+    trigger.className = 'dlg-trigger'
+    document.body.appendChild(trigger)
+    trigger.focus()
+    const wrapper = mountDialog({}, { default: () => [h('button', { class: 'dlg-first' }, '一')] })
+    await nextTick()
+    expect(document.activeElement).not.toBe(trigger)
+    await wrapper.setProps({ modelValue: false })
+    await nextTick()
+    expect(document.activeElement).toBe(trigger)
   })
 })

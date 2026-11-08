@@ -29,7 +29,8 @@ function isVisible(element: HTMLElement) {
   return element.offsetWidth > 0 || element.offsetHeight > 0 || element === document.activeElement
 }
 
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
+/** dialog 等浮层接入焦点闭环时复用同一套可聚焦元素收集逻辑，保证口径一致 */
+export function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(focusableSelector)).filter((element) => isVisible(element))
 }
 
