@@ -289,6 +289,24 @@ describe('Tree', () => {
     expect(wrapper.find('.custom-node').text()).toBe('#甲')
   })
 
+  it('default 插槽自定义节点内容，拿到 node/data/level 作用域并优先于 renderContent', async () => {
+    const wrapper = mountTree(
+      {
+        data: [{ id: 1, label: '甲', children: [{ id: 2, label: '乙' }] }],
+        defaultExpandAll: true,
+        renderContent: (node: { label: string }) => h('em', { class: 'custom-node' }, `#${node.label}`)
+      },
+      {
+        default: (scope: { node: { key: string }; data: { label: string }; level: number }) =>
+          h('b', { class: 'slot-node' }, `${scope.level}:${scope.node.key}:${scope.data.label}`)
+      }
+    )
+    await nextTick()
+    const labels = wrapper.findAll('.ui-tree__label .slot-node').map((item) => item.text())
+    expect(labels).toEqual(['0:1:甲', '1:2:乙'])
+    expect(wrapper.find('.custom-node').exists()).toBe(false)
+  })
+
   it('icon 自定义展开图标', async () => {
     const wrapper = mountTree({ icon: h('span', { class: 'my-icon' }) as unknown as Record<string, unknown> })
     await nextTick()

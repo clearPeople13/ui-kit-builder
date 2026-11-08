@@ -95,6 +95,19 @@ export default {
           description: 'checkStrictly'
         }
       ],
+      slots: [
+        {
+          name: 'default',
+          scope: {
+            node: 'any',
+            data: 'any',
+            level: 'number'
+          },
+          fallback: true,
+          description:
+            '节点内容，渲染在 ui-tree__label 内；作用域含原始节点 node/data 与层级 level，无插槽时回退 renderContent 或节点 label'
+        }
+      ],
       features: {
         'tree.icons': {
           title: '图标',

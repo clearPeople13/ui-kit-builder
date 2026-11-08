@@ -43,7 +43,7 @@ export function createTree(features: UiFeature[] = []) {
       name: 'UiTree',
       baseClass: 'ui-tree',
       props: treeBaseProps,
-      setup(props, { emit }) {
+      setup(props, { emit, slots }) {
         const nodes = computed(() => normalizeTreeNodes(props.data, props.props ?? {}))
         const expandedKeys = ref<Set<string | number>>(
           new Set(
@@ -382,7 +382,11 @@ export function createTree(features: UiFeature[] = []) {
                       })
                     : null,
                   h('span', { class: 'ui-tree__label' }, [
-                    props.renderContent ? props.renderContent(node.raw, node) : node.label
+                    slots.default
+                      ? slots.default({ node, data: node.raw, level: node.level })
+                      : props.renderContent
+                        ? props.renderContent(node.raw, node)
+                        : node.label
                   ])
                 ]
               ),
