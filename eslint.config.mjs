@@ -6,6 +6,7 @@ export default tseslint.config(
       'dist/**',
       '.build/**',
       'node_modules/**',
+      '.qoder/**',
       'examples/consumer/node_modules/**',
       'examples/consumer/dist/**',
       // 本地临时探针与草稿：不进仓库，也不参与质量门禁
