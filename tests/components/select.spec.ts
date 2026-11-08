@@ -1,7 +1,7 @@
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { Dialog, Option, OptionGroup, Select } from '@ui-kit-full'
+import { ConfigProvider, Dialog, Option, OptionGroup, Select } from '@ui-kit-full'
 
 const options = [
   { value: 1, label: '选项一' },
@@ -54,6 +54,18 @@ describe('Select', () => {
       mountSelect({ modelValue: undefined, placeholder: '请选择城市' }).find('.ui-select__placeholder').text()
     ).toBe('请选择城市')
     expect(mountSelect({ modelValue: undefined }).find('.ui-select__placeholder').text()).toBe('请选择')
+  })
+
+  it('占位与加载文案来自 ConfigProvider 注入的 locale', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { select: { placeholder: 'Pick one', loading: 'Loading…' } } },
+      slots: { default: () => h(Select, { modelValue: undefined, loading: true }) },
+      attachTo: document.body
+    })
+    wrappers.push(wrapper)
+    expect(wrapper.find('.ui-select__placeholder').text()).toBe('Pick one')
+    await wrapper.find('.ui-select__trigger').trigger('click')
+    expect(document.body.textContent).toContain('Loading…')
   })
 
   // 原缺陷 F-2：modelValue 的类型联合含 Boolean，缺省的键被归一化成 false，

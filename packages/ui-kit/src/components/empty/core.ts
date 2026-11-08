@@ -2,6 +2,7 @@ import { h } from 'vue'
 import { Inbox } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { sizeValue } from '../../shared/behavior'
 import './core.css'
@@ -19,7 +20,8 @@ export function createEmpty(features: UiFeature[] = []) {
       baseClass: 'ui-empty',
       props: emptyBaseProps,
       tag: (props) => (props.tag as string) || 'div',
-      content: ({ props, slots }) =>
+      setup: () => ({ locale: useLocale('empty') }),
+      content: ({ props, slots, state }) =>
         h('div', { class: 'ui-empty__inner' }, [
           props.image
             ? h('img', { class: 'ui-empty__image', src: props.image, style: { width: sizeValue(props.imageSize) } })
@@ -31,7 +33,7 @@ export function createEmpty(features: UiFeature[] = []) {
                     : undefined
                 }
               }),
-          h('div', { class: 'ui-empty__description' }, [props.description || '暂无数据']),
+          h('div', { class: 'ui-empty__description' }, [props.description || state.locale.value.description]),
           slots.default ? h('div', { class: 'ui-empty__footer' }, [slots.default()]) : null
         ])
     },

@@ -2,6 +2,7 @@ import { h, ref } from 'vue'
 import { ArrowLeft, ArrowRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { createCheckbox } from '../checkbox/core'
 import './core.css'
@@ -50,6 +51,7 @@ export function createTransfer(features: UiFeature[] = []) {
       baseClass: 'ui-transfer',
       props: transferBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('transfer')
         const items = () => normalizeItems(props.data, props.props ?? {})
         // 预设勾次要过滤 disabled 条目，否则右移按钮会被点亮并把禁用项搬走
         const pickEnabled = (keys: unknown) => {
@@ -105,6 +107,7 @@ export function createTransfer(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           leftChecked,
           rightChecked,
           leftQuery,
@@ -136,7 +139,7 @@ export function createTransfer(features: UiFeature[] = []) {
                   h('input', {
                     class: 'ui-transfer__input',
                     value: query.value,
-                    placeholder: props.filterPlaceholder || '请输入搜索内容',
+                    placeholder: props.filterPlaceholder || state.locale.value.filterPlaceholder,
                     onInput: (event: Event) => {
                       query.value = (event.target as HTMLInputElement).value
                     }
@@ -161,7 +164,7 @@ export function createTransfer(features: UiFeature[] = []) {
                       )
                     ])
                   )
-                : h('div', { class: 'ui-transfer__empty' }, '暂无数据')
+                : h('div', { class: 'ui-transfer__empty' }, state.locale.value.empty)
             )
           ])
         return [

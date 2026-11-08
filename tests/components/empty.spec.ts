@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { Empty } from '@ui-kit-full'
+import { ConfigProvider, Empty } from '@ui-kit-full'
 
 function mountEmpty(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
   return mount(Empty, { props, slots })
@@ -50,6 +50,14 @@ describe('Empty 空状态', () => {
   it('description 为空字符串时回退「暂无数据」', () => {
     const wrapper = mountEmpty({ description: '' })
     expect(wrapper.find('.ui-empty__description').text()).toBe('暂无数据')
+  })
+
+  it('描述文案来自 ConfigProvider 注入的 locale', () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { empty: { description: 'No data' } } },
+      slots: { default: () => h(Empty) }
+    })
+    expect(wrapper.find('.ui-empty__description').text()).toBe('No data')
   })
 
   it('默认插槽渲染进底部操作区', () => {

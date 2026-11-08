@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { ConfigProvider, Segmented, Space, Tag, Text } from '@ui-kit-full'
+import { ConfigProvider, Empty, Segmented, Select, Space, Tag, Text } from '@ui-kit-full'
 
 function mountProvider(props: Record<string, any> = {}, child: any) {
   return mount(ConfigProvider, {
@@ -110,5 +110,40 @@ describe('ConfigProvider', () => {
       slots: { default: () => h('span', 'x') }
     })
     expect(wrapper.attributes('style') ?? '').toContain('width: 220px')
+  })
+
+  it('未注入 locale 时子组件文案保持默认中文', () => {
+    const wrapper = mountProvider({}, h(Empty))
+    expect(wrapper.find('.ui-empty__description').text()).toBe('暂无数据')
+  })
+
+  it('locale 注入后子组件文案来自注入值', () => {
+    const wrapper = mountProvider(
+      { locale: { empty: { description: 'No data' }, select: { placeholder: 'Pick one' } } },
+      [h(Empty), h(Select, { modelValue: undefined })]
+    )
+    expect(wrapper.find('.ui-empty__description').text()).toBe('No data')
+    expect(wrapper.find('.ui-select__placeholder').text()).toBe('Pick one')
+  })
+
+  it('切换 locale 文案跟随变化', async () => {
+    const wrapper = mountProvider({ locale: { empty: { description: 'No data' } } }, h(Empty))
+    expect(wrapper.find('.ui-empty__description').text()).toBe('No data')
+    await wrapper.setProps({ locale: { empty: { description: '什么都没有' } } })
+    expect(wrapper.find('.ui-empty__description').text()).toBe('什么都没有')
+  })
+
+  it('locale 缺键时回退默认中文文案', () => {
+    const wrapper = mountProvider({ locale: { select: { placeholder: 'Pick one' } } }, [h(Empty), h(Select)])
+    expect(wrapper.find('.ui-empty__description').text()).toBe('暂无数据')
+    expect(wrapper.find('.ui-select__placeholder').text()).toBe('Pick one')
+  })
+
+  it('内层 ConfigProvider 未设 locale 时会屏蔽外层的全局文案', () => {
+    const wrapper = mountProvider(
+      { locale: { empty: { description: 'No data' } } },
+      h(ConfigProvider, {}, { default: () => h(Empty) })
+    )
+    expect(wrapper.find('.ui-empty__description').text()).toBe('暂无数据')
   })
 })

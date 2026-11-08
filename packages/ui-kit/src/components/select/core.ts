@@ -4,6 +4,7 @@ import { Check, ChevronDown, X } from '../../shared/icons'
 import type { UiFeature, UiFeatureState } from '../../shared/feature'
 import { collectFeatureHooks } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import { sameValue } from '../../shared/value'
@@ -148,6 +149,7 @@ export function createSelect(features: UiFeature[] = []) {
       props: selectBaseProps,
       emits: ['update:modelValue', 'change', 'clear', 'remove-tag', 'visible-change', 'filter-change'],
       setup(props, { emit, slots }) {
+        const locale = useLocale('select')
         const open = ref(false)
         const query = ref('')
         // 搜索中清空关键字后不要回填选中项文本，否则输入框内容永远删不干净
@@ -198,9 +200,9 @@ export function createSelect(features: UiFeature[] = []) {
 
         const emptyText = computed(() => {
           if (props.filterable && query.value) {
-            return props.noMatchText || '无匹配数据'
+            return props.noMatchText || locale.value.noMatch
           }
-          return props.noDataText || '无数据'
+          return props.noDataText || locale.value.noData
         })
 
         const { position, arrowStyle, actualSide, refresh } = useFloatingPanel({
@@ -472,7 +474,7 @@ export function createSelect(features: UiFeature[] = []) {
             ref: inputRef,
             class: 'ui-select__input',
             value: query.value || (showLabel ? selectedLabels.value[0] : ''),
-            placeholder: hasValue.value ? '' : props.placeholder || '请选择',
+            placeholder: hasValue.value ? '' : props.placeholder || locale.value.placeholder,
             disabled: Boolean(props.disabled),
             readonly: Boolean(props.disabled),
             autocomplete: props.autocomplete,
@@ -497,7 +499,7 @@ export function createSelect(features: UiFeature[] = []) {
           if (hasValue.value) {
             return [h('span', { class: 'ui-select__selected' }, selectedLabels.value[0])]
           }
-          return [h('span', { class: 'ui-select__placeholder' }, props.placeholder || '请选择')]
+          return [h('span', { class: 'ui-select__placeholder' }, props.placeholder || locale.value.placeholder)]
         }
 
         function renderOptionRow(option: SelectOption, index: number): VNodeChild {
@@ -541,7 +543,7 @@ export function createSelect(features: UiFeature[] = []) {
             children.push(
               h('div', { class: 'ui-loader', role: 'status' }, [
                 h('span', { class: 'ui-loader__spinner', 'aria-hidden': 'true' }),
-                h('span', null, props.loadingText || '加载中')
+                h('span', null, props.loadingText || locale.value.loading)
               ])
             )
           } else if (visibleOptions.value.length) {

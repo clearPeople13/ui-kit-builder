@@ -13,6 +13,11 @@ export default {
           name: 'size',
           type: 'string',
           description: '全局尺寸：未显式设置 size 的子组件继承该值'
+        },
+        {
+          name: 'locale',
+          type: '{ empty?: { description?: string }; select?: { placeholder?: string; loading?: string; noData?: string; noMatch?: string }; transfer?: { filterPlaceholder?: string; empty?: string } }',
+          description: '全局文案：按组件分组注入，未覆盖的键回退默认中文文案'
         }
       ],
       features: {}

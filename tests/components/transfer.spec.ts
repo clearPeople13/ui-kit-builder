@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Transfer } from '@ui-kit-full'
+import { ConfigProvider, Transfer } from '@ui-kit-full'
 
 const rows = [
   { key: 1, label: '选项一' },
@@ -208,6 +208,17 @@ describe('Transfer', () => {
     await nextTick()
     expect(countOf(wrapper, 'left')).toBe('0/3')
     expect(buttons(wrapper)[0].attributes('disabled')).toBeDefined()
+    wrapper.unmount()
+  })
+
+  it('空态与筛选占位文案来自 ConfigProvider 注入的 locale', () => {
+    const wrapper = mount(ConfigProvider, {
+      props: { locale: { transfer: { empty: 'Nothing here', filterPlaceholder: 'Type to filter' } } },
+      slots: { default: () => h(Transfer, { data: [], modelValue: [], filterable: true }) },
+      attachTo: document.body
+    })
+    expect(wrapper.find('.ui-transfer__empty').text()).toBe('Nothing here')
+    expect(wrapper.find('.ui-transfer__input').attributes('placeholder')).toBe('Type to filter')
     wrapper.unmount()
   })
 
