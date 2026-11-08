@@ -9,14 +9,14 @@
  *   node scripts/ci.mjs                 # 全量十三段（先 build 一次，后续各层复用产物）
  *   node scripts/ci.mjs --changed       # 只跑这次改动影响到的阶段与用例（内循环用，分钟级 → 十秒级）
  *   node scripts/ci.mjs --changed --dry # 只打印受影响范围，不执行
- *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（秒级，给 pre-commit 用）
+ *   node scripts/ci.mjs --fast          # 只跑格式/类型/lint/库级校验（五段并行，秒级，给 pre-commit 用）
  *   node scripts/ci.mjs --stage test    # 只跑名字里含 test 的阶段
  *   node scripts/ci.mjs --keep-going    # build / verify 失败后仍继续跑后续阶段（默认立即短路）
  *
  * `--changed` 只解决"改三个文件等两分钟"，不替代合并门禁：
  * 合入前仍然跑一次全量，受影响范围拿不准时它自己也会回落全量。
  */
-import { spawnSync } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
 import { writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -91,7 +91,7 @@ export function selectStages({ fast = false, only = null } = {}) {
   )
 }
 
-function main(argv) {
+async function main(argv) {
   const fast = argv.includes('--fast')
   const keepGoing = argv.includes('--keep-going')
   const changed = argv.includes('--changed')
@@ -149,6 +149,7 @@ function main(argv) {
 
   const results = []
   let abortedBy = null
+  let wallMs = null
 
   // 在 npm 里跑时复用同一个 npm-cli.js（跨平台、不依赖 PATH 上的 shim）；
   // 直接被 node/钩子调起时才退回可执行文件名，Windows 上 .cmd 必须经 shell 才能起来
@@ -169,36 +170,44 @@ function main(argv) {
   }
   process.stdout.write(`\n环境自愈：${autoEnv.join('、')}\n`)
 
-  for (const [index, stage] of selected.entries()) {
-    const started = Date.now()
-    const script =
-      singleBuild && stage.fullScript ? stage.fullScript : fast && stage.fastScript ? stage.fastScript : stage.script
-    // 受影响范围只在必要时收窄到具体用例文件：整层优先，漏跑比多跑贵
-    const files = plan?.filters?.[stage.name] ?? []
-    process.stdout.write(`\n── ${stage.name} · ${stage.desc}${files.length ? `（${files.length} 个文件）` : ''}\n`)
-    const npmArgs = npmCli ? [npmCli, 'run', script] : ['run', script]
-    if (files.length) {
-      npmArgs.push('--', ...files)
-    }
-    const run = spawnSync(command, npmArgs, {
-      stdio: 'inherit',
-      shell: !npmCli,
-      encoding: 'utf8',
-      env: childEnv
-    })
-    const durationMs = Date.now() - started
-    const ok = run.status === 0
-    results.push({ stage: stage.name, script, files: files.length ? files : null, ok, durationMs })
-    process.stdout.write(
-      `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
-    )
-    if (!ok && !keepGoing && CRITICAL_STAGES.has(stage.name)) {
-      abortedBy = stage.name
-      selected.slice(index + 1).forEach((skipped) => {
-        results.push({ stage: skipped.name, script: skipped.script, ok: false, skipped: true, durationMs: 0 })
+  // fast 固定五段彼此独立，并行执行后再按 STAGES 顺序回放缓冲输出；
+  // full / --changed / --stage 仍走串行（构建产物有依赖，且要保留短路语义）。
+  if (fast && !changed && !only) {
+    const parallel = await runFastParallel({ stages: selected, command, npmCli, env: childEnv })
+    results.push(...parallel.results)
+    wallMs = parallel.wallMs
+  } else {
+    for (const [index, stage] of selected.entries()) {
+      const started = Date.now()
+      const script =
+        singleBuild && stage.fullScript ? stage.fullScript : fast && stage.fastScript ? stage.fastScript : stage.script
+      // 受影响范围只在必要时收窄到具体用例文件：整层优先，漏跑比多跑贵
+      const files = plan?.filters?.[stage.name] ?? []
+      process.stdout.write(`\n── ${stage.name} · ${stage.desc}${files.length ? `（${files.length} 个文件）` : ''}\n`)
+      const npmArgs = npmCli ? [npmCli, 'run', script] : ['run', script]
+      if (files.length) {
+        npmArgs.push('--', ...files)
+      }
+      const run = spawnSync(command, npmArgs, {
+        stdio: 'inherit',
+        shell: !npmCli,
+        encoding: 'utf8',
+        env: childEnv
       })
-      process.stdout.write(`\n${stage.name} 失败，后续阶段不再执行（--keep-going 可继续）\n`)
-      break
+      const durationMs = Date.now() - started
+      const ok = run.status === 0
+      results.push({ stage: stage.name, script, files: files.length ? files : null, ok, durationMs })
+      process.stdout.write(
+        `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
+      )
+      if (!ok && !keepGoing && CRITICAL_STAGES.has(stage.name)) {
+        abortedBy = stage.name
+        selected.slice(index + 1).forEach((skipped) => {
+          results.push({ stage: skipped.name, script: skipped.script, ok: false, skipped: true, durationMs: 0 })
+        })
+        process.stdout.write(`\n${stage.name} 失败，后续阶段不再执行（--keep-going 可继续）\n`)
+        break
+      }
     }
   }
 
@@ -206,7 +215,8 @@ function main(argv) {
     mode: changed ? 'changed' : fast ? 'fast' : only ? `stage:${only}` : 'full',
     results,
     plan,
-    abortedBy
+    abortedBy,
+    totalMs: wallMs
   })
 
   process.stdout.write('\n阶段汇总\n')
@@ -222,14 +232,68 @@ function main(argv) {
   return report.ok ? 0 : 1
 }
 
-function writeReport({ mode, results, plan = null, abortedBy = null }) {
+// 并行段的输出必须整段缓冲：多个子进程同时写继承的 stdout 会互相穿插，
+// 失败时也定位不到是哪个阶段；回放顺序固定为 STAGES 顺序，与串行输出一致。
+async function runFastParallel({ stages, command, npmCli, env }) {
+  const started = Date.now()
+  process.stdout.write(`\n── 并行执行：${stages.map((stage) => stage.name).join(' / ')}（完成后按阶段顺序回放输出）\n`)
+  const settled = await Promise.all(
+    stages.map((stage) => spawnStage({ command, npmCli, script: stage.fastScript ?? stage.script, env }))
+  )
+  const results = []
+  for (const [index, stage] of stages.entries()) {
+    const { status, stdout, stderr, durationMs } = settled[index]
+    process.stdout.write(`\n── ${stage.name} · ${stage.desc}\n`)
+    if (stdout) {
+      process.stdout.write(stdout.endsWith('\n') ? stdout : `${stdout}\n`)
+    }
+    if (stderr) {
+      process.stderr.write(stderr.endsWith('\n') ? stderr : `${stderr}\n`)
+    }
+    const ok = status === 0
+    results.push({ stage: stage.name, script: stage.fastScript ?? stage.script, files: null, ok, durationMs })
+    process.stdout.write(
+      `${ok ? '✓' : '✗'} ${stage.name} ${ok ? '通过' : '失败'}（${(durationMs / 1000).toFixed(1)}s）\n`
+    )
+  }
+  return { results, wallMs: Date.now() - started }
+}
+
+function spawnStage({ command, npmCli, script, env }) {
+  const started = Date.now()
+  const args = npmCli ? [npmCli, 'run', script] : ['run', script]
+  return new Promise((resolve) => {
+    let settled = false
+    let stdout = ''
+    let stderr = ''
+    const finish = (status) => {
+      if (settled) {
+        return
+      }
+      settled = true
+      resolve({ status, stdout, stderr, durationMs: Date.now() - started })
+    }
+    const child = spawn(command, args, { shell: !npmCli, env })
+    child.stdout.setEncoding('utf8')
+    child.stderr.setEncoding('utf8')
+    child.stdout.on('data', (chunk) => (stdout += chunk))
+    child.stderr.on('data', (chunk) => (stderr += chunk))
+    child.on('error', (error) => {
+      stderr += `${error.message}\n`
+      finish(null)
+    })
+    child.on('close', (status) => finish(status))
+  })
+}
+
+function writeReport({ mode, results, plan = null, abortedBy = null, totalMs = null }) {
   const report = {
     generatedAt: new Date().toISOString(),
     mode,
     ok: results.every((item) => item.ok || item.skipped === true),
     abortedBy,
     skipped: results.filter((item) => item.skipped).map((item) => item.stage),
-    totalMs: results.reduce((sum, item) => sum + item.durationMs, 0),
+    totalMs: totalMs ?? results.reduce((sum, item) => sum + item.durationMs, 0),
     stages: results,
     changed: plan
       ? { scope: plan.scope, files: plan.files, reasons: plan.reasons, stages: plan.stages, filters: plan.filters }
@@ -241,5 +305,5 @@ function writeReport({ mode, results, plan = null, abortedBy = null }) {
 
 const entryUrl = process.argv[1] ? pathToFileURL(path.resolve(process.argv[1])).href : ''
 if (entryUrl === import.meta.url) {
-  process.exit(main(process.argv.slice(2)))
+  process.exitCode = await main(process.argv.slice(2))
 }
