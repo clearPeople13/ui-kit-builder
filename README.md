@@ -109,7 +109,7 @@ npm run hooks:install  # 装 pre-commit（秒级五段）与 pre-push（全量�
 profile 运行时用例位于 `tests/profiles/`（`vitest.profiles.config.ts`），把 20 份产物逐个 import 后真挂载：导出全挂得起、控制台不报警、类名前缀完全隔离、结构性类名在自家 CSS 里有规则、同特性集的组件与 `full` 渲染出同样的标签骨架。
 覆盖率层走 `vitest.coverage.config.ts`：同一批组件用例改在源码入口 `.build/full/entry.ts` 上重放，报告输出逐文件表格，全局阈值 88 / 84 / 89 / 88，并对 `src/components/**` 设 21 / 33 / 21 的组件级下限，低于下限即红。
 用例暴露的缺陷都以组件文件里的常规回归用例收尾；目前共记录 106 条缺陷（F-1…F-106）。F-101 存量命名违规已随第二刀（F-106）全部改完，守卫 BASELINE 清空；剩余 visible 阵营统一等三项为第三刀（见 NAMING.md §5）。
-背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`。
+背景、缺陷清单与修复落点见 `REQUIREMENTS.md`，写用例的约定与踩坑见 `KNOWLEDGE.md`；**全量项目规则（注释/命名/编码/UI/测试/git/agent 分配/出口收敛）见 `RULES.md`**——换 IDE、换机器以它为准。
 
 ## 服务端 CI
 
