@@ -179,11 +179,11 @@ function renderedSlotScanText(componentId: string): string {
 }
 
 function isRendered(scan: string, slotName: string): boolean {
-  const quoted = escapeRegExp(JSON.stringify(slotName))
+  const escaped = escapeRegExp(slotName)
   return [
-    new RegExp(`slots\\??\\.${escapeRegExp(slotName)}\\b`),
-    new RegExp(`slots\\??\\[\\s*${quoted}\\s*\\]`),
-    new RegExp(`renderSlot\\([^)]*${quoted}`)
+    new RegExp(`slots\\??\\.${escaped}\\b`),
+    new RegExp(`slots\\??\\[\\s*['"]${escaped}['"]\\s*\\]`),
+    new RegExp(`renderSlot\\([^)]*['"]${escaped}['"]`)
   ].some((pattern) => pattern.test(scan))
 }
 

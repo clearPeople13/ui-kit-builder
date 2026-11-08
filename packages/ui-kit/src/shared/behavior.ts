@@ -2129,23 +2129,25 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
       }
 
       function triggerLabel(): VNodeChild {
-        const custom = slots.default?.()
+        const custom = slots.trigger?.() ?? slots.default?.()
         if (custom) {
           return custom
         }
+        const hint = slots.hint
+          ? slots.hint()
+          : listType === 'picture-card'
+            ? '上传'
+            : props.draggable
+              ? '将文件拖到此处，或点击上传'
+              : '选择文件'
+        const hintNode = h('span', { class: `${baseClass}__hint` }, [hint])
         if (listType === 'picture-card') {
-          return [
-            renderIcon(Plus, { class: `${baseClass}__trigger-icon` }),
-            h('span', { class: `${baseClass}__hint` }, '上传')
-          ]
+          return [renderIcon(Plus, { class: `${baseClass}__trigger-icon` }), hintNode]
         }
         if (props.draggable) {
-          return [
-            renderIcon(UploadIcon, { class: `${baseClass}__trigger-icon` }),
-            h('span', { class: `${baseClass}__hint` }, '将文件拖到此处，或点击上传')
-          ]
+          return [renderIcon(UploadIcon, { class: `${baseClass}__trigger-icon` }), hintNode]
         }
-        return h('span', { class: `${baseClass}__hint` }, '选择文件')
+        return hintNode
       }
 
       const trigger = h(
@@ -2202,38 +2204,42 @@ export function uploadConfig(options: { name: string; baseClass: string; props: 
         'ul',
         // picture-card 下列表用 display:contents 去掉盒子，补 role 保住列表语义
         { class: [`${baseClass}__list`, `is-${listType}`], role: 'list' },
-        files.map((file: AnyProps, index: number) =>
-          h(
+        files.map((file: AnyProps, index: number) => {
+          const remove = () => removeFile(file, index)
+          const custom = slots['file-item']?.({ file, index, remove })
+          return h(
             'li',
             {
               key: file?.uid ?? file?.name ?? index,
               role: 'listitem',
               class: [`${baseClass}__item`, statusOf(file) ? `is-${statusOf(file)}` : '']
             },
-            [
-              listType === 'text'
-                ? null
-                : h('span', { class: `${baseClass}__thumb` }, [
-                    previewUrl(file)
-                      ? h('img', { src: previewUrl(file), alt: fileName(file) })
-                      : h('span', { class: `${baseClass}__thumb-placeholder` }, thumbFallback(file))
-                  ]),
-              h('span', { class: `${baseClass}__file-name` }, fileName(file)),
-              statusNode(file),
-              h(
-                'button',
-                {
-                  class: `${baseClass}__remove`,
-                  type: 'button',
-                  disabled: Boolean(props.disabled),
-                  'aria-label': '移除文件',
-                  onClick: () => removeFile(file, index)
-                },
-                '×'
-              )
-            ]
+            custom
+              ? [custom]
+              : [
+                  listType === 'text'
+                    ? null
+                    : h('span', { class: `${baseClass}__thumb` }, [
+                        previewUrl(file)
+                          ? h('img', { src: previewUrl(file), alt: fileName(file) })
+                          : h('span', { class: `${baseClass}__thumb-placeholder` }, thumbFallback(file))
+                      ]),
+                  h('span', { class: `${baseClass}__file-name` }, fileName(file)),
+                  statusNode(file),
+                  h(
+                    'button',
+                    {
+                      class: `${baseClass}__remove`,
+                      type: 'button',
+                      disabled: Boolean(props.disabled),
+                      'aria-label': '移除文件',
+                      onClick: remove
+                    },
+                    '×'
+                  )
+                ]
           )
-        )
+        })
       )
       return [trigger, list]
     }

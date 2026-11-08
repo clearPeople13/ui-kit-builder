@@ -19,7 +19,7 @@ function guessType(name: string): string {
   return 'text/plain'
 }
 
-function mountUpload(props: Record<string, any> = {}, slots: Record<string, () => unknown> = {}) {
+function mountUpload(props: Record<string, any> = {}, slots: Record<string, (scope?: any) => unknown> = {}) {
   const wrapper = mount(Upload, { props: { ...props }, slots, attachTo: document.body })
   mounted.push(wrapper)
   return wrapper
@@ -114,6 +114,39 @@ describe('Upload 上传', () => {
     expect(wrapper.find('.ui-upload__status').exists()).toBe(false)
     expect(wrapper.find('.ui-upload__trigger-icon').exists()).toBe(true)
     expect(wrapper.find('.ui-upload__hint').text()).toBe('上传')
+  })
+
+  it('trigger 插槽优先于 default，hint 插槽替换提示文案', async () => {
+    const withTrigger = mountUpload(
+      {},
+      { trigger: () => h('span', { class: 'custom-trigger' }, '自定义触发'), default: () => '默认触发' }
+    )
+    expect(withTrigger.find('.custom-trigger').text()).toBe('自定义触发')
+    expect(withTrigger.text()).not.toContain('默认触发')
+
+    const withHint = mountUpload({}, { hint: () => '拖拽或点击' })
+    expect(withHint.find('.ui-upload__hint').text()).toBe('拖拽或点击')
+  })
+
+  it('file-item 插槽自定义列表项并可通过作用域 remove 删除', async () => {
+    let removeFromSlot: (() => void) | undefined
+    const wrapper = mountUpload(
+      { fileList: [{ name: 'a.txt' }, { name: 'b.txt' }] },
+      {
+        'file-item': (scope: { file: any; index: number; remove: () => void }) => {
+          if (scope.index === 0) {
+            removeFromSlot = scope.remove
+          }
+          return h('span', { class: 'custom-item' }, `${scope.index}:${scope.file.name}`)
+        }
+      }
+    )
+    await nextTick()
+    expect(wrapper.findAll('.custom-item').map((node) => node.text())).toEqual(['0:a.txt', '1:b.txt'])
+    removeFromSlot?.()
+    await nextTick()
+    const next = wrapper.emitted('update:file-list')?.[0]?.[0] as unknown[]
+    expect(next.map((item: any) => item.name)).toEqual(['b.txt'])
   })
 
   it('无地址的图片项用扩展名占位，未知扩展名回退 FILE', async () => {
