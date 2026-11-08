@@ -136,7 +136,7 @@ export function createMenu(features: UiFeature[] = []) {
           setOpen(index, !isOpened(index))
         }
 
-        // ===== roving tabindex：menu-item 与 sub-menu 标题共享整组唯一的 Tab 停靠点 =====
+        // menu-item 与 sub-menu 标题共享整组唯一的 Tab 停靠点
         const navId = ref<string | null>(null)
         const navElements = new Map<string, HTMLElement>()
 
