@@ -252,7 +252,9 @@ describe('slot 契约：产物 meta 与 d.ts', () => {
         for (const slot of slots) {
           const scopeProps = Object.entries(slot.scope ?? {})
           if (scopeProps.length) {
-            expect(block!, `${exportName}.${slot.name} 应有作用域 props`).toContain(`${slot.name}(props: {`)
+            // d.ts 生成器对非标识符 slot 名（如 file-item）加引号，断言按同一口径归一
+            const slotName = /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(slot.name) ? slot.name : JSON.stringify(slot.name)
+            expect(block!, `${exportName}.${slot.name} 应有作用域 props`).toContain(`${slotName}(props: {`)
             for (const [key, type] of scopeProps) {
               // d.ts 生成器会把函数类型包一层括号（`() => void` → `(() => void)`），断言按同一口径归一
               const expectedType =
