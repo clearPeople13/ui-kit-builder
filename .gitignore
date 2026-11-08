@@ -29,3 +29,4 @@ coverage/
 # 并行开发的工作树与任务认领台账（本地状态，不进仓库）
 .worktrees/
 .tasks/
+.qoder/
