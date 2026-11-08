@@ -57,11 +57,11 @@ describe('Popconfirm', () => {
     expect(panel()).toBeNull()
   })
 
-  it('点击触发器展开面板并抛 show', async () => {
+  it('点击触发器展开面板并抛 visible-change', async () => {
     const wrapper = mountPc({ title: '删除该行数据？' })
     await nextTick()
     await open(wrapper)
-    expect(wrapper.emitted('show')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
     expect(wrapper.element.querySelector('.ui-popconfirm__trigger')?.getAttribute('aria-expanded')).toBe('true')
     expect(panel()).not.toBeNull()
     expect(document.querySelector('.ui-popconfirm__title')?.textContent).toContain('删除该行数据？')
@@ -83,12 +83,12 @@ describe('Popconfirm', () => {
     expect(confirm?.getAttribute('type')).toBe('button')
   })
 
-  it('确认按钮发出 confirm 与 hide 并收起', async () => {
+  it('确认按钮发出 confirm 与 visible-change 并收起', async () => {
     const wrapper = mountPc()
     await open(wrapper)
     await click(document.querySelector('.ui-popconfirm__button.is-confirm'))
     expect(wrapper.emitted('confirm')).toHaveLength(1)
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(panel()).toBeNull()
   })
 
@@ -97,7 +97,7 @@ describe('Popconfirm', () => {
     await open(wrapper)
     await click(document.querySelector('.ui-popconfirm__button.is-cancel'))
     expect(wrapper.emitted('cancel')).toHaveLength(1)
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(panel()).toBeNull()
   })
 
@@ -168,25 +168,39 @@ describe('Popconfirm', () => {
     expect(panel()?.getAttribute('style') ?? '').toContain('width: 12rem')
   })
 
-  it('受控 visible=true 时内部取消不改变显示', async () => {
-    const wrapper = mountPc({ visible: true })
+  it('受控 modelValue=true 时内部取消不改变显示', async () => {
+    const wrapper = mountPc({ modelValue: true })
     await nextTick()
     expect(panel()).not.toBeNull()
     await click(wrapper.element.querySelector('.ui-popconfirm__trigger'))
-    expect(wrapper.emitted('hide')).toBeUndefined()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false]])
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
     expect(panel()).not.toBeNull()
     await click(document.querySelector('.ui-popconfirm__button.is-cancel'))
     expect(wrapper.emitted('cancel')).toHaveLength(1)
-    expect(wrapper.emitted('hide')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false], [false]])
     expect(panel()).not.toBeNull()
   })
 
-  it('受控 visible=false 强制收起并抛 hide', async () => {
-    const wrapper = mountPc({ visible: true })
+  it('父级把 modelValue 置 false 后面板收起并抛 visible-change', async () => {
+    const wrapper = mountPc({ modelValue: true })
     await open(wrapper)
-    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ modelValue: false })
     expect(panel()).toBeNull()
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[false]])
+  })
+
+  it('v-model 受控：请求收起后等父级把 modelValue 置 false 才移除面板', async () => {
+    const wrapper = mountPc({ modelValue: true })
+    await nextTick()
+    expect(panel()).not.toBeNull()
+    await click(wrapper.element.querySelector('.ui-popconfirm__trigger'))
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false]])
+    expect(panel()).not.toBeNull()
+    await wrapper.setProps({ modelValue: false })
+    expect(panel()).toBeNull()
+    expect(wrapper.emitted('visible-change')).toEqual([[false]])
   })
 
   it('persistent=true 收起后面板保留为隐藏态', async () => {
@@ -202,7 +216,7 @@ describe('Popconfirm', () => {
     await open(wrapper)
     document.body.dispatchEvent(new Event('pointerdown', { bubbles: true }))
     await nextTick()
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(panel()).toBeNull()
   })
 

@@ -2305,10 +2305,11 @@ export function triggerConfig(options: {
     name: options.name,
     baseClass: options.baseClass,
     props: options.props,
+    emits: ['visible-change', 'update:modelValue'],
     classes: (props) => stateClasses(options.baseClass, props),
     setup(props, { emit }) {
-      // visible 声明（非 undefined）时视为受控：展开态由 visible 决定，未声明时回到内部状态
-      const open = ref(props.visible !== undefined ? Boolean(props.visible) : Boolean(options.defaultOpen))
+      // modelValue 声明（非 undefined）时视为受控：展开态由 modelValue 决定，未声明时回到内部状态
+      const open = ref(props.modelValue !== undefined ? Boolean(props.modelValue) : Boolean(options.defaultOpen))
       const triggerRef = shallowRef<HTMLElement>()
       const panelRef = shallowRef<HTMLElement>()
       let showTimer: ReturnType<typeof setTimeout> | null = null
@@ -2361,7 +2362,11 @@ export function triggerConfig(options: {
           return
         }
         open.value = true
-        emit('show')
+        emit('visible-change', true)
+        // 受控时父级回写 modelValue 后由 watch 落地，非受控时直接向父级同步展开态
+        if (!isControlled()) {
+          emit('update:modelValue', true)
+        }
         scheduleAutoClose()
       }
 
@@ -2373,24 +2378,29 @@ export function triggerConfig(options: {
           return
         }
         open.value = false
-        emit('hide')
+        emit('visible-change', false)
+        if (!isControlled()) {
+          emit('update:modelValue', false)
+        }
       }
 
       // 受控态下交互（点击 / 悬停 / 外点 / 面板点击 / 计时器）都不允许改写展开态，
-      // 收起与展开只由 visible 的取值决定
-      function isControlledVisible() {
-        return props.visible !== undefined
+      // 收起与展开只由 modelValue 的取值决定
+      function isControlled() {
+        return props.modelValue !== undefined
       }
 
       function showNow() {
-        if (isControlledVisible()) {
+        if (isControlled()) {
+          emit('update:modelValue', true)
           return
         }
         applyShow()
       }
 
       function hideNow() {
-        if (isControlledVisible()) {
+        if (isControlled()) {
+          emit('update:modelValue', false)
           return
         }
         applyHide()
@@ -2465,7 +2475,7 @@ export function triggerConfig(options: {
       }
 
       watch(
-        () => props.visible,
+        () => props.modelValue,
         (value) => {
           if (value === undefined) {
             return

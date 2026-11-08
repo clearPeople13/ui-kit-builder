@@ -88,18 +88,21 @@ describe('Dropdown 下拉菜单', () => {
     expect(panelItems()[3].querySelector('.ui-dropdown-item__icon')).not.toBeNull()
   })
 
-  it('点击触发按钮展开面板并抛 show，再点收起并抛 hide', async () => {
+  it('点击触发按钮展开面板并抛 visible-change，再点收起', async () => {
     const wrapper = mountDropdown()
     await wrapper.trigger('click')
     await nextTick()
     expect(wrapper.find('.ui-dropdown__trigger').attributes('aria-expanded')).toBe('true')
     expect(isOpen()).toBe(true)
     expect(panel()!.getAttribute('role')).toBe('menu')
-    expect(wrapper.emitted('show')).toEqual([[]])
+    // 非受控：展开态变化同时回写 update:modelValue，父级可直接 v-model 消费
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
     await wrapper.trigger('click')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true], [false]])
   })
 
   it('悬停按 showTimeout / hideTimeout 延时展开与收起', async () => {
@@ -116,8 +119,7 @@ describe('Dropdown 下拉菜单', () => {
     vi.advanceTimersByTime(150)
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('show')).toHaveLength(1)
-    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
   })
 
   it('鼠标移入面板会取消收起计时', async () => {
@@ -131,7 +133,7 @@ describe('Dropdown 下拉菜单', () => {
     vi.advanceTimersByTime(300)
     await nextTick()
     expect(isOpen()).toBe(true)
-    expect(wrapper.emitted('hide')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
   })
 
   it('右键触发 contextmenu 时阻止默认菜单并切换', async () => {
@@ -168,7 +170,7 @@ describe('Dropdown 下拉菜单', () => {
     await itemClickOpen(wrapper)
     await itemClick(0)
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
 
     wrapper.unmount()
     document.body.innerHTML = ''
@@ -177,7 +179,7 @@ describe('Dropdown 下拉菜单', () => {
     await nextTick()
     await itemClick(0)
     expect(isOpen()).toBe(true)
-    expect(kept.emitted('hide')).toBeUndefined()
+    expect(kept.emitted('visible-change')).toEqual([[true]])
   })
 
   it('点击菜单项不会再次触发根节点的切换逻辑', async () => {
@@ -186,7 +188,7 @@ describe('Dropdown 下拉菜单', () => {
     panel()!.dispatchEvent(new MouseEvent('click', { bubbles: true }))
     await nextTick()
     // 面板自身 click 被 stopPropagation，收起只由 closeOnPanelClick 分支触发一次
-    expect(wrapper.emitted('show')).toHaveLength(1)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(isOpen()).toBe(false)
   })
 
@@ -213,34 +215,52 @@ describe('Dropdown 下拉菜单', () => {
     await nextTick()
     expect(isOpen()).toBe(false)
     expect(wrapper.find('.ui-dropdown__trigger').attributes('aria-expanded')).toBe('false')
-    expect(wrapper.emitted()).not.toHaveProperty('show')
+    expect(wrapper.emitted()).not.toHaveProperty('visible-change')
   })
 
-  it('visible 受控展开与收起', async () => {
-    const wrapper = mountDropdown({ visible: true })
+  it('modelValue 受控展开与收起', async () => {
+    const wrapper = mountDropdown({ modelValue: true })
     await nextTick()
     expect(isOpen()).toBe(true)
-    await wrapper.setProps({ visible: false })
+    await wrapper.setProps({ modelValue: false })
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('show')).toBeUndefined()
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    // 父级回写只落地状态，不再重复抛 update:modelValue
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toEqual([[false]])
     // 受控值缺省时回到内部状态
-    await wrapper.setProps({ visible: undefined })
+    await wrapper.setProps({ modelValue: undefined })
     await wrapper.trigger('click')
     await nextTick()
     expect(isOpen()).toBe(true)
   })
 
-  it('visible=false 强制收起，交互不能把它重新打开', async () => {
-    // F-13 回归：受控为假时点击 / 悬停 / 计时器都不改写展开态
-    const wrapper = mountDropdown({ visible: false })
+  it('modelValue=false 强制收起，交互不能把它重新打开', async () => {
+    // F-13 回归：受控为假时点击 / 悬停 / 计时器都不改写展开态，只向父级请求新值
+    const wrapper = mountDropdown({ modelValue: false })
     await nextTick()
     expect(isOpen()).toBe(false)
     await wrapper.find('.ui-dropdown__trigger').trigger('click')
     await wrapper.find('.ui-dropdown__trigger').trigger('mouseenter')
     await nextTick()
     expect(isOpen()).toBe(false)
-    expect(wrapper.emitted('show')).toBeUndefined()
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
+  })
+
+  it('v-model 受控：点击只回写 update:modelValue(false)，父级落地后才收起', async () => {
+    const wrapper = mountDropdown({ modelValue: true })
+    await nextTick()
+    expect(isOpen()).toBe(true)
+    await wrapper.trigger('click')
+    await nextTick()
+    // 受控态交互不回写内部展开态，只向父级请求新值
+    expect(wrapper.emitted('update:modelValue')).toEqual([[false]])
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(isOpen()).toBe(true)
+    await wrapper.setProps({ modelValue: false })
+    await nextTick()
+    expect(isOpen()).toBe(false)
+    expect(wrapper.emitted('visible-change')).toEqual([[false]])
   })
 
   it('size / effect 映射到面板类名', async () => {
@@ -494,7 +514,7 @@ describe('Dropdown 键盘菜单', () => {
     press(first, 'Enter')
     await flush()
     expect(clicked).toHaveBeenCalledTimes(1)
-    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(isOpen()).toBe(false)
     expect(document.activeElement).toBe(trigger)
     first.removeEventListener('click', clicked)
