@@ -78,7 +78,7 @@ npm run quality
 | W1.3c | upload 插槽补全 | `feat/20261108-upload-slots` | `upload` 及对应用例 | W1.1 | `trigger` / `hint` / `file-item` 至少补齐触发区与文件项，作用域字段写清 | M |
 | W1.3d | tree 自定义节点 | `feat/20261108-tree-node-slot` | `tree` 及对应用例 | W1.1 | 自定义节点作用域至少含 `node/data/level`；键盘与展开语义不回归 | M |
 | W2.1 | cascader / cascader-panel 虚拟特性化 | `refactor/20261108-cascader-virtualized` | `cascader`、`cascader-panel`、`shared/virtual-window.ts` 只读复用 | W1.1 | 窗口实现搬进 `features/virtualized/`；边际体积脱离 240B 量级；守卫移出 `SHELL_VIRTUAL_FEATURES` | M/L |
-| W2.2 | transfer.virtualized 处置 | `refactor/20261108-transfer-virtualized` | `transfer`、`profiles/*.json`（仅涉及项）、`tests/profiles/**` | 决策记录 | 二选一：真实现双列表虚拟化；或删除特性并清空引用 | S/M |
+| W2.2 | transfer.virtualized 处置 | `refactor/20261108-transfer-virtualized` | `transfer`、`scripts/verify-governance.mjs`、`README.md`、`KNOWLEDGE.md`、`REQUIREMENTS.md` | 决策记录 | 已定：删除特性，清空 spec / 守卫 / 文档引用（REQUIREMENTS §25.4） | S/M |
 | W3.1 | 触发器可访问名 | `fix/20261108-a11y-names` | `shared/behavior.ts`（triggerConfig）、`cascader`、`color-picker`、`rate`、`select`、`tests/browser/axe.spec.ts` | W1.3a/b | `aria-command-name` / `aria-input-field-name` 白名单条目可删 | M |
 | W3.2 | role / aria / 滚动可达 | `fix/20261108-a11y-roles` | `shared/behavior.ts`、`dropdown`、`popover`、`table`、`tests/browser/axe.spec.ts` | W3.1 | 收掉 `aria-allowed-attr`、`aria-required-children`、`aria-tooltip-name`、`scrollable-region-focusable` | M |
 | W3.3 | 纯图标按钮可访问名 | `fix/20261108-a11y-icon-buttons` | `calendar`、`carousel`、`collapse`、`transfer`、`shared/config.ts`（locale 文案）及浏览器用例 | W3.1 | `button-name` 白名单条目可删；文案走 locale | M |
@@ -107,7 +107,7 @@ npm run quality
 
 - **第 1 波（已完成）**：W0.1（`cedb99f`）+ W1.1（`a9fc051`）。55 条公开 slot 缺口已登记，双向守卫已生效。
 - **第 2 波（已完成）**：W1.2a、W1.2b、W1.2c、W1.2d 四路并行合入，23 条 BASELINE 缺口清空。
-- **第 4 波（当前）**：W1.3c / W1.3d 已并入；进入 W2 虚拟化收口（W2.1 特性化、W2.2 transfer.virtualized 处置）。
+- **第 4 波（当前）**：W2.2 已删除 transfer 空壳；W2.1 cascader / cascader-panel 特性化待启动。
 - **第 4 波**：W1.3b → W3.1 → W3.2 串行（共享基座），W2.1 / W2.2 可与组件车道并行。
 - **第 5 波**：W3.3 + W4.1 并行，最后 W4.2 / W5.1 收口。
 
@@ -211,7 +211,7 @@ W5.1 ─────────────────────────
 
 | 决策点 | 结论 | 状态 |
 | --- | --- | --- |
-| 虚拟化空壳 | cascader / cascader-panel 真特性化；transfer 推荐删除特性 | 待 W2.2 执行前确认 |
+| 虚拟化空壳 | cascader / cascader-panel 真特性化；transfer 删除特性 | 已定：transfer 已删除（W2.2）；cascader 待 W2.1 |
 | Slot 范围 | 只声明有渲染点的公开 slot；C/D 类登记理由，不伪造 | 已定 |
 | a11y 对比度 | 本计划不动主题令牌，`color-contrast` 保留白名单 | 已定 |
 | 发布链 / vitest 升级 | 沿用 V2：延后，单独立项 | 已定 |
@@ -247,8 +247,8 @@ W5.1 ─────────────────────────
 | W1.3b | done | w13b-overlay-close | `feat/20261108-overlay-close-slot` | `.worktrees/overlay-close` | 已合入 `181bbe4` + `06c563e`；dialog/drawer/image-viewer/notification 四件套 close 插槽，86 条用例 |
 | W1.3c | done | w13c-upload-slots | `feat/20261108-upload-slots` | `.worktrees/upload-slots` | 已合入 `d564cd1`；trigger / hint / file-item（作用域 file/index/remove），21 条用例 |
 | W1.3d | done | w13d-tree-node | `feat/20261108-tree-node-slot` | `.worktrees/tree-node-slot` | 已合入 `70626e7`；default 节点插槽（node/data/level），优先于 renderContent |
-| W2.1 | blocked | — | `refactor/20261108-cascader-virtualized` | — | 等 W1.1 |
-| W2.2 | blocked | — | `refactor/20261108-transfer-virtualized` | — | 等决策确认 |
+| W2.1 | ready | — | `refactor/20261108-cascader-virtualized` | 待建 | 可启动；cascader / cascader-panel 窗口逻辑搬进特性目录 |
+| W2.2 | done | w22-transfer-virtualized | `refactor/20261108-transfer-virtualized` | `.worktrees/transfer-virtualized` | 已删除零实现特性、白名单与文档同步；README 特性数 175→174 |
 | W3.1 | blocked | — | `fix/20261108-a11y-names` | — | 等 W1.3b |
 | W3.2 | blocked | — | `fix/20261108-a11y-roles` | — | 等 W3.1 |
 | W3.3 | blocked | — | `fix/20261108-a11y-icon-buttons` | — | 等 W3.1 |

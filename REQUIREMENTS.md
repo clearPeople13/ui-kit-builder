@@ -931,7 +931,7 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 | `cascader/core.ts`       | `.ui-cascader__window` + 逐行 `top` 定位                                      | overscan 4、`itemSize` 下限 16           |
 | `cascader-panel/core.ts` | 与 cascader 同一段逻辑的第二份拷贝                                            | overscan 4、`itemSize > 0` 才启用        |
 | `table/core.ts`          | 变量行高前缀和 + 贴底锁 + 滚动停稳后实测回填                                  | 动态行高，与前三种不同类                 |
-| `transfer.virtualized`   | 只挂 `ui-transfer--virtualized` 类名                                          | **无实现（空壳）**                       |
+| `transfer.virtualized`   | 只挂 `ui-transfer--virtualized` 类名                                          | **无实现（空壳）**；W2.2 已删除特性      |
 | `virtual-list` 组件      | 除自身用例与调试台元数据外**全仓零引用**                                      | 第三套固定行高实现                       |
 
 决定性证据来自 `sizes.json`：`select.select-virtualized` 的边际体积只有 **441 B js / 310 B css**，与同样是空壳的 `cascader.virtualized`（240 B）同量级。这说明 §24 把窗口算术写进 `select/core.ts` 后，**不开特性也照样打包**，「开了才打包」只是运行时 `props.virtualized === true` 的分支判定，并没有发生体积裁剪。
@@ -952,7 +952,8 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 ### 25.4 本批未统一的部分（已登记，避免被当成已完成）
 
-- `cascader.virtualized` / `cascader-panel.virtualized` / `transfer.virtualized` 三个特性仍是「只挂类名」：前两者的窗口逻辑在各自 `core.ts` 里（已接内核但仍在 core，裁不掉），`transfer.virtualized` 完全没有实现。三者已列入待统一清单，治理守卫会阻止新增空壳。
+- `cascader.virtualized` / `cascader-panel.virtualized` 两个特性仍是「只挂类名」：窗口逻辑在各自 `core.ts` 里（已接内核但仍在 core，裁不掉）。两者已列入待统一清单，治理守卫会阻止新增空壳。
+- `transfer.virtualized` 零实现，已于 W2.2 删除；双列表虚拟化若要做，按新功能单独立项，不再挂空壳。
 - `table` 的虚拟滚动是变量行高 + 前缀和 + 贴底锁，与固定行高窗口不是同一种算法，强行套内核会丢掉动态行高能力，本批不动。
 
 ### 25.5 缺陷登记

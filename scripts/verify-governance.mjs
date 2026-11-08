@@ -269,7 +269,7 @@ if (virtualFeatureBytes && virtualFeatureBytes < 1500) {
   )
 }
 // 仍是「只挂类名」的空壳虚拟特性必须逐个登记在 §25，新增空壳或删登记都会红
-const SHELL_VIRTUAL_FEATURES = ['cascader.virtualized', 'cascader-panel.virtualized', 'transfer.virtualized']
+const SHELL_VIRTUAL_FEATURES = ['cascader.virtualized', 'cascader-panel.virtualized']
 const shellMissing = SHELL_VIRTUAL_FEATURES.filter((id) => !requirementsText.includes(id))
 if (shellMissing.length) {
   fail(`空壳虚拟特性没有登记进 REQUIREMENTS §25 待统一清单：${shellMissing.join(', ')}`)

@@ -56,12 +56,12 @@ describe('体积预算', () => {
     }
   })
 
-  it('开满 175 个特性带来的增量落在可接受区间', () => {
+  it('开满 174 个特性带来的增量落在可接受区间', () => {
     const core = bundleOf('core').meta
     const full = bundleOf('full').meta
     const jsDelta = full.jsBytes - core.jsBytes
     const cssDelta = full.cssBytes - core.cssBytes
-    expect(featureEntries(registry).length).toBe(175)
+    expect(featureEntries(registry).length).toBe(174)
     // 实测：js +78.9 kB、css +19.4 kB；特性翻倍时不至于失控，也不至于什么都没带
     expect(jsDelta).toBeGreaterThan(60_000)
     expect(jsDelta).toBeLessThan(core.jsBytes * 0.2)

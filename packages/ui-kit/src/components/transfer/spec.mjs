@@ -63,20 +63,6 @@ export default {
               "type": "boolean"
             }
           ]
-        },
-        "transfer.virtualized": {
-          "title": "虚拟滚动",
-          "description": "虚拟滚动：itemSize",
-          "module": "packages/ui-kit/src/components/transfer/features/virtualized/index.ts",
-          "exportName": "transferVirtualizedFeature",
-          "requires": [],
-          "props": [
-            {
-              "name": "itemSize",
-              "type": "number",
-              "default": 30
-            }
-          ]
         }
       }
     }
