@@ -387,6 +387,18 @@ describe('Dropdown 键盘菜单', () => {
     expect(list[0].hasAttribute('aria-disabled')).toBe(false)
   })
 
+  it('孤立渲染的菜单项不挂 menuitem（无 role=menu 父级时保留 li 原生语义）', async () => {
+    const wrapper = mount(DropdownItem, {
+      slots: { default: () => '孤立条目' },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(wrapper.element.getAttribute('role')).toBeNull()
+    expect(wrapper.element.hasAttribute('tabindex')).toBe(false)
+    expect(wrapper.element.hasAttribute('aria-disabled')).toBe(false)
+  })
+
   it('键盘 Enter 打开后焦点移交首个可导航项', async () => {
     const wrapper = mountDropdown()
     const trigger = await openByKeyboard(wrapper)

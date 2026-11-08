@@ -52,7 +52,9 @@ describe('浏览器层 · popconfirm 面板与文案', () => {
         panelWidth: panelBox.width,
         belowTrigger: panelBox.top >= triggerBox.bottom - 1,
         title: document.querySelector('.ui-popconfirm__title span:last-child')?.textContent,
-        buttons: Array.from(document.querySelectorAll('.ui-popconfirm__button')).map((node) => node.textContent)
+        buttons: Array.from(document.querySelectorAll('.ui-popconfirm__button')).map((node) => node.textContent),
+        expandedAfterCancel: null as string | null,
+        panelAfterCancel: false
       }
 
       document
@@ -102,7 +104,8 @@ describe('浏览器层 · popconfirm 面板与文案', () => {
         await new Promise((resolve) => setTimeout(resolve, 100))
         const result = {
           title: document.querySelector('.ui-popconfirm__title span:last-child')?.textContent,
-          buttons: Array.from(document.querySelectorAll('.ui-popconfirm__button')).map((node) => node.textContent)
+          buttons: Array.from(document.querySelectorAll('.ui-popconfirm__button')).map((node) => node.textContent),
+          panelAfterEscape: false
         }
         window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
         await new Promise((resolve) => setTimeout(resolve, 100))

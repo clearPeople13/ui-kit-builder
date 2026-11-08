@@ -268,16 +268,21 @@ export function createDropdownItem(features: UiFeature[] = []) {
           () => menu?.ensureNav()
         )
         return {
+          // menuitem 只在菜单上下文里成立：孤立渲染时保留 li 原生语义，否则 axe 报 aria-required-parent
+          inMenu: Boolean(menu),
           // roving tabindex：仅当前停靠项为 0，禁用项整体退出 Tab 序与键盘导航
           get tabindex() {
-            return props.disabled ? undefined : menu?.navId() === navKey ? 0 : -1
+            if (!menu || props.disabled) {
+              return undefined
+            }
+            return menu.navId() === navKey ? 0 : -1
           }
         }
       },
       classes: (props, state) => [...(base.classes?.(props, state) ?? []), props.divided ? 'is-divided' : ''],
       attrs: (props, state) => ({
         ...base.attrs?.(props, state),
-        role: 'menuitem',
+        role: state.inMenu ? 'menuitem' : undefined,
         tabindex: state.tabindex,
         'aria-disabled': props.disabled ? 'true' : undefined
       }),
