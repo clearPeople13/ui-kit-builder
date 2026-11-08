@@ -38,6 +38,14 @@ export default {
           "scope": null,
           "fallback": false,
           "description": "面板标题区，未提供时标题为空（组件无 title 属性可回退）"
+        },
+        {
+          "name": "close",
+          "scope": {
+            "close": "() => void"
+          },
+          "fallback": true,
+          "description": "关闭按钮内容，渲染在面板 header 的关闭按钮内；无插槽时回退 closeIcon 或内置关闭图标。提供插槽会强制显示关闭按钮"
         }
       ],
       "features": {

@@ -74,6 +74,14 @@ export default {
           scope: null,
           fallback: true,
           description: '面板标题，未提供时回退 title 属性'
+        },
+        {
+          name: 'close',
+          scope: {
+            close: '() => void'
+          },
+          fallback: true,
+          description: '关闭按钮内容，渲染在面板 header 的关闭按钮内；无插槽时回退 closeIcon 或内置关闭图标。提供插槽会强制显示关闭按钮'
         }
       ],
       features: {

@@ -118,6 +118,24 @@ describe('Notification', () => {
     expect(document.querySelector('.ui-notification__panel__footer')).toBeNull()
   })
 
+  it('slot 契约：close 插槽替换关闭按钮内容，并通过作用域 close 回调关闭', async () => {
+    let closeFromSlot: (() => void) | undefined
+    const wrapper = mountNotif(
+      {},
+      {
+        close: (scope: { close: () => void }) => {
+          closeFromSlot = scope.close
+          return h('span', { class: 'notification-close' }, '自定义关闭')
+        }
+      }
+    )
+    await nextTick()
+    expect(document.querySelector('.ui-notification__panel__close .notification-close')?.textContent).toBe('自定义关闭')
+    closeFromSlot?.()
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+  })
+
   it('onClick 回调收到点击事件', async () => {
     const onClick = vi.fn()
     mountNotif({ onClick })

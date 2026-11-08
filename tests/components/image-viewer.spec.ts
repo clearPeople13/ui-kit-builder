@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { ImageViewer } from '@ui-kit-full'
 
@@ -15,7 +15,7 @@ function container() {
 
 const mounted: Array<ReturnType<typeof mount>> = []
 
-function mountViewer(props: Record<string, any> = {}, slots: Record<string, () => string> = {}) {
+function mountViewer(props: Record<string, any> = {}, slots: Record<string, (scope?: any) => unknown> = {}) {
   const wrapper = mount(ImageViewer, {
     props: { modelValue: true, ...props },
     slots: { default: () => '内部', ...slots },
@@ -155,6 +155,24 @@ describe('ImageViewer', () => {
     expect(panel()!.querySelector('.ui-image-viewer__panel__body')!.textContent).toBe('预览内容')
     expect(panel()!.querySelector('.ui-image-viewer__panel__title')!.textContent).toBe('预览标题')
     expect(panel()!.querySelector('.ui-image-viewer__panel__footer')!.textContent).toBe('预览页脚')
+  })
+
+  it('slot 契约：close 插槽替换关闭按钮内容，并通过作用域 close 回调关闭', async () => {
+    let closeFromSlot: (() => void) | undefined
+    const wrapper = mountViewer(
+      {},
+      {
+        close: (scope: { close: () => void }) => {
+          closeFromSlot = scope.close
+          return h('span', { class: 'viewer-close' }, '自定义关闭')
+        }
+      }
+    )
+    await nextTick()
+    expect(panel()!.querySelector('.ui-image-viewer__panel__close .viewer-close')?.textContent).toBe('自定义关闭')
+    closeFromSlot?.()
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
   })
 
   it('卸载清理传送节点', async () => {
