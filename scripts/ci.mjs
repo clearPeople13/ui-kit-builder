@@ -30,7 +30,7 @@ export const STAGES = [
     name: 'build',
     script: 'build:all',
     fullOnly: true,
-    desc: '统一构建：20 份 profile + 175 个特性边际产物（后续各层复用）'
+    desc: '统一构建：20 份 profile + 172 个特性边际产物（后续各层复用）'
   },
   { name: 'format', script: 'format:check', fast: true, desc: 'prettier 格式一致性' },
   { name: 'typecheck', script: 'typecheck', fast: true, desc: 'TypeScript 类型检查（库 + 用例两份工程）' },

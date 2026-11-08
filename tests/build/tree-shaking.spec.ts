@@ -45,7 +45,7 @@ describe('入口文件的特性引用', () => {
     }
   })
 
-  it('core 的入口不引入任何特性模块，full 引入全部 173 个', () => {
+  it('core 的入口不引入任何特性模块，full 引入全部 172 个', () => {
     expect([...bundleOf('core').entry.matchAll(/\/features\//g)]).toEqual([])
     const fullModules = [
       ...new Set(
