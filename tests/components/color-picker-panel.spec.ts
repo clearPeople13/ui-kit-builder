@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
-import { nextTick } from 'vue'
-import { ColorPickerPanel } from '@ui-kit-full'
+import { h, nextTick } from 'vue'
+import { ColorPickerPanel, ConfigProvider } from '@ui-kit-full'
 
 /**
  * ColorPickerPanel 颜色面板：happy-dom 里色板 rect 恒为 0×0，
@@ -189,5 +189,21 @@ describe('ColorPickerPanel 颜色面板', () => {
     const wrapper = mountPanel({}, { default: '<span class="slot-probe">插槽</span>' })
     expect(wrapper.find('.slot-probe').exists()).toBe(false)
     expect(wrapper.find('.ui-color-picker-panel__body').exists()).toBe(true)
+  })
+
+  it('预置色 aria 文案来自 ConfigProvider 注入的 locale，缺键回退中文', () => {
+    const injected = mount(ConfigProvider, {
+      props: { locale: { colorPicker: { presetFormat: 'Preset {color}' } } },
+      slots: { default: () => h(ColorPickerPanel, { modelValue: '#3366cc', predefine: ['#ff0000'] }) }
+    })
+    wrappers.push(injected)
+    expect(injected.find('.ui-color-picker-panel__preset').attributes('aria-label')).toBe('Preset #ff0000')
+
+    const fallback = mount(ConfigProvider, {
+      props: { locale: { colorPicker: { clear: 'Clear' } } },
+      slots: { default: () => h(ColorPickerPanel, { modelValue: '#3366cc', predefine: ['#00ff00'] }) }
+    })
+    wrappers.push(fallback)
+    expect(fallback.find('.ui-color-picker-panel__preset').attributes('aria-label')).toBe('预设颜色 #00ff00')
   })
 })

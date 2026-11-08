@@ -89,6 +89,7 @@ export interface UiLocaleColorPicker {
   hue?: string
   opacity?: string
   svValueFormat?: string
+  presetFormat?: string
 }
 
 export interface UiLocaleTable {
@@ -224,7 +225,8 @@ export const defaultUiLocale: { [K in keyof UiLocale]-?: Required<NonNullable<Ui
     saturationBrightness: '饱和度与明度',
     hue: '色相',
     opacity: '不透明度',
-    svValueFormat: '饱和度 {saturation}%，明度 {value}%'
+    svValueFormat: '饱和度 {saturation}%，明度 {value}%',
+    presetFormat: '预设颜色 {color}'
   },
   table: { emptyText: '暂无数据', expandRow: '展开行', collapseRow: '收起行' },
   tree: { emptyText: '暂无数据' },

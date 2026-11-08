@@ -2,6 +2,7 @@ import { h } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import chroma from 'chroma-js'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import './core.css'
 
 type Rgba = { r: number; g: number; b: number; a: number }
@@ -206,7 +207,8 @@ export function createColorPickerPanel(features: UiFeature[] = []) {
       props: colorPickerPanelBaseProps,
       tag: () => 'div',
       classes: (props) => [props.disabled ? 'is-disabled' : ''],
-      content: ({ props, emit }) => {
+      setup: () => ({ locale: useLocale('colorPicker') }),
+      content: ({ props, emit, state }) => {
         const color = parseColor(props.modelValue)
         // 空值不参与反解析，否则会把内部兜底色当成用户当前值吐回去
         const hasModel = typeof props.modelValue === 'string' && Boolean(props.modelValue.trim())
@@ -333,7 +335,7 @@ export function createColorPickerPanel(features: UiFeature[] = []) {
                 type: 'button',
                 style: { background: String(item) },
                 disabled: Boolean(props.disabled),
-                'aria-label': `预设颜色 ${String(item)}`,
+                'aria-label': formatLocale(state.locale.value.presetFormat, { color: String(item) }),
                 onClick: () => pickPredefine(item)
               })
             )
