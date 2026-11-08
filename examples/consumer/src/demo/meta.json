@@ -10357,19 +10357,6 @@
                   "description": "是否可搜索过滤"
                 }
               ]
-            },
-            {
-              "id": "transfer.virtualized",
-              "title": "虚拟滚动",
-              "description": "虚拟滚动：itemSize",
-              "props": [
-                {
-                  "name": "itemSize",
-                  "type": "number",
-                  "default": 30,
-                  "description": "选项高度（虚拟滚动用）"
-                }
-              ]
             }
           ],
           "methods": []
@@ -11564,7 +11551,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -11879,8 +11865,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -12298,8 +12283,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -12327,8 +12311,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 688363,
-          "gzipBytes": 167137
+          "bytes": 688123,
+          "gzipBytes": 167070
         },
         {
           "file": "ui-kit.css",
@@ -12337,10 +12321,10 @@
         }
       ],
       "sizes": {
-        "js": 688363,
+        "js": 688123,
         "css": 247619,
-        "total": 935982,
-        "gzip": 201516
+        "total": 935742,
+        "gzip": 201448
       }
     },
     {
@@ -12512,7 +12496,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -12827,8 +12810,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -13246,8 +13228,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -13275,8 +13256,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167220
+          "bytes": 689965,
+          "gzipBytes": 167158
         },
         {
           "file": "ui-kit.css",
@@ -13285,10 +13266,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 259683,
-        "total": 949890,
-        "gzip": 202395
+        "total": 949648,
+        "gzip": 202334
       }
     },
     {
@@ -13460,7 +13441,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -13775,8 +13755,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -14194,8 +14173,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -14223,8 +14201,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692973,
-          "gzipBytes": 167331
+          "bytes": 692728,
+          "gzipBytes": 167269
         },
         {
           "file": "ui-kit.css",
@@ -14233,10 +14211,10 @@
         }
       ],
       "sizes": {
-        "js": 692973,
+        "js": 692728,
         "css": 295675,
-        "total": 988648,
-        "gzip": 206234
+        "total": 988403,
+        "gzip": 206170
       }
     },
     {
@@ -14408,7 +14386,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -14723,8 +14700,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -15142,8 +15118,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -15171,8 +15146,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167217
+          "bytes": 689965,
+          "gzipBytes": 167155
         },
         {
           "file": "ui-kit.css",
@@ -15181,10 +15156,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 275134,
-        "total": 965341,
-        "gzip": 205360
+        "total": 965099,
+        "gzip": 205299
       }
     },
     {
@@ -15356,7 +15331,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -15671,8 +15645,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -16090,8 +16063,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -16119,8 +16091,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167220
+          "bytes": 689965,
+          "gzipBytes": 167159
         },
         {
           "file": "ui-kit.css",
@@ -16129,10 +16101,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 279890,
-        "total": 970097,
-        "gzip": 205510
+        "total": 969855,
+        "gzip": 205449
       }
     },
     {
@@ -16304,7 +16276,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -16619,8 +16590,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -17038,8 +17008,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -17067,8 +17036,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167221
+          "bytes": 689965,
+          "gzipBytes": 167159
         },
         {
           "file": "ui-kit.css",
@@ -17077,10 +17046,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 260055,
-        "total": 950262,
-        "gzip": 202493
+        "total": 950020,
+        "gzip": 202432
       }
     },
     {
@@ -17252,7 +17221,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -17567,8 +17535,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -17986,8 +17953,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -18015,8 +17981,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692973,
-          "gzipBytes": 167325
+          "bytes": 692728,
+          "gzipBytes": 167265
         },
         {
           "file": "ui-kit.css",
@@ -18025,10 +17991,10 @@
         }
       ],
       "sizes": {
-        "js": 692973,
+        "js": 692728,
         "css": 276381,
-        "total": 969354,
-        "gzip": 203063
+        "total": 969109,
+        "gzip": 203000
       }
     },
     {
@@ -18200,7 +18166,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -18515,8 +18480,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -18934,8 +18898,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -18963,8 +18926,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691129,
-          "gzipBytes": 167248
+          "bytes": 690886,
+          "gzipBytes": 167186
         },
         {
           "file": "ui-kit.css",
@@ -18973,10 +18936,10 @@
         }
       ],
       "sizes": {
-        "js": 691129,
+        "js": 690886,
         "css": 265372,
-        "total": 956501,
-        "gzip": 202590
+        "total": 956258,
+        "gzip": 202526
       }
     },
     {
@@ -19148,7 +19111,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -19463,8 +19425,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -19882,8 +19843,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -19911,8 +19871,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692051,
-          "gzipBytes": 167284
+          "bytes": 691807,
+          "gzipBytes": 167222
         },
         {
           "file": "ui-kit.css",
@@ -19921,10 +19881,10 @@
         }
       ],
       "sizes": {
-        "js": 692051,
+        "js": 691807,
         "css": 270875,
-        "total": 962926,
-        "gzip": 202832
+        "total": 962682,
+        "gzip": 202767
       }
     },
     {
@@ -20096,7 +20056,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -20411,8 +20370,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -20830,8 +20788,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -20859,8 +20816,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167217
+          "bytes": 689965,
+          "gzipBytes": 167156
         },
         {
           "file": "ui-kit.css",
@@ -20869,10 +20826,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 260195,
-        "total": 950402,
-        "gzip": 202498
+        "total": 950160,
+        "gzip": 202437
       }
     },
     {
@@ -21044,7 +21001,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -21359,8 +21315,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -21778,8 +21733,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -21807,8 +21761,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692051,
-          "gzipBytes": 167294
+          "bytes": 691807,
+          "gzipBytes": 167232
         },
         {
           "file": "ui-kit.css",
@@ -21817,10 +21771,10 @@
         }
       ],
       "sizes": {
-        "js": 692051,
+        "js": 691807,
         "css": 270915,
-        "total": 962966,
-        "gzip": 202856
+        "total": 962722,
+        "gzip": 202791
       }
     },
     {
@@ -21992,7 +21946,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -22307,8 +22260,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -22726,8 +22678,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -22755,8 +22706,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690207,
-          "gzipBytes": 167219
+          "bytes": 689965,
+          "gzipBytes": 167157
         },
         {
           "file": "ui-kit.css",
@@ -22765,10 +22716,10 @@
         }
       ],
       "sizes": {
-        "js": 690207,
+        "js": 689965,
         "css": 259751,
-        "total": 949958,
-        "gzip": 202380
+        "total": 949716,
+        "gzip": 202318
       }
     },
     {
@@ -22940,7 +22891,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -23255,8 +23205,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -23674,8 +23623,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -23703,8 +23651,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694817,
-          "gzipBytes": 167393
+          "bytes": 694570,
+          "gzipBytes": 167330
         },
         {
           "file": "ui-kit.css",
@@ -23713,10 +23661,10 @@
         }
       ],
       "sizes": {
-        "js": 694817,
+        "js": 694570,
         "css": 288310,
-        "total": 983127,
-        "gzip": 203672
+        "total": 982880,
+        "gzip": 203607
       }
     },
     {
@@ -23888,7 +23836,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -24203,8 +24150,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -24622,8 +24568,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -24651,8 +24596,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694817,
-          "gzipBytes": 167394
+          "bytes": 694570,
+          "gzipBytes": 167330
         },
         {
           "file": "ui-kit.css",
@@ -24661,10 +24606,10 @@
         }
       ],
       "sizes": {
-        "js": 694817,
+        "js": 694570,
         "css": 287650,
-        "total": 982467,
-        "gzip": 203394
+        "total": 982220,
+        "gzip": 203329
       }
     },
     {
@@ -24836,7 +24781,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -25151,8 +25095,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -25570,8 +25513,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -25599,8 +25541,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692051,
-          "gzipBytes": 167296
+          "bytes": 691807,
+          "gzipBytes": 167232
         },
         {
           "file": "ui-kit.css",
@@ -25609,10 +25551,10 @@
         }
       ],
       "sizes": {
-        "js": 692051,
+        "js": 691807,
         "css": 271280,
-        "total": 963331,
-        "gzip": 202940
+        "total": 963087,
+        "gzip": 202876
       }
     },
     {
@@ -25784,7 +25726,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -26099,8 +26040,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -26518,8 +26458,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -26547,8 +26486,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692051,
-          "gzipBytes": 167290
+          "bytes": 691807,
+          "gzipBytes": 167226
         },
         {
           "file": "ui-kit.css",
@@ -26557,10 +26496,10 @@
         }
       ],
       "sizes": {
-        "js": 692051,
+        "js": 691807,
         "css": 270831,
-        "total": 962882,
-        "gzip": 202849
+        "total": 962638,
+        "gzip": 202784
       }
     },
     {
@@ -26732,7 +26671,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -27047,8 +26985,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -27466,8 +27403,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -27495,8 +27431,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692051,
-          "gzipBytes": 167293
+          "bytes": 691807,
+          "gzipBytes": 167231
         },
         {
           "file": "ui-kit.css",
@@ -27505,10 +27441,10 @@
         }
       ],
       "sizes": {
-        "js": 692051,
+        "js": 691807,
         "css": 270920,
-        "total": 962971,
-        "gzip": 202873
+        "total": 962727,
+        "gzip": 202809
       }
     },
     {
@@ -27680,7 +27616,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -27995,8 +27930,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -28414,8 +28348,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -28443,8 +28376,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692973,
-          "gzipBytes": 167331
+          "bytes": 692728,
+          "gzipBytes": 167270
         },
         {
           "file": "ui-kit.css",
@@ -28453,10 +28386,10 @@
         }
       ],
       "sizes": {
-        "js": 692973,
+        "js": 692728,
         "css": 276820,
-        "total": 969793,
-        "gzip": 203202
+        "total": 969548,
+        "gzip": 203139
       }
     },
     {
@@ -28628,7 +28561,6 @@
         "tour.tour-step-popper",
         "tour.tour-step-validate",
         "transfer.filterable",
-        "transfer.virtualized",
         "tree.icons",
         "tree.draggable",
         "tree.selection",
@@ -28943,8 +28875,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -29362,8 +29293,7 @@
           "tour.tour-step-validate"
         ],
         "transfer": [
-          "transfer.filterable",
-          "transfer.virtualized"
+          "transfer.filterable"
         ],
         "tree": [
           "tree.icons",
@@ -29391,8 +29321,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689285,
-          "gzipBytes": 167172
+          "bytes": 689044,
+          "gzipBytes": 167105
         },
         {
           "file": "ui-kit.css",
@@ -29401,10 +29331,10 @@
         }
       ],
       "sizes": {
-        "js": 689285,
+        "js": 689044,
         "css": 254283,
-        "total": 943568,
-        "gzip": 202223
+        "total": 943327,
+        "gzip": 202157
       }
     }
   ]
