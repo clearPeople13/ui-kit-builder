@@ -90,7 +90,58 @@ describe('CollapseTransition 折叠动画', () => {
     expect(wrapper.element.tagName).toBe('TRANSITION-STUB')
     expect(wrapper.findAll('.only')).toHaveLength(1)
   })
+
+  it('进入钩子按内容高度展开，结束后清空所有内联样式', () => {
+    const hooks = transitionHooks()
+    const el = scrolledElement(180)
+    hooks.onBeforeEnter(el)
+    expect(el.style.height).toBe('0px')
+    expect(el.style.overflow).toBe('hidden')
+    expect(el.style.paddingTop).toBe('0px')
+    expect(el.style.marginBottom).toBe('0px')
+    expect(el.style.transition).toContain('height 0.28s')
+    hooks.onEnter(el)
+    expect(el.style.height).toBe('180px')
+    hooks.onAfterEnter(el)
+    expect(el.style.height).toBe('')
+    expect(el.style.overflow).toBe('')
+    expect(el.style.paddingTop).toBe('')
+    expect(el.style.paddingBottom).toBe('')
+    expect(el.style.marginTop).toBe('')
+    expect(el.style.marginBottom).toBe('')
+    expect(el.style.transition).toBe('')
+  })
+
+  it('离开钩子从实际高度收缩到 0，结束后清空所有内联样式', () => {
+    const hooks = transitionHooks()
+    const el = scrolledElement(150)
+    el.style.paddingTop = '4px'
+    hooks.onBeforeLeave(el)
+    expect(el.style.height).toBe('150px')
+    expect(el.style.overflow).toBe('hidden')
+    expect(el.style.transition).toContain('height 0.28s')
+    hooks.onLeave(el)
+    expect(el.style.height).toBe('0px')
+    expect(el.style.paddingTop).toBe('0px')
+    expect(el.style.marginTop).toBe('0px')
+    hooks.onAfterLeave(el)
+    expect(el.style.height).toBe('')
+    expect(el.style.paddingTop).toBe('')
+    expect(el.style.marginTop).toBe('')
+  })
 })
+
+// 过渡钩子挂在 Transition 的 props 上，VTU 的 transition-stub 仍原样保留这些函数
+function transitionHooks() {
+  const wrapper = mount(CollapseTransition, { slots: { default: () => h('div', 'x') } })
+  return wrapper.findComponent({ name: 'transition' }).props() as unknown as Record<string, (el: Element) => void>
+}
+
+function scrolledElement(scrollHeight: number) {
+  const el = document.createElement('div')
+  Object.defineProperty(el, 'scrollHeight', { value: scrollHeight, configurable: true })
+  return el
+}
 
 // 用一个宿主组件驱动 CollapseTransition 内部内容的显示/隐藏
 function toggleHost(show: boolean) {

@@ -656,3 +656,13 @@ describe('Table 列宽拖拽', () => {
     expect(wrapper.emitted('resize-change')).toBeUndefined()
   })
 })
+
+describe('TableColumn', () => {
+  it('缺省 sortOrders 为升序/降序/取消三态，sortable 缺省关闭', () => {
+    const wrapper = mount(TableColumn)
+    const column = wrapper.vm as unknown as { sortOrders: unknown[]; sortable: boolean }
+    expect(column.sortOrders).toEqual(['ascending', 'descending', null])
+    expect(column.sortable).toBe(false)
+    wrapper.unmount()
+  })
+})

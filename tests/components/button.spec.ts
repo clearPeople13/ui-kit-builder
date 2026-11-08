@@ -162,6 +162,36 @@ describe('Button', () => {
     await wrapper.trigger('click')
     expect(wrapper.find('.ui-button__wave').exists()).toBe(false)
   })
+
+  it('bgColor 写入背景色并追加变体类名，未开 autoContrast 不写文字色', () => {
+    const wrapper = mountButton({ bgColor: '#f7f8fa' })
+    expect(wrapper.classes()).toContain('ui-button--bg-color')
+    const style = wrapper.attributes('style') ?? ''
+    expect(style).toContain('background-color: #f7f8fa')
+    expect(style).not.toMatch(/(^|;\s)color:/)
+    expect(mountButton().classes()).not.toContain('ui-button--bg-color')
+  })
+
+  it('autoContrast 按背景亮度选择深/浅文字色', () => {
+    const light = mountButton({ bgColor: '#f7f8fa', autoContrast: true }).attributes('style') ?? ''
+    expect(light).toContain('color: #101828')
+    const dark = mountButton({ bgColor: '#101828', autoContrast: true }).attributes('style') ?? ''
+    expect(dark).toContain('color: #ffffff')
+  })
+
+  it('无法解析的背景色回落到白色文字且不抛错', () => {
+    const wrapper = mountButton({ bgColor: 'not-a-color', autoContrast: true })
+    expect(wrapper.classes()).toContain('ui-button--bg-color')
+    expect(wrapper.attributes('style') ?? '').toContain('color: #ffffff')
+  })
+
+  it('gradient 用提亮后的颜色构造渐变，无效色回退原值', () => {
+    const style = mountButton({ gradient: true, bgColor: '#ff0000', gradientAngle: 45 }).attributes('style') ?? ''
+    expect(style).toContain('linear-gradient(45deg, #ff0000,')
+    expect(style).toContain('background-image')
+    const fallback = mountButton({ gradient: true, bgColor: 'not-a-color' }).attributes('style') ?? ''
+    expect(fallback).toContain('linear-gradient(90deg, not-a-color, not-a-color)')
+  })
 })
 
 describe('ButtonGroup', () => {

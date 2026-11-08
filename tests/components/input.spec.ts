@@ -205,4 +205,18 @@ describe('Input', () => {
     expect(wrapper.find('.ui-input__password').exists()).toBe(true)
     expect(wrapper.find('.ui-input__count').text()).toBe('6/20')
   })
+
+  it('expose 的 focus/blur/select 作用到原生输入框', () => {
+    const wrapper = mount(Input, { props: { modelValue: 'abc' }, attachTo: document.body })
+    const api = wrapper.vm as unknown as { focus: () => void; blur: () => void; select: () => void }
+    const field = wrapper.find('input').element as HTMLInputElement
+    api.focus()
+    expect(document.activeElement).toBe(field)
+    api.select()
+    expect(field.selectionStart).toBe(0)
+    expect(field.selectionEnd).toBe(3)
+    api.blur()
+    expect(document.activeElement).not.toBe(field)
+    wrapper.unmount()
+  })
 })

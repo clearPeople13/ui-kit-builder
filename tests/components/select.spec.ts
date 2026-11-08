@@ -354,6 +354,16 @@ describe('Select', () => {
       expect(virtual?.querySelector('.ui-virtual-list__spacer')?.getAttribute('style')).toContain('height: 120px')
     })
   })
+
+  it('expose 的 focus/blur 在没有原生 select 时安全空操作', () => {
+    const wrapper = mountSelect({ options, modelValue: undefined })
+    const api = wrapper.vm as unknown as { focus: () => void; blur: () => void }
+    expect(wrapper.find('select').exists()).toBe(false)
+    expect(() => {
+      api.focus()
+      api.blur()
+    }).not.toThrow()
+  })
 })
 
 describe('Select Escape 分层', () => {

@@ -225,9 +225,14 @@ describe('InputNumber', () => {
     expect(zeroFloat.emitted('update:modelValue')?.[0]).toEqual([0])
   })
 
-  it('组件通过 methods 特性暴露 focus 等命令式方法', () => {
-    const wrapper = mountNumber({ modelValue: 1 })
-    const vm = wrapper.vm as unknown as Record<string, unknown>
-    expect(typeof vm.focus).toBe('function')
+  it('组件通过 methods 特性暴露的 focus/blur 作用到原生输入框', () => {
+    const wrapper = mount(InputNumber, { props: { modelValue: 1 }, attachTo: document.body })
+    wrappers.push(wrapper)
+    const api = wrapper.vm as unknown as { focus: () => void; blur: () => void }
+    const field = wrapper.find('input').element as HTMLInputElement
+    api.focus()
+    expect(document.activeElement).toBe(field)
+    api.blur()
+    expect(document.activeElement).not.toBe(field)
   })
 })
