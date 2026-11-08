@@ -254,8 +254,11 @@ describe('gc TTL 回收', () => {
       const result = verifyBranch({ root, id: 't1' })
       expect(String(result.error)).toContain('baseCommit')
     } finally {
-      if (saved === undefined) delete process.env.GIT_DIR
-      else process.env.GIT_DIR = saved
+      if (saved === undefined) {
+        delete process.env.GIT_DIR
+      } else {
+        process.env.GIT_DIR = saved
+      }
     }
   })
 
