@@ -193,7 +193,7 @@ export function readChangedFiles({ root = ROOT, base = null } = {}) {
 function impactOf(file, root) {
   const component = file.match(/^packages\/ui-kit\/src\/components\/([^/]+)\//)
 
-  // ---- 源码 ----
+  // 源码
   if (file.startsWith('packages/ui-kit/src/shared/')) {
     return { full: true, reason: '改了共享模块，影响面覆盖全部组件' }
   }
@@ -204,7 +204,7 @@ function impactOf(file, root) {
     return { full: true, reason: '改了组件库入口 / 主题 / 未分类源码，影响面不确定' }
   }
 
-  // ---- 构建器与注册表 ----
+  // 构建器与注册表
   if (/^registry\.mjs$/.test(file) || /^scripts\/(build-lib|build-all)\.mjs$/.test(file)) {
     return {
       stages: [
@@ -229,7 +229,7 @@ function impactOf(file, root) {
     }
   }
 
-  // ---- 门禁自身 ----
+  // 门禁自身
   if (/^scripts\/ci\.mjs$/.test(file) || /^scripts\/test-impact\.mjs$/.test(file)) {
     return {
       stages: [
@@ -266,7 +266,7 @@ function impactOf(file, root) {
     return { full: true, reason: `改了未分类脚本 ${file}，影响面不确定` }
   }
 
-  // ---- 可视化构建器 / 调试台 ----
+  // 可视化构建器 / 调试台
   if (file.startsWith('configurator/')) {
     return {
       stages: [
@@ -283,7 +283,7 @@ function impactOf(file, root) {
     }
   }
 
-  // ---- 用例自身 ----
+  // 用例自身
   if (file.startsWith('tests/components/')) {
     return file.endsWith('.spec.ts')
       ? { stages: [{ name: 'test', files: [file] }], reason: '改了组件层用例' }
@@ -306,7 +306,7 @@ function impactOf(file, root) {
     return { stages: [{ name: 'test' }], reason: '改了未分类用例' }
   }
 
-  // ---- 生成物与文档 ----
+  // 生成物与文档
   if (file === 'sizes.json') {
     return {
       stages: [{ name: 'test:build', files: ['tests/build/size-budget.spec.ts', 'tests/build/tree-shaking.spec.ts'] }],
@@ -323,7 +323,7 @@ function impactOf(file, root) {
     return { stages: [], reason: '只改文档（治理段会核对口径）' }
   }
 
-  // ---- 兜底 ----
+  // 兜底
   if (
     /^(vitest\.[^/]*\.config\.ts|tsconfig[^/]*\.json|eslint\.config\.mjs|package\.json|package-lock\.json)$/.test(file)
   ) {

@@ -84,7 +84,7 @@ function hasComponentSpec(id) {
   })
 }
 
-// ---- 1. 改动面与影响面清单 ----
+// 1. 改动面与影响面清单
 const base = ['origin/main', 'main'].find((candidate) => git(['rev-parse', '--verify', candidate]).length)
 const changed = [
   ...new Set([
@@ -162,7 +162,7 @@ if (!changed.length) {
   notes.push('本次无源码改动，影响面清单跳过')
 }
 
-// ---- 2. 特性裁剪静态守卫 ----
+// 2. 特性裁剪静态守卫
 // 白名单每一项都必须在 REQUIREMENTS.md 写下"已审计但无害"的结论与理由，
 // 否则 fail：白名单不许变成绕过检查的后门。
 // A- 前缀是"审计结论（已确认无害）"，不是缺陷编号；F- 前缀只给真缺陷用。
@@ -208,7 +208,7 @@ for (const id of componentIds) {
 }
 notes.push(`特性裁剪静态守卫：扫描 ${componentIds.length} 个组件目录`)
 
-// ---- 2.1 Select 统一守卫（第十一批 §22）----
+// 2.1 Select 统一守卫（第十一批 §22）
 // 只保留一个选择器：源码、profile、配置、示例与测试里不许再出现旧虚拟列表选择器的名字。
 // 历史缺陷登记（REQUIREMENTS.md / KNOWLEDGE.md 的 F-38、F-47）与第三方参考目录不在扫描范围内。
 const LEGACY_NAME = /select-v2|SelectV2/i
@@ -243,7 +243,7 @@ if (!read('examples/consumer/src/demo/meta.json').includes('select.select-virtua
 }
 notes.push(`Select 统一守卫：扫描 ${candidateFiles.length} 个跟踪文件，旧组件零残留`)
 
-// ---- 2.2 虚拟窗口统一守卫（§25）----
+// 2.2 虚拟窗口统一守卫（§25）
 // 第十一批把旧虚拟列表选择器合并进 Select 时，窗口算术留在了 select/core.ts 里：
 // 不开特性也照样打包（sizes.json 里该特性边际值只有 441B，只反映 props + 类名），
 // 同时 virtual-list 组件全仓无人引用，cascader / cascader-panel 各写一套 clamp。
@@ -278,7 +278,7 @@ notes.push(
   `虚拟窗口：Select 复用 VirtualList（边际 ${virtualFeatureBytes}B），空壳特性 ${SHELL_VIRTUAL_FEATURES.length} 个已登记`
 )
 
-// ---- 2.3 构建缓存口径守卫（§26）----
+// 2.3 构建缓存口径守卫（§26）
 // 边际体积缓存键不再包含 build-all.mjs 全文，改口径只看库里的 SIZE_ALGO_VERSION。
 // 代价是"改了算法却忘了加版本号"会静默复用旧值，所以这里扫 diff：
 // 动了统计 / 差值 / 输出结构的代码，就必须让版本号相对改动前发生变化。
@@ -334,7 +334,7 @@ if (!/export const SIZE_ALGO_VERSION = \d+/.test(read('scripts/build-all.mjs')))
 }
 notes.push('构建缓存口径：SIZE_ALGO_VERSION 仍是常量，算法改动必须显式升版')
 
-// ---- 3. 文档数字与产物对齐 ----
+// 3. 文档数字与产物对齐
 const meta = JSON.parse(read('examples/consumer/src/demo/meta.json') || '{}')
 const componentCount = Array.isArray(meta.components) ? meta.components.length : 0
 const readmeCount = Number(read('README.md').match(/(\d+)\s*个组件的场景预设/)?.[1] ?? 0)
@@ -359,7 +359,7 @@ if (!/name:\s*['"]governance['"]/.test(ciText) || !pkg.scripts['verify:governanc
 }
 notes.push(`文档数字：组件 ${componentCount}、门禁 ${stageCount} 段（governance 已接入）`)
 
-// ---- 3.0 视觉体检能力的自守卫 ----
+// 3.0 视觉体检能力的自守卫
 // 像素基线的前提是"当前这版是对的"，只能防漂移、发现不了本来就有双层边框。
 // 视觉体检器是唯一能发现"现状就长歪了"的一层，因此它的存在、规则集、
 // 豁免名单与重点场景都要静态锁死，防止合并 ci.mjs / 改探针页时被悄悄架空。
@@ -428,7 +428,7 @@ notes.push(
   `视觉体检自守卫：${ruleCount} 条规则 / ${focusScenes.length} 个重点场景 / ${consumerPages.length} 个调试台页面 / 1 个大数据场景 / 豁免清单与 harness 对齐`
 )
 
-// ---- 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径 ----
+// 3.1 缺陷编号唯一性 / 连续性 / 三处文档口径
 // 两条并行分支各自按"开工时的最大编号 + 1"登记，合入后会出现同号不同缺陷；
 // 这条守卫让撞号、断档、文档口径滞后在门禁第六段直接报红，而不是靠维护者记得 fetch main。
 // 只认登记表里的五列行（编号 / 位置 / 现象 / 根因 / 修复），
@@ -461,7 +461,7 @@ for (const doc of ['README.md', 'KNOWLEDGE.md']) {
 }
 notes.push(`缺陷编号：已登记 ${definedIds.length} 条，最大 F-${maxId}（唯一性 / 连续性 / 口径由上方校验判定）`)
 
-// ---- 3.2 手写用例计数与门禁入口（B8 / B9）----
+// 3.2 手写用例计数与门禁入口（B8 / B9）
 // 用例条数只认命令输出与 ci-report.json；一旦又被写回文档，"文档说 1582、实际 1590"就会重演。
 const staleCounts = [
   { pattern: /（共\s*\d+\s*条）/, hint: '「（共 N 条）」' },

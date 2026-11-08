@@ -28,7 +28,7 @@ const { profileCatalog } = (await import('../../scripts/profile-catalog.mjs')) a
 const catalog = profileCatalog(repoRoot)
 const catalogLabels = new Map(catalog.map((entry) => [entry.dirName, entry.label]))
 
-// ---- HTTP 层的最小替身：只实现中间件注册与请求/响应，足够覆盖 405 / 413 / 静态文件分支 ----
+// HTTP 层的最小替身：只实现中间件注册与请求/响应，足够覆盖 405 / 413 / 静态文件分支
 
 function createHarness() {
   const routes = new Map<string, RouteHandler>()

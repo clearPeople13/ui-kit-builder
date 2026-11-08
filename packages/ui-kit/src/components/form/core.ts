@@ -121,7 +121,7 @@ export function createForm(features: UiFeature[] = []) {
           }
         }
 
-        // ---- 增量校验：按 trigger 只重校验"本次变更字段"的规则 ----
+        // 增量校验：按 trigger 只重校验"本次变更字段"的规则
         // 原实现 deep watch 每次按键全量校验所有字段：
         // A 字段输入会把 B 字段的规则重跑一遍，validator 副作用（如远程查重）被无辜触发。
         // 现按 path 快照比对找出变更字段，只重校验 trigger 含 change 的规则；

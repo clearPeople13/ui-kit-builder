@@ -215,7 +215,7 @@ export function createSelect(features: UiFeature[] = []) {
           fallbackPlacements: () => props.fallbackPlacements as string[] | undefined
         })
 
-        // ---- 特性扩展点（虚拟窗口等由特性注入，core 不感知具体算法）----
+        // 特性扩展点（虚拟窗口等由特性注入，core 不感知具体算法）
         // 不开特性时 featureStates 里没有对应 hook，下面所有调用都会自然退化为 no-op，
         // 虚拟渲染与 VirtualList 的代码也不会被打进产物。
         let featureStates: UiFeatureState[] = []
