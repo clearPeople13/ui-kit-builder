@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T10:54:56.032Z",
+  "generatedAt": "2026-11-08T11:15:40.525Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -309,8 +309,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 607115,
-          "gzipBytes": 147917
+          "bytes": 607709,
+          "gzipBytes": 148059
         },
         {
           "file": "ui-kit.css",
@@ -318,10 +318,10 @@
           "gzipBytes": 31490
         }
       ],
-      "jsBytes": 607115,
+      "jsBytes": 607709,
       "cssBytes": 227485,
-      "totalBytes": 834600,
-      "gzipBytes": 179324
+      "totalBytes": 835194,
+      "gzipBytes": 179456
     },
     "full": {
       "name": "full",
@@ -1044,8 +1044,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 687244,
-          "gzipBytes": 166805
+          "bytes": 687838,
+          "gzipBytes": 166926
         },
         {
           "file": "ui-kit.css",
@@ -1053,10 +1053,10 @@
           "gzipBytes": 34185
         }
       ],
-      "jsBytes": 687244,
+      "jsBytes": 687838,
       "cssBytes": 247236,
-      "totalBytes": 934480,
-      "gzipBytes": 201080
+      "totalBytes": 935074,
+      "gzipBytes": 201202
     },
     "branded": {
       "name": "branded",
@@ -1779,8 +1779,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166884
+          "bytes": 689682,
+          "gzipBytes": 167015
         },
         {
           "file": "ui-kit.css",
@@ -1788,10 +1788,10 @@
           "gzipBytes": 34977
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 259282,
-      "totalBytes": 948370,
-      "gzipBytes": 201985
+      "totalBytes": 948964,
+      "gzipBytes": 202119
     },
     "chinese": {
       "name": "chinese",
@@ -2514,8 +2514,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691854,
-          "gzipBytes": 166996
+          "bytes": 692448,
+          "gzipBytes": 167129
         },
         {
           "file": "ui-kit.css",
@@ -2523,10 +2523,10 @@
           "gzipBytes": 38653
         }
       ],
-      "jsBytes": 691854,
+      "jsBytes": 692448,
       "cssBytes": 295247,
-      "totalBytes": 987101,
-      "gzipBytes": 205813
+      "totalBytes": 987695,
+      "gzipBytes": 205949
     },
     "cute": {
       "name": "cute",
@@ -3249,8 +3249,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166883
+          "bytes": 689682,
+          "gzipBytes": 167011
         },
         {
           "file": "ui-kit.css",
@@ -3258,10 +3258,10 @@
           "gzipBytes": 37931
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 274733,
-      "totalBytes": 963821,
-      "gzipBytes": 204950
+      "totalBytes": 964415,
+      "gzipBytes": 205080
     },
     "antd": {
       "name": "antd",
@@ -3984,8 +3984,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166884
+          "bytes": 689682,
+          "gzipBytes": 167016
         },
         {
           "file": "ui-kit.css",
@@ -3993,10 +3993,10 @@
           "gzipBytes": 38087
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 279489,
-      "totalBytes": 968577,
-      "gzipBytes": 205100
+      "totalBytes": 969171,
+      "gzipBytes": 205235
     },
     "arco": {
       "name": "arco",
@@ -4719,8 +4719,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166885
+          "bytes": 689682,
+          "gzipBytes": 167017
         },
         {
           "file": "ui-kit.css",
@@ -4728,10 +4728,10 @@
           "gzipBytes": 35073
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 259654,
-      "totalBytes": 948742,
-      "gzipBytes": 202083
+      "totalBytes": 949336,
+      "gzipBytes": 202217
     },
     "tdesign": {
       "name": "tdesign",
@@ -5454,8 +5454,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691854,
-          "gzipBytes": 166991
+          "bytes": 692448,
+          "gzipBytes": 167125
         },
         {
           "file": "ui-kit.css",
@@ -5463,10 +5463,10 @@
           "gzipBytes": 35492
         }
       ],
-      "jsBytes": 691854,
+      "jsBytes": 692448,
       "cssBytes": 275953,
-      "totalBytes": 967807,
-      "gzipBytes": 202642
+      "totalBytes": 968401,
+      "gzipBytes": 202778
     },
     "naive": {
       "name": "naive",
@@ -6189,8 +6189,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690010,
-          "gzipBytes": 166915
+          "bytes": 690604,
+          "gzipBytes": 167044
         },
         {
           "file": "ui-kit.css",
@@ -6198,10 +6198,10 @@
           "gzipBytes": 35126
         }
       ],
-      "jsBytes": 690010,
+      "jsBytes": 690604,
       "cssBytes": 264962,
-      "totalBytes": 954972,
-      "gzipBytes": 202181
+      "totalBytes": 955566,
+      "gzipBytes": 202309
     },
     "viewui": {
       "name": "viewui",
@@ -6924,8 +6924,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690932,
-          "gzipBytes": 166954
+          "bytes": 691526,
+          "gzipBytes": 167082
         },
         {
           "file": "ui-kit.css",
@@ -6933,10 +6933,10 @@
           "gzipBytes": 35302
         }
       ],
-      "jsBytes": 690932,
+      "jsBytes": 691526,
       "cssBytes": 270456,
-      "totalBytes": 961388,
-      "gzipBytes": 202404
+      "totalBytes": 961982,
+      "gzipBytes": 202533
     },
     "vant": {
       "name": "vant",
@@ -7659,8 +7659,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166883
+          "bytes": 689682,
+          "gzipBytes": 167013
         },
         {
           "file": "ui-kit.css",
@@ -7668,10 +7668,10 @@
           "gzipBytes": 35080
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 259794,
-      "totalBytes": 948882,
-      "gzipBytes": 202090
+      "totalBytes": 949476,
+      "gzipBytes": 202219
     },
     "varlet": {
       "name": "varlet",
@@ -8394,8 +8394,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690932,
-          "gzipBytes": 166960
+          "bytes": 691526,
+          "gzipBytes": 167091
         },
         {
           "file": "ui-kit.css",
@@ -8403,10 +8403,10 @@
           "gzipBytes": 35317
         }
       ],
-      "jsBytes": 690932,
+      "jsBytes": 691526,
       "cssBytes": 270496,
-      "totalBytes": 961428,
-      "gzipBytes": 202424
+      "totalBytes": 962022,
+      "gzipBytes": 202558
     },
     "semi": {
       "name": "semi",
@@ -9129,8 +9129,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689088,
-          "gzipBytes": 166883
+          "bytes": 689682,
+          "gzipBytes": 167014
         },
         {
           "file": "ui-kit.css",
@@ -9138,10 +9138,10 @@
           "gzipBytes": 34965
         }
       ],
-      "jsBytes": 689088,
+      "jsBytes": 689682,
       "cssBytes": 259350,
-      "totalBytes": 948438,
-      "gzipBytes": 201970
+      "totalBytes": 949032,
+      "gzipBytes": 202103
     },
     "material3": {
       "name": "material3",
@@ -9864,8 +9864,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693698,
-          "gzipBytes": 167067
+          "bytes": 694292,
+          "gzipBytes": 167197
         },
         {
           "file": "ui-kit.css",
@@ -9873,10 +9873,10 @@
           "gzipBytes": 36028
         }
       ],
-      "jsBytes": 693698,
+      "jsBytes": 694292,
       "cssBytes": 287864,
-      "totalBytes": 981562,
-      "gzipBytes": 203263
+      "totalBytes": 982156,
+      "gzipBytes": 203393
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -10599,8 +10599,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693698,
-          "gzipBytes": 167068
+          "bytes": 694292,
+          "gzipBytes": 167198
         },
         {
           "file": "ui-kit.css",
@@ -10608,10 +10608,10 @@
           "gzipBytes": 35754
         }
       ],
-      "jsBytes": 693698,
+      "jsBytes": 694292,
       "cssBytes": 287204,
-      "totalBytes": 980902,
-      "gzipBytes": 202986
+      "totalBytes": 981496,
+      "gzipBytes": 203116
     },
     "shadcn": {
       "name": "shadcn",
@@ -11334,8 +11334,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690932,
-          "gzipBytes": 166962
+          "bytes": 691526,
+          "gzipBytes": 167093
         },
         {
           "file": "ui-kit.css",
@@ -11343,10 +11343,10 @@
           "gzipBytes": 35400
         }
       ],
-      "jsBytes": 690932,
+      "jsBytes": 691526,
       "cssBytes": 270861,
-      "totalBytes": 961793,
-      "gzipBytes": 202509
+      "totalBytes": 962387,
+      "gzipBytes": 202642
     },
     "fluent": {
       "name": "fluent",
@@ -12069,8 +12069,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690932,
-          "gzipBytes": 166954
+          "bytes": 691526,
+          "gzipBytes": 167085
         },
         {
           "file": "ui-kit.css",
@@ -12078,10 +12078,10 @@
           "gzipBytes": 35313
         }
       ],
-      "jsBytes": 690932,
+      "jsBytes": 691526,
       "cssBytes": 270412,
-      "totalBytes": 961344,
-      "gzipBytes": 202418
+      "totalBytes": 961938,
+      "gzipBytes": 202549
     },
     "carbon": {
       "name": "carbon",
@@ -12804,8 +12804,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690932,
-          "gzipBytes": 166961
+          "bytes": 691526,
+          "gzipBytes": 167092
         },
         {
           "file": "ui-kit.css",
@@ -12813,10 +12813,10 @@
           "gzipBytes": 35335
         }
       ],
-      "jsBytes": 690932,
+      "jsBytes": 691526,
       "cssBytes": 270501,
-      "totalBytes": 961433,
-      "gzipBytes": 202444
+      "totalBytes": 962027,
+      "gzipBytes": 202577
     },
     "mantine": {
       "name": "mantine",
@@ -13539,8 +13539,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691854,
-          "gzipBytes": 166999
+          "bytes": 692448,
+          "gzipBytes": 167129
         },
         {
           "file": "ui-kit.css",
@@ -13548,10 +13548,10 @@
           "gzipBytes": 35621
         }
       ],
-      "jsBytes": 691854,
+      "jsBytes": 692448,
       "cssBytes": 276392,
-      "totalBytes": 968246,
-      "gzipBytes": 202783
+      "totalBytes": 968840,
+      "gzipBytes": 202916
     },
     "ios": {
       "name": "ios",
@@ -14274,8 +14274,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 688166,
-          "gzipBytes": 166838
+          "bytes": 688760,
+          "gzipBytes": 166962
         },
         {
           "file": "ui-kit.css",
@@ -14283,10 +14283,10 @@
           "gzipBytes": 34828
         }
       ],
-      "jsBytes": 688166,
+      "jsBytes": 688760,
       "cssBytes": 253891,
-      "totalBytes": 942057,
-      "gzipBytes": 201774
+      "totalBytes": 942651,
+      "gzipBytes": 201902
     }
   },
   "features": {
@@ -14296,7 +14296,7 @@
       "jsBytes": 442,
       "cssBytes": 0,
       "totalBytes": 442,
-      "gzipBytes": 145
+      "gzipBytes": 147
     },
     "alert.closable": {
       "title": "可关闭",
@@ -14304,7 +14304,7 @@
       "jsBytes": 613,
       "cssBytes": 421,
       "totalBytes": 1034,
-      "gzipBytes": 187
+      "gzipBytes": 173
     },
     "anchor.popper": {
       "title": "滚动偏移",
@@ -14312,7 +14312,7 @@
       "jsBytes": 151,
       "cssBytes": 0,
       "totalBytes": 151,
-      "gzipBytes": 35
+      "gzipBytes": 30
     },
     "autocomplete.clearable": {
       "title": "可清空",
@@ -14320,7 +14320,7 @@
       "jsBytes": 107,
       "cssBytes": 0,
       "totalBytes": 107,
-      "gzipBytes": 20
+      "gzipBytes": 24
     },
     "autocomplete.password": {
       "title": "密码可见切换",
@@ -14328,7 +14328,7 @@
       "jsBytes": 105,
       "cssBytes": 0,
       "totalBytes": 105,
-      "gzipBytes": 21
+      "gzipBytes": 23
     },
     "autocomplete.word-limit": {
       "title": "字数统计",
@@ -14336,7 +14336,7 @@
       "jsBytes": 109,
       "cssBytes": 0,
       "totalBytes": 109,
-      "gzipBytes": -44
+      "gzipBytes": -37
     },
     "autocomplete.icons": {
       "title": "图标",
@@ -14344,7 +14344,7 @@
       "jsBytes": 99,
       "cssBytes": 0,
       "totalBytes": 99,
-      "gzipBytes": -12
+      "gzipBytes": -10
     },
     "autocomplete.filterable": {
       "title": "筛选与远程搜索",
@@ -14352,7 +14352,7 @@
       "jsBytes": 225,
       "cssBytes": 0,
       "totalBytes": 225,
-      "gzipBytes": 42
+      "gzipBytes": 37
     },
     "autocomplete.popper": {
       "title": "浮层定位",
@@ -14360,7 +14360,7 @@
       "jsBytes": 550,
       "cssBytes": 0,
       "totalBytes": 550,
-      "gzipBytes": 71
+      "gzipBytes": 65
     },
     "avatar.icons": {
       "title": "图标",
@@ -14368,7 +14368,7 @@
       "jsBytes": 172,
       "cssBytes": 0,
       "totalBytes": 172,
-      "gzipBytes": 29
+      "gzipBytes": 25
     },
     "avatar.avatar-group-popper": {
       "title": "浮层定位",
@@ -14376,7 +14376,7 @@
       "jsBytes": 849,
       "cssBytes": 0,
       "totalBytes": 849,
-      "gzipBytes": 142
+      "gzipBytes": 135
     },
     "badge.popper": {
       "title": "徽章偏移",
@@ -14384,7 +14384,7 @@
       "jsBytes": 154,
       "cssBytes": 0,
       "totalBytes": 154,
-      "gzipBytes": 29
+      "gzipBytes": 26
     },
     "button.appearance": {
       "title": "外观变体",
@@ -14392,7 +14392,7 @@
       "jsBytes": 795,
       "cssBytes": 2209,
       "totalBytes": 3004,
-      "gzipBytes": 485
+      "gzipBytes": 477
     },
     "button.icon": {
       "title": "图标",
@@ -14400,7 +14400,7 @@
       "jsBytes": 227,
       "cssBytes": 156,
       "totalBytes": 383,
-      "gzipBytes": 56
+      "gzipBytes": 51
     },
     "button.loading": {
       "title": "加载状态",
@@ -14408,7 +14408,7 @@
       "jsBytes": 389,
       "cssBytes": 383,
       "totalBytes": 772,
-      "gzipBytes": 124
+      "gzipBytes": 116
     },
     "button.auto-insert-space": {
       "title": "两字自动空格",
@@ -14416,7 +14416,7 @@
       "jsBytes": 545,
       "cssBytes": 0,
       "totalBytes": 545,
-      "gzipBytes": 202
+      "gzipBytes": 193
     },
     "button.bg-color": {
       "title": "背景色",
@@ -14432,7 +14432,7 @@
       "jsBytes": 618,
       "cssBytes": 133,
       "totalBytes": 751,
-      "gzipBytes": 182
+      "gzipBytes": 172
     },
     "calendar.range": {
       "title": "范围选择",
@@ -14440,7 +14440,7 @@
       "jsBytes": 197,
       "cssBytes": 0,
       "totalBytes": 197,
-      "gzipBytes": 59
+      "gzipBytes": 54
     },
     "card.appearance": {
       "title": "外观变体",
@@ -14448,7 +14448,7 @@
       "jsBytes": 219,
       "cssBytes": 269,
       "totalBytes": 488,
-      "gzipBytes": 116
+      "gzipBytes": 111
     },
     "carousel.methods": {
       "title": "实例方法",
@@ -14456,7 +14456,7 @@
       "jsBytes": 179,
       "cssBytes": 0,
       "totalBytes": 179,
-      "gzipBytes": 68
+      "gzipBytes": 64
     },
     "cascader.clearable": {
       "title": "可清空",
@@ -14464,7 +14464,7 @@
       "jsBytes": 318,
       "cssBytes": 0,
       "totalBytes": 318,
-      "gzipBytes": 78
+      "gzipBytes": 73
     },
     "cascader.multiple": {
       "title": "多选",
@@ -14480,7 +14480,7 @@
       "jsBytes": 261,
       "cssBytes": 921,
       "totalBytes": 1182,
-      "gzipBytes": 150
+      "gzipBytes": 143
     },
     "cascader.filterable": {
       "title": "筛选与远程搜索",
@@ -14488,7 +14488,7 @@
       "jsBytes": 334,
       "cssBytes": 0,
       "totalBytes": 334,
-      "gzipBytes": 69
+      "gzipBytes": 65
     },
     "cascader.popper": {
       "title": "浮层定位",
@@ -14496,7 +14496,7 @@
       "jsBytes": 535,
       "cssBytes": 0,
       "totalBytes": 535,
-      "gzipBytes": 96
+      "gzipBytes": 92
     },
     "cascader.lazy": {
       "title": "懒加载与展开",
@@ -14504,7 +14504,7 @@
       "jsBytes": 193,
       "cssBytes": 0,
       "totalBytes": 193,
-      "gzipBytes": 40
+      "gzipBytes": 36
     },
     "cascader.virtualized": {
       "title": "虚拟滚动",
@@ -14512,7 +14512,7 @@
       "jsBytes": 240,
       "cssBytes": 0,
       "totalBytes": 240,
-      "gzipBytes": 32
+      "gzipBytes": 29
     },
     "cascader.format": {
       "title": "格式化",
@@ -14520,7 +14520,7 @@
       "jsBytes": 199,
       "cssBytes": 0,
       "totalBytes": 199,
-      "gzipBytes": 43
+      "gzipBytes": 39
     },
     "cascader-panel.multiple": {
       "title": "多选",
@@ -14528,7 +14528,7 @@
       "jsBytes": 194,
       "cssBytes": 0,
       "totalBytes": 194,
-      "gzipBytes": 34
+      "gzipBytes": 30
     },
     "cascader-panel.lazy": {
       "title": "懒加载与展开",
@@ -14536,7 +14536,7 @@
       "jsBytes": 174,
       "cssBytes": 0,
       "totalBytes": 174,
-      "gzipBytes": 32
+      "gzipBytes": 28
     },
     "cascader-panel.selection": {
       "title": "高亮与勾选",
@@ -14544,7 +14544,7 @@
       "jsBytes": 311,
       "cssBytes": 0,
       "totalBytes": 311,
-      "gzipBytes": 79
+      "gzipBytes": 74
     },
     "cascader-panel.virtualized": {
       "title": "虚拟滚动",
@@ -14552,7 +14552,7 @@
       "jsBytes": 258,
       "cssBytes": 0,
       "totalBytes": 258,
-      "gzipBytes": 30
+      "gzipBytes": 27
     },
     "cascader-panel.appearance": {
       "title": "外观变体",
@@ -14560,7 +14560,7 @@
       "jsBytes": 228,
       "cssBytes": 74,
       "totalBytes": 302,
-      "gzipBytes": 40
+      "gzipBytes": 35
     },
     "checkbox.appearance": {
       "title": "外观变体",
@@ -14568,7 +14568,7 @@
       "jsBytes": 175,
       "cssBytes": 489,
       "totalBytes": 664,
-      "gzipBytes": 96
+      "gzipBytes": 95
     },
     "col.popper": {
       "title": "栅格偏移",
@@ -14576,7 +14576,7 @@
       "jsBytes": 142,
       "cssBytes": 0,
       "totalBytes": 142,
-      "gzipBytes": 29
+      "gzipBytes": 25
     },
     "collapse.collapse-item-icons": {
       "title": "图标",
@@ -14584,7 +14584,7 @@
       "jsBytes": 211,
       "cssBytes": 0,
       "totalBytes": 211,
-      "gzipBytes": 56
+      "gzipBytes": 47
     },
     "color-picker.clearable": {
       "title": "可清空",
@@ -14592,7 +14592,7 @@
       "jsBytes": 224,
       "cssBytes": 0,
       "totalBytes": 224,
-      "gzipBytes": 51
+      "gzipBytes": 44
     },
     "color-picker.popper": {
       "title": "浮层定位",
@@ -14600,7 +14600,7 @@
       "jsBytes": 410,
       "cssBytes": 0,
       "totalBytes": 410,
-      "gzipBytes": 65
+      "gzipBytes": 61
     },
     "color-picker.format": {
       "title": "格式化",
@@ -14608,7 +14608,7 @@
       "jsBytes": 211,
       "cssBytes": 0,
       "totalBytes": 211,
-      "gzipBytes": 42
+      "gzipBytes": 37
     },
     "color-picker-panel.appearance": {
       "title": "外观变体",
@@ -14616,7 +14616,7 @@
       "jsBytes": 222,
       "cssBytes": 147,
       "totalBytes": 369,
-      "gzipBytes": 44
+      "gzipBytes": 43
     },
     "date-picker.clearable": {
       "title": "可清空",
@@ -14624,7 +14624,7 @@
       "jsBytes": 277,
       "cssBytes": 0,
       "totalBytes": 277,
-      "gzipBytes": 43
+      "gzipBytes": 41
     },
     "date-picker.icons": {
       "title": "图标",
@@ -14632,7 +14632,7 @@
       "jsBytes": 198,
       "cssBytes": 0,
       "totalBytes": 198,
-      "gzipBytes": 41
+      "gzipBytes": 38
     },
     "date-picker.popper": {
       "title": "浮层定位",
@@ -14640,7 +14640,7 @@
       "jsBytes": 413,
       "cssBytes": 0,
       "totalBytes": 413,
-      "gzipBytes": 66
+      "gzipBytes": 67
     },
     "date-picker.editable": {
       "title": "可编辑",
@@ -14648,7 +14648,7 @@
       "jsBytes": 201,
       "cssBytes": 0,
       "totalBytes": 201,
-      "gzipBytes": 40
+      "gzipBytes": 36
     },
     "date-picker.format": {
       "title": "格式化",
@@ -14664,7 +14664,7 @@
       "jsBytes": 397,
       "cssBytes": 0,
       "totalBytes": 397,
-      "gzipBytes": 58
+      "gzipBytes": 55
     },
     "date-picker-panel.clearable": {
       "title": "可清空",
@@ -14680,7 +14680,7 @@
       "jsBytes": 221,
       "cssBytes": 146,
       "totalBytes": 367,
-      "gzipBytes": 36
+      "gzipBytes": 34
     },
     "date-picker-panel.format": {
       "title": "格式化",
@@ -14704,7 +14704,7 @@
       "jsBytes": 175,
       "cssBytes": 391,
       "totalBytes": 566,
-      "gzipBytes": 85
+      "gzipBytes": 84
     },
     "dialog.closable": {
       "title": "可关闭",
@@ -14712,7 +14712,7 @@
       "jsBytes": 346,
       "cssBytes": 0,
       "totalBytes": 346,
-      "gzipBytes": 25
+      "gzipBytes": 23
     },
     "dialog.popper": {
       "title": "浮层定位",
@@ -14728,7 +14728,7 @@
       "jsBytes": 615,
       "cssBytes": 120,
       "totalBytes": 735,
-      "gzipBytes": 107
+      "gzipBytes": 87
     },
     "dialog.modal": {
       "title": "遮罩与关闭行为",
@@ -14736,7 +14736,7 @@
       "jsBytes": 504,
       "cssBytes": 0,
       "totalBytes": 504,
-      "gzipBytes": 205
+      "gzipBytes": 187
     },
     "dialog.fullscreen": {
       "title": "全屏",
@@ -14744,7 +14744,7 @@
       "jsBytes": 183,
       "cssBytes": 130,
       "totalBytes": 313,
-      "gzipBytes": 41
+      "gzipBytes": 40
     },
     "drawer.closable": {
       "title": "可关闭",
@@ -14752,7 +14752,7 @@
       "jsBytes": 346,
       "cssBytes": 0,
       "totalBytes": 346,
-      "gzipBytes": 25
+      "gzipBytes": 21
     },
     "drawer.popper": {
       "title": "浮层定位",
@@ -14760,7 +14760,7 @@
       "jsBytes": 207,
       "cssBytes": 0,
       "totalBytes": 207,
-      "gzipBytes": 22
+      "gzipBytes": 20
     },
     "drawer.draggable": {
       "title": "拖拽与缩放",
@@ -14768,7 +14768,7 @@
       "jsBytes": 2525,
       "cssBytes": 603,
       "totalBytes": 3128,
-      "gzipBytes": 643
+      "gzipBytes": 647
     },
     "drawer.modal": {
       "title": "遮罩与关闭行为",
@@ -14776,7 +14776,7 @@
       "jsBytes": 330,
       "cssBytes": 0,
       "totalBytes": 330,
-      "gzipBytes": 28
+      "gzipBytes": 25
     },
     "drawer.fullscreen": {
       "title": "全屏",
@@ -14784,7 +14784,7 @@
       "jsBytes": 183,
       "cssBytes": 114,
       "totalBytes": 297,
-      "gzipBytes": 41
+      "gzipBytes": 36
     },
     "dropdown.popper": {
       "title": "浮层定位",
@@ -14792,7 +14792,7 @@
       "jsBytes": 566,
       "cssBytes": 0,
       "totalBytes": 566,
-      "gzipBytes": 113
+      "gzipBytes": 116
     },
     "dropdown.dropdown-item-icons": {
       "title": "图标",
@@ -14808,7 +14808,7 @@
       "jsBytes": 582,
       "cssBytes": 0,
       "totalBytes": 582,
-      "gzipBytes": 87
+      "gzipBytes": 85
     },
     "form.form-item-validate": {
       "title": "表单校验",
@@ -14816,7 +14816,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 60
+      "gzipBytes": 52
     },
     "image.loading": {
       "title": "加载状态",
@@ -14824,7 +14824,7 @@
       "jsBytes": 157,
       "cssBytes": 0,
       "totalBytes": 157,
-      "gzipBytes": 41
+      "gzipBytes": 29
     },
     "image.lazy": {
       "title": "懒加载与展开",
@@ -14832,7 +14832,7 @@
       "jsBytes": 150,
       "cssBytes": 0,
       "totalBytes": 150,
-      "gzipBytes": 47
+      "gzipBytes": 36
     },
     "image.preview": {
       "title": "图片预览",
@@ -14840,7 +14840,7 @@
       "jsBytes": 4180,
       "cssBytes": 1902,
       "totalBytes": 6082,
-      "gzipBytes": 1193
+      "gzipBytes": 1176
     },
     "image-viewer.popper": {
       "title": "浮层传送",
@@ -14848,7 +14848,7 @@
       "jsBytes": 164,
       "cssBytes": 0,
       "totalBytes": 164,
-      "gzipBytes": 34
+      "gzipBytes": 23
     },
     "image-viewer.modal": {
       "title": "遮罩与关闭行为",
@@ -14856,7 +14856,7 @@
       "jsBytes": 230,
       "cssBytes": 0,
       "totalBytes": 230,
-      "gzipBytes": 46
+      "gzipBytes": 35
     },
     "input.clearable": {
       "title": "可清空",
@@ -14864,7 +14864,7 @@
       "jsBytes": 86,
       "cssBytes": 0,
       "totalBytes": 86,
-      "gzipBytes": 17
+      "gzipBytes": 20
     },
     "input.password": {
       "title": "密码可见切换",
@@ -14872,7 +14872,7 @@
       "jsBytes": 84,
       "cssBytes": 0,
       "totalBytes": 84,
-      "gzipBytes": 20
+      "gzipBytes": 22
     },
     "input.word-limit": {
       "title": "字数统计",
@@ -14880,7 +14880,7 @@
       "jsBytes": 88,
       "cssBytes": 0,
       "totalBytes": 88,
-      "gzipBytes": 22
+      "gzipBytes": 24
     },
     "input.icons": {
       "title": "图标",
@@ -14888,7 +14888,7 @@
       "jsBytes": 78,
       "cssBytes": 0,
       "totalBytes": 78,
-      "gzipBytes": 19
+      "gzipBytes": 23
     },
     "input.methods": {
       "title": "实例方法",
@@ -14896,7 +14896,7 @@
       "jsBytes": 293,
       "cssBytes": 0,
       "totalBytes": 293,
-      "gzipBytes": 75
+      "gzipBytes": 66
     },
     "input-number.methods": {
       "title": "实例方法",
@@ -14904,7 +14904,7 @@
       "jsBytes": 252,
       "cssBytes": 0,
       "totalBytes": 252,
-      "gzipBytes": 55
+      "gzipBytes": 43
     },
     "input-tag.clearable": {
       "title": "可清空",
@@ -14912,7 +14912,7 @@
       "jsBytes": 1023,
       "cssBytes": 650,
       "totalBytes": 1673,
-      "gzipBytes": 311
+      "gzipBytes": 302
     },
     "input-tag.separator": {
       "title": "分隔符批量添加",
@@ -14920,7 +14920,7 @@
       "jsBytes": 1920,
       "cssBytes": 0,
       "totalBytes": 1920,
-      "gzipBytes": 429
+      "gzipBytes": 419
     },
     "input-tag.draggable": {
       "title": "拖拽排序",
@@ -14928,7 +14928,7 @@
       "jsBytes": 2366,
       "cssBytes": 303,
       "totalBytes": 2669,
-      "gzipBytes": 607
+      "gzipBytes": 610
     },
     "link.icons": {
       "title": "图标",
@@ -14936,7 +14936,7 @@
       "jsBytes": 229,
       "cssBytes": 0,
       "totalBytes": 229,
-      "gzipBytes": 54
+      "gzipBytes": 49
     },
     "link.appearance": {
       "title": "外观变体",
@@ -14944,7 +14944,7 @@
       "jsBytes": 354,
       "cssBytes": 0,
       "totalBytes": 354,
-      "gzipBytes": 101
+      "gzipBytes": 95
     },
     "mention.clearable": {
       "title": "可清空",
@@ -14976,7 +14976,7 @@
       "jsBytes": 84,
       "cssBytes": 0,
       "totalBytes": 84,
-      "gzipBytes": 21
+      "gzipBytes": 23
     },
     "mention.loading": {
       "title": "加载状态",
@@ -14984,7 +14984,7 @@
       "jsBytes": 179,
       "cssBytes": 0,
       "totalBytes": 179,
-      "gzipBytes": 36
+      "gzipBytes": 34
     },
     "mention.popper": {
       "title": "浮层定位",
@@ -14992,7 +14992,7 @@
       "jsBytes": 535,
       "cssBytes": 0,
       "totalBytes": 535,
-      "gzipBytes": 46
+      "gzipBytes": 47
     },
     "menu.sub-menu-icons": {
       "title": "图标",
@@ -15000,7 +15000,7 @@
       "jsBytes": 378,
       "cssBytes": 0,
       "totalBytes": 378,
-      "gzipBytes": 58
+      "gzipBytes": 59
     },
     "message.icons": {
       "title": "图标",
@@ -15008,7 +15008,7 @@
       "jsBytes": 177,
       "cssBytes": 0,
       "totalBytes": 177,
-      "gzipBytes": 20
+      "gzipBytes": 19
     },
     "message.closable": {
       "title": "可关闭",
@@ -15016,7 +15016,7 @@
       "jsBytes": 258,
       "cssBytes": 0,
       "totalBytes": 258,
-      "gzipBytes": 27
+      "gzipBytes": 25
     },
     "message.popper": {
       "title": "浮层定位",
@@ -15024,7 +15024,7 @@
       "jsBytes": 190,
       "cssBytes": 0,
       "totalBytes": 190,
-      "gzipBytes": 37
+      "gzipBytes": 35
     },
     "message.appearance": {
       "title": "外观变体",
@@ -15040,7 +15040,7 @@
       "jsBytes": 391,
       "cssBytes": 0,
       "totalBytes": 391,
-      "gzipBytes": 83
+      "gzipBytes": 84
     },
     "notification.icons": {
       "title": "图标",
@@ -15048,7 +15048,7 @@
       "jsBytes": 192,
       "cssBytes": 0,
       "totalBytes": 192,
-      "gzipBytes": 23
+      "gzipBytes": 21
     },
     "notification.closable": {
       "title": "可关闭",
@@ -15056,7 +15056,7 @@
       "jsBytes": 374,
       "cssBytes": 0,
       "totalBytes": 374,
-      "gzipBytes": 53
+      "gzipBytes": 51
     },
     "notification.popper": {
       "title": "边缘偏移",
@@ -15064,7 +15064,7 @@
       "jsBytes": 251,
       "cssBytes": 416,
       "totalBytes": 667,
-      "gzipBytes": 119
+      "gzipBytes": 117
     },
     "page-header.icons": {
       "title": "图标",
@@ -15072,7 +15072,7 @@
       "jsBytes": 209,
       "cssBytes": 0,
       "totalBytes": 209,
-      "gzipBytes": 36
+      "gzipBytes": 34
     },
     "pagination.icons": {
       "title": "图标",
@@ -15080,7 +15080,7 @@
       "jsBytes": 242,
       "cssBytes": 0,
       "totalBytes": 242,
-      "gzipBytes": 31
+      "gzipBytes": 30
     },
     "pagination.layout": {
       "title": "布局",
@@ -15088,7 +15088,7 @@
       "jsBytes": 210,
       "cssBytes": 1285,
       "totalBytes": 1495,
-      "gzipBytes": 232
+      "gzipBytes": 229
     },
     "popconfirm.icons": {
       "title": "图标",
@@ -15096,7 +15096,7 @@
       "jsBytes": 186,
       "cssBytes": 0,
       "totalBytes": 186,
-      "gzipBytes": 24
+      "gzipBytes": 23
     },
     "popconfirm.popper": {
       "title": "浮层定位",
@@ -15104,7 +15104,7 @@
       "jsBytes": 350,
       "cssBytes": 0,
       "totalBytes": 350,
-      "gzipBytes": 39
+      "gzipBytes": 40
     },
     "popover.popper": {
       "title": "浮层定位",
@@ -15112,7 +15112,7 @@
       "jsBytes": 563,
       "cssBytes": 0,
       "totalBytes": 563,
-      "gzipBytes": 47
+      "gzipBytes": 48
     },
     "radio.appearance": {
       "title": "外观变体",
@@ -15120,7 +15120,7 @@
       "jsBytes": 166,
       "cssBytes": 699,
       "totalBytes": 865,
-      "gzipBytes": 142
+      "gzipBytes": 140
     },
     "rate.clearable": {
       "title": "可清空",
@@ -15128,7 +15128,7 @@
       "jsBytes": 185,
       "cssBytes": 0,
       "totalBytes": 185,
-      "gzipBytes": 30
+      "gzipBytes": 29
     },
     "result.icons": {
       "title": "图标",
@@ -15136,7 +15136,7 @@
       "jsBytes": 169,
       "cssBytes": 0,
       "totalBytes": 169,
-      "gzipBytes": 22
+      "gzipBytes": 21
     },
     "scrollbar.methods": {
       "title": "实例方法",
@@ -15144,7 +15144,7 @@
       "jsBytes": 242,
       "cssBytes": 0,
       "totalBytes": 242,
-      "gzipBytes": 61
+      "gzipBytes": 60
     },
     "select.select-clearable": {
       "title": "可清空",
@@ -15152,7 +15152,7 @@
       "jsBytes": 273,
       "cssBytes": 620,
       "totalBytes": 893,
-      "gzipBytes": 100
+      "gzipBytes": 99
     },
     "select.select-icons": {
       "title": "图标",
@@ -15168,7 +15168,7 @@
       "jsBytes": 226,
       "cssBytes": 0,
       "totalBytes": 226,
-      "gzipBytes": 26
+      "gzipBytes": 25
     },
     "select.select-multiple": {
       "title": "多选",
@@ -15176,7 +15176,7 @@
       "jsBytes": 423,
       "cssBytes": 0,
       "totalBytes": 423,
-      "gzipBytes": 64
+      "gzipBytes": 61
     },
     "select.select-filterable": {
       "title": "筛选与远程搜索",
@@ -15184,7 +15184,7 @@
       "jsBytes": 419,
       "cssBytes": 0,
       "totalBytes": 419,
-      "gzipBytes": 73
+      "gzipBytes": 71
     },
     "select.select-popper": {
       "title": "浮层定位",
@@ -15200,7 +15200,7 @@
       "jsBytes": 207,
       "cssBytes": 0,
       "totalBytes": 207,
-      "gzipBytes": 31
+      "gzipBytes": 28
     },
     "select.select-virtualized": {
       "title": "大数据虚拟列表",
@@ -15208,7 +15208,7 @@
       "jsBytes": 2499,
       "cssBytes": 209,
       "totalBytes": 2708,
-      "gzipBytes": 802
+      "gzipBytes": 774
     },
     "select.methods": {
       "title": "实例方法",
@@ -15216,7 +15216,7 @@
       "jsBytes": 249,
       "cssBytes": 0,
       "totalBytes": 249,
-      "gzipBytes": 70
+      "gzipBytes": 62
     },
     "skeleton.loading": {
       "title": "加载状态",
@@ -15248,7 +15248,7 @@
       "jsBytes": 158,
       "cssBytes": 0,
       "totalBytes": 158,
-      "gzipBytes": 35
+      "gzipBytes": 33
     },
     "splitter.lazy": {
       "title": "懒加载与展开",
@@ -15256,7 +15256,7 @@
       "jsBytes": 157,
       "cssBytes": 0,
       "totalBytes": 157,
-      "gzipBytes": 35
+      "gzipBytes": 32
     },
     "splitter.splitter-panel-draggable": {
       "title": "拖拽与缩放",
@@ -15264,7 +15264,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 59
+      "gzipBytes": 56
     },
     "statistic.format": {
       "title": "格式化",
@@ -15272,7 +15272,7 @@
       "jsBytes": 107,
       "cssBytes": 0,
       "totalBytes": 107,
-      "gzipBytes": 27
+      "gzipBytes": 26
     },
     "steps.icons": {
       "title": "图标",
@@ -15288,7 +15288,7 @@
       "jsBytes": 358,
       "cssBytes": 0,
       "totalBytes": 358,
-      "gzipBytes": 40
+      "gzipBytes": 36
     },
     "switch.loading": {
       "title": "加载状态",
@@ -15312,7 +15312,7 @@
       "jsBytes": 3733,
       "cssBytes": 761,
       "totalBytes": 4494,
-      "gzipBytes": 998
+      "gzipBytes": 995
     },
     "table.resize": {
       "title": "列宽拖拽",
@@ -15320,7 +15320,7 @@
       "jsBytes": 2310,
       "cssBytes": 428,
       "totalBytes": 2738,
-      "gzipBytes": 645
+      "gzipBytes": 648
     },
     "table.span": {
       "title": "合并单元格",
@@ -15328,7 +15328,7 @@
       "jsBytes": 265,
       "cssBytes": 0,
       "totalBytes": 265,
-      "gzipBytes": 40
+      "gzipBytes": 39
     },
     "table.loading": {
       "title": "加载状态",
@@ -15336,7 +15336,7 @@
       "jsBytes": 537,
       "cssBytes": 535,
       "totalBytes": 1072,
-      "gzipBytes": 226
+      "gzipBytes": 225
     },
     "table.summary": {
       "title": "合计行",
@@ -15344,7 +15344,7 @@
       "jsBytes": 712,
       "cssBytes": 0,
       "totalBytes": 712,
-      "gzipBytes": 175
+      "gzipBytes": 176
     },
     "table.selection": {
       "title": "选择列配置",
@@ -15352,7 +15352,7 @@
       "jsBytes": 225,
       "cssBytes": 0,
       "totalBytes": 225,
-      "gzipBytes": 52
+      "gzipBytes": 42
     },
     "table.methods": {
       "title": "实例方法",
@@ -15360,7 +15360,7 @@
       "jsBytes": 2099,
       "cssBytes": 0,
       "totalBytes": 2099,
-      "gzipBytes": 528
+      "gzipBytes": 523
     },
     "table.column-sort": {
       "title": "列排序配置",
@@ -15376,7 +15376,7 @@
       "jsBytes": 246,
       "cssBytes": 0,
       "totalBytes": 246,
-      "gzipBytes": 28
+      "gzipBytes": 27
     },
     "tabs.lazy": {
       "title": "面板懒渲染",
@@ -15384,7 +15384,7 @@
       "jsBytes": 102,
       "cssBytes": 0,
       "totalBytes": 102,
-      "gzipBytes": 31
+      "gzipBytes": 30
     },
     "tabs.editable": {
       "title": "编辑与新增",
@@ -15392,7 +15392,7 @@
       "jsBytes": 197,
       "cssBytes": 0,
       "totalBytes": 197,
-      "gzipBytes": 25
+      "gzipBytes": 23
     },
     "tabs.tabs-closable": {
       "title": "可关闭",
@@ -15408,7 +15408,7 @@
       "jsBytes": 276,
       "cssBytes": 0,
       "totalBytes": 276,
-      "gzipBytes": 39
+      "gzipBytes": 38
     },
     "tag.closable": {
       "title": "可关闭",
@@ -15416,7 +15416,7 @@
       "jsBytes": 236,
       "cssBytes": 0,
       "totalBytes": 236,
-      "gzipBytes": 26
+      "gzipBytes": 25
     },
     "tag.appearance": {
       "title": "外观变体",
@@ -15424,7 +15424,7 @@
       "jsBytes": 239,
       "cssBytes": 159,
       "totalBytes": 398,
-      "gzipBytes": 116
+      "gzipBytes": 117
     },
     "time-picker.clearable": {
       "title": "可清空",
@@ -15448,7 +15448,7 @@
       "jsBytes": 413,
       "cssBytes": 0,
       "totalBytes": 413,
-      "gzipBytes": 56
+      "gzipBytes": 58
     },
     "time-picker.editable": {
       "title": "编辑与新增",
@@ -15456,7 +15456,7 @@
       "jsBytes": 231,
       "cssBytes": 116,
       "totalBytes": 347,
-      "gzipBytes": 77
+      "gzipBytes": 76
     },
     "time-picker.format": {
       "title": "格式化",
@@ -15472,7 +15472,7 @@
       "jsBytes": 316,
       "cssBytes": 0,
       "totalBytes": 316,
-      "gzipBytes": 60
+      "gzipBytes": 61
     },
     "time-select.clearable": {
       "title": "可清空",
@@ -15480,7 +15480,7 @@
       "jsBytes": 264,
       "cssBytes": 0,
       "totalBytes": 264,
-      "gzipBytes": 39
+      "gzipBytes": 40
     },
     "time-select.icons": {
       "title": "图标",
@@ -15488,7 +15488,7 @@
       "jsBytes": 198,
       "cssBytes": 0,
       "totalBytes": 198,
-      "gzipBytes": 24
+      "gzipBytes": 25
     },
     "time-select.popper": {
       "title": "浮层定位",
@@ -15496,7 +15496,7 @@
       "jsBytes": 282,
       "cssBytes": 0,
       "totalBytes": 282,
-      "gzipBytes": 33
+      "gzipBytes": 35
     },
     "time-select.editable": {
       "title": "编辑与新增",
@@ -15528,7 +15528,7 @@
       "jsBytes": 357,
       "cssBytes": 0,
       "totalBytes": 357,
-      "gzipBytes": 42
+      "gzipBytes": 44
     },
     "tour.closable": {
       "title": "可关闭",
@@ -15536,7 +15536,7 @@
       "jsBytes": 305,
       "cssBytes": 0,
       "totalBytes": 305,
-      "gzipBytes": 33
+      "gzipBytes": 34
     },
     "tour.popper": {
       "title": "浮层定位",
@@ -15544,7 +15544,7 @@
       "jsBytes": 306,
       "cssBytes": 0,
       "totalBytes": 306,
-      "gzipBytes": 40
+      "gzipBytes": 41
     },
     "tour.validate": {
       "title": "滚动定位",
@@ -15552,7 +15552,7 @@
       "jsBytes": 188,
       "cssBytes": 0,
       "totalBytes": 188,
-      "gzipBytes": 29
+      "gzipBytes": 30
     },
     "tour.modal": {
       "title": "遮罩与关闭行为",
@@ -15560,7 +15560,7 @@
       "jsBytes": 158,
       "cssBytes": 0,
       "totalBytes": 158,
-      "gzipBytes": 34
+      "gzipBytes": 35
     },
     "tour.tour-step-closable": {
       "title": "可关闭",
@@ -15568,7 +15568,7 @@
       "jsBytes": 329,
       "cssBytes": 0,
       "totalBytes": 329,
-      "gzipBytes": 38
+      "gzipBytes": 39
     },
     "tour.tour-step-popper": {
       "title": "浮层定位",
@@ -15576,7 +15576,7 @@
       "jsBytes": 231,
       "cssBytes": 0,
       "totalBytes": 231,
-      "gzipBytes": 36
+      "gzipBytes": 37
     },
     "tour.tour-step-validate": {
       "title": "滚动定位",
@@ -15584,7 +15584,7 @@
       "jsBytes": 209,
       "cssBytes": 0,
       "totalBytes": 209,
-      "gzipBytes": 27
+      "gzipBytes": 28
     },
     "transfer.filterable": {
       "title": "筛选与远程搜索",
@@ -15592,7 +15592,7 @@
       "jsBytes": 189,
       "cssBytes": 0,
       "totalBytes": 189,
-      "gzipBytes": 35
+      "gzipBytes": 36
     },
     "transfer.virtualized": {
       "title": "虚拟滚动",
@@ -15600,7 +15600,7 @@
       "jsBytes": 240,
       "cssBytes": 0,
       "totalBytes": 240,
-      "gzipBytes": 70
+      "gzipBytes": 71
     },
     "tree.icons": {
       "title": "图标",
@@ -15608,7 +15608,7 @@
       "jsBytes": 168,
       "cssBytes": 0,
       "totalBytes": 168,
-      "gzipBytes": 30
+      "gzipBytes": 31
     },
     "tree.draggable": {
       "title": "拖拽排序",
@@ -15616,7 +15616,7 @@
       "jsBytes": 3769,
       "cssBytes": 396,
       "totalBytes": 4165,
-      "gzipBytes": 1178
+      "gzipBytes": 1183
     },
     "tree.selection": {
       "title": "高亮与勾选",
@@ -15624,7 +15624,7 @@
       "jsBytes": 300,
       "cssBytes": 0,
       "totalBytes": 300,
-      "gzipBytes": 71
+      "gzipBytes": 69
     },
     "tree.methods": {
       "title": "实例方法",
@@ -15632,7 +15632,7 @@
       "jsBytes": 524,
       "cssBytes": 0,
       "totalBytes": 524,
-      "gzipBytes": 159
+      "gzipBytes": 156
     },
     "tree-select.multiple": {
       "title": "多选",
@@ -15648,7 +15648,7 @@
       "jsBytes": 203,
       "cssBytes": 0,
       "totalBytes": 203,
-      "gzipBytes": 32
+      "gzipBytes": 31
     },
     "tree-select.popper": {
       "title": "弹层配置",
@@ -15656,7 +15656,7 @@
       "jsBytes": 412,
       "cssBytes": 0,
       "totalBytes": 412,
-      "gzipBytes": 74
+      "gzipBytes": 75
     },
     "tree-v2.check": {
       "title": "复选框",
@@ -15664,7 +15664,7 @@
       "jsBytes": 277,
       "cssBytes": 0,
       "totalBytes": 277,
-      "gzipBytes": 51
+      "gzipBytes": 50
     },
     "upload.multiple": {
       "title": "多选",
@@ -15672,7 +15672,7 @@
       "jsBytes": 173,
       "cssBytes": 0,
       "totalBytes": 173,
-      "gzipBytes": 27
+      "gzipBytes": 26
     },
     "upload.methods": {
       "title": "实例方法",
