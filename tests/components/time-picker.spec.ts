@@ -115,6 +115,12 @@ async function keydownOn(node: Element | null | undefined, key: string) {
   await flush()
 }
 
+// 行首不能以括号起手：无分号风格下会被 ASI 拼进上一条语句
+function focusNode(node: Element | null | undefined) {
+  const element = node as HTMLElement | null | undefined
+  element?.focus()
+}
+
 // 焦点落点断言只认"activeElement 是不是列项"，不锁实现里的查找顺序细节
 function activeItem() {
   const active = document.activeElement as HTMLElement | null
@@ -640,7 +646,7 @@ describe('TimePicker 键盘操作', () => {
     const wrapper = mountPicker()
     await flush()
     const trigger = wrapper.find('.ui-time-picker__trigger')
-    trigger.element.focus()
+    focusNode(trigger.element)
     await keydownOn(trigger.element, 'Enter')
     expect(activeItem()?.textContent).toBe('09')
 

@@ -47,6 +47,12 @@ async function keydownOn(node: Element | null | undefined, key: string) {
   await nextTick()
 }
 
+// 行首不能以括号起手：无分号风格下会被 ASI 拼进上一条语句
+function focusNode(node: Element | null | undefined) {
+  const element = node as HTMLElement | null | undefined
+  element?.focus()
+}
+
 // 焦点落点断言只认"activeElement 是不是某个日格"，不锁实现里的查找顺序细节
 function activeCell() {
   const active = document.activeElement as HTMLElement | null
@@ -617,7 +623,7 @@ describe('DatePicker 键盘操作', () => {
     const wrapper = mountPicker()
     const trigger = wrapper.find('.ui-date-picker__trigger')
     // 真实键盘路径：焦点先落在触发区，再按键打开
-    trigger.element.focus()
+    focusNode(trigger.element)
     await keydownOn(trigger.element, 'Enter')
     await nextTick()
     expect(activeCell()?.textContent).toBe('6')
@@ -632,7 +638,7 @@ describe('DatePicker 键盘操作', () => {
   it('触发区上 Escape 同样收起面板并归还焦点', async () => {
     const wrapper = mountPicker()
     const trigger = wrapper.find('.ui-date-picker__trigger')
-    trigger.element.focus()
+    focusNode(trigger.element)
     await wrapper.find('.ui-date-picker__trigger').trigger('click')
     await nextTick()
     expect(panel()).not.toBeNull()
@@ -646,7 +652,7 @@ describe('DatePicker 键盘操作', () => {
   it('外部点击收起面板时不抢回焦点', async () => {
     const wrapper = mountPicker()
     const trigger = wrapper.find('.ui-date-picker__trigger')
-    trigger.element.focus()
+    focusNode(trigger.element)
     await keydownOn(trigger.element, 'ArrowDown')
     await nextTick()
     expect(activeCell()?.textContent).toBe('6')
@@ -696,7 +702,7 @@ describe('DatePicker 键盘操作', () => {
   it('区间字段 Escape 收起面板并把焦点归还该字段', async () => {
     const wrapper = mountPicker({ isRange: true, modelValue: ['2026-11-01', '2026-11-06'] })
     const fields = wrapper.findAll('.ui-date-picker__field')
-    fields[0].element.focus()
+    focusNode(fields[0].element)
     await keydownOn(fields[0].element, 'ArrowDown')
     await nextTick()
     expect(panel()).not.toBeNull()
@@ -751,7 +757,7 @@ describe('DatePicker 面板细粒度交互', () => {
     const lists = Array.from(panel()!.querySelectorAll('.ui-date-picker__time-list')) as HTMLElement[]
     const marks: HTMLElement[] = [timeItem(lists, 0, 9), timeItem(lists, 1, 31), timeItem(lists, 2, 32)]
     expect(marks.map((item) => item.className.includes('is-disabled'))).toEqual([true, true, true])
-    expect(marks.map((item) => item.disabled)).toEqual([true, true, true])
+    expect(marks.map((item) => (item as HTMLButtonElement).disabled)).toEqual([true, true, true])
     for (const mark of marks) {
       await clickNative(mark)
     }
