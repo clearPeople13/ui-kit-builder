@@ -807,7 +807,9 @@ B3b 把"只有 full 进过真浏览器"扩到裁剪产物，并让覆盖率从"�
 
 这些文件以指针拖拽、真实测量为主，happy-dom 里无法可靠复现；先保底不再下滑。
 
-W4 已补盲：把 `resolveDropType` / `canDropNode` / `moveNode`、`resolveDrawerSize`、`resolveColumnWidth`、`resolveDragRange` / `resolveKeyboardDelta` 等纯函数从闭包抽出，新增 37 条边界用例。四个目标文件现为 tree 96.61/88.75、drawer resize 100/100、table resize 89.47/81.25、splitter 96.15/82.08（lines/branches）。组件级下限从实际的 7/0/7 抬到 **30/40/30**，全量聚合覆盖率 lines 84.59 → **87.69**、branches 77.64 → **79.79**。当前阈值是聚合口径（未开 `perFile`），逐文件下限需另开任务补齐 `collapse-transition` / `button.bg-color` 等低覆盖文件。
+W4 已补盲：把 `resolveDropType` / `canDropNode` / `moveNode`、`resolveDrawerSize`、`resolveColumnWidth`、`resolveDragRange` / `resolveKeyboardDelta` 等纯函数从闭包抽出，新增 37 条边界用例。四个目标文件现为 tree 96.61/88.75、drawer resize 100/100、table resize 89.47/81.25、splitter 96.15/82.08（lines/branches）。组件级下限从实际的 7/0/7 抬到 **30/40/30**，全量聚合覆盖率 lines 84.59 → **87.69**、branches 77.64 → **79.79**。
+
+W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 30/40/30），并补齐 16 条用例：`collapse-transition` 11.11 → **100**、`button.bg-color` 44.44 → **100**、`scrollbar` 42.57 → **100**、input / input-number / select 的 `features/methods` 与 `table.features.column-sort` 均到 **100**。开启 perFile 后 `packages/ui-kit/src/components/**` 下无文件低于 30/40/30，汇总 88.8 / 80.29 / 93.53 / 88.8（stmts/branches/funcs/lines）。
 
 ### 21.4 axe 白名单（按场景 × 规则）
 
