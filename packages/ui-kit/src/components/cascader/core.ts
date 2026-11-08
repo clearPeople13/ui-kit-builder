@@ -109,6 +109,7 @@ export function createCascader(features: UiFeature[] = []) {
         const panelRef = ref<HTMLElement>()
         const inputRef = ref<HTMLInputElement>()
         const activePath = ref<any[]>([])
+        const focusKey = ref('')
         const lazyChildren = ref<Record<string, CascaderNode[]>>({})
         const lazyLoadedKeys = ref<Set<string>>(new Set())
         const lazyLoadingKeys = ref<Set<string>>(new Set())
@@ -466,6 +467,7 @@ export function createCascader(features: UiFeature[] = []) {
           }
           const checkboxMode = Boolean(props.checkbox) && isMultiple.value
           const next = [...activePath.value.slice(0, level), node.value]
+          focusKey.value = pathKey(next)
           activePath.value = next
           emit('expand-change', next)
           if (lazyEnabled.value && !node.leaf && !lazyLoadedKeys.value.has(pathKey(next))) {
@@ -491,6 +493,29 @@ export function createCascader(features: UiFeature[] = []) {
             return
           }
           emitValue(toEmit(modelPaths.value.filter((_item, current) => current !== index)))
+        }
+
+        // roving tabindex 停靠点：键盘/点击共用 focusKey 同步，失效（收起/下钻后不在可见列里）
+        // 时兜底第一列首个非禁用节点，整面板只占一个 Tab 位，与 tree 口径一致
+        function tabStopKey(): string {
+          const cols = columns.value
+          for (let level = 0; level < cols.length; level += 1) {
+            const prefix = activePath.value.slice(0, level)
+            for (const node of cols[level]) {
+              if (!node.disabled && pathKey([...prefix, node.value]) === focusKey.value) {
+                return focusKey.value
+              }
+            }
+          }
+          const first = cols[0]?.find((node) => !node.disabled)
+          return first ? pathKey([first.value]) : ''
+        }
+
+        function focusNodeByKey(key: string): void {
+          const target = Array.from(panelRef.value?.querySelectorAll<HTMLElement>('.ui-cascader__node') ?? []).find(
+            (element) => element.getAttribute('data-node-key') === key
+          )
+          target?.focus({ preventScroll: true })
         }
 
         // +N 折叠标签浮层：mouseleave 在离开「标签+浮层」子树时才触发，
@@ -566,6 +591,8 @@ export function createCascader(features: UiFeature[] = []) {
             })
             if (props.filterable) {
               inputRef.value?.focus()
+            } else {
+              focusNodeByKey(tabStopKey())
             }
           })
         }
@@ -629,6 +656,15 @@ export function createCascader(features: UiFeature[] = []) {
           if (event.key === 'Escape' && open.value) {
             event.preventDefault()
             closePanel()
+            return
+          }
+          // filterable 的搜索结果只挂 onClick，Enter 选中首个命中项才能脱离鼠标
+          if (event.key === 'Enter' && open.value) {
+            const first = searchResults.value.find((item) => !item.disabled)
+            if (first) {
+              event.preventDefault()
+              toggleLeaf(first.values)
+            }
           }
         }
 
@@ -687,9 +723,11 @@ export function createCascader(features: UiFeature[] = []) {
                 [
                   h('span', { class: 'ui-cascader__tag-label' }, displayText(item)),
                   h(
-                    'span',
+                    'button',
                     {
+                      type: 'button',
                       class: 'ui-cascader__tag-close',
+                      'aria-label': `移除 ${displayText(item)}`,
                       onClick: (event: Event) => {
                         event.stopPropagation()
                         removePath(index)
@@ -769,7 +807,7 @@ export function createCascader(features: UiFeature[] = []) {
           return [h('span', { class: 'ui-cascader__placeholder' }, props.placeholder || '请选择')]
         }
 
-        function renderNode(node: CascaderNode, level: number, itemHeight?: number): VNodeChild {
+        function renderNode(node: CascaderNode, level: number, tabStop: string, itemHeight?: number): VNodeChild {
           const path = [...activePath.value.slice(0, level), node.value]
           const expandable = isExpandable(node, path)
           const loading = isLoading(path)
@@ -801,6 +839,11 @@ export function createCascader(features: UiFeature[] = []) {
                 }
               ],
               style: itemHeight ? { height: `${itemHeight}px` } : undefined,
+              role: 'option',
+              'aria-selected': selected,
+              'aria-disabled': node.disabled || undefined,
+              'data-node-key': pathKey(path),
+              tabindex: node.disabled ? undefined : tabStop === pathKey(path) ? 0 : -1,
               onClick: () => handleNode(node, level)
             },
             [
@@ -860,7 +903,7 @@ export function createCascader(features: UiFeature[] = []) {
           scrollTops.value = { ...scrollTops.value, [level]: top }
         }
 
-        function renderColumn(column: CascaderNode[], level: number): VNodeChild {
+        function renderColumn(column: CascaderNode[], level: number, tabStop: string): VNodeChild {
           const height = Number(props.height ?? 204)
           const itemHeight = Math.max(16, Number(props.itemSize ?? 34))
           const virtual = Boolean(props.virtualScroll) && column.length > 40
@@ -880,7 +923,7 @@ export function createCascader(features: UiFeature[] = []) {
             children.push(h('div', { class: 'ui-floating-panel__empty' }, emptyText))
           } else if (!virtual) {
             for (let index = 0; index < column.length; index += 1) {
-              children.push(renderNode(column[index], level))
+              children.push(renderNode(column[index], level, tabStop))
             }
           } else {
             const rows: VNodeChild[] = []
@@ -893,7 +936,7 @@ export function createCascader(features: UiFeature[] = []) {
                     class: 'ui-cascader__row',
                     style: { top: `${index * itemHeight}px` }
                   },
-                  [renderNode(column[index], level, itemHeight)]
+                  [renderNode(column[index], level, tabStop, itemHeight)]
                 )
               )
             }
@@ -907,17 +950,155 @@ export function createCascader(features: UiFeature[] = []) {
               key: `column-${level}`,
               class: ['ui-cascader__column', virtual ? 'is-virtual' : ''],
               style: { maxHeight: `${height}px` },
-              onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined
+              role: 'listbox',
+              'aria-label': `第 ${level + 1} 级`,
+              onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined,
+              onKeydown: (event: KeyboardEvent) => handleColumnKeydown(level, event)
             },
             children
           )
         }
 
+        // WAI-ARIA 级联键盘映射，与 menu/tree 同口径：↑↓ 同列移动（跳过禁用、边界停住），
+        // → 展开并进入子列首项，← 收起子列或回父级节点，Home/End 跳列首末，Enter 等同点击；
+        // checkbox 模式 Space 拨动复选框——行点击只下钻，复选框才是写口
+        function handleColumnKeydown(level: number, event: KeyboardEvent) {
+          if (event.key === 'Escape') {
+            if (!open.value) {
+              return
+            }
+            event.preventDefault()
+            closePanel()
+            triggerRef.value?.focus()
+            return
+          }
+          const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' ']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const columnEl = event.currentTarget as HTMLElement
+          const target = (event.target as HTMLElement | null)?.closest('.ui-cascader__node')
+          if (!target || !columnEl.contains(target) || target.classList.contains('is-disabled')) {
+            return
+          }
+          const items = Array.from(columnEl.querySelectorAll<HTMLElement>('.ui-cascader__node'))
+          const currentIndex = items.indexOf(target as HTMLElement)
+          const column = columns.value[level] ?? []
+          const node = column[currentIndex]
+          if (currentIndex < 0 || !node) {
+            return
+          }
+          const path = [...activePath.value.slice(0, level), node.value]
+          const keyOf = (element: HTMLElement) => element.getAttribute('data-node-key') ?? ''
+          const moveFocus = (element: HTMLElement | undefined | null) => {
+            if (!element) {
+              return
+            }
+            element.focus({ preventScroll: true })
+            focusKey.value = keyOf(element)
+          }
+          const enabled = (index: number) => index >= 0 && index < column.length && !column[index].disabled
+          event.preventDefault()
+
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const step = event.key === 'ArrowDown' ? 1 : -1
+            for (let offset = 1; offset < column.length; offset += 1) {
+              const index = currentIndex + step * offset
+              if (index < 0 || index >= column.length) {
+                break
+              }
+              if (enabled(index)) {
+                moveFocus(items[index])
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'Home' || event.key === 'End') {
+            const edge = event.key === 'Home' ? 0 : column.length - 1
+            const step = event.key === 'Home' ? 1 : -1
+            for (let offset = 0; offset < column.length; offset += 1) {
+              const index = edge + step * offset
+              if (index < 0 || index >= column.length) {
+                break
+              }
+              if (enabled(index)) {
+                moveFocus(items[index])
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'Enter' || event.key === ' ') {
+            const strict = Boolean(props.checkStrictly) && isMultiple.value
+            const checkboxMode = Boolean(props.checkbox) && isMultiple.value
+            if (event.key === ' ' && (strict || checkboxMode)) {
+              if (strict) {
+                toggleLeaf(path)
+              } else {
+                toggleCascade(path)
+              }
+              nextTick(refresh)
+              return
+            }
+            focusKey.value = pathKey(path)
+            handleNode(node, level)
+            nextTick(() => {
+              if (!open.value) {
+                triggerRef.value?.focus()
+              }
+            })
+            return
+          }
+          if (event.key === 'ArrowRight') {
+            if (!isExpandable(node, path)) {
+              return
+            }
+            focusKey.value = pathKey(path)
+            handleNode(node, level)
+            // 子列是展开后才新建的，必须在 nextTick 里重新查询，捕获的旧引用里没有它
+            nextTick(() => {
+              refresh()
+              const columnsNow = Array.from(
+                columnEl.parentElement?.querySelectorAll<HTMLElement>('.ui-cascader__column') ?? []
+              )
+              const first = Array.from(
+                columnsNow[level + 1]?.querySelectorAll<HTMLElement>('.ui-cascader__node') ?? []
+              ).find((element) => !element.classList.contains('is-disabled'))
+              moveFocus(first)
+            })
+            return
+          }
+          const columnEls = Array.from(
+            columnEl.parentElement?.querySelectorAll<HTMLElement>('.ui-cascader__column') ?? []
+          )
+          // ArrowLeft：已展开子列则收起（activePath 摘掉当前节点，子列整体退场），否则焦点回父级节点
+          if (level + 1 < columns.value.length && sameValue(activePath.value[level], node.value)) {
+            const next = [...activePath.value.slice(0, level)]
+            activePath.value = next
+            emit('expand-change', next)
+            nextTick(() => {
+              refresh()
+              moveFocus(items[currentIndex])
+            })
+            return
+          }
+          if (level > 0) {
+            const parentItems = Array.from(
+              columnEls[level - 1]?.querySelectorAll<HTMLElement>('.ui-cascader__node') ?? []
+            )
+            moveFocus(
+              parentItems.find((element) => element.getAttribute('data-node-key') === pathKey(path.slice(0, -1)))
+            )
+          }
+        }
+
         function renderColumns(): VNodeChild {
+          const tabStop = tabStopKey()
           return h(
             'div',
             { class: 'ui-cascader__columns' },
-            columns.value.map((column, level) => renderColumn(column, level))
+            columns.value.map((column, level) => renderColumn(column, level, tabStop))
           )
         }
 
@@ -1004,9 +1185,11 @@ export function createCascader(features: UiFeature[] = []) {
         if (props.clearable && state.hasValue && !props.disabled) {
           actions.push(
             h(
-              'span',
+              'button',
               {
+                type: 'button',
                 class: 'ui-cascader__clear',
+                'aria-label': '清空',
                 onClick: (event: Event) => {
                   event.stopPropagation()
                   state.clearValue()
@@ -1037,7 +1220,22 @@ export function createCascader(features: UiFeature[] = []) {
               onKeydown: (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
                   state.closePanel()
+                  return
                 }
+                // triggerConfig 同款口径：纯 div 触发器 Tab 到位后必须能用 Enter/Space 开合；
+                // 里层 button/input 的原生 click 已会冒泡到 onClick，重复 toggle 会把状态顶回去
+                if (event.key !== 'Enter' && event.key !== ' ' && event.key !== 'Spacebar') {
+                  return
+                }
+                const target = event.target as HTMLElement | null
+                if (target?.closest?.('button, a, input, select, textarea, [role="button"]')) {
+                  return
+                }
+                event.preventDefault()
+                if (props.filterable && state.open) {
+                  return
+                }
+                state.togglePanel()
               }
             },
             [

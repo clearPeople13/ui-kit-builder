@@ -1,5 +1,5 @@
 import type { VNodeChild } from 'vue'
-import { computed, h, ref, watch } from 'vue'
+import { computed, h, nextTick, ref, watch } from 'vue'
 import { Check, ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
@@ -100,6 +100,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
       classes: (props) => (props.disabled === true ? ['is-disabled'] : []),
       setup(props, { emit }) {
         const activePath = ref<any[]>([])
+        const focusKey = ref('')
         const lazyChildren = ref<Record<string, PanelNode[]>>({})
         const lazyLoading = ref<Record<string, boolean>>({})
         const lazyLoaded = ref<Record<string, boolean>>({})
@@ -248,6 +249,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
             return
           }
           const path = [...activePath.value.slice(0, level), node.value]
+          focusKey.value = pathKey(path)
           const expandable = isExpandable(node, path)
           if (expandable) {
             ensureChildren(node, path)
@@ -256,6 +258,21 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           if (!expandable || Boolean(props.checkStrictly)) {
             emitSelection(path)
           }
+        }
+
+        // roving tabindex 停靠点：键盘/点击共用 focusKey 同步，失效时兜底第一列首个非禁用节点，
+        // 整面板只占一个 Tab 位，与 tree/cascader 口径一致
+        function tabStopKey(cols: PanelNode[][]): string {
+          for (let level = 0; level < cols.length; level += 1) {
+            const prefix = activePath.value.slice(0, level)
+            for (const node of cols[level]) {
+              if (!node.disabled && pathKey([...prefix, node.value]) === focusKey.value) {
+                return focusKey.value
+              }
+            }
+          }
+          const first = cols[0]?.find((node) => !node.disabled)
+          return first ? pathKey([first.value]) : ''
         }
 
         function columns(): PanelNode[][] {
@@ -277,13 +294,14 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           return result
         }
 
-        function renderNode(node: PanelNode, level: number, itemHeight?: number): VNodeChild {
+        function renderNode(node: PanelNode, level: number, tabStop: string, itemHeight?: number): VNodeChild {
           const path = [...activePath.value.slice(0, level), node.value]
           const expandable = isExpandable(node, path)
           const loading = isLoading(node, path)
           const selected = isSelected(path)
           const active = sameValue(activePath.value[level], node.value) && !expandable
           const checkable = props.multiple && (!expandable || Boolean(props.checkStrictly))
+          const keyboardOff = props.disabled === true
           return h(
             'div',
             {
@@ -301,6 +319,8 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               role: 'option',
               'aria-selected': selected,
               'aria-disabled': node.disabled || undefined,
+              'data-node-key': pathKey(path),
+              tabindex: keyboardOff || node.disabled ? undefined : tabStop === pathKey(path) ? 0 : -1,
               onClick: () => handleNode(node, level)
             },
             [
@@ -332,7 +352,110 @@ export function createCascaderPanel(features: UiFeature[] = []) {
           scrollTops.value = { ...scrollTops.value, [level]: top }
         }
 
-        function renderColumn(column: PanelNode[], level: number): VNodeChild {
+        // WAI-ARIA 级联键盘映射，与 cascader/menu/tree 同口径：↑↓ 同列移动（跳过禁用、边界停住），
+        // → 展开并进入子列首项，← 收起子列或回父级节点，Home/End 跳列首末，Enter/Space 等同点击
+        function handleColumnKeydown(level: number, event: KeyboardEvent): void {
+          const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'Enter', ' ']
+          if (!keys.includes(event.key)) {
+            return
+          }
+          const columnEl = event.currentTarget as HTMLElement
+          const target = (event.target as HTMLElement | null)?.closest('.ui-cascader-panel__node')
+          if (!target || !columnEl.contains(target) || target.classList.contains('is-disabled')) {
+            return
+          }
+          const cols = columns()
+          const items = Array.from(columnEl.querySelectorAll<HTMLElement>('.ui-cascader-panel__node'))
+          const currentIndex = items.indexOf(target as HTMLElement)
+          const column = cols[level] ?? []
+          const node = column[currentIndex]
+          if (currentIndex < 0 || !node) {
+            return
+          }
+          const path = [...activePath.value.slice(0, level), node.value]
+          const keyOf = (element: HTMLElement) => element.getAttribute('data-node-key') ?? ''
+          const moveFocus = (element: HTMLElement | undefined | null) => {
+            if (!element) {
+              return
+            }
+            element.focus({ preventScroll: true })
+            focusKey.value = keyOf(element)
+          }
+          const enabled = (index: number) => index >= 0 && index < column.length && !column[index].disabled
+          event.preventDefault()
+
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const step = event.key === 'ArrowDown' ? 1 : -1
+            for (let offset = 1; offset < column.length; offset += 1) {
+              const index = currentIndex + step * offset
+              if (index < 0 || index >= column.length) {
+                break
+              }
+              if (enabled(index)) {
+                moveFocus(items[index])
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'Home' || event.key === 'End') {
+            const edge = event.key === 'Home' ? 0 : column.length - 1
+            const step = event.key === 'Home' ? 1 : -1
+            for (let offset = 0; offset < column.length; offset += 1) {
+              const index = edge + step * offset
+              if (index < 0 || index >= column.length) {
+                break
+              }
+              if (enabled(index)) {
+                moveFocus(items[index])
+                return
+              }
+            }
+            return
+          }
+          if (event.key === 'Enter' || event.key === ' ') {
+            focusKey.value = pathKey(path)
+            handleNode(node, level)
+            return
+          }
+          if (event.key === 'ArrowRight') {
+            if (!isExpandable(node, path)) {
+              return
+            }
+            focusKey.value = pathKey(path)
+            handleNode(node, level)
+            // 子列是展开后才新建的，必须在 nextTick 里重新查询，捕获的旧引用里没有它
+            nextTick(() => {
+              const columnsNow = Array.from(
+                columnEl.parentElement?.querySelectorAll<HTMLElement>('.ui-cascader-panel__column') ?? []
+              )
+              const first = Array.from(
+                columnsNow[level + 1]?.querySelectorAll<HTMLElement>('.ui-cascader-panel__node') ?? []
+              ).find((element) => !element.classList.contains('is-disabled'))
+              moveFocus(first)
+            })
+            return
+          }
+          const columnEls = Array.from(
+            columnEl.parentElement?.querySelectorAll<HTMLElement>('.ui-cascader-panel__column') ?? []
+          )
+          // ArrowLeft：已展开子列则收起（activePath 摘掉当前节点，子列整体退场），否则焦点回父级节点
+          if (level + 1 < cols.length && sameValue(activePath.value[level], node.value)) {
+            moveFocus(items[currentIndex])
+            activePath.value = [...activePath.value.slice(0, level)]
+            return
+          }
+          if (level > 0) {
+            const parentItems = Array.from(
+              columnEls[level - 1]?.querySelectorAll<HTMLElement>('.ui-cascader-panel__node') ?? []
+            )
+            moveFocus(
+              parentItems.find((element) => element.getAttribute('data-node-key') === pathKey(path.slice(0, -1)))
+            )
+          }
+        }
+
+        function renderColumn(column: PanelNode[], level: number, tabStop: string): VNodeChild {
           const height = Number(props.height ?? 204)
           const itemHeight = Number(props.itemSize ?? 0)
           const virtual = itemHeight > 0 && column.length > 40
@@ -352,7 +475,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               h('div', { class: 'ui-cascader-panel__empty' }, level === 0 && rootLoading.value ? '加载中…' : '无数据')
             ]
           } else if (!virtual) {
-            children = column.map((node) => renderNode(node, level))
+            children = column.map((node) => renderNode(node, level, tabStop))
           } else {
             const rows: VNodeChild[] = []
             for (let index = start; index < end; index += 1) {
@@ -364,7 +487,7 @@ export function createCascaderPanel(features: UiFeature[] = []) {
                     class: 'ui-cascader-panel__row',
                     style: { top: `${index * itemHeight}px` }
                   },
-                  [renderNode(column[index], level, itemHeight)]
+                  [renderNode(column[index], level, tabStop, itemHeight)]
                 )
               )
             }
@@ -384,14 +507,19 @@ export function createCascaderPanel(features: UiFeature[] = []) {
               style: { maxHeight: `${height}px` },
               role: 'listbox',
               'aria-label': `第 ${level + 1} 级`,
-              onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined
+              onScroll: virtual ? (event: Event) => handleColumnScroll(level, event) : undefined,
+              onKeydown: (event: KeyboardEvent) => handleColumnKeydown(level, event)
             },
             children
           )
         }
 
         return {
-          renderColumns: () => columns().map((column, level) => renderColumn(column, level))
+          renderColumns: () => {
+            const cols = columns()
+            const tabStop = tabStopKey(cols)
+            return cols.map((column, level) => renderColumn(column, level, tabStop))
+          }
         }
       },
       content: ({ state }) => (state.renderColumns as () => VNodeChild[])(),
