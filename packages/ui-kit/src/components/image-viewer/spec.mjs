@@ -20,6 +20,26 @@ export default {
           "description": "zIndex"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "面板正文，渲染在 body 区（无 props 回退）"
+        },
+        {
+          "name": "footer",
+          "scope": null,
+          "fallback": false,
+          "description": "面板底部，渲染在正文之后（无默认内容）"
+        },
+        {
+          "name": "header",
+          "scope": null,
+          "fallback": false,
+          "description": "面板标题区，未提供时标题为空（组件无 title 属性可回退）"
+        }
+      ],
       "features": {
         "image-viewer.popper": {
           "title": "浮层传送",

@@ -72,6 +72,14 @@ export default {
           "description": "fallbackPlacements"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "触发器内容，渲染在触发区（无默认内容，面板文案仍取 content 属性）"
+        }
+      ],
       "features": {
         "tooltip.delay": {
           "title": "延迟显示",

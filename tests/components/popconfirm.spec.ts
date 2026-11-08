@@ -148,6 +148,21 @@ describe('Popconfirm', () => {
     expect(panel()?.querySelector('.pc-content')?.textContent).toBe('补充说明')
   })
 
+  it('slot 契约：default 渲染触发器，content 渲染补充正文', async () => {
+    const wrapper = mountPc(
+      { title: '删除该行数据？' },
+      {
+        default: () => h('button', { class: 'pc-slot-trigger' }, '自定义触发器'),
+        content: () => h('p', { class: 'pc-slot-content' }, '自定义正文')
+      }
+    )
+    await nextTick()
+    expect(wrapper.find('.ui-popconfirm__trigger .pc-slot-trigger').text()).toBe('自定义触发器')
+    await open(wrapper)
+    expect(panel()?.querySelector('.pc-slot-content')?.textContent).toBe('自定义正文')
+    expect(document.querySelector('.ui-popconfirm__title span:last-child')?.textContent).toBe('删除该行数据？')
+  })
+
   it('hideIcon 隐藏图标，icon 覆盖并保留 iconColor', async () => {
     const hidden = mountPc({ hideIcon: true })
     await open(hidden)

@@ -27,6 +27,14 @@ export default {
           "description": "description"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "底部操作区，渲染在描述节点之后（无默认内容）"
+        }
+      ],
       "features": {}
     }
   ]

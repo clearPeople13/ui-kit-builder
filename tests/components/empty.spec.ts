@@ -68,4 +68,10 @@ describe('Empty 空状态', () => {
     // 图标与描述仍在
     expect(wrapper.find('.ui-empty__icon').exists()).toBe(true)
   })
+
+  it('slot 契约：default 渲染底部操作区，缺省不渲染页脚', () => {
+    const slotted = mountEmpty({}, { default: () => h('a', { class: 'empty-action' }, '刷新') })
+    expect(slotted.find('.ui-empty__footer .empty-action').text()).toBe('刷新')
+    expect(mountEmpty().find('.ui-empty__footer').exists()).toBe(false)
+  })
 })

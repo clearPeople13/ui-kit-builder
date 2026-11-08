@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { h } from 'vue'
 import { describe, expect, it } from 'vitest'
 import { Result } from '@ui-kit-full'
 
@@ -65,6 +66,18 @@ describe('Result 结果', () => {
     const wrapper = mountResult({}, { icon: () => '<b>自定义徽标</b>' })
     expect(wrapper.find('.ui-result__icon').exists()).toBe(false)
     expect(wrapper.find('.ui-result__inner').text()).toContain('自定义徽标')
+  })
+
+  it('slot 契约：icon 插槽替换内置图标，default 渲染额外区', () => {
+    const slotted = mountResult(
+      { icon: 'success' },
+      { icon: () => h('i', { class: 'rs-slot-icon' }, '徽标'), default: () => '自定义操作' }
+    )
+    expect(slotted.find('.rs-slot-icon').text()).toBe('徽标')
+    expect(slotted.find('.ui-result__icon').exists()).toBe(false)
+    expect(slotted.find('.ui-result__extra').text()).toBe('自定义操作')
+    const fallback = mountResult({ icon: 'success' })
+    expect(fallback.find('.ui-result__icon svg').classes()).toContain('lucide-circle-check')
   })
 
   it('无业务事件声明：点击各区域只漏出原生 click，不抛组件事件', async () => {

@@ -149,6 +149,14 @@ describe('ImageViewer', () => {
     expect(document.querySelector('.ui-image-viewer__panel__body')?.textContent).toBe('')
   })
 
+  it('slot 契约：default / header / footer 各落面板分区', async () => {
+    mountViewer({}, { default: () => '预览内容', header: () => '预览标题', footer: () => '预览页脚' })
+    await nextTick()
+    expect(panel()!.querySelector('.ui-image-viewer__panel__body')!.textContent).toBe('预览内容')
+    expect(panel()!.querySelector('.ui-image-viewer__panel__title')!.textContent).toBe('预览标题')
+    expect(panel()!.querySelector('.ui-image-viewer__panel__footer')!.textContent).toBe('预览页脚')
+  })
+
   it('卸载清理传送节点', async () => {
     const wrapper = mountViewer({ teleported: true })
     await nextTick()

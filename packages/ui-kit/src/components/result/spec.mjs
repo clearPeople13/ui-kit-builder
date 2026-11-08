@@ -28,6 +28,20 @@ export default {
           description: '根节点标签，缺省为 div'
         }
       ],
+      slots: [
+        {
+          name: 'default',
+          scope: null,
+          fallback: false,
+          description: '额外操作区，渲染在副标题之后（无默认内容）'
+        },
+        {
+          name: 'icon',
+          scope: null,
+          fallback: true,
+          description: '图标区，未提供时按 icon 属性渲染内置图标'
+        }
+      ],
       features: {
         'result.icons': {
           title: '图标',

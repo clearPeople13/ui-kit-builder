@@ -43,6 +43,18 @@ describe('Tooltip 文字提示', () => {
     expect(popper()!.getAttribute('role')).toBe('tooltip')
   })
 
+  it('slot 契约：default 渲染触发区，缺省时触发区为空', async () => {
+    const wrapper = mountTooltip({}, { default: () => h('button', { class: 'tt-slot-trigger' }, '悬停按钮') })
+    await nextTick()
+    expect(wrapper.find('.ui-tooltip__trigger .tt-slot-trigger').text()).toBe('悬停按钮')
+    wrapper.unmount()
+    document.body.innerHTML = ''
+    const bare = mount(Tooltip, { props: { content: '提示' }, attachTo: document.body })
+    mounted.push(bare)
+    await nextTick()
+    expect(bare.find('.ui-tooltip__trigger').text()).toBe('')
+  })
+
   it('悬停立即展开并抛 visible-change 与 update:modelValue', async () => {
     const wrapper = mountTooltip()
     await wrapper.trigger('mouseenter')

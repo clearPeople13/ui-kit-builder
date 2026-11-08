@@ -71,6 +71,20 @@ export default {
           "description": "width"
         }
       ],
+      "slots": [
+        {
+          "name": "content",
+          "scope": null,
+          "fallback": false,
+          "description": "面板正文，渲染在标题与操作按钮之间（无默认内容）"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "触发器内容，渲染在面板锚点区（无默认内容）"
+        }
+      ],
       "features": {
         "popconfirm.icons": {
           "title": "图标",

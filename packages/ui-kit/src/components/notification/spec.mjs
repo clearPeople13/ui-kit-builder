@@ -56,6 +56,26 @@ export default {
           description: 'zIndex'
         }
       ],
+      slots: [
+        {
+          name: 'default',
+          scope: null,
+          fallback: true,
+          description: '面板正文，未提供时回退 message 属性'
+        },
+        {
+          name: 'footer',
+          scope: null,
+          fallback: false,
+          description: '面板底部，渲染在正文之后（无默认内容）'
+        },
+        {
+          name: 'header',
+          scope: null,
+          fallback: true,
+          description: '面板标题，未提供时回退 title 属性'
+        }
+      ],
       features: {
         'notification.icons': {
           title: '图标',

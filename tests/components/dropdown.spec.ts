@@ -603,6 +603,23 @@ describe('Dropdown 键盘菜单', () => {
     expect(panelItems()).toHaveLength(4)
   })
 
+  it('slot 契约：default 渲染触发区，dropdown 优先于 content', async () => {
+    const wrapper = mount(Dropdown, {
+      props: { trigger: 'click' },
+      slots: {
+        default: () => h('span', { class: 'dd-slot-trigger' }, '自定义触发器'),
+        content: () => h('span', { class: 'dd-slot-content' }, '后备内容'),
+        dropdown: () => h('span', { class: 'dd-slot-dropdown' }, '面板内容')
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(wrapper.find('.ui-dropdown__trigger .dd-slot-trigger').text()).toBe('自定义触发器')
+    expect(panelContent()!.querySelector('.dd-slot-dropdown')!.textContent).toBe('面板内容')
+    expect(panelContent()!.querySelector('.dd-slot-content')).toBeNull()
+  })
+
   it('禁用状态翻转后停靠点仍落在可用项上', async () => {
     const secondDisabled = ref(false)
     const wrapper = mount(Dropdown, {

@@ -100,6 +100,24 @@ describe('Notification', () => {
     expect(wrapper.element.querySelector('.ui-notification__panel__body .mn')?.textContent).toBe('富文本通知')
   })
 
+  it('slot 契约：header / default / footer 覆盖并回退 title / message', async () => {
+    const slotted = mountNotif(
+      { title: '属性标题', message: '属性正文' },
+      { header: () => '插槽标题', default: () => '插槽正文', footer: () => '插槽页脚' }
+    )
+    await nextTick()
+    expect(document.querySelector('.ui-notification__panel__title')?.textContent).toBe('插槽标题')
+    expect(document.querySelector('.ui-notification__panel__body')?.textContent).toBe('插槽正文')
+    expect(document.querySelector('.ui-notification__panel__footer')?.textContent).toBe('插槽页脚')
+    slotted.unmount()
+    document.body.innerHTML = ''
+    mountNotif()
+    await nextTick()
+    expect(document.querySelector('.ui-notification__panel__title')?.textContent).toBe('标题文字')
+    expect(document.querySelector('.ui-notification__panel__body')?.textContent).toBe('通知正文内容')
+    expect(document.querySelector('.ui-notification__panel__footer')).toBeNull()
+  })
+
   it('onClick 回调收到点击事件', async () => {
     const onClick = vi.fn()
     mountNotif({ onClick })

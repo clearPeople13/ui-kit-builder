@@ -46,6 +46,26 @@ export default {
           "description": "gap"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "面板正文，无子步骤时作为面板内容、有 TourStep 时作为步骤容器（无 props 回退）"
+        },
+        {
+          "name": "footer",
+          "scope": null,
+          "fallback": false,
+          "description": "面板页脚，仅无步骤模式下渲染（缺省不渲染，步骤模式由内置进度与导航接管）"
+        },
+        {
+          "name": "header",
+          "scope": null,
+          "fallback": true,
+          "description": "面板标题，未提供时回退当前步骤的 title 属性"
+        }
+      ],
       "features": {
         "tour.closable": {
           "title": "可关闭",

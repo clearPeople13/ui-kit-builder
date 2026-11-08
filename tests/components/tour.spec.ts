@@ -308,6 +308,13 @@ describe('Tour 漫游式引导', () => {
     expect(action('下一步')).toBeUndefined()
   })
 
+  it('slot 契约：header 缺省回退步骤 title，footer 缺省由内置进度与导航接管', async () => {
+    await openKit({ steps: [{ props: { title: '步骤标题' } }] })
+    expect(textOf('.ui-tour__panel__title')).toBe('步骤标题')
+    expect(textOf('.ui-tour__progress')).toBe('1 / 1')
+    expect(action('完成')).toBeTruthy()
+  })
+
   it('目标可解析时渲染高亮与箭头，showArrow false 只去箭头', async () => {
     addTarget('tour-arrow-target')
     await openKit({ steps: [{ props: { title: '甲', target: '#tour-arrow-target' } }] })

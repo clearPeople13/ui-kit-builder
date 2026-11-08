@@ -79,6 +79,26 @@ export default {
           "description": "role"
         }
       ],
+      "slots": [
+        {
+          "name": "content",
+          "scope": null,
+          "fallback": false,
+          "description": "面板内容，dropdown 插槽缺省时作为后备渲染（无 props 回退）"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "触发器内容，渲染在面板锚点区（无默认内容）"
+        },
+        {
+          "name": "dropdown",
+          "scope": null,
+          "fallback": false,
+          "description": "面板内容，优先于 content 插槽渲染（无 props 回退）"
+        }
+      ],
       "features": {
         "dropdown.popper": {
           "title": "浮层定位",

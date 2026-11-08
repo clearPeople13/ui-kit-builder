@@ -77,6 +77,27 @@ describe('Popover 浮层气泡', () => {
     expect(panel()!.querySelector('.slot-body')).not.toBeNull()
   })
 
+  it('slot 契约：default 渲染触发区，content 缺省回退 content 属性', async () => {
+    const slotted = mountPopover(
+      {},
+      {
+        default: () => h('span', { class: 'po-slot-trigger' }, '自定义触发器'),
+        content: () => h('p', { class: 'po-slot-body' }, '插槽正文')
+      }
+    )
+    await nextTick()
+    expect(slotted.find('.ui-popover__trigger .po-slot-trigger').text()).toBe('自定义触发器')
+    await slotted.trigger('click')
+    await nextTick()
+    expect(panel()!.querySelector('.po-slot-body')!.textContent).toBe('插槽正文')
+    slotted.unmount()
+    document.body.innerHTML = ''
+    const fallback = mountPopover({ content: '属性正文' })
+    await fallback.trigger('click')
+    await nextTick()
+    expect(panel()!.querySelector('.ui-popover__content')!.textContent).toBe('属性正文')
+  })
+
   it('width 默认 150px，可覆盖面板宽度', async () => {
     const wrapper = mountPopover()
     await nextTick()

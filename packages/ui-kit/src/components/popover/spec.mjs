@@ -112,6 +112,20 @@ export default {
           "description": "width"
         }
       ],
+      "slots": [
+        {
+          "name": "content",
+          "scope": null,
+          "fallback": true,
+          "description": "面板正文，未提供时回退 content 属性"
+        },
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "触发器内容，渲染在面板锚点区（无默认内容）"
+        }
+      ],
       "features": {
         "popover.popper": {
           "title": "浮层定位",
