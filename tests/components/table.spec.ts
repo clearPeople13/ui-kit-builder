@@ -475,3 +475,38 @@ describe('Table', () => {
     expect(empty.find('.ui-table__empty-row td').text()).toBe('Nothing')
   })
 })
+
+describe('Table slot 契约', () => {
+  it('empty 插槽替换空数据文案，未提供时回退 emptyText', async () => {
+    const withSlot = await setup(
+      { data: [] },
+      { default: columns(), empty: () => h('div', { class: 'empty-slot' }, '自定义空态') }
+    )
+    expect(withSlot.find('.ui-table__empty-row .empty-slot').text()).toBe('自定义空态')
+
+    const fallback = await setup({ data: [], emptyText: '没有数据' }, { default: columns() })
+    expect(fallback.find('.ui-table__empty-row td').text()).toBe('没有数据')
+  })
+
+  it('TableColumn default / header 插槽拿到作用域并替换单元格内容', async () => {
+    const slotColumns = () => [
+      h(
+        TableColumn,
+        { prop: 'name', label: '名称' },
+        {
+          default: ({ row, $index, rowIndex, columnIndex }: Record<string, any>) =>
+            h('span', { class: 'cell-slot' }, `${row.name}-${$index}-${rowIndex}-${columnIndex}`),
+          header: ({ column, $index }: Record<string, any>) =>
+            h('span', { class: 'header-slot' }, `${column.label}-${$index}`)
+        }
+      ),
+      h(TableColumn, { prop: 'age', label: '年龄' })
+    ]
+    const wrapper = await setup({}, { default: slotColumns })
+    expect(wrapper.find('thead .header-slot').text()).toBe('名称-0')
+    expect(wrapper.findAll('tbody .cell-slot').map((item) => item.text())).toEqual(['A-0-0-0', 'B-1-1-0', 'C-2-2-0'])
+    // 未提供插槽的列回退 label 与行字段原值
+    expect(wrapper.findAll('thead th')[1].text()).toBe('年龄')
+    expect(wrapper.findAll('tbody tr')[0].findAll('td')[1].text()).toBe('20')
+  })
+})

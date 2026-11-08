@@ -70,6 +70,14 @@ export default {
           "description": "hideOnSinglePage"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "布局含 slot / -> 时渲染的分页附加内容（无默认内容）"
+        }
+      ],
       "features": {
         "pagination.icons": {
           "title": "图标",

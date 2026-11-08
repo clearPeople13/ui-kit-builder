@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils'
+import { h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
 import { Switch } from '@ui-kit-full'
 
@@ -115,5 +116,15 @@ describe('Switch', () => {
     expect(inner.attributes('id')).toBe('sw')
     expect(inner.attributes('tabindex')).toBe('4')
     expect(inner.attributes('aria-label')).toBe('通知开关')
+  })
+})
+
+describe('Switch slot 契约', () => {
+  it('默认插槽渲染为轨道后的标签内容', () => {
+    const wrapper = mount(Switch, {
+      props: { modelValue: false },
+      slots: { default: () => h('span', { class: 'switch-slot' }, '自定义标签') }
+    })
+    expect(wrapper.find('.ui-switch__label .switch-slot').text()).toBe('自定义标签')
   })
 })

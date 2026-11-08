@@ -102,6 +102,14 @@ export default {
             '虚拟滚动：只渲染可视窗口内的行，首尾占位行撑开滚动高度，适合大数据量；行高按实测自适应（内容多少行高不一也正确），合并单元格整块纳入窗口，auto 布局下自动失效'
         }
       ],
+      slots: [
+        {
+          name: 'empty',
+          scope: null,
+          fallback: true,
+          description: '空数据时渲染在表体整行单元格内，回退 emptyText 与 locale 空文案'
+        }
+      ],
       features: {
         'table.sort': {
           title: '排序',
@@ -386,6 +394,27 @@ export default {
           name: 'formatter',
           type: 'Function',
           description: '单元格格式化函数 (row, column, value, index) => any'
+        }
+      ],
+      slots: [
+        {
+          name: 'default',
+          scope: {
+            row: 'any',
+            column: 'any',
+            $index: 'number',
+            rowIndex: 'number',
+            columnIndex: 'number',
+            meta: 'Record<string, any>'
+          },
+          fallback: true,
+          description: '单元格内容，渲染在 td 内，回退 formatter 或行字段原值'
+        },
+        {
+          name: 'header',
+          scope: { column: 'any', $index: 'number', columnIndex: 'number' },
+          fallback: true,
+          description: '表头单元格内容，渲染在 th 内，回退列的 label'
         }
       ],
       features: {

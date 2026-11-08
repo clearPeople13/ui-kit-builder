@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Pagination } from '@ui-kit-full'
 
@@ -214,5 +214,17 @@ describe('Pagination', () => {
     await wrapper.setProps({ currentPage: 3 })
     await nextTick()
     expect(pagers(wrapper)[2].classes()).toContain('is-active')
+  })
+})
+
+describe('Pagination slot 契约', () => {
+  it('layout 含 slot 时渲染默认插槽内容', async () => {
+    const wrapper = mount(Pagination, {
+      props: { total: 95, currentPage: 1, pageSize: 10, layout: 'prev, slot, next' },
+      slots: { default: () => h('span', { class: 'pager-slot' }, '自定义分页内容') },
+      attachTo: document.body
+    })
+    await nextTick()
+    expect(wrapper.find('.pager-slot').text()).toBe('自定义分页内容')
   })
 })

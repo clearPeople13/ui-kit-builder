@@ -26,6 +26,14 @@ export default {
           "description": "disabled"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "选项内容，渲染在选项元素内，回退 label prop"
+        }
+      ],
       "features": {}
     },
     {
@@ -43,6 +51,14 @@ export default {
           "name": "disabled",
           "type": "boolean",
           "description": "disabled"
+        }
+      ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": true,
+          "description": "分组标题内容，渲染在分组元素内，回退 label"
         }
       ],
       "features": {}

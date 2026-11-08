@@ -392,3 +392,24 @@ describe('Select Escape 分层', () => {
     expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
   })
 })
+
+describe('Select 子组件 slot 契约', () => {
+  it('Option 默认插槽替换选项内容，未提供时回退 label / value', () => {
+    const custom = mount(Option, {
+      props: { value: 1, label: '一' },
+      slots: { default: () => h('strong', { class: 'option-slot' }, '自定义选项') }
+    })
+    expect(custom.find('.option-slot').text()).toBe('自定义选项')
+
+    expect(mount(Option, { props: { value: 1, label: '一' } }).text()).toBe('一')
+  })
+
+  it('OptionGroup 默认插槽替换分组标题，未提供时回退 label', () => {
+    const custom = mount(OptionGroup, {
+      props: { label: '分组' },
+      slots: { default: () => h('em', { class: 'group-slot' }, '自定义分组') }
+    })
+    expect(custom.find('.group-slot').text()).toBe('自定义分组')
+    expect(mount(OptionGroup, { props: { label: '分组' } }).text()).toBe('分组')
+  })
+})

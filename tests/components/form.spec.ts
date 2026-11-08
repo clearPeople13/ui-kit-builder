@@ -377,3 +377,42 @@ describe('Form 组合辅助', () => {
     expect(wrapper.find('.ui-form-item__error').exists()).toBe(false)
   })
 })
+
+describe('Form slot 契约', () => {
+  it('Form 默认插槽渲染字段容器并透出上下文', () => {
+    const wrapper = mount(Form, {
+      props: { model: { name: 'x' }, size: 'large', labelWidth: 100, disabled: true },
+      slots: {
+        default: (scope: Record<string, any>) =>
+          h(
+            'div',
+            { class: 'form-slot' },
+            `${JSON.stringify(scope.model)}-${scope.size}-${scope.labelWidth}-${scope.disabled}`
+          )
+      }
+    })
+    expect(wrapper.find('form .form-slot').text()).toBe('{"name":"x"}-large-100-true')
+  })
+
+  it('FormItem default / label 插槽替换内容与标签，未提供 label 时回退 label prop', () => {
+    const wrapper = mount(Form, {
+      props: { model: model() },
+      slots: {
+        default: () => [
+          h(
+            FormItem,
+            { prop: 'name', label: '名称' },
+            {
+              label: () => h('span', { class: 'label-slot' }, '自定义标签'),
+              default: () => h('span', { class: 'field-slot' }, '字段内容')
+            }
+          ),
+          h(FormItem, { prop: 'mail', label: '邮箱' }, () => h('span', '邮件字段'))
+        ]
+      }
+    })
+    expect(wrapper.find('.ui-form-item__label .label-slot').text()).toBe('自定义标签')
+    expect(wrapper.find('.ui-form-item__content .field-slot').text()).toBe('字段内容')
+    expect(wrapper.findAll('.ui-form-item__label')[1].text()).toBe('邮箱')
+  })
+})

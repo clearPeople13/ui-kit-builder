@@ -83,6 +83,14 @@ export default {
           "description": "ariaLabel"
         }
       ],
+      "slots": [
+        {
+          "name": "default",
+          "scope": null,
+          "fallback": false,
+          "description": "开关标签内容，渲染在轨道后的 label 元素内（无默认内容）"
+        }
+      ],
       "features": {
         "switch.icons": {
           "title": "图标",
