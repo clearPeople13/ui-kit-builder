@@ -6829,6 +6829,11 @@
             {
               "name": "expanded",
               "type": "boolean"
+            },
+            {
+              "name": "ariaLabel",
+              "type": "string",
+              "description": "原生 aria-label 无障碍标签"
             }
           ],
           "features": [],
@@ -11366,8 +11371,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 608234,
-          "gzipBytes": 148249
+          "bytes": 609538,
+          "gzipBytes": 148480
         },
         {
           "file": "ui-kit.css",
@@ -11376,10 +11381,10 @@
         }
       ],
       "sizes": {
-        "js": 608234,
+        "js": 609538,
         "css": 227868,
-        "total": 836102,
-        "gzip": 179718
+        "total": 837406,
+        "gzip": 179943
       }
     },
     {
@@ -12311,8 +12316,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 688123,
-          "gzipBytes": 167070
+          "bytes": 689427,
+          "gzipBytes": 167293
         },
         {
           "file": "ui-kit.css",
@@ -12321,10 +12326,10 @@
         }
       ],
       "sizes": {
-        "js": 688123,
+        "js": 689427,
         "css": 247619,
-        "total": 935742,
-        "gzip": 201448
+        "total": 937046,
+        "gzip": 201666
       }
     },
     {
@@ -13256,8 +13261,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167158
+          "bytes": 691269,
+          "gzipBytes": 167367
         },
         {
           "file": "ui-kit.css",
@@ -13266,10 +13271,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 259683,
-        "total": 949648,
-        "gzip": 202334
+        "total": 950952,
+        "gzip": 202541
       }
     },
     {
@@ -14201,8 +14206,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692728,
-          "gzipBytes": 167269
+          "bytes": 694032,
+          "gzipBytes": 167508
         },
         {
           "file": "ui-kit.css",
@@ -14211,10 +14216,10 @@
         }
       ],
       "sizes": {
-        "js": 692728,
+        "js": 694032,
         "css": 295675,
-        "total": 988403,
-        "gzip": 206170
+        "total": 989707,
+        "gzip": 206409
       }
     },
     {
@@ -15146,8 +15151,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167155
+          "bytes": 691269,
+          "gzipBytes": 167364
         },
         {
           "file": "ui-kit.css",
@@ -15156,10 +15161,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 275134,
-        "total": 965099,
-        "gzip": 205299
+        "total": 966403,
+        "gzip": 205505
       }
     },
     {
@@ -16091,8 +16096,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167159
+          "bytes": 691269,
+          "gzipBytes": 167367
         },
         {
           "file": "ui-kit.css",
@@ -16101,10 +16106,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 279890,
-        "total": 969855,
-        "gzip": 205449
+        "total": 971159,
+        "gzip": 205656
       }
     },
     {
@@ -17036,8 +17041,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167159
+          "bytes": 691269,
+          "gzipBytes": 167367
         },
         {
           "file": "ui-kit.css",
@@ -17046,10 +17051,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 260055,
-        "total": 950020,
-        "gzip": 202432
+        "total": 951324,
+        "gzip": 202637
       }
     },
     {
@@ -17981,8 +17986,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692728,
-          "gzipBytes": 167265
+          "bytes": 694032,
+          "gzipBytes": 167503
         },
         {
           "file": "ui-kit.css",
@@ -17991,10 +17996,10 @@
         }
       ],
       "sizes": {
-        "js": 692728,
+        "js": 694032,
         "css": 276381,
-        "total": 969109,
-        "gzip": 203000
+        "total": 970413,
+        "gzip": 203237
       }
     },
     {
@@ -18926,8 +18931,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690886,
-          "gzipBytes": 167186
+          "bytes": 692190,
+          "gzipBytes": 167409
         },
         {
           "file": "ui-kit.css",
@@ -18936,10 +18941,10 @@
         }
       ],
       "sizes": {
-        "js": 690886,
+        "js": 692190,
         "css": 265372,
-        "total": 956258,
-        "gzip": 202526
+        "total": 957562,
+        "gzip": 202745
       }
     },
     {
@@ -19871,8 +19876,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691807,
-          "gzipBytes": 167222
+          "bytes": 693111,
+          "gzipBytes": 167456
         },
         {
           "file": "ui-kit.css",
@@ -19881,10 +19886,10 @@
         }
       ],
       "sizes": {
-        "js": 691807,
+        "js": 693111,
         "css": 270875,
-        "total": 962682,
-        "gzip": 202767
+        "total": 963986,
+        "gzip": 202999
       }
     },
     {
@@ -20816,8 +20821,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167156
+          "bytes": 691269,
+          "gzipBytes": 167364
         },
         {
           "file": "ui-kit.css",
@@ -20826,10 +20831,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 260195,
-        "total": 950160,
-        "gzip": 202437
+        "total": 951464,
+        "gzip": 202641
       }
     },
     {
@@ -21761,8 +21766,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691807,
-          "gzipBytes": 167232
+          "bytes": 693111,
+          "gzipBytes": 167464
         },
         {
           "file": "ui-kit.css",
@@ -21771,10 +21776,10 @@
         }
       ],
       "sizes": {
-        "js": 691807,
+        "js": 693111,
         "css": 270915,
-        "total": 962722,
-        "gzip": 202791
+        "total": 964026,
+        "gzip": 203020
       }
     },
     {
@@ -22706,8 +22711,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689965,
-          "gzipBytes": 167157
+          "bytes": 691269,
+          "gzipBytes": 167366
         },
         {
           "file": "ui-kit.css",
@@ -22716,10 +22721,10 @@
         }
       ],
       "sizes": {
-        "js": 689965,
+        "js": 691269,
         "css": 259751,
-        "total": 949716,
-        "gzip": 202318
+        "total": 951020,
+        "gzip": 202525
       }
     },
     {
@@ -23651,8 +23656,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694570,
-          "gzipBytes": 167330
+          "bytes": 695874,
+          "gzipBytes": 167579
         },
         {
           "file": "ui-kit.css",
@@ -23661,10 +23666,10 @@
         }
       ],
       "sizes": {
-        "js": 694570,
+        "js": 695874,
         "css": 288310,
-        "total": 982880,
-        "gzip": 203607
+        "total": 984184,
+        "gzip": 203852
       }
     },
     {
@@ -24596,8 +24601,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694570,
-          "gzipBytes": 167330
+          "bytes": 695874,
+          "gzipBytes": 167579
         },
         {
           "file": "ui-kit.css",
@@ -24606,10 +24611,10 @@
         }
       ],
       "sizes": {
-        "js": 694570,
+        "js": 695874,
         "css": 287650,
-        "total": 982220,
-        "gzip": 203329
+        "total": 983524,
+        "gzip": 203573
       }
     },
     {
@@ -25541,8 +25546,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691807,
-          "gzipBytes": 167232
+          "bytes": 693111,
+          "gzipBytes": 167468
         },
         {
           "file": "ui-kit.css",
@@ -25551,10 +25556,10 @@
         }
       ],
       "sizes": {
-        "js": 691807,
+        "js": 693111,
         "css": 271280,
-        "total": 963087,
-        "gzip": 202876
+        "total": 964391,
+        "gzip": 203106
       }
     },
     {
@@ -26486,8 +26491,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691807,
-          "gzipBytes": 167226
+          "bytes": 693111,
+          "gzipBytes": 167458
         },
         {
           "file": "ui-kit.css",
@@ -26496,10 +26501,10 @@
         }
       ],
       "sizes": {
-        "js": 691807,
+        "js": 693111,
         "css": 270831,
-        "total": 962638,
-        "gzip": 202784
+        "total": 963942,
+        "gzip": 203012
       }
     },
     {
@@ -27431,8 +27436,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691807,
-          "gzipBytes": 167231
+          "bytes": 693111,
+          "gzipBytes": 167465
         },
         {
           "file": "ui-kit.css",
@@ -27441,10 +27446,10 @@
         }
       ],
       "sizes": {
-        "js": 691807,
+        "js": 693111,
         "css": 270920,
-        "total": 962727,
-        "gzip": 202809
+        "total": 964031,
+        "gzip": 203042
       }
     },
     {
@@ -28376,8 +28381,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692728,
-          "gzipBytes": 167270
+          "bytes": 694032,
+          "gzipBytes": 167508
         },
         {
           "file": "ui-kit.css",
@@ -28386,10 +28391,10 @@
         }
       ],
       "sizes": {
-        "js": 692728,
+        "js": 694032,
         "css": 276820,
-        "total": 969548,
-        "gzip": 203139
+        "total": 970852,
+        "gzip": 203375
       }
     },
     {
@@ -29321,8 +29326,8 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689044,
-          "gzipBytes": 167105
+          "bytes": 690348,
+          "gzipBytes": 167326
         },
         {
           "file": "ui-kit.css",
@@ -29331,10 +29336,10 @@
         }
       ],
       "sizes": {
-        "js": 689044,
+        "js": 690348,
         "css": 254283,
-        "total": 943327,
-        "gzip": 202157
+        "total": 944631,
+        "gzip": 202374
       }
     }
   ]
