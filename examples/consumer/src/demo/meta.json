@@ -5395,18 +5395,6 @@
               ]
             },
             {
-              "id": "mention.password",
-              "title": "密码可见切换",
-              "description": "密码可见切换：showPassword",
-              "props": [
-                {
-                  "name": "showPassword",
-                  "type": "boolean",
-                  "description": "是否显示密码可见切换图标"
-                }
-              ]
-            },
-            {
               "id": "mention.word-limit",
               "title": "字数统计",
               "description": "字数统计：showWordLimit、wordLimitPosition",
@@ -11340,7 +11328,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -11590,7 +11577,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -12001,7 +11987,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -12167,20 +12152,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 687537,
-          "gzipBytes": 168186
+          "bytes": 687447,
+          "gzipBytes": 168180
         },
         {
           "file": "ui-kit.css",
-          "bytes": 246447,
-          "gzipBytes": 34181
+          "bytes": 246339,
+          "gzipBytes": 34168
         }
       ],
       "sizes": {
-        "js": 687537,
-        "css": 246447,
-        "total": 933984,
-        "gzip": 202460
+        "js": 687447,
+        "css": 246339,
+        "total": 933786,
+        "gzip": 202441
       }
     },
     {
@@ -12272,7 +12257,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -12522,7 +12506,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -12933,7 +12916,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -13099,20 +13081,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168261
+          "bytes": 689269,
+          "gzipBytes": 168255
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258459,
-          "gzipBytes": 34937
+          "bytes": 258343,
+          "gzipBytes": 34919
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 258459,
-        "total": 947820,
-        "gzip": 203318
+        "js": 689269,
+        "css": 258343,
+        "total": 947612,
+        "gzip": 203296
       }
     },
     {
@@ -13204,7 +13186,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -13454,7 +13435,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -13865,7 +13845,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -14031,20 +14010,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692097,
-          "gzipBytes": 168389
+          "bytes": 692002,
+          "gzipBytes": 168384
         },
         {
           "file": "ui-kit.css",
-          "bytes": 294373,
-          "gzipBytes": 38592
+          "bytes": 294245,
+          "gzipBytes": 38579
         }
       ],
       "sizes": {
-        "js": 692097,
-        "css": 294373,
-        "total": 986470,
-        "gzip": 207162
+        "js": 692002,
+        "css": 294245,
+        "total": 986247,
+        "gzip": 207145
       }
     },
     {
@@ -14136,7 +14115,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -14386,7 +14364,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -14797,7 +14774,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -14963,20 +14939,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168259
+          "bytes": 689269,
+          "gzipBytes": 168253
         },
         {
           "file": "ui-kit.css",
-          "bytes": 273910,
-          "gzipBytes": 37884
+          "bytes": 273794,
+          "gzipBytes": 37866
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 273910,
-        "total": 963271,
-        "gzip": 206281
+        "js": 689269,
+        "css": 273794,
+        "total": 963063,
+        "gzip": 206258
       }
     },
     {
@@ -15068,7 +15044,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -15318,7 +15293,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -15729,7 +15703,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -15895,20 +15868,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168256
+          "bytes": 689269,
+          "gzipBytes": 168255
         },
         {
           "file": "ui-kit.css",
-          "bytes": 278666,
-          "gzipBytes": 38040
+          "bytes": 278550,
+          "gzipBytes": 38022
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 278666,
-        "total": 968027,
-        "gzip": 206433
+        "js": 689269,
+        "css": 278550,
+        "total": 967819,
+        "gzip": 206410
       }
     },
     {
@@ -16000,7 +15973,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -16250,7 +16222,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -16661,7 +16632,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -16827,20 +16797,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168257
+          "bytes": 689269,
+          "gzipBytes": 168256
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258831,
-          "gzipBytes": 35032
+          "bytes": 258715,
+          "gzipBytes": 35014
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 258831,
-        "total": 948192,
-        "gzip": 203416
+        "js": 689269,
+        "css": 258715,
+        "total": 947984,
+        "gzip": 203392
       }
     },
     {
@@ -16932,7 +16902,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -17182,7 +17151,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -17593,7 +17561,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -17759,20 +17726,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692097,
-          "gzipBytes": 168387
+          "bytes": 692002,
+          "gzipBytes": 168382
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275079,
-          "gzipBytes": 35440
+          "bytes": 274951,
+          "gzipBytes": 35426
         }
       ],
       "sizes": {
-        "js": 692097,
-        "css": 275079,
-        "total": 967176,
-        "gzip": 203993
+        "js": 692002,
+        "css": 274951,
+        "total": 966953,
+        "gzip": 203974
       }
     },
     {
@@ -17864,7 +17831,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -18114,7 +18080,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -18525,7 +18490,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -18691,20 +18655,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 690273,
-          "gzipBytes": 168302
+          "bytes": 690180,
+          "gzipBytes": 168298
         },
         {
           "file": "ui-kit.css",
-          "bytes": 264122,
-          "gzipBytes": 35099
+          "bytes": 264002,
+          "gzipBytes": 35088
         }
       ],
       "sizes": {
-        "js": 690273,
-        "css": 264122,
-        "total": 954395,
-        "gzip": 203546
+        "js": 690180,
+        "css": 264002,
+        "total": 954182,
+        "gzip": 203527
       }
     },
     {
@@ -18796,7 +18760,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -19046,7 +19009,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -19457,7 +19419,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -19623,20 +19584,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691185,
-          "gzipBytes": 168344
+          "bytes": 691091,
+          "gzipBytes": 168341
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269599,
-          "gzipBytes": 35292
+          "bytes": 269475,
+          "gzipBytes": 35282
         }
       ],
       "sizes": {
-        "js": 691185,
-        "css": 269599,
-        "total": 960784,
-        "gzip": 203790
+        "js": 691091,
+        "css": 269475,
+        "total": 960566,
+        "gzip": 203776
       }
     },
     {
@@ -19728,7 +19689,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -19978,7 +19938,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -20389,7 +20348,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -20555,20 +20513,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168260
+          "bytes": 689269,
+          "gzipBytes": 168253
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258971,
-          "gzipBytes": 35039
+          "bytes": 258855,
+          "gzipBytes": 35019
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 258971,
-        "total": 948332,
-        "gzip": 203423
+        "js": 689269,
+        "css": 258855,
+        "total": 948124,
+        "gzip": 203399
       }
     },
     {
@@ -20660,7 +20618,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -20910,7 +20867,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -21321,7 +21277,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -21487,20 +21442,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691185,
-          "gzipBytes": 168358
+          "bytes": 691091,
+          "gzipBytes": 168353
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269639,
-          "gzipBytes": 35306
+          "bytes": 269515,
+          "gzipBytes": 35296
         }
       ],
       "sizes": {
-        "js": 691185,
-        "css": 269639,
-        "total": 960824,
-        "gzip": 203817
+        "js": 691091,
+        "css": 269515,
+        "total": 960606,
+        "gzip": 203804
       }
     },
     {
@@ -21592,7 +21547,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -21842,7 +21796,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -22253,7 +22206,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -22419,20 +22371,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 689361,
-          "gzipBytes": 168260
+          "bytes": 689269,
+          "gzipBytes": 168254
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258527,
-          "gzipBytes": 34922
+          "bytes": 258411,
+          "gzipBytes": 34904
         }
       ],
       "sizes": {
-        "js": 689361,
-        "css": 258527,
-        "total": 947888,
-        "gzip": 203301
+        "js": 689269,
+        "css": 258411,
+        "total": 947680,
+        "gzip": 203279
       }
     },
     {
@@ -22524,7 +22476,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -22774,7 +22725,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -23185,7 +23135,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -23351,20 +23300,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693921,
-          "gzipBytes": 168454
+          "bytes": 693824,
+          "gzipBytes": 168449
         },
         {
           "file": "ui-kit.css",
-          "bytes": 286956,
-          "gzipBytes": 36015
+          "bytes": 286820,
+          "gzipBytes": 36003
         }
       ],
       "sizes": {
-        "js": 693921,
-        "css": 286956,
-        "total": 980877,
-        "gzip": 204650
+        "js": 693824,
+        "css": 286820,
+        "total": 980644,
+        "gzip": 204633
       }
     },
     {
@@ -23456,7 +23405,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -23706,7 +23654,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -24117,7 +24064,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -24283,20 +24229,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 693921,
-          "gzipBytes": 168452
+          "bytes": 693824,
+          "gzipBytes": 168447
         },
         {
           "file": "ui-kit.css",
-          "bytes": 286296,
-          "gzipBytes": 35742
+          "bytes": 286160,
+          "gzipBytes": 35731
         }
       ],
       "sizes": {
-        "js": 693921,
-        "css": 286296,
-        "total": 980217,
-        "gzip": 204369
+        "js": 693824,
+        "css": 286160,
+        "total": 979984,
+        "gzip": 204351
       }
     },
     {
@@ -24388,7 +24334,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -24638,7 +24583,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -25049,7 +24993,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -25215,20 +25158,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691185,
-          "gzipBytes": 168360
+          "bytes": 691091,
+          "gzipBytes": 168355
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270004,
-          "gzipBytes": 35390
+          "bytes": 269880,
+          "gzipBytes": 35380
         }
       ],
       "sizes": {
-        "js": 691185,
-        "css": 270004,
-        "total": 961189,
-        "gzip": 203901
+        "js": 691091,
+        "css": 269880,
+        "total": 960971,
+        "gzip": 203886
       }
     },
     {
@@ -25320,7 +25263,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -25570,7 +25512,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -25981,7 +25922,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -26147,20 +26087,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691185,
-          "gzipBytes": 168349
+          "bytes": 691091,
+          "gzipBytes": 168348
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269555,
-          "gzipBytes": 35302
+          "bytes": 269431,
+          "gzipBytes": 35293
         }
       ],
       "sizes": {
-        "js": 691185,
-        "css": 269555,
-        "total": 960740,
-        "gzip": 203808
+        "js": 691091,
+        "css": 269431,
+        "total": 960522,
+        "gzip": 203795
       }
     },
     {
@@ -26252,7 +26192,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -26502,7 +26441,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -26913,7 +26851,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -27079,20 +27016,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 691185,
-          "gzipBytes": 168356
+          "bytes": 691091,
+          "gzipBytes": 168352
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269644,
-          "gzipBytes": 35325
+          "bytes": 269520,
+          "gzipBytes": 35315
         }
       ],
       "sizes": {
-        "js": 691185,
-        "css": 269644,
-        "total": 960829,
-        "gzip": 203832
+        "js": 691091,
+        "css": 269520,
+        "total": 960611,
+        "gzip": 203818
       }
     },
     {
@@ -27184,7 +27121,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -27434,7 +27370,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -27845,7 +27780,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -28011,20 +27945,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 692097,
-          "gzipBytes": 168390
+          "bytes": 692002,
+          "gzipBytes": 168386
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275518,
-          "gzipBytes": 35570
+          "bytes": 275390,
+          "gzipBytes": 35556
         }
       ],
       "sizes": {
-        "js": 692097,
-        "css": 275518,
-        "total": 967615,
-        "gzip": 204133
+        "js": 692002,
+        "css": 275390,
+        "total": 967392,
+        "gzip": 204116
       }
     },
     {
@@ -28116,7 +28050,6 @@
         "link.icons",
         "link.appearance",
         "mention.clearable",
-        "mention.password",
         "mention.word-limit",
         "mention.icons",
         "mention.loading",
@@ -28366,7 +28299,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -28777,7 +28709,6 @@
         "loading": [],
         "mention": [
           "mention.clearable",
-          "mention.password",
           "mention.word-limit",
           "mention.icons",
           "mention.loading",
@@ -28943,20 +28874,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 688449,
-          "gzipBytes": 168219
+          "bytes": 688358,
+          "gzipBytes": 168213
         },
         {
           "file": "ui-kit.css",
-          "bytes": 253085,
-          "gzipBytes": 34815
+          "bytes": 252973,
+          "gzipBytes": 34804
         }
       ],
       "sizes": {
-        "js": 688449,
-        "css": 253085,
-        "total": 941534,
-        "gzip": 203147
+        "js": 688358,
+        "css": 252973,
+        "total": 941331,
+        "gzip": 203132
       }
     }
   ]
