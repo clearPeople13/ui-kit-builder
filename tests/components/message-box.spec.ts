@@ -15,6 +15,11 @@ function panel() {
 
 const mounted: Array<ReturnType<typeof mount>> = []
 
+// happy-dom 没有布局引擎，offsetWidth 恒为 0，焦点陷阱的可见性判定会全部落空；
+// 与 dialog.spec.ts 同法：只在测试内让原型返回非零尺寸，断言对象仍是"焦点落在哪个元素"
+const proto = window.HTMLElement.prototype
+let originalOffsetWidth: PropertyDescriptor | undefined
+
 function mountBox(props: Record<string, any> = {}) {
   const wrapper = mount(MessageBox, {
     props: { modelValue: true, ...props },
@@ -22,6 +27,37 @@ function mountBox(props: Record<string, any> = {}) {
   })
   mounted.push(wrapper)
   return wrapper
+}
+
+function mountClosed(props: Record<string, any> = {}) {
+  const wrapper = mount(MessageBox, {
+    props: { modelValue: false, ...props },
+    attachTo: document.body
+  })
+  mounted.push(wrapper)
+  return wrapper
+}
+
+function forget(wrapper: ReturnType<typeof mount>) {
+  const index = mounted.indexOf(wrapper)
+  if (index >= 0) {
+    mounted.splice(index, 1)
+  }
+}
+
+function applyFocusableWidth() {
+  Object.defineProperty(proto, 'offsetWidth', { configurable: true, get: () => 100 })
+}
+
+function press(target: Window | Element | null | undefined, key: string, init: KeyboardEventInit = {}) {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+  target?.dispatchEvent(event)
+  return event
+}
+
+async function flush() {
+  await nextTick()
+  await new Promise((resolve) => setTimeout(resolve, 0))
 }
 
 async function click(selector: string) {
@@ -33,9 +69,19 @@ async function click(selector: string) {
   await nextTick()
 }
 
+function opener() {
+  const button = document.createElement('button')
+  button.className = 'opener'
+  document.body.appendChild(button)
+  button.focus()
+  return button
+}
+
 beforeEach(() => {
   document.body.innerHTML = ''
   document.documentElement.style.overflow = ''
+  originalOffsetWidth = Object.getOwnPropertyDescriptor(proto, 'offsetWidth')
+  applyFocusableWidth()
 })
 
 afterEach(async () => {
@@ -45,6 +91,9 @@ afterEach(async () => {
   }
   document.body.innerHTML = ''
   document.documentElement.style.overflow = ''
+  if (originalOffsetWidth) {
+    Object.defineProperty(proto, 'offsetWidth', originalOffsetWidth)
+  }
 })
 
 describe('MessageBox', () => {
@@ -221,8 +270,117 @@ describe('MessageBox', () => {
     const wrapper = mountBox()
     await nextTick()
     wrapper.unmount()
+    forget(wrapper)
     expect(mask()).toBeNull()
     expect(panel()).toBeNull()
     expect(document.documentElement.style.overflow).toBe('')
+  })
+
+  it('标题存在时用 aria-labelledby 锚定标题节点', async () => {
+    mountBox({ title: '确认操作' })
+    await nextTick()
+    const title = document.querySelector('.ui-message-box__title') as HTMLElement
+    expect(title.id).toMatch(/^ui-message-box-title-\d+$/)
+    expect(panel()?.getAttribute('aria-labelledby')).toBe(title.id)
+    expect(panel()?.getAttribute('aria-modal')).toBe('true')
+  })
+
+  it('无标题时省略 aria-labelledby 与标题 id', async () => {
+    mountBox({ message: '正文' })
+    await nextTick()
+    const title = document.querySelector('.ui-message-box__title') as HTMLElement
+    expect(title.hasAttribute('id')).toBe(false)
+    expect(panel()?.getAttribute('aria-labelledby')).toBeNull()
+  })
+
+  it('打开时记录触发元素并把焦点送到首个可聚焦节点', async () => {
+    const trigger = opener()
+    const wrapper = mountClosed()
+    await nextTick()
+    expect(panel()).toBeNull()
+    await wrapper.setProps({ modelValue: true })
+    await flush()
+    expect(document.activeElement).toBe(document.querySelector('.ui-message-box__close'))
+    expect(document.activeElement).not.toBe(trigger)
+  })
+
+  it('showClose=false 时初始焦点落在确认按钮', async () => {
+    mountBox({ showClose: false, title: '提示' })
+    await flush()
+    expect(document.activeElement).toBe(document.querySelector('.ui-message-box__button.is-primary'))
+  })
+
+  it('Tab 在末位回卷首位，Shift+Tab 在首位回卷末位', async () => {
+    mountBox({ showCancelButton: true })
+    await flush()
+    const close = document.querySelector('.ui-message-box__close') as HTMLElement
+    const confirm = document.querySelector('.ui-message-box__button.is-primary') as HTMLElement
+    confirm.focus()
+    const forward = press(window, 'Tab')
+    expect(forward.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(close)
+    close.focus()
+    const backward = press(window, 'Tab', { shiftKey: true })
+    expect(backward.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(confirm)
+  })
+
+  it('焦点在面板外时 Tab 被拉回面板首位', async () => {
+    mountBox()
+    await flush()
+    const outside = opener()
+    expect(document.activeElement).toBe(outside)
+    const event = press(window, 'Tab')
+    expect(event.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(document.querySelector('.ui-message-box__close'))
+  })
+
+  it('面板中间的 Tab 不拦截，留给浏览器默认行为', async () => {
+    mountBox({ showCancelButton: true })
+    await flush()
+    const cancel = document.querySelector('.ui-message-box__button.is-cancel') as HTMLElement
+    cancel.focus()
+    const event = press(window, 'Tab')
+    expect(event.defaultPrevented).toBe(false)
+    expect(document.activeElement).toBe(cancel)
+  })
+
+  it('关闭后焦点归还触发元素', async () => {
+    const trigger = opener()
+    const wrapper = mountClosed()
+    await wrapper.setProps({ modelValue: true })
+    await flush()
+    await wrapper.setProps({ modelValue: false })
+    await flush()
+    expect(panel()).toBeNull()
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('打开期间卸载同样归还焦点', async () => {
+    const trigger = opener()
+    const wrapper = mountClosed()
+    await wrapper.setProps({ modelValue: true })
+    await flush()
+    wrapper.unmount()
+    forget(wrapper)
+    expect(panel()).toBeNull()
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('关闭态下的 Tab 与无关按键都不接管', async () => {
+    mountClosed()
+    await nextTick()
+    expect(press(window, 'Tab').defaultPrevented).toBe(false)
+    expect(press(window, 'a').defaultPrevented).toBe(false)
+  })
+
+  it('没有可见可聚焦元素时焦点与 Tab 都落在面板本身', async () => {
+    Object.defineProperty(proto, 'offsetWidth', { configurable: true, get: () => 0 })
+    mountBox({ title: '提示' })
+    await flush()
+    expect(document.activeElement).toBe(panel())
+    const event = press(window, 'Tab')
+    expect(event.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(panel())
   })
 })

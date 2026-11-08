@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { h, nextTick } from 'vue'
+import { h, nextTick, ref, type Ref } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Dropdown, DropdownItem, DropdownMenu } from '@ui-kit-full'
 
@@ -319,3 +319,280 @@ async function itemClickOpen(wrapper: ReturnType<typeof mountDropdown>) {
   await nextTick()
   expect(isOpen()).toBe(true)
 }
+
+function press(target: Element | null | undefined, key: string, init: KeyboardEventInit = {}) {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+  target?.dispatchEvent(event)
+  return event
+}
+
+// 键盘打开后焦点移交走 setTimeout（跨 Vue 调度器），断言前必须跨过一次宏任务
+async function flush() {
+  await nextTick()
+  await new Promise((resolve) => setTimeout(resolve, 0))
+}
+
+function triggerEl(wrapper: ReturnType<typeof mountDropdown>) {
+  return wrapper.element.querySelector('.ui-dropdown__trigger') as HTMLElement
+}
+
+async function openByKeyboard(wrapper: ReturnType<typeof mountDropdown>) {
+  const trigger = triggerEl(wrapper)
+  trigger.focus()
+  press(trigger, 'Enter')
+  await flush()
+  expect(isOpen()).toBe(true)
+  return trigger
+}
+
+function mountCustomItems(showSecond: Ref<boolean>, firstDisabled = false) {
+  const wrapper = mount(Dropdown, {
+    props: { trigger: 'click' },
+    slots: {
+      default: () => h('button', { class: 'probe-trigger' }, '更多操作'),
+      dropdown: () =>
+        h(DropdownMenu, null, {
+          default: () => [
+            h(DropdownItem, { class: 'first', disabled: firstDisabled }, () => '首条'),
+            showSecond.value ? h(DropdownItem, { class: 'second' }, () => '次条') : null
+          ]
+        })
+    },
+    attachTo: document.body
+  })
+  mounted.push(wrapper)
+  return wrapper
+}
+
+describe('Dropdown 键盘菜单', () => {
+  it('触发器暴露 aria-haspopup，取值跟随面板 role', async () => {
+    const wrapper = mountDropdown()
+    await nextTick()
+    expect(triggerEl(wrapper).getAttribute('aria-haspopup')).toBe('menu')
+    wrapper.unmount()
+    document.body.innerHTML = ''
+
+    const navigation = mountDropdown({ role: 'navigation' })
+    await nextTick()
+    expect(triggerEl(navigation).getAttribute('aria-haspopup')).toBe('navigation')
+  })
+
+  it('菜单项 role=menuitem，当前停靠项 tabindex=0，禁用项退出 Tab 序', async () => {
+    mountDropdown()
+    await nextTick()
+    const list = panelItems()
+    expect(list.map((item) => item.getAttribute('role'))).toEqual(['menuitem', 'menuitem', 'menuitem', 'menuitem'])
+    expect(list.map((item) => item.getAttribute('tabindex'))).toEqual(['0', '-1', null, '-1'])
+    expect(list[2].getAttribute('aria-disabled')).toBe('true')
+    expect(list[0].hasAttribute('aria-disabled')).toBe(false)
+  })
+
+  it('键盘 Enter 打开后焦点移交首个可导航项', async () => {
+    const wrapper = mountDropdown()
+    const trigger = await openByKeyboard(wrapper)
+    expect(document.activeElement).toBe(panelItems()[0])
+    expect(document.activeElement).not.toBe(trigger)
+  })
+
+  it('键盘 Space 同样能打开并接管焦点', async () => {
+    const wrapper = mountDropdown()
+    const trigger = triggerEl(wrapper)
+    trigger.focus()
+    const event = press(trigger, ' ')
+    await flush()
+    expect(event.defaultPrevented).toBe(true)
+    expect(isOpen()).toBe(true)
+    expect(document.activeElement).toBe(panelItems()[0])
+  })
+
+  it('鼠标打开不抢焦点，焦点留在触发区', async () => {
+    const wrapper = mountDropdown()
+    const trigger = triggerEl(wrapper)
+    trigger.focus()
+    await wrapper.trigger('click')
+    await flush()
+    expect(isOpen()).toBe(true)
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('内层原生按钮上的 Enter 交给原生点击，不重复切换', async () => {
+    const wrapper = mountDropdown()
+    const inner = wrapper.element.querySelector('.probe-trigger') as HTMLElement
+    inner.focus()
+    const event = press(inner, 'Enter')
+    await flush()
+    expect(event.defaultPrevented).toBe(false)
+    expect(isOpen()).toBe(false)
+  })
+
+  it('↑↓ 在可导航项间循环，禁用项被跳过', async () => {
+    const wrapper = mountDropdown()
+    await openByKeyboard(wrapper)
+    const list = panelItems()
+    press(list[0], 'ArrowDown')
+    await nextTick()
+    expect(document.activeElement).toBe(list[1])
+    press(list[1], 'ArrowDown')
+    await nextTick()
+    expect(document.activeElement).toBe(list[3])
+    press(list[3], 'ArrowDown')
+    await nextTick()
+    expect(document.activeElement).toBe(list[0])
+    press(list[0], 'ArrowUp')
+    await nextTick()
+    expect(document.activeElement).toBe(list[3])
+    // 焦点移动同步 roving 停靠点
+    expect(list[3].getAttribute('tabindex')).toBe('0')
+    expect(list[0].getAttribute('tabindex')).toBe('-1')
+  })
+
+  it('Home / End 跳到首末可用项', async () => {
+    const wrapper = mountDropdown()
+    await openByKeyboard(wrapper)
+    const list = panelItems()
+    const end = press(list[0], 'End')
+    await nextTick()
+    expect(end.defaultPrevented).toBe(true)
+    expect(document.activeElement).toBe(list[3])
+    press(list[3], 'Home')
+    await nextTick()
+    expect(document.activeElement).toBe(list[0])
+  })
+
+  it('禁用项与无关按键不移动焦点', async () => {
+    const wrapper = mountDropdown()
+    await openByKeyboard(wrapper)
+    const list = panelItems()
+    const onDisabled = press(list[2], 'ArrowDown')
+    await nextTick()
+    expect(onDisabled.defaultPrevented).toBe(false)
+    expect(document.activeElement).toBe(list[0])
+    const typing = press(list[0], 'a')
+    await nextTick()
+    expect(typing.defaultPrevented).toBe(false)
+    expect(document.activeElement).toBe(list[0])
+  })
+
+  it('Enter 选中与点击同出口：触发项点击、收起并归还焦点', async () => {
+    const wrapper = mountDropdown()
+    const trigger = await openByKeyboard(wrapper)
+    const first = panelItems()[0]
+    const clicked = vi.fn()
+    first.addEventListener('click', clicked)
+    press(first, 'Enter')
+    await flush()
+    expect(clicked).toHaveBeenCalledTimes(1)
+    expect(wrapper.emitted('hide')).toEqual([[]])
+    expect(isOpen()).toBe(false)
+    expect(document.activeElement).toBe(trigger)
+    first.removeEventListener('click', clicked)
+  })
+
+  it('hideOnClick=false 时 Enter 选中不收起，焦点留在项上', async () => {
+    const wrapper = mountDropdown({ hideOnClick: false })
+    await openByKeyboard(wrapper)
+    const first = panelItems()[0]
+    press(first, 'Enter')
+    await flush()
+    expect(isOpen()).toBe(true)
+    expect(document.activeElement).toBe(first)
+  })
+
+  it('Escape 在菜单项上收起，并把焦点还给触发器', async () => {
+    const wrapper = mountDropdown()
+    const trigger = await openByKeyboard(wrapper)
+    press(panelItems()[1], 'Escape')
+    await flush()
+    expect(isOpen()).toBe(false)
+    expect(document.activeElement).toBe(trigger)
+  })
+
+  it('Escape 从面板空白处触发只收起，不改写焦点', async () => {
+    const wrapper = mountDropdown()
+    await openByKeyboard(wrapper)
+    press(panelContent(), 'Escape')
+    await flush()
+    expect(isOpen()).toBe(false)
+    expect(document.activeElement).toBe(panelItems()[0])
+  })
+
+  it('鼠标点击条目同步键盘停靠点', async () => {
+    const wrapper = mountDropdown()
+    await itemClickOpen(wrapper)
+    await itemClick(1)
+    expect(panelItems()[1].getAttribute('tabindex')).toBe('0')
+    expect(panelItems()[0].getAttribute('tabindex')).toBe('-1')
+    await itemClickOpen(wrapper)
+    press(panelItems()[1], 'ArrowDown')
+    await nextTick()
+    expect(document.activeElement).toBe(panelItems()[3])
+  })
+
+  it('点击禁用项不改写停靠点', async () => {
+    const wrapper = mountDropdown()
+    await itemClickOpen(wrapper)
+    await itemClick(2)
+    expect(panelItems()[0].getAttribute('tabindex')).toBe('0')
+    expect(panelItems()[2].hasAttribute('tabindex')).toBe(false)
+  })
+
+  it('停靠项卸载后回退到首个可用项', async () => {
+    const showSecond = ref(true)
+    const wrapper = mountCustomItems(showSecond)
+    await wrapper.trigger('click')
+    await nextTick()
+    await itemClick(1)
+    expect(panelItems()[1].getAttribute('tabindex')).toBe('0')
+    showSecond.value = false
+    await nextTick()
+    expect(panelItems().map((item) => item.textContent)).toEqual(['首条'])
+    expect(panelItems()[0].getAttribute('tabindex')).toBe('0')
+  })
+
+  it('没有可导航项时停靠点清空，整组退出 Tab 序', async () => {
+    const showSecond = ref(true)
+    const wrapper = mountCustomItems(showSecond, true)
+    await wrapper.trigger('click')
+    await nextTick()
+    await itemClick(1)
+    showSecond.value = false
+    await nextTick()
+    expect(panelItems().map((item) => item.getAttribute('tabindex'))).toEqual([null])
+  })
+
+  it('content 插槽作为 dropdown 插槽的别名', async () => {
+    const wrapper = mount(Dropdown, {
+      props: { trigger: 'click' },
+      slots: { default: () => h('button', { class: 'probe-trigger' }, '更多操作'), content: items },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(panelItems()).toHaveLength(4)
+  })
+
+  it('禁用状态翻转后停靠点仍落在可用项上', async () => {
+    const secondDisabled = ref(false)
+    const wrapper = mount(Dropdown, {
+      props: { trigger: 'click' },
+      slots: {
+        default: () => h('button', { class: 'probe-trigger' }, '更多操作'),
+        dropdown: () =>
+          h(DropdownMenu, null, {
+            default: () => [
+              h(DropdownItem, { class: 'first' }, () => '首条'),
+              h(DropdownItem, { class: 'second', disabled: secondDisabled.value }, () => '次条')
+            ]
+          })
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await wrapper.trigger('click')
+    await nextTick()
+    secondDisabled.value = true
+    await nextTick()
+    expect(panelItems()[0].getAttribute('tabindex')).toBe('0')
+    expect(panelItems()[1].hasAttribute('tabindex')).toBe(false)
+  })
+})

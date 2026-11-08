@@ -79,6 +79,40 @@ function fire(el: Element | undefined, type: string) {
   el?.dispatchEvent(new Event(type, { bubbles: true }))
 }
 
+function press(target: Element | null | undefined, key: string, init: KeyboardEventInit = {}) {
+  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init })
+  target?.dispatchEvent(event)
+  return event
+}
+
+function slider(selector: string) {
+  return document.querySelector(selector) as HTMLElement
+}
+
+// happy-dom 没有布局引擎，拖拽反算需要非零矩形才能算出比例；替身只喂几何，断言仍是色值与 ARIA
+function stubRect(el: Element, rect: Partial<DOMRect> = {}) {
+  Object.defineProperty(el, 'getBoundingClientRect', {
+    configurable: true,
+    value: () =>
+      ({
+        left: 0,
+        top: 0,
+        width: 100,
+        height: 100,
+        right: 100,
+        bottom: 100,
+        x: 0,
+        y: 0,
+        toJSON: () => ({}),
+        ...rect
+      }) as DOMRect
+  })
+}
+
+function triggerNode(wrapper: ReturnType<typeof mountPicker>) {
+  return wrapper.element.querySelector('.ui-color-picker__trigger') as HTMLElement
+}
+
 afterEach(() => {
   while (mounted.length) {
     mounted.pop()!.unmount()
@@ -360,6 +394,293 @@ describe('ColorPicker 颜色选择', () => {
       'ui-color-picker--popper',
       'ui-color-picker--format'
     ])
+  })
+
+  it('触发器 Enter 打开面板并把焦点交给饱和度滑杆', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const trigger = triggerNode(wrapper)
+    trigger.focus()
+    const event = press(trigger, 'Enter')
+    await flush()
+    expect(event.defaultPrevented).toBe(true)
+    expect(visible()).toBe(true)
+    expect(wrapper.emitted('visible-change')).toEqual([[true]])
+    expect(document.activeElement).toBe(slider('.ui-color-picker__sv'))
+  })
+
+  it('触发器 Space 打开，再次按 Enter 收起', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const trigger = triggerNode(wrapper)
+    trigger.focus()
+    press(trigger, ' ')
+    await flush()
+    expect(visible()).toBe(true)
+    expect(document.activeElement).toBe(slider('.ui-color-picker__sv'))
+    press(trigger, 'Enter')
+    await flush()
+    expect(visible()).toBe(false)
+    expect(wrapper.find('.ui-color-picker__trigger').attributes('aria-expanded')).toBe('false')
+  })
+
+  it('触发器上的 Escape 收起面板，关闭态下不产生副作用', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const trigger = triggerNode(wrapper)
+    press(trigger, 'Escape')
+    await flush()
+    expect(visible()).toBe(false)
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    await open(wrapper)
+    press(trigger, 'Escape')
+    await flush()
+    expect(visible()).toBe(false)
+    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+  })
+
+  it('三个滑杆带齐 slider 语义与当前值', async () => {
+    const wrapper = mountPicker({ modelValue: '#3366cc', showAlpha: true })
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    const hue = slider('.ui-color-picker__hue')
+    const alpha = slider('.ui-color-picker__alpha')
+    for (const node of [sv, hue, alpha]) {
+      expect(node.getAttribute('role')).toBe('slider')
+      expect(node.getAttribute('aria-valuemin')).toBe('0')
+      expect(node.getAttribute('tabindex')).toBe('0')
+    }
+    expect(sv.getAttribute('aria-valuemax')).toBe('100')
+    expect(sv.getAttribute('aria-valuenow')).toBe('75')
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 75%，明度 80%')
+    expect(hue.getAttribute('aria-valuemax')).toBe('360')
+    expect(hue.getAttribute('aria-valuenow')).toBe('220')
+    expect(hue.getAttribute('aria-valuetext')).toBe('220°')
+    expect(alpha.getAttribute('aria-valuemax')).toBe('100')
+    expect(alpha.getAttribute('aria-valuenow')).toBe('100')
+    expect(alpha.getAttribute('aria-valuetext')).toBe('100%')
+  })
+
+  it('饱和度滑杆方向键按 1% 步进并提交色值', async () => {
+    const wrapper = mountPicker({ modelValue: '#3366cc' })
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    const right = press(sv, 'ArrowRight')
+    await flush()
+    expect(right.defaultPrevented).toBe(true)
+    expect(sv.getAttribute('aria-valuenow')).toBe('76')
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 76%，明度 80%')
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
+    await flush()
+    press(sv, 'ArrowLeft')
+    await flush()
+    expect(sv.getAttribute('aria-valuenow')).toBe('75')
+    press(sv, 'ArrowDown')
+    await flush()
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 75%，明度 79%')
+    press(sv, 'ArrowUp')
+    await flush()
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 75%，明度 80%')
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(4)
+  })
+
+  it('饱和度与明度步进夹在 0–100 边界', async () => {
+    const wrapper = mountPicker({ modelValue: '#ffffff' })
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    press(sv, 'ArrowLeft')
+    await flush()
+    expect(sv.getAttribute('aria-valuenow')).toBe('0')
+    press(sv, 'ArrowUp')
+    await flush()
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 0%，明度 100%')
+  })
+
+  it('色相滑杆方向键按 1° 步进并夹在 0–360', async () => {
+    const wrapper = mountPicker({ modelValue: '#ff0000' })
+    await open(wrapper)
+    const hue = slider('.ui-color-picker__hue')
+    press(hue, 'ArrowRight')
+    await flush()
+    expect(hue.getAttribute('aria-valuenow')).toBe('1')
+    expect(hue.getAttribute('aria-valuetext')).toBe('1°')
+    press(hue, 'ArrowLeft')
+    await flush()
+    press(hue, 'ArrowLeft')
+    await flush()
+    expect(hue.getAttribute('aria-valuenow')).toBe('0')
+    press(hue, 'ArrowUp')
+    await flush()
+    expect(hue.getAttribute('aria-valuenow')).toBe('1')
+
+    wrapper.unmount()
+    mounted.pop()
+    document.body.innerHTML = ''
+    const top = mountPicker({ modelValue: 'hsl(359, 100%, 50%)' })
+    await open(top)
+    const topHue = slider('.ui-color-picker__hue')
+    press(topHue, 'ArrowRight')
+    await flush()
+    expect(topHue.getAttribute('aria-valuenow')).toBe('360')
+    expect(topHue.getAttribute('aria-valuetext')).toBe('360°')
+  })
+
+  it('透明度滑杆方向键按 1% 步进并夹在 0–100', async () => {
+    const wrapper = mountPicker({ modelValue: 'rgba(51, 102, 204, 0.5)', showAlpha: true })
+    await open(wrapper)
+    const alpha = slider('.ui-color-picker__alpha')
+    expect(alpha.getAttribute('aria-valuenow')).toBe('50')
+    press(alpha, 'ArrowRight')
+    await flush()
+    expect(alpha.getAttribute('aria-valuenow')).toBe('51')
+    press(alpha, 'ArrowLeft')
+    await flush()
+    expect(alpha.getAttribute('aria-valuenow')).toBe('50')
+
+    wrapper.unmount()
+    mounted.pop()
+    document.body.innerHTML = ''
+    const clear = mountPicker({ modelValue: 'rgba(51, 102, 204, 0)', showAlpha: true })
+    await open(clear)
+    const clearAlpha = slider('.ui-color-picker__alpha')
+    expect(clearAlpha.getAttribute('aria-valuenow')).toBe('0')
+    press(clearAlpha, 'ArrowLeft')
+    await flush()
+    expect(clearAlpha.getAttribute('aria-valuenow')).toBe('0')
+    press(clearAlpha, 'ArrowUp')
+    await flush()
+    expect(clearAlpha.getAttribute('aria-valuenow')).toBe('1')
+  })
+
+  it('滑杆忽略非方向键', async () => {
+    const wrapper = mountPicker({ modelValue: '#3366cc' })
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    const event = press(sv, 'a')
+    await flush()
+    expect(event.defaultPrevented).toBe(false)
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('面板内 Escape 收起并归还焦点给触发区', async () => {
+    const wrapper = mountPicker()
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    sv.focus()
+    const event = press(sv, 'Escape')
+    await flush()
+    expect(event.defaultPrevented).toBe(true)
+    expect(visible()).toBe(false)
+    expect(document.activeElement).toBe(triggerNode(wrapper))
+  })
+
+  it('SV 区拖拽按像素比例改写饱和度与明度', async () => {
+    const wrapper = mountPicker({ modelValue: '#3366cc' })
+    await open(wrapper)
+    const sv = slider('.ui-color-picker__sv')
+    stubRect(sv)
+    sv.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, clientX: 25, clientY: 25 }))
+    await flush()
+    expect(sv.getAttribute('aria-valuenow')).toBe('25')
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 25%，明度 75%')
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(1)
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: 75, clientY: 0 }))
+    await flush()
+    expect(sv.getAttribute('aria-valuenow')).toBe('75')
+    expect(sv.getAttribute('aria-valuetext')).toBe('饱和度 75%，明度 100%')
+    window.dispatchEvent(new MouseEvent('pointerup'))
+    await flush()
+    window.dispatchEvent(new MouseEvent('pointermove', { clientX: 10, clientY: 10 }))
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(2)
+  })
+
+  it('色相滑条拖拽写入角度，透明度滑条拖拽写入 alpha', async () => {
+    const wrapper = mountPicker({ modelValue: '#ff0000', showAlpha: true })
+    await open(wrapper)
+    const hue = slider('.ui-color-picker__hue')
+    stubRect(hue)
+    hue.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, clientX: 50 }))
+    await flush()
+    expect(hue.getAttribute('aria-valuenow')).toBe('180')
+    expect(cursorPercent('.ui-color-picker__slider-cursor', 'left')).toBe('50.000')
+    const alpha = slider('.ui-color-picker__alpha')
+    stubRect(alpha)
+    alpha.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, clientX: 30 }))
+    await flush()
+    expect(alpha.getAttribute('aria-valuenow')).toBe('30')
+    expect(wrapper.emitted('update:modelValue')).toHaveLength(2)
+  })
+
+  it('按下触发区或面板内部不关闭面板', async () => {
+    const wrapper = mountPicker()
+    await open(wrapper)
+    triggerNode(wrapper).dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+    await flush()
+    expect(visible()).toBe(true)
+    slider('.ui-color-picker__fields').dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+    await flush()
+    expect(visible()).toBe(true)
+  })
+
+  it('hex 输入框 Enter 立即提交色值', async () => {
+    const wrapper = mountPicker()
+    await open(wrapper)
+    const hex = hexInput()!
+    hex.value = '#00ff00'
+    press(hex, 'Enter')
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toEqual([['#00ff00']])
+    expect(triggerText(wrapper)).toBe('#00ff00')
+  })
+
+  it('colorFormat 支持 hsl 输出', async () => {
+    const wrapper = mountPicker({ colorFormat: 'hsl' })
+    await flush()
+    expect(triggerText(wrapper)).toBe('hsl(0deg 100% 50%)')
+  })
+
+  it('禁用态滑杆退出 Tab 序，拖拽与方向键都不生效', async () => {
+    const wrapper = mountPicker({ modelValue: '#3366cc', disabled: true, showAlpha: true })
+    await flush()
+    const sv = slider('.ui-color-picker__sv')
+    expect(sv.getAttribute('tabindex')).toBeNull()
+    expect(sv.getAttribute('aria-disabled')).toBe('true')
+    stubRect(sv)
+    sv.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, clientX: 50, clientY: 50 }))
+    await flush()
+    press(sv, 'ArrowRight')
+    await flush()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(sv.getAttribute('aria-valuenow')).toBe('75')
+  })
+
+  it('persistent=false 时面板随收起卸载', async () => {
+    const wrapper = mountPicker({ persistent: false })
+    await flush()
+    expect(dropdown()).toBeNull()
+    await open(wrapper)
+    expect(dropdown()).not.toBeNull()
+    await clickNode(actionButtons()[1])
+    expect(dropdown()).toBeNull()
+  })
+
+  it('触发区上的无关按键不切换面板', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    const event = press(triggerNode(wrapper), 'a')
+    await flush()
+    expect(event.defaultPrevented).toBe(false)
+    expect(visible()).toBe(false)
+  })
+
+  it('关闭态的外部按下不触发收起流程', async () => {
+    const wrapper = mountPicker()
+    await flush()
+    document.body.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }))
+    await flush()
+    expect(wrapper.emitted('visible-change')).toBeUndefined()
+    expect(visible()).toBe(false)
   })
 })
 
