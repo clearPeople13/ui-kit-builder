@@ -24,21 +24,28 @@ describe('浏览器层 · Form 场景契约', () => {
     const { page } = session
     await page.reload({ waitUntil: 'load' })
     await page.waitForFunction(() => (window as unknown as { __probe?: { ready?: boolean } }).__probe?.ready === true)
+    // vitest 5 下 ready 信号可能早于初始异步校验的渲染完成：必须等两条初始错误真正挂上
+    // 再进用例。否则 fill 会抢在初始报错之前，change 通路（有错才重校）够不到后到的错误，
+    // 姓名必填 会永久挂住（F-93 的 trigger 增量校验语义如此，非产品缺陷，是探针时序问题）。
+    await expect.poll(async () => [await nameError(), await emailError()]).toEqual(['姓名必填', '邮箱必填'])
   })
 
+  // 错误元素不存在时 Playwright 会按默认 30s 超时重试：vitest 5 的 expect.poll 按单次
+  // 迭代限 1s 竞速，慢探针会被判 "function didn't resolve in time"。给 textContent 一个
+  // 短超时（不存在即快速抛错走 catch → null），语义不变、与 poll 的迭代预算兼容。
   const nameError = () =>
     session.page
       .locator('.ui-form-item')
       .nth(0)
       .locator('.ui-form-item__error')
-      .textContent()
+      .textContent({ timeout: 500 })
       .catch(() => null)
   const emailError = () =>
     session.page
       .locator('.ui-form-item')
       .nth(1)
       .locator('.ui-form-item__error')
-      .textContent()
+      .textContent({ timeout: 500 })
       .catch(() => null)
 
   it('初始整表校验：两个必填字段直接报错（兼容既有行为）', async () => {

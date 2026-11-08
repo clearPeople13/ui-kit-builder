@@ -16,13 +16,19 @@ function classesOf(wrapper: ReturnType<typeof mountBacktop>) {
 
 let scrollToSpy: ReturnType<typeof vi.fn>
 
+// vitest 5 起 happy-dom 的 window.scrollY 只有 getter，直接赋值抛 TypeError；
+// 用 defineProperty 在实例上自建属性遮蔽原型 getter。
+function setScrollY(value: number) {
+  Object.defineProperty(window, 'scrollY', { value, configurable: true, writable: true })
+}
+
 beforeEach(() => {
   scrollToSpy = vi.fn()
   ;(window as unknown as Record<string, any>).scrollTo = scrollToSpy
 })
 
 afterEach(() => {
-  ;(window as unknown as Record<string, any>).scrollY = 0
+  setScrollY(0)
   document.documentElement.scrollTop = 0
   document.body.innerHTML = ''
   vi.restoreAllMocks()
@@ -42,11 +48,11 @@ describe('Backtop 回到顶部', () => {
   it('window 滚动超过 visibilityHeight 阈值后浮现（手动触发显隐路径）', async () => {
     const wrapper = mountBacktop({ visibilityHeight: 200 })
     expect(wrapper.classes()).toContain('is-hidden')
-    ;(window as unknown as Record<string, any>).scrollY = 300
+    setScrollY(300)
     window.dispatchEvent(new Event('scroll'))
     await nextTick()
     expect(wrapper.classes()).toEqual(['ui-backtop', 'is-visible'])
-    ;(window as unknown as Record<string, any>).scrollY = 0
+    setScrollY(0)
     window.dispatchEvent(new Event('scroll'))
     await nextTick()
     expect(wrapper.classes()).toContain('is-hidden')

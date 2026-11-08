@@ -23,7 +23,6 @@ export default defineConfig({
     // Firefox 子集（network.proxy.type=0）自成一条 file，同样受益。
     fileParallelism: true,
     maxWorkers: 3,
-    minWorkers: 1,
     testTimeout: 60000,
     hookTimeout: 120000,
     reporters: ['default']
