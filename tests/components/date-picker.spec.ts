@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DatePicker, DatePickerPanel } from '@ui-kit-full'
+import { ConfigProvider, DatePicker, DatePickerPanel } from '@ui-kit-full'
 
 const mounted: ReturnType<typeof mount>[] = []
 
@@ -190,6 +190,51 @@ describe('DatePicker 日期选择', () => {
     await clickNative(actions[1])
     expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
     expect(wrapper.emitted('update:modelValue')).toHaveLength(2)
+  })
+
+  it('文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: {
+        locale: {
+          datePicker: {
+            placeholder: 'Pick a date',
+            today: 'Today',
+            confirm: 'OK',
+            prevPage: 'Previous',
+            nextPage: 'Next',
+            monthFormat: '{month}M',
+            weekdays: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+          }
+        }
+      },
+      slots: { default: () => h(DatePicker, { modelValue: '2026-11-06' }) },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(wrapper.find('input').attributes('placeholder')).toBe('Pick a date')
+    await wrapper.find('.ui-date-picker__trigger').trigger('click')
+    await nextTick()
+    const actions = Array.from(
+      panel()!.querySelectorAll('.ui-date-picker__footer-actions .ui-date-picker__action')
+    ) as HTMLElement[]
+    expect(actions.map((action) => action.textContent)).toEqual(['Today', 'OK'])
+    expect(panel()!.querySelectorAll('.ui-date-picker__nav')[0].getAttribute('aria-label')).toBe('Previous')
+    expect(panel()!.querySelectorAll('.ui-date-picker__nav')[1].getAttribute('aria-label')).toBe('Next')
+    expect(Array.from(panel()!.querySelectorAll('.ui-date-picker__weekday')).map((node) => node.textContent)).toEqual([
+      'Mo',
+      'Tu',
+      'We',
+      'Th',
+      'Fr',
+      'Sa',
+      'Su'
+    ])
+    // monthFormat 已注入，yearFormat 未注入仍回退默认中文
+    expect(Array.from(panel()!.querySelectorAll('.ui-date-picker__title')).map((node) => node.textContent)).toEqual([
+      '2026年',
+      '11M'
+    ])
   })
 
   it('快捷方式按文本提交对应日期', async () => {

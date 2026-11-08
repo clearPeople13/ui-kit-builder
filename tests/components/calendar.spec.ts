@@ -1,7 +1,8 @@
 import { mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
+import { h } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Calendar } from '@ui-kit-full'
+import { Calendar, ConfigProvider } from '@ui-kit-full'
 
 // 日历依赖系统时钟判定"今天"，统一冻结在 2026-11-07
 beforeEach(() => {
@@ -125,6 +126,36 @@ describe('Calendar 日历', () => {
     expect(value[1].getDate()).toBe(15)
     expect(cellOf(wrapper, 12).classes()).toContain('is-range-start')
     expect(cellOf(wrapper, 15).classes()).toContain('is-range-end')
+  })
+
+  it('文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: {
+        locale: {
+          calendar: {
+            monthTitleFormat: '{month}/{year}',
+            rangeFormat: '{start} -> {end}',
+            rangeHint: 'Pick a range',
+            weekdays: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
+          }
+        }
+      },
+      slots: { default: () => h(Calendar, { range: [] }) }
+    })
+    expect(wrapper.find('.ui-calendar__title').text()).toBe('11/2026')
+    expect(wrapper.find('.ui-calendar__range-tip').text()).toBe('Pick a range')
+    expect(wrapper.findAll('.ui-calendar__weekday').map((item) => item.text())).toEqual([
+      'Mo',
+      'Tu',
+      'We',
+      'Th',
+      'Fr',
+      'Sa',
+      'Su'
+    ])
+    await cellOf(wrapper, 12).trigger('click')
+    // startHintFormat 未注入，起点提示仍回退默认中文
+    expect(wrapper.find('.ui-calendar__range-tip').text()).toBe('开始 2026-11-12，请选择结束日期')
   })
 
   it('区间倒序选择会自动纠正起止', async () => {

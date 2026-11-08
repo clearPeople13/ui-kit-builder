@@ -2,6 +2,7 @@ import { computed, h, ref, watch } from 'vue'
 import { ChevronLeft, ChevronRight } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import './core.css'
 
@@ -9,8 +10,6 @@ const calendarBaseProps = {
   modelValue: { type: null },
   controllerType: { type: String, default: 'button' }
 }
-
-const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日']
 
 function toDate(value: unknown): Date {
   if (value instanceof Date) {
@@ -55,6 +54,7 @@ export function createCalendar(features: UiFeature[] = []) {
       baseClass: 'ui-calendar',
       props: calendarBaseProps,
       setup(props, { emit }) {
+        const locale = useLocale('calendar')
         const hasRange = computed(() => Array.isArray(props.range))
         const pendingStart = ref<Date | null>(null)
         const innerValue = ref<unknown>(props.modelValue)
@@ -177,6 +177,7 @@ export function createCalendar(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           viewYear,
           viewMonth,
           pendingStart,
@@ -194,18 +195,21 @@ export function createCalendar(features: UiFeature[] = []) {
           get rangeText() {
             const { start, end } = rangeValue.value
             if (pendingStart.value) {
-              return `开始 ${formatDay(pendingStart.value)}，请选择结束日期`
+              return formatLocale(locale.value.startHintFormat, { start: formatDay(pendingStart.value) })
             }
             if (start && end) {
-              return `${formatDay(start)} 至 ${formatDay(end)}`
+              return formatLocale(locale.value.rangeFormat, { start: formatDay(start), end: formatDay(end) })
             }
             if (start) {
-              return `开始 ${formatDay(start)}，请选择结束日期`
+              return formatLocale(locale.value.startHintFormat, { start: formatDay(start) })
             }
-            return '点击日期选择范围'
+            return locale.value.rangeHint
           },
           get title() {
-            return `${viewYear.value} 年 ${viewMonth.value + 1} 月`
+            return formatLocale(locale.value.monthTitleFormat, {
+              year: viewYear.value,
+              month: viewMonth.value + 1
+            })
           }
         }
       },
@@ -227,7 +231,7 @@ export function createCalendar(features: UiFeature[] = []) {
         h(
           'div',
           { class: 'ui-calendar__weekdays' },
-          WEEKDAYS.map((day) => h('span', { class: 'ui-calendar__weekday', key: day }, day))
+          state.locale.value.weekdays.map((day: string) => h('span', { class: 'ui-calendar__weekday', key: day }, day))
         ),
         h(
           'div',

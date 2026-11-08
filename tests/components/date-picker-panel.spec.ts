@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { h, nextTick } from 'vue'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DatePickerPanel } from '@ui-kit-full'
+import { ConfigProvider, DatePickerPanel } from '@ui-kit-full'
 
 /**
  * DatePickerPanel 内联日期面板：不含触发器，只渲染日历网格与页脚操作。
@@ -68,6 +68,38 @@ describe('DatePickerPanel 日期面板', () => {
     expect(
       Array.from(document.querySelectorAll('.ui-date-picker-panel__footer > *')).map((node) => node.className)
     ).toEqual(['ui-date-picker-panel__now', 'ui-date-picker-panel__clear'])
+  })
+
+  it('文案来自 ConfigProvider 注入的 locale，未注入键回退中文', async () => {
+    const wrapper = mount(ConfigProvider, {
+      props: {
+        locale: {
+          datePicker: {
+            panelYearMonthFormat: '{year} / {month}',
+            now: 'Now',
+            confirm: 'OK',
+            prevPage: 'Prev'
+          }
+        }
+      },
+      slots: {
+        default: () => h(DatePickerPanel, { modelValue: '2026-11-06', showWeekNumber: true, showConfirm: true })
+      },
+      attachTo: document.body
+    })
+    mounted.push(wrapper)
+    await nextTick()
+    expect(titles()).toEqual(['2026 / 11'])
+    expect(
+      Array.from(document.querySelectorAll('.ui-date-picker-panel__nav')).map((node) => node.getAttribute('aria-label'))
+    ).toEqual(['上一组', 'Prev', '下一页', '下一组'])
+    // week 与 weekdays 未注入，周表头仍回退默认中文
+    expect(
+      Array.from(document.querySelectorAll('.ui-date-picker-panel__weekday')).map((node) => node.textContent)
+    ).toEqual(['周', '一', '二', '三', '四', '五', '六', '日'])
+    expect(
+      Array.from(document.querySelectorAll('.ui-date-picker-panel__footer > *')).map((node) => node.textContent)
+    ).toEqual(['Now', '清空', 'OK'])
   })
 
   it('今日与受控选中日期共用单元格类名，且今日只落在本月', async () => {

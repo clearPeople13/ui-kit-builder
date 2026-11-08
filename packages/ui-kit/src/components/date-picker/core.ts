@@ -3,6 +3,7 @@ import { Teleport, computed, h, nextTick, onBeforeUnmount, onMounted, ref, watch
 import { Calendar, ChevronDown, ChevronLeft, ChevronRight, X } from '../../shared/icons'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import { renderIcon } from '../../shared/icon'
 import { useFloatingPanel } from '../../shared/panel'
 import {
@@ -47,8 +48,6 @@ const datePickerBaseProps = {
   showFooter: { type: Boolean, default: true }
 }
 
-const WEEK_LABELS = ['一', '二', '三', '四', '五', '六', '日']
-
 export function createDatePicker(features: UiFeature[] = []) {
   return createUiComponent(
     {
@@ -57,6 +56,7 @@ export function createDatePicker(features: UiFeature[] = []) {
       props: datePickerBaseProps,
       emits: ['update:modelValue', 'change', 'clear', 'visible-change'],
       setup(props, { emit }) {
+        const locale = useLocale('datePicker')
         const open = ref(false)
         const view = ref<'date' | 'month' | 'year'>('date')
         const panelDate = ref<Date>(startOfMonth(new Date()))
@@ -827,7 +827,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                   {
                     key: `week-${row}`,
                     class: 'ui-date-picker__week-num',
-                    title: `第 ${isoWeekNumber(weekStart)} 周`
+                    title: formatLocale(locale.value.weekNumberFormat, { week: isoWeekNumber(weekStart) })
                   },
                   `W${isoWeekNumber(weekStart)}`
                 )
@@ -841,8 +841,10 @@ export function createDatePicker(features: UiFeature[] = []) {
           }
           return h('div', { class: 'ui-date-picker__month' }, [
             h('div', { class: ['ui-date-picker__weekdays', showWeek ? 'is-week' : ''] }, [
-              showWeek ? h('span', { class: 'ui-date-picker__weekday is-week', key: 'week' }, '周') : null,
-              ...WEEK_LABELS.map((label) => h('span', { class: 'ui-date-picker__weekday', key: label }, label))
+              showWeek ? h('span', { class: 'ui-date-picker__weekday is-week', key: 'week' }, locale.value.week) : null,
+              ...locale.value.weekdays.map((label) =>
+                h('span', { class: 'ui-date-picker__weekday', key: label }, label)
+              )
             ]),
             h('div', { class: ['ui-date-picker__grid', showWeek ? 'is-week' : ''] }, rows)
           ])
@@ -866,7 +868,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: () => handleMonthClick(index)
                 },
-                `${index + 1}月`
+                formatLocale(locale.value.monthFormat, { month: index + 1 })
               )
             })
           )
@@ -899,7 +901,11 @@ export function createDatePicker(features: UiFeature[] = []) {
 
         function renderMonthPanel(date: Date): VNodeChild {
           return h('div', { class: 'ui-date-picker__panel' }, [
-            h('div', { class: 'ui-date-picker__panel-title' }, `${date.getFullYear()}年${date.getMonth() + 1}月`),
+            h(
+              'div',
+              { class: 'ui-date-picker__panel-title' },
+              formatLocale(locale.value.yearMonthFormat, { year: date.getFullYear(), month: date.getMonth() + 1 })
+            ),
             renderMonthGrid(date)
           ])
         }
@@ -967,18 +973,18 @@ export function createDatePicker(features: UiFeature[] = []) {
 
         function renderTime(): VNodeChild {
           const columns: VNodeChild[] = [
-            renderTimeColumn('时', 24, hours.value, isHourDisabled, (value) => {
+            renderTimeColumn(locale.value.hour, 24, hours.value, isHourDisabled, (value) => {
               hours.value = value
               applyTime()
             }),
-            renderTimeColumn('分', 60, minutes.value, isMinuteDisabled, (value) => {
+            renderTimeColumn(locale.value.minute, 60, minutes.value, isMinuteDisabled, (value) => {
               minutes.value = value
               applyTime()
             })
           ]
           if (showSeconds.value) {
             columns.push(
-              renderTimeColumn('秒', 60, seconds.value, isSecondDisabled, (value) => {
+              renderTimeColumn(locale.value.second, 60, seconds.value, isSecondDisabled, (value) => {
                 seconds.value = value
                 applyTime()
               })
@@ -996,7 +1002,7 @@ export function createDatePicker(features: UiFeature[] = []) {
               {
                 class: 'ui-date-picker__nav',
                 type: 'button',
-                'aria-label': '上一页',
+                'aria-label': locale.value.prevPage,
                 onClick: () => shiftPanel(-1)
               },
               [renderIcon(ChevronLeft)]
@@ -1011,7 +1017,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                     view.value = 'year'
                   }
                 },
-                `${year}年`
+                formatLocale(locale.value.yearFormat, { year })
               ),
               baseView.value === 'date' && !(range.value && !props.singlePanel)
                 ? h(
@@ -1023,7 +1029,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                         view.value = 'month'
                       }
                     },
-                    `${month}月`
+                    formatLocale(locale.value.monthFormat, { month })
                   )
                 : null
             ]),
@@ -1032,7 +1038,7 @@ export function createDatePicker(features: UiFeature[] = []) {
               {
                 class: 'ui-date-picker__nav',
                 type: 'button',
-                'aria-label': '下一页',
+                'aria-label': locale.value.nextPage,
                 onClick: () => shiftPanel(1)
               },
               [renderIcon(ChevronRight)]
@@ -1047,20 +1053,27 @@ export function createDatePicker(features: UiFeature[] = []) {
               {
                 class: 'ui-date-picker__nav',
                 type: 'button',
-                'aria-label': '上一页',
+                'aria-label': locale.value.prevPage,
                 onClick: () => onShift(-1)
               },
               [renderIcon(ChevronLeft)]
             ),
             h('div', { class: 'ui-date-picker__titles' }, [
-              h('span', { class: 'ui-date-picker__title is-static' }, `${date.getFullYear()}年${date.getMonth() + 1}月`)
+              h(
+                'span',
+                { class: 'ui-date-picker__title is-static' },
+                formatLocale(locale.value.yearMonthFormat, {
+                  year: date.getFullYear(),
+                  month: date.getMonth() + 1
+                })
+              )
             ]),
             h(
               'button',
               {
                 class: 'ui-date-picker__nav',
                 type: 'button',
-                'aria-label': '下一页',
+                'aria-label': locale.value.nextPage,
                 onClick: () => onShift(1)
               },
               [renderIcon(ChevronRight)]
@@ -1083,7 +1096,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: setNow
                 },
-                isDatetime.value ? '此刻' : '今天'
+                isDatetime.value ? locale.value.now : locale.value.today
               )
             )
           }
@@ -1096,7 +1109,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                   type: 'button',
                   onClick: confirmPanel
                 },
-                '确定'
+                locale.value.confirm
               )
             )
           }
@@ -1152,6 +1165,7 @@ export function createDatePicker(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           triggerRef,
           get open() {
             return open.value
@@ -1229,7 +1243,7 @@ export function createDatePicker(features: UiFeature[] = []) {
             type: 'text',
             autocomplete: 'off',
             value: state.startText,
-            placeholder: props.placeholder || '选择日期',
+            placeholder: props.placeholder || state.locale.value.placeholder,
             readonly: !state.editable,
             disabled: Boolean(props.disabled),
             id: singleId,
@@ -1277,7 +1291,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                 type: 'text',
                 autocomplete: 'off',
                 value: state.startText,
-                placeholder: props.startPlaceholder || '开始日期',
+                placeholder: props.startPlaceholder || state.locale.value.startPlaceholder,
                 readonly: !state.editable,
                 disabled: Boolean(props.disabled),
                 id: rangeIds[0],
@@ -1307,7 +1321,7 @@ export function createDatePicker(features: UiFeature[] = []) {
                 type: 'text',
                 autocomplete: 'off',
                 value: state.endText,
-                placeholder: props.endPlaceholder || '结束日期',
+                placeholder: props.endPlaceholder || state.locale.value.endPlaceholder,
                 readonly: !state.editable,
                 disabled: Boolean(props.disabled),
                 id: rangeIds[1],

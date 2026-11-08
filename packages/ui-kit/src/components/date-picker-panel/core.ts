@@ -1,6 +1,7 @@
 import { h, ref } from 'vue'
 import type { UiFeature } from '../../shared/feature'
 import { createUiComponent } from '../../shared/component'
+import { formatLocale, useLocale } from '../../shared/config'
 import './core.css'
 
 type CalendarCell = {
@@ -10,7 +11,6 @@ type CalendarCell = {
   outside: boolean
 }
 
-const WEEK_LABELS = ['一', '二', '三', '四', '五', '六', '日']
 const DAY_MS = 86400000
 
 function startOfDay(date: Date): Date {
@@ -84,11 +84,11 @@ function isoWeek(date: Date): number {
   return Math.ceil(((target.getTime() - yearStart.getTime()) / DAY_MS + 1) / 7)
 }
 
-function buildCells(month: Date, type: string): CalendarCell[] {
+function buildCells(month: Date, type: string, monthFormat: string): CalendarCell[] {
   if (type === 'month') {
     return Array.from({ length: 12 }, (_unused, index) => {
       const date = new Date(month.getFullYear(), index, 1)
-      return { key: `month-${index}`, date, label: `${index + 1}月`, outside: false }
+      return { key: `month-${index}`, date, label: formatLocale(monthFormat, { month: index + 1 }), outside: false }
     })
   }
   if (type === 'year') {
@@ -137,6 +137,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
       tag: () => 'div',
       classes: (props) => [props.disabled ? 'is-disabled' : '', props.isRange ? 'is-range' : ''],
       setup(props, { emit }) {
+        const locale = useLocale('datePicker')
         const initial =
           (Array.isArray(props.modelValue) ? parseDate(props.modelValue[0]) : parseDate(props.modelValue)) ??
           (Array.isArray(props.defaultValue) ? parseDate(props.defaultValue[0]) : parseDate(props.defaultValue)) ??
@@ -246,13 +247,16 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
         function titleOf(month: Date): string {
           const type = gridType()
           if (type === 'month') {
-            return `${month.getFullYear()}年`
+            return formatLocale(locale.value.yearFormat, { year: month.getFullYear() })
           }
           if (type === 'year') {
             const start = month.getFullYear() - (month.getFullYear() % 10)
             return `${start - 1} - ${start + 10}`
           }
-          return `${month.getFullYear()}年 ${month.getMonth() + 1}月`
+          return formatLocale(locale.value.panelYearMonthFormat, {
+            year: month.getFullYear(),
+            month: month.getMonth() + 1
+          })
         }
 
         function isDisabled(date: Date): boolean {
@@ -357,6 +361,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
         }
 
         return {
+          locale,
           get leftMonth(): Date {
             return leftMonth.value
           },
@@ -396,7 +401,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
         const showWeek = Boolean(props.showWeekNumber) && type === 'date'
 
         function renderPanel(month: Date, panel: 'left' | 'right') {
-          const cells = buildCells(month, type)
+          const cells = buildCells(month, type, state.locale.value.monthFormat)
           const rows: CalendarCell[][] = []
           for (let index = 0; index < cells.length; index += 7) {
             rows.push(cells.slice(index, index + 7))
@@ -409,7 +414,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                   class: 'ui-date-picker-panel__nav is-prev-year',
                   type: 'button',
                   disabled: Boolean(props.disabled),
-                  'aria-label': '上一组',
+                  'aria-label': state.locale.value.prevGroup,
                   onClick: () => state.move(panel, -1, true)
                 },
                 '«'
@@ -420,7 +425,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                   class: 'ui-date-picker-panel__nav is-prev',
                   type: 'button',
                   disabled: Boolean(props.disabled),
-                  'aria-label': '上一页',
+                  'aria-label': state.locale.value.prevPage,
                   onClick: () => state.move(panel, -1, false)
                 },
                 '‹'
@@ -432,7 +437,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                   class: 'ui-date-picker-panel__nav is-next',
                   type: 'button',
                   disabled: Boolean(props.disabled),
-                  'aria-label': '下一页',
+                  'aria-label': state.locale.value.nextPage,
                   onClick: () => state.move(panel, 1, false)
                 },
                 '›'
@@ -443,7 +448,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                   class: 'ui-date-picker-panel__nav is-next-year',
                   type: 'button',
                   disabled: Boolean(props.disabled),
-                  'aria-label': '下一组',
+                  'aria-label': state.locale.value.nextGroup,
                   onClick: () => state.move(panel, 1, true)
                 },
                 '»'
@@ -452,8 +457,12 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
             type !== 'date'
               ? null
               : h('div', { class: ['ui-date-picker-panel__weekdays', showWeek ? 'is-with-week' : ''] }, [
-                  showWeek ? h('span', { class: 'ui-date-picker-panel__weekday is-week-number' }, '周') : null,
-                  ...WEEK_LABELS.map((label) => h('span', { class: 'ui-date-picker-panel__weekday' }, label))
+                  showWeek
+                    ? h('span', { class: 'ui-date-picker-panel__weekday is-week-number' }, state.locale.value.week)
+                    : null,
+                  ...state.locale.value.weekdays.map((label: string) =>
+                    h('span', { class: 'ui-date-picker-panel__weekday' }, label)
+                  )
                 ]),
             h(
               'div',
@@ -531,7 +540,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                       disabled: Boolean(props.disabled),
                       onClick: () => state.pickNow()
                     },
-                    '此刻'
+                    state.locale.value.now
                   )
                 : null,
               state.hasClear
@@ -543,7 +552,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                       disabled: Boolean(props.disabled),
                       onClick: () => state.clear()
                     },
-                    '清空'
+                    state.locale.value.clear
                   )
                 : null,
               props.showConfirm
@@ -555,7 +564,7 @@ export function createDatePickerPanel(features: UiFeature[] = []) {
                       disabled: Boolean(props.disabled) || !state.canConfirm,
                       onClick: () => state.confirm()
                     },
-                    '确定'
+                    state.locale.value.confirm
                   )
                 : null
             ])
