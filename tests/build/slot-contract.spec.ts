@@ -41,6 +41,94 @@ function exportsWithSlots() {
  *  守卫解析 shared 的 inputConfig 函数体覆盖，不需要豁免。 */
 const RENDERED_VIA_NOTES: Record<string, string> = {}
 
+/**
+ * 公开 slot 缺口台账（W1.1）：源码里扫到渲染点、但 spec 还没声明的 slot 必须逐条登记，
+ * 且登记集合要与实际缺口完全一致——补完一个就得从台账删一个，漏删/新增未登记都会红。
+ * 分类口径：A 消费方应能自定义（排期到 W1.2/W1.3）；C 结构性子节点容器；
+ * D 内部件不对外承诺。
+ *
+ * 扫描口径与实现守卫一致：core.ts + features + core.ts 从 shared 引入的 `*Config`
+ * 函数体。子导出目录（如 button/button-group）不在扫描集内，故不进台账。
+ */
+const SLOT_DECLARATION_BASELINE: Record<string, { slots: string[]; reason: string }> = {
+  alert: { slots: ['default', 'title'], reason: 'A 类，待 W1.2a 信息展示族声明' },
+  affix: { slots: ['default'], reason: 'C 类，children 容器' },
+  anchor: { slots: ['default'], reason: 'C 类，children 容器' },
+  autocomplete: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
+  avatar: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  backtop: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  badge: { slots: ['default'], reason: 'A 类，待 W1.2a 信息展示族声明' },
+  breadcrumb: { slots: ['default'], reason: 'C 类，子项容器' },
+  card: { slots: ['cover', 'default', 'footer', 'header'], reason: 'A 类，待 W1.2a 信息展示族声明' },
+  carousel: { slots: ['default'], reason: 'C 类，子项容器' },
+  'check-tag': { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  col: { slots: ['default'], reason: 'C 类，children 容器' },
+  collapse: { slots: ['default'], reason: 'C 类，子项容器' },
+  'collapse-transition': { slots: ['default'], reason: 'D 类，内部过渡件' },
+  collection: { slots: ['default'], reason: 'D 类，内部件' },
+  'config-provider': { slots: ['default'], reason: 'C 类，children 容器' },
+  container: { slots: ['default'], reason: 'C 类，children 容器' },
+  descriptions: { slots: ['default'], reason: 'C 类，子项容器' },
+  divider: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  dropdown: { slots: ['content', 'default', 'dropdown'], reason: 'A 类，待 W1.2d 反馈族声明；default 为触发器内容' },
+  empty: { slots: ['default'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  form: { slots: ['default', 'label'], reason: 'A 类 label 待 W1.2b；default 为字段容器' },
+  icon: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  'image-viewer': { slots: ['default', 'footer', 'header'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  link: { slots: ['default'], reason: 'C 类，文本内容容器' },
+  mention: { slots: ['append'], reason: 'A 类，待 W1.3a 与 input 同步声明' },
+  menu: { slots: ['default', 'title'], reason: 'A 类 title 待 W1.2c；default 为子项容器' },
+  notification: { slots: ['default', 'footer', 'header'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  overlay: { slots: ['default'], reason: 'C 类，内部浮层包装' },
+  'page-header': { slots: ['content', 'default', 'extra', 'title'], reason: 'A 类，待 W1.2c 导航族声明' },
+  pagination: { slots: ['default'], reason: 'A 类，待 W1.2b 数据族评估额外内容' },
+  popconfirm: { slots: ['content', 'default'], reason: 'A 类，待 W1.2d 反馈族声明；default 为触发器内容' },
+  popover: { slots: ['content', 'default'], reason: 'A 类，待 W1.2d 反馈族声明；default 为触发器内容' },
+  popper: { slots: ['default'], reason: 'D 类，内部浮层容器' },
+  result: { slots: ['default', 'icon'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  'roving-focus-group': { slots: ['default'], reason: 'D 类，内部件' },
+  row: { slots: ['default'], reason: 'C 类，children 容器' },
+  scrollbar: { slots: ['default'], reason: 'C 类，children 容器' },
+  select: { slots: ['default'], reason: 'A 类，Option / OptionGroup 默认内容待 W1.2b' },
+  skeleton: { slots: ['default'], reason: 'A 类，待 W1.2e 基础族声明' },
+  slot: { slots: ['default'], reason: 'D 类，内部件' },
+  space: { slots: ['default'], reason: 'C 类，children 容器' },
+  splitter: { slots: ['default'], reason: 'C 类，面板容器' },
+  statistic: { slots: ['default'], reason: 'A 类，待 W1.2a 信息展示族声明' },
+  steps: { slots: ['default', 'description', 'title'], reason: 'A 类，待 W1.2c 导航族声明' },
+  switch: { slots: ['default'], reason: 'A 类，label 自定义待 W1.2b 数据族声明' },
+  table: { slots: ['default', 'empty', 'header'], reason: 'A 类 empty 待 W1.2b；default / header 属列插槽' },
+  tabs: { slots: ['default'], reason: 'C 类，页签容器' },
+  tag: { slots: ['default'], reason: 'C 类，文本内容容器' },
+  text: { slots: ['default'], reason: 'C 类，文本内容容器' },
+  timeline: { slots: ['default'], reason: 'A 类，待 W1.2a 信息展示族声明' },
+  tooltip: { slots: ['default'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  tour: { slots: ['default', 'footer', 'header'], reason: 'A 类，待 W1.2d 反馈族声明' },
+  'virtual-list': { slots: ['default'], reason: 'A 类，待 W1.2e 声明并带 { item, index } 作用域' },
+  watermark: { slots: ['default'], reason: 'A 类，待 W1.2a 信息展示族声明' }
+}
+
+function detectedSlotNames(componentId: string): string[] {
+  const scan = renderedSlotScanText(componentId)
+  const found = new Set<string>()
+  for (const match of scan.matchAll(/slots\??\.([A-Za-z_$][\w$]*)/g)) {
+    found.add(match[1])
+  }
+  for (const match of scan.matchAll(/slots\??\[\s*['"]([^'"]+)['"]\s*\]/g)) {
+    found.add(match[1])
+  }
+  for (const match of scan.matchAll(/renderSlot\([^)]*['"]([^'"]+)['"]/g)) {
+    found.add(match[1])
+  }
+  return [...found].sort()
+}
+
+function declaredSlotNames(componentId: string): string[] {
+  return [
+    ...new Set(registry.components[componentId].exports.flatMap((item) => (item.slots ?? []).map((slot) => slot.name)))
+  ].sort()
+}
+
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
@@ -263,6 +351,39 @@ describe('slot 契约：实现守卫', () => {
           ).toBeTruthy()
         }
       }
+    }
+  })
+
+  it('公开 slot 缺口台账与实际缺口双向一致（补完要删、新增要登记）', () => {
+    const actual: Record<string, string[]> = {}
+    for (const componentId of registry.order) {
+      const declared = declaredSlotNames(componentId)
+      const missing = detectedSlotNames(componentId).filter((name) => !declared.includes(name))
+      if (missing.length) {
+        actual[componentId] = missing
+      }
+    }
+
+    const baseline: Record<string, string[]> = {}
+    for (const [componentId, entry] of Object.entries(SLOT_DECLARATION_BASELINE)) {
+      expect(entry.reason.trim(), `${componentId} 的台账条目必须写明分类与排期理由`).not.toBe('')
+      baseline[componentId] = [...entry.slots].sort()
+    }
+
+    const unregistered = Object.keys(actual).filter((componentId) => !(componentId in baseline))
+    expect(
+      unregistered,
+      `有渲染点但既未声明也未登记理由的组件：${unregistered.join(', ')}（补 spec 声明，或在 SLOT_DECLARATION_BASELINE 登记分类）`
+    ).toEqual([])
+
+    const stale = Object.keys(baseline).filter((componentId) => !(componentId in actual))
+    expect(
+      stale,
+      `台账登记但实际已无缺口的组件：${stale.join(', ')}（声明的 slot 已进 spec 或渲染点已消失，请删条目）`
+    ).toEqual([])
+
+    for (const componentId of Object.keys(actual)) {
+      expect(baseline[componentId], `${componentId} 的缺口 slot 集合与台账不一致`).toEqual(actual[componentId])
     }
   })
 })
