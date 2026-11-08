@@ -63,7 +63,6 @@ export function registerKit(packageId: string, module: KitModule): void {
 
 const EVENT_PROPS: Record<string, string> = {
   'onUpdate:modelValue': 'modelValue',
-  'onUpdate:visible': 'visible',
   'onUpdate:currentPage': 'currentPage',
   'onUpdate:current': 'current',
   'onUpdate:pageSize': 'pageSize',

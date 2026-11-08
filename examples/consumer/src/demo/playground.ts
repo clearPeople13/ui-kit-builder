@@ -438,7 +438,7 @@ const INITIAL_ENABLED: Record<string, string[]> = {
 
 const HIDDEN_PROP_NAMES = new Set(['modelModifiers'])
 
-const PREVIEW_EVENT_PROPS = ['modelValue', 'visible', 'currentPage', 'current', 'pageSize', 'value']
+const PREVIEW_EVENT_PROPS = ['modelValue', 'currentPage', 'current', 'pageSize', 'value']
 
 const CHILD_EXPORT_NOTES: Record<string, string> = {
   TableColumn: 'TableColumn 需作为 Table 的子节点使用。',

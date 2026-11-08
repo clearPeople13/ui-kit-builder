@@ -27,9 +27,15 @@ import { repoRoot } from './_helpers'
  * - state-event-bare-verb：事件名是裸 show/hide/open。依据：状态变化事件统一 xxx-change
  *   （visible-change 已 8 组件主流）；裸 show/hide/open 动作/状态二义（tooltip 的 show 是状态），
  *   禁止新用。close 因"点关闭"动作义与"已关闭"状态义静态不可分，暂不在模式内，见 NAMING.md §5。
+ * - display-prop-word（第三刀）：Boolean 型"显示受控" prop 必须叫 modelValue，不得用 visible/open。
+ *   依据：v-model 协议是显示受控的唯一出口；第三刀把 visible 阵营 5 组件全部收敛后，
+ *   只剩 popper 的 visible 按 NAMING.md §5 豁免登记在 BASELINE。
+ * - mixed-type-prop（第三刀）：type 数组同时含 Boolean 与 Function（开关与谓词混型）。
+ *   依据：mention filterOption 拆成 filterable + filterMethod 后，同一 prop 不能既当开关
+ *   又当过滤器；table showCheckbox 的按行谓词按 §5 豁免登记。
  */
 
-type PropDecl = { name: string; isBoolean: boolean }
+type PropDecl = { name: string; isBoolean: boolean; typeText: string }
 
 type PatternId =
   | 'display-drift'
@@ -38,6 +44,8 @@ type PatternId =
   | 'event-camel-case'
   | 'dual-update-alias'
   | 'state-event-bare-verb'
+  | 'display-prop-word'
+  | 'mixed-type-prop'
 
 /** 动词原形黑名单：布尔 prop 不得用这些词（show-/hide- 前缀子元素语义不受此限，见 NAMING.md §3.1） */
 const BOOLEAN_VERBS = new Set([
@@ -75,7 +83,9 @@ const PATTERN_TITLES: Record<PatternId, string> = {
   'event-dom-focus-leak': '事件名外泄 DOM 焦点词（focusout/focusin）',
   'event-camel-case': '事件名 camelCase（应为 kebab-case）',
   'dual-update-alias': '同一组件多个 update:* 写口（v-model 应单一出口）',
-  'state-event-bare-verb': '状态事件用了裸 show/hide/open（应为 xxx-change）'
+  'state-event-bare-verb': '状态事件用了裸 show/hide/open（应为 xxx-change）',
+  'display-prop-word': '显示受控 Boolean prop 未用 modelValue（visible/open 应为 v-model）',
+  'mixed-type-prop': '开关与谓词混型（type 同时含 Boolean 与 Function）'
 }
 
 /** prop 声明是扁平对象字面量 `name: { type: ..., ... }`（无嵌套花括号），含 type 字段即视为 prop */
@@ -85,7 +95,7 @@ function extractProps(source: string): PropDecl[] {
     if (!/\btype:\s*(\[|Boolean\b|String\b|Number\b|Array\b|Object\b|Function\b)/.test(match[2])) {
       continue
     }
-    props.push({ name: match[1], isBoolean: /\bBoolean\b/.test(match[2]) })
+    props.push({ name: match[1], isBoolean: /\bBoolean\b/.test(match[2]), typeText: match[2] })
   }
   return props
 }
@@ -93,12 +103,24 @@ function extractProps(source: string): PropDecl[] {
 /** 事件名 = emits: [...] 声明 ∪ emit('...') 调用点（特性文件常不声明 emits 数组，直接 emit） */
 function extractEvents(source: string): string[] {
   const events = new Set<string>()
-  for (const match of source.matchAll(/emits:\s*\[([\s\S]*?)\]/g)) {
-    for (const item of match[1].split(',')) {
-      const name = item.trim().replace(/['"`]/g, '')
-      if (name) {
-        events.add(name)
+  // emits 数组可能含展开（[...base.emits, 'cancel']），按括号配平取整体再抽引号内名字
+  for (const start of source.matchAll(/emits:\s*\[/g)) {
+    let depth = 0
+    let end = start.index ?? 0
+    for (let index = (start.index ?? 0) + start[0].length - 1; index < source.length; index += 1) {
+      if (source[index] === '[') {
+        depth += 1
+      } else if (source[index] === ']') {
+        depth -= 1
+        if (depth === 0) {
+          end = index
+          break
+        }
       }
+    }
+    const body = source.slice(start.index ?? 0, end + 1)
+    for (const match of body.matchAll(/['"]([\w:-]+)['"]/g)) {
+      events.add(match[1])
     }
   }
   for (const match of source.matchAll(/\bemit\(\s*['"]([\w:-]+)['"]/g)) {
@@ -144,6 +166,32 @@ function checkSource(source: string): Partial<Record<PatternId, string[]>> {
   const bareStateEvents = events.filter((event) => event === 'show' || event === 'hide' || event === 'open')
   if (bareStateEvents.length > 0) {
     findings['state-event-bare-verb'] = bareStateEvents
+  }
+
+  const displayWordProps = props
+    .filter((prop) => prop.isBoolean && (prop.name === 'visible' || prop.name === 'open'))
+    .map((prop) => prop.name)
+  if (displayWordProps.length > 0) {
+    findings['display-prop-word'] = displayWordProps
+  }
+
+  // 只抓"二选一"混型：正好 Boolean+Function 说明开关与谓词共用一 prop。
+  // 多类型值联合（valueOnClear: String|Number|Boolean|Function）是值/工厂语义，不在此列。
+  const mixedTypeProps = props
+    .filter((prop) => {
+      const types = prop.typeText.match(/\btype:\s*\[([^\]]*)\]/)
+      if (!types) {
+        return false
+      }
+      const parts = types[1]
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+      return parts.length === 2 && parts.includes('Boolean') && parts.includes('Function')
+    })
+    .map((prop) => prop.name)
+  if (mixedTypeProps.length > 0) {
+    findings['mixed-type-prop'] = mixedTypeProps
   }
 
   return findings
@@ -193,10 +241,17 @@ function scanAll(): Record<string, Partial<Record<PatternId, string[]>>> {
  * 结构：文件 → 模式 → 命中词。扫描结果与本表必须完全一致：
  * 表外的命中是新增漂移（红）；表内但已扫不到的条目说明修复后忘了删白名单（同样红，
  * 防止白名单漂成死名单）。两个方向都会给出精确的 文件 → 模式 → 词 差异。
- * 第三刀（NAMING.md §5 剩余行：visible 阵营统一、mention filterOption、close 一词两义）
- * 需要先扩守卫模式，再登记新 BASELINE。
+ * 第三刀（2026-11-08）扩了 display-prop-word / mixed-type-prop 两模式，visible 阵营 5 组件
+ * 与 mention filterOption 已改完；表内只剩两处按 NAMING.md §5 明确豁免的条目。
  */
-const BASELINE: Record<string, Partial<Record<PatternId, string[]>>> = {}
+const BASELINE: Record<string, Partial<Record<PatternId, string[]>>> = {
+  // PopperContent 的 visible 是"单显示词"豁免：它只管面板显示，没有对外展开交互，
+  // 改成 modelValue 会让纯展示面板伪装成受控组件（NAMING.md §5）
+  'popper/core.ts': { 'display-prop-word': ['visible'] },
+  // Table 按行判定复选框是数据规约，Boolean 只是"全部行"快捷开关；
+  // 拆 method 会改掉表格 API 形状，第四刀再评估（NAMING.md §5）
+  'table/features/selection/index.ts': { 'mixed-type-prop': ['showCheckbox'] }
+}
 
 function formatFindings(findings: Record<string, Partial<Record<PatternId, string[]>>>): string {
   return Object.entries(findings)
@@ -209,7 +264,7 @@ function formatFindings(findings: Record<string, Partial<Record<PatternId, strin
 }
 
 describe('守卫自测：检查器必须会咬人', () => {
-  // 人为构造一份覆盖全部 6 种模式的"新违规"源文件，逐模式断言检查器返回失败。
+  // 人为构造一份覆盖全部 8 种模式的"新违规"源文件，逐模式断言检查器返回失败。
   // 真实仓库里没有这份代码；它存在的意义是证明每条模式都能命中——
   // 若未来有人把某条模式写松了，这里先于仓库扫描报红。
   const synthetic = [
@@ -217,14 +272,15 @@ describe('守卫自测：检查器必须会咬人', () => {
     '  props: {',
     '    modelValue: { type: Boolean },',
     '    visible: { type: Boolean },',
-    '    spin: { type: Boolean }',
+    '    spin: { type: Boolean },',
+    '    filterOption: { type: [Boolean, Function] }',
     '  },',
     "  emits: ['show', 'focusout', 'itemFocus', 'update:modelValue', 'update:checked'],",
     "  setup(_p, { emit }) { emit('hide') }",
     '}'
   ].join('\n')
 
-  it('构造源里 6 种模式全部被命中', () => {
+  it('构造源里 8 种模式全部被命中', () => {
     const findings = checkSource(synthetic)
     expect(findings['display-drift']).toEqual(['modelValue', 'visible'])
     expect(findings['boolean-verb-prop']).toEqual(['spin'])
@@ -232,6 +288,8 @@ describe('守卫自测：检查器必须会咬人', () => {
     expect(findings['event-dom-focus-leak']).toEqual(['focusout'])
     expect(findings['event-camel-case']).toEqual(['itemFocus'])
     expect(findings['dual-update-alias']).toEqual(['update:modelValue', 'update:checked'])
+    expect(findings['display-prop-word']).toEqual(['visible'])
+    expect(findings['mixed-type-prop']).toEqual(['filterOption'])
   })
 
   it('公约合规的构造源一种模式都不命中', () => {
