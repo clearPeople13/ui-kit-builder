@@ -7,9 +7,6 @@ _scratch/
 .tmp/
 .tmp-*
 .tmp-snapshot.txt
-configurator-preview.png
-configurator-test.png
-consumer-preview.png
 *.log
 .guardian/
 .trae-html-share-packages/
@@ -30,3 +27,13 @@ coverage/
 .worktrees/
 .tasks/
 .qoder/
+
+# AOCI agent host integration (machine-bound; do not commit)
+.mcp.json
+.mcp.json.backup.*
+AGENTS.md.backup.*
+
+# AOCI 认知资产不得加入本文件：
+# aoci.txt / aoci.meta.txt / aoci.code.txt 一旦被 git 忽略，aoci scan 会按 git 忽略权威
+# 静默跳过它们，索引将无法建立。.aoci/ 内部已由 .aoci/.gitignore 自行管理边界。
+# 安装与接入步骤见 AOCI.md
