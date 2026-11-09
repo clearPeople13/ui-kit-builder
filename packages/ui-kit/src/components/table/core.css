@@ -75,19 +75,20 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 1px;
+  width: 10px;
   pointer-events: none;
   z-index: 6;
 }
 
+/* 渐变而不是 box-shadow：1px 宽的伪元素配 -6px spread 会把阴影矩形收缩成 0，阴影整个消失 */
 .ui-table.has-fixed-left.is-scrolled-left::after {
   left: var(--ui-table-fixed-left, 0);
-  box-shadow: 6px 0 8px -6px var(--ui-table-fixed-shadow-color);
+  background-image: linear-gradient(to right, var(--ui-table-fixed-shadow-color), transparent);
 }
 
 .ui-table.has-fixed-right.is-scrolled-right::before {
   right: var(--ui-table-fixed-right, 0);
-  box-shadow: -6px 0 8px -6px var(--ui-table-fixed-shadow-color);
+  background-image: linear-gradient(to left, var(--ui-table-fixed-shadow-color), transparent);
 }
 
 .ui-table__body td {

@@ -1,5 +1,25 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { PNG } from 'pngjs'
 import { expectSilent, openScene, probeValue, rect, type Session } from './_session'
+
+/** 取一小块像素的平均亮度：阴影只覆盖几个像素，单点采样会被抗锯齿抖动带偏 */
+function avgLuma(png: PNG, x: number, y: number, width = 3) {
+  let sum = 0
+  let count = 0
+  for (let dy = -4; dy <= 4; dy += 1) {
+    for (let dx = 0; dx < width; dx += 1) {
+      const px = Math.round(x) + dx
+      const py = Math.round(y) + dy
+      if (px < 0 || py < 0 || px >= png.width || py >= png.height) {
+        continue
+      }
+      const index = (png.width * py + px) << 2
+      sum += 0.299 * png.data[index] + 0.587 * png.data[index + 1] + 0.114 * png.data[index + 2]
+      count += 1
+    }
+  }
+  return count ? sum / count : 0
+}
 
 /**
  * 表格的滚动、冻结列、列宽拖拽只在真浏览器里可证：
@@ -115,7 +135,7 @@ describe('浏览器层 · 表格', () => {
     expect(text).toContain(String((137 * 200 * 201) / 2))
   })
 
-  it('冻结列阴影是一条贯穿表头/表体/合计的 overlay', async () => {
+  it('冻结列阴影是一条贯穿表头/表体/合计的连续渐变态 overlay', async () => {
     const { page } = session
     await page.evaluate(() => {
       const wrapper = document.querySelector('.ui-table__wrapper')
@@ -130,14 +150,20 @@ describe('浏览器层 · 表格', () => {
         throw new Error('找不到表格根节点')
       }
       const after = getComputedStyle(root, '::after')
+      const before = getComputedStyle(root, '::before')
       return {
         hasLeft: root.classList.contains('is-scrolled-left'),
         edge: getComputedStyle(root).getPropertyValue('--ui-table-fixed-left').trim(),
+        rightEdge: getComputedStyle(root).getPropertyValue('--ui-table-fixed-right').trim(),
         content: after.content,
         top: after.top,
         bottom: after.bottom,
         left: after.left,
-        shadow: after.boxShadow
+        width: after.width,
+        background: after.backgroundImage,
+        rightContent: before.content,
+        right: before.right,
+        rightBackground: before.backgroundImage
       }
     })
     expect(data.hasLeft).toBe(true)
@@ -146,7 +172,51 @@ describe('浏览器层 · 表格', () => {
     expect(data.left).toBe(data.edge)
     expect(data.top).toBe('0px')
     expect(data.bottom).toBe('0px')
-    expect(data.shadow).not.toBe('none')
+    // F-122：1px 宽 + 负 spread 的 box-shadow 会把阴影矩形收缩成 0，看起来像"阴影被删了"
+    expect(parseFloat(data.width)).toBeGreaterThanOrEqual(8)
+    expect(data.background).toContain('linear-gradient')
+    expect(data.rightContent).not.toBe('none')
+    expect(data.right).toBe(data.rightEdge)
+    expect(data.rightBackground).toContain('linear-gradient')
+  })
+
+  it('阴影在表头/表体/合计三段同样可见（F-122）', async () => {
+    const { page } = session
+    await page.evaluate(() => {
+      document.querySelector('.ui-table__wrapper')!.scrollLeft = 60
+    })
+    await page.waitForTimeout(200)
+    const geometry = await page.evaluate(() => {
+      const root = document.querySelector<HTMLElement>('#probe-table')
+      if (!root) {
+        throw new Error('找不到表格根节点')
+      }
+      const rootRect = root.getBoundingClientRect()
+      const header = root.querySelector('.ui-table__header')!.getBoundingClientRect()
+      const wrapper = root.querySelector('.ui-table__wrapper')!.getBoundingClientRect()
+      const summary = root.querySelector('.ui-table__summary-row')!.getBoundingClientRect()
+      const border = parseFloat(getComputedStyle(root).borderLeftWidth) || 0
+      const edge = parseFloat(getComputedStyle(root).getPropertyValue('--ui-table-fixed-left')) || 0
+      return {
+        x: border + edge + 2,
+        bands: [header.top + header.height / 2, wrapper.top + 24, summary.top + summary.height / 2].map(
+          (y) => y - rootRect.top
+        )
+      }
+    })
+    const table = page.locator('#probe-table')
+    const withShadow = PNG.sync.read(await table.screenshot())
+    await page.evaluate(() => document.querySelector('#probe-table')!.classList.remove('is-scrolled-left'))
+    await page.waitForTimeout(50)
+    const withoutShadow = PNG.sync.read(await table.screenshot())
+    await page.evaluate(() => document.querySelector('#probe-table')!.classList.add('is-scrolled-left'))
+
+    const deltas = geometry.bands.map((y) => avgLuma(withoutShadow, geometry.x, y) - avgLuma(withShadow, geometry.x, y))
+    for (const delta of deltas) {
+      expect(delta).toBeGreaterThan(6)
+    }
+    // 三段落在同一条竖带上：强度一致才算"连贯"，否则又会退化成三段各自为政
+    expect(Math.max(...deltas) - Math.min(...deltas)).toBeLessThanOrEqual(3)
   })
 
   it('全流程控制台无告警', () => {
