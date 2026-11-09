@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T17:35:23.262Z",
-  "sourceDigest": "2926bb9b0ee7ee07",
+  "generatedAt": "2026-11-09T17:46:25.847Z",
+  "sourceDigest": "4da2779a8961cc28",
   "stats": {
-    "nodes": 3034,
-    "edges": 4220,
+    "nodes": 3037,
+    "edges": 4237,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 349,
+    "docs": 352,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 257
+        "lines": 258
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1550
+        "lines": 1567
       }
     },
     {
@@ -5821,6 +5821,48 @@
       "label": "56.2 验证",
       "summary": "- 组件层：虚拟 span 场景仍保持 < 30 行；顶部有 `is-span-start`，没有真实 `rowspan=50`。\n- 浏览器层：顶部 `is-span-content` 为 0；滚到块中线后存在内容单元格，行号 > 10；输入框出现在块中部而不是首行。\n- 真实调试台截图：顶部模块列为空（内容在中线视口外）；滚到中线后输入框位于合并列中部，和原生 rowspan 的垂直居中一致。\n- 缺陷口径：F-1…F-123 全部",
       "path": "REQUIREMENTS.md#192",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#193",
+      "type": "doc-section",
+      "label": "57. 合并内容多元素被省略号裁掉（F-124）",
+      "summary": "> 触发：合并内容里放多个元素（例如 Input + Select + 文本），只有第一个 Input 可见，后面的内容被裁成省略号。",
+      "path": "REQUIREMENTS.md#193",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#194",
+      "type": "doc-section",
+      "label": "57.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                                            | 现象                                                                                     | 根因         ",
+      "path": "REQUIREMENTS.md#194",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#195",
+      "type": "doc-section",
+      "label": "57.2 验证",
+      "summary": "- 红用例反证：`table-span-virtual` 场景给合并列放入 Input + Select + 文本，改前内容单元格 `whiteSpace` 为 `nowrap`、`textOverflow` 为 `ellipsis`，子元素右侧越过单元格边界，用例红。\n- 改后同一场景：内容单元格 `whiteSpace` 为 `normal`、`textOverflow` 为 `clip`，三个子元素都有高度且左右边界落在单元格内。",
+      "path": "REQUIREMENTS.md#195",
       "tags": [
         "doc",
         "subsection"
@@ -18036,7 +18078,7 @@
         "css"
       ],
       "meta": {
-        "lines": 298
+        "lines": 306
       }
     },
     {
@@ -44399,7 +44441,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 804
+        "lines": 821
       }
     },
     {
@@ -44503,7 +44545,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 399
+        "lines": 435
       }
     },
     {
@@ -50560,6 +50602,11 @@
     },
     {
       "from": "doc:KNOWLEDGE.md#8",
+      "to": "component:space",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:KNOWLEDGE.md#8",
       "to": "component:table",
       "type": "mentions"
     },
@@ -50571,6 +50618,11 @@
     {
       "from": "doc:KNOWLEDGE.md#8",
       "to": "component:tag",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:KNOWLEDGE.md#8",
+      "to": "component:text",
       "type": "mentions"
     },
     {
@@ -53020,6 +53072,11 @@
     },
     {
       "from": "doc:README.md#5",
+      "to": "component:input",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:README.md#5",
       "to": "component:mention",
       "type": "mentions"
     },
@@ -53566,6 +53623,21 @@
     {
       "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#192",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#193",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#194",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#195",
       "type": "contains"
     },
     {
@@ -55635,6 +55707,61 @@
     },
     {
       "from": "doc:REQUIREMENTS.md#191",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#193",
+      "to": "component:input",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#193",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#194",
+      "to": "component:input",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#194",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#194",
+      "to": "component:space",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#194",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#194",
+      "to": "component:text",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#195",
+      "to": "component:input",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#195",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#195",
+      "to": "component:space",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#195",
       "to": "component:table",
       "type": "mentions"
     },
