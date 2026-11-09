@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T14:05:18.439Z",
-  "sourceDigest": "3f9b4f180050dfc5",
+  "generatedAt": "2026-11-09T14:41:07.516Z",
+  "sourceDigest": "d0ce147a714b117d",
   "stats": {
-    "nodes": 3006,
-    "edges": 4171,
+    "nodes": 3012,
+    "edges": 4182,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 321,
+    "docs": 327,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 251
+        "lines": 253
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1390
+        "lines": 1422
       }
     },
     {
@@ -5371,7 +5371,7 @@
       "id": "doc:REQUIREMENTS.md#163",
       "type": "doc-section",
       "label": "47.1 缺陷登记",
-      "summary": "| 编号  | 文件                                                                          | 现象                                                                                                         | 根因                       ",
+      "summary": "| 编号  | 文件                                                                                               | 现象                                                                                                               ",
       "path": "REQUIREMENTS.md#163",
       "tags": [
         "doc",
@@ -5396,11 +5396,95 @@
       }
     },
     {
+      "id": "doc:REQUIREMENTS.md#165",
+      "type": "doc-section",
+      "label": "48. 展开示例代码触发 Vite 依赖重优化（F-118）",
+      "summary": "> 触发：调试台点击「展开代码」时控制台出现 `ERR_ABORTED 504 (Outdated Optimize Dep)` 与 `Failed to fetch dynamically imported module`，涉及 `wasm-*.js`、`github-light-*.js`、`vue-*.js` 等 dep chunk，代码面板偶发空白。",
+      "path": "REQUIREMENTS.md#165",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#166",
+      "type": "doc-section",
+      "label": "48.1 缺陷登记",
+      "summary": "| 编号  | 文件                                          | 现象                                                                                 | 根因                                                                               ",
+      "path": "REQUIREMENTS.md#166",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#167",
+      "type": "doc-section",
+      "label": "48.2 验证",
+      "summary": "- Playwright Chromium 与 Firefox：打开表格页 → 展开代码 → 收起 → 再展开，`.shiki` 正常渲染（3258 字符），控制台 0 条 error / warning。\n- `npm --prefix examples/consumer run check` 类型检查通过。\n- 缺陷口径：F-1…F-118 全部修复，三处文档同步为 118 条。",
+      "path": "REQUIREMENTS.md#167",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#168",
+      "type": "doc-section",
+      "label": "49. 冻结列阴影跨表头/表体/合计断开（F-119）",
+      "summary": "> 触发：横向滚动带冻结列的表格时，表头、表体、合计三段的冻结边界阴影各自只覆盖本段，边界处出现断线/缺影。",
+      "path": "REQUIREMENTS.md#168",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#169",
+      "type": "doc-section",
+      "label": "49.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                      | 现象                                                                           | 根因                                         ",
+      "path": "REQUIREMENTS.md#169",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
       "id": "doc:REQUIREMENTS.md#17",
       "type": "doc-section",
       "label": "9.2 浏览器层用例（`tests/browser/**`，Chromium + 固定 1280×720）",
       "summary": "| 文件                                                                       | 用例 | 盯住的缺口                                                                                                   |\n| ------------------------------",
       "path": "REQUIREMENTS.md#17",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#170",
+      "type": "doc-section",
+      "label": "49.2 验证",
+      "summary": "- 红用例反证：改前浏览器层断言 `--ui-table-fixed-left` 为空、伪元素 `content: none`，用例红；改后 9/9 绿。\n- 用 `table` 场景横向滚动后截图确认：表头 → 表体 → 合计的阴影是一条连续竖线，左右冻结列均生效。\n- 缺陷口径：F-1…F-119 全部修复，三处文档同步为 119 条。",
+      "path": "REQUIREMENTS.md#170",
       "tags": [
         "doc",
         "subsection"
@@ -17644,7 +17728,7 @@
         "css"
       ],
       "meta": {
-        "lines": 260
+        "lines": 272
       }
     },
     {
@@ -17657,7 +17741,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1650
+        "lines": 1657
       }
     },
     {
@@ -44007,7 +44091,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 690
+        "lines": 721
       }
     },
     {
@@ -44111,7 +44195,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 122
+        "lines": 193
       }
     },
     {
@@ -44280,7 +44364,7 @@
         "build"
       ],
       "meta": {
-        "lines": 35
+        "lines": 61
       }
     },
     {
@@ -52633,6 +52717,11 @@
     },
     {
       "from": "doc:README.md#5",
+      "to": "component:overlay",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:README.md#5",
       "to": "component:switch",
       "type": "mentions"
     },
@@ -53013,7 +53102,37 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#165",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#166",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#167",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#168",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#169",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#17",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#170",
       "type": "contains"
     },
     {
@@ -54873,11 +54992,26 @@
     },
     {
       "from": "doc:REQUIREMENTS.md#163",
+      "to": "component:scrollbar",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#163",
       "to": "component:table",
       "type": "mentions"
     },
     {
       "from": "doc:REQUIREMENTS.md#164",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#169",
+      "to": "component:overlay",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#169",
       "to": "component:table",
       "type": "mentions"
     },
@@ -54904,6 +55038,11 @@
     {
       "from": "doc:REQUIREMENTS.md#17",
       "to": "component:tree",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#170",
+      "to": "component:table",
       "type": "mentions"
     },
     {
