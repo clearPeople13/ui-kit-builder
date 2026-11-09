@@ -810,10 +810,17 @@ export function createTable(features: UiFeature[] = []) {
           pendingCommitTimer = undefined
         }
         const pending = pendingRowHeights
-        pendingRowHeights = null
         if (!pending) {
           return
         }
+        // 只在顶部/底部提交实测：中途提交会改动未测行的估算前缀和，滚动位置没动内容却整体跳
+        const element = wrapper.value
+        const atTop = !element || element.scrollTop <= 1
+        const atBottom = element ? element.scrollTop + element.clientHeight >= element.scrollHeight - 1 : false
+        if (!atTop && !atBottom) {
+          return
+        }
+        pendingRowHeights = null
         const list = pipelineRows.value
         const wrapperEl = wrapper.value
         const viewH = wrapperEl?.clientHeight ?? 0
@@ -858,6 +865,15 @@ export function createTable(features: UiFeature[] = []) {
       function flushRowMeasure() {
         if (scrollActive) {
           return
+        }
+        // 中途不实测：实测值一旦提交就会改变窗口定位，用户停在中途时画面会从 y 行跳到 x 行
+        const wrapperEl = wrapper.value
+        if (wrapperEl) {
+          const atTop = wrapperEl.scrollTop <= 1
+          const atBottom = wrapperEl.scrollTop + wrapperEl.clientHeight >= wrapperEl.scrollHeight - 1
+          if (!atTop && !atBottom) {
+            return
+          }
         }
         const list = pipelineRows.value
         const bodyEl = tableRef.value?.querySelector(':scope > tbody.ui-table__body')

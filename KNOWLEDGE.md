@@ -186,7 +186,7 @@ npm run hooks:install # 装 pre-commit（秒级五段）与 pre-push（全量十
 - F-118 是展开示例代码时 Shiki 的 theme/lang/wasm 首次被 Vite 发现，触发依赖重新预构建，浏览器缓存的旧 dep URL 返回 504（Outdated Optimize Dep）；改用 `shiki/core` + `shiki/engine/oniguruma` + 静态 theme/lang/wasm，首屏完成依赖发现，展开时不再重新优化。详见 `REQUIREMENTS.md` §48。
 - F-119 是冻结列阴影在表头/表体/合计三张分表边界断开：逐单元格 `box-shadow` 在 footer 汇总行会被相邻单元格背景盖住；改为根节点一条 absolute overlay 贯穿全高，边界宽度用 `--ui-table-fixed-left/right` 由 `leftOffset`/`rightOffset` 注入。浏览器层用伪元素 computed style 守住。详见 `REQUIREMENTS.md` §49。
 - F-120 是 Select 的 `persistent` 默认 true 让每个实例挂载时就渲染完整下拉面板，表格一行一个 Select 时会一次性生成大量不可见面板与选项节点；改为首次展开才创建面板，收起后仍按 `persistent` 保留已创建的面板，`persistent=false` 收起即移除。详见 `REQUIREMENTS.md` §50。
-- F-121 是虚拟表格异步实测提交后视觉位置漂移：旧锚点取「第一个高度变化行」，它通常在视口上方的 overscan 区，偏移增量为 0，导致视口内容整体位移；改为在提交前记录已渲染行的真实 DOM 位置，`nextTick` 后取仍然存在的最高锚点行按真实位移回写 `scrollTop` 并同步 `bodyScrollTop`。详见 `REQUIREMENTS.md` §51。
+- F-121 是虚拟表格异步实测提交后视觉位置漂移：实测会改变未测行的估算前缀和，滚动条没动视口内容却被整体推走；改为中途不提交实测，只在滚动到顶部或底部时提交（底部仍保留贴底锁），用户停在中途时不再从 y 行跳到 x 行。详见 `REQUIREMENTS.md` §51。
 - **并行分支开新缺陷编号前必须先 `git fetch origin main` 取当前最大 F 编号**：两条分支同时从 F-53 起编号，合入后就会出现同号不同缺陷。本批（§15）在主线占掉 F-53 后整体顺延为 F-55…F-65、章节顺延为 §15；治理校验新增编号唯一性 / 连续性 / 三处文档口径一致性守卫，撞号或漏改会在门禁第六段直接报红。**章节号同样会撞**：选择器统一批次先占 §22 并推上远端，另一批 B1–B5 随后合入主线占掉 §18–§23，合入时只能整体顺延到 §24 并同步「目录」与批次清单——功能改造批次（不新增缺陷号）撞的往往只是章节，取号后仍要在合入前重看远端 `REQUIREMENTS.md` 的最后一个章节号
 - `tsconfig.tests.json` + `npm run typecheck` 已把 `tests/**` 与四份 vitest 配置纳入类型检查，并在第九批 B4（C9）切到 `strict: true`：`as any` 全部改成 `as unknown as ...` 或结构化类型，构建脚本与产物（未带 .d.ts 的 ESM）通过 `tests/shims.d.ts` 的环境声明放行。**基线已清零**：库工程与用例工程均无报错；新增用例必须保持 strict 下零报错，也不允许再引入 `as any`
 
