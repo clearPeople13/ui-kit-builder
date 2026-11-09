@@ -591,12 +591,13 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       interface SpanPlan {
-        spans: Map<number, Map<number, { rowspan: number; colspan: number }>>
+        spans: Map<number, Map<number, { rowspan: number; colspan: number; fakeStart?: boolean }>>
         covered: Map<number, Set<number>>
+        continuations: Map<number, Map<number, { colspan: number; end: boolean }>>
         anchors: SpanAnchor[]
       }
 
-      // 合并单元格计划：virtual 把窗口扩到整块边界，rowspan 的所有行都在 DOM 里才能正确渲染；
+      // 合并单元格计划：virtual 下大 rowspan 不整块扩窗，改为逐行续接单元格；
       // 有 spanMethod 时替代渲染期的逐格 hook 调用，结果随数据/列变化一次算清
       const spanPlan = computed<SpanPlan | null>(() => {
         if (typeof resolved.spanMethod !== 'function') {
@@ -607,7 +608,11 @@ export function createTable(features: UiFeature[] = []) {
         const spanHooks = flattenHooks(states, 'tableSpan')
         const spans: SpanPlan['spans'] = new Map()
         const covered: SpanPlan['covered'] = new Map()
+        const continuations: SpanPlan['continuations'] = new Map()
         const anchors: SpanAnchor[] = []
+        const fakeRowspan = Boolean(
+          resolved.virtual && resolved.tableLayout !== 'auto' && list.length && (resolved.height || resolved.maxHeight)
+        )
         for (let rowIndex = 0; rowIndex < list.length; rowIndex += 1) {
           const row = list[rowIndex]
           for (let columnIndex = 0; columnIndex < columns.length; columnIndex += 1) {
@@ -631,6 +636,27 @@ export function createTable(features: UiFeature[] = []) {
             if (!spans.has(rowIndex)) {
               spans.set(rowIndex, new Map())
             }
+            if (rowspan > 1 && fakeRowspan) {
+              spans.get(rowIndex)!.set(columnIndex, { rowspan: 1, colspan, fakeStart: true })
+              for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
+                if (spanRow !== rowIndex) {
+                  if (!continuations.has(spanRow)) {
+                    continuations.set(spanRow, new Map())
+                  }
+                  continuations.get(spanRow)!.set(columnIndex, {
+                    colspan,
+                    end: spanRow === rowIndex + rowspan - 1
+                  })
+                }
+                for (let spanColumn = columnIndex + 1; spanColumn < columnIndex + colspan; spanColumn += 1) {
+                  if (!covered.has(spanRow)) {
+                    covered.set(spanRow, new Set())
+                  }
+                  covered.get(spanRow)!.add(spanColumn)
+                }
+              }
+              continue
+            }
             spans.get(rowIndex)!.set(columnIndex, { rowspan, colspan })
             for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
               for (let spanColumn = columnIndex; spanColumn < columnIndex + colspan; spanColumn += 1) {
@@ -648,7 +674,7 @@ export function createTable(features: UiFeature[] = []) {
             }
           }
         }
-        return { spans, covered, anchors }
+        return { spans, covered, continuations, anchors }
       })
 
       // 最后一个偏移 <= y 的行下标，二分 O(logN)
@@ -1512,6 +1538,24 @@ export function createTable(features: UiFeature[] = []) {
               continue
             }
             const column = columns[columnIndex]
+            const continuation = plan?.continuations.get(rowIndex)?.get(columnIndex)
+            if (continuation) {
+              cells.push(
+                h('td', {
+                  class: [
+                    column.className,
+                    column.align ? `is-${column.align}` : '',
+                    ...(fixedClasses[columnIndex] ?? []),
+                    'is-span-continuation',
+                    continuation.end ? 'is-span-end' : ''
+                  ],
+                  style: fixedStyles[columnIndex],
+                  colspan: continuation.colspan > 1 ? continuation.colspan : undefined,
+                  'aria-hidden': 'true'
+                })
+              )
+              continue
+            }
             let rowspan = 1
             let colspan = 1
             const planned = plan?.spans.get(rowIndex)?.get(columnIndex)
@@ -1549,6 +1593,7 @@ export function createTable(features: UiFeature[] = []) {
                   class: [
                     column.className,
                     column.align ? `is-${column.align}` : '',
+                    planned?.fakeStart ? 'is-span-start' : '',
                     ...(fixedClasses[columnIndex] ?? [])
                   ],
                   style: fixedStyles[columnIndex],

@@ -400,6 +400,31 @@ describe('Table', () => {
     expect(wrapper.findAll('tbody tr')[1].findAll('td')).toHaveLength(2)
   })
 
+  it('虚拟滚动不把大合并块整块塞进窗口', async () => {
+    const big = Array.from({ length: 200 }, (_, index) => ({ id: index, name: `N${index}`, age: index }))
+    const wrapper = await setup({
+      data: big,
+      height: 100,
+      virtual: true,
+      spanMethod: ({ rowIndex, columnIndex }: any) => {
+        if (columnIndex !== 0) {
+          return { rowspan: 1, colspan: 1 }
+        }
+        return rowIndex % 50 === 0 ? { rowspan: 50, colspan: 1 } : { rowspan: 0, colspan: 0 }
+      }
+    })
+    expect(wrapper.findAll('tbody tr').length).toBeLessThan(30)
+    expect(wrapper.findAll('td.is-span-start').length).toBeGreaterThan(0)
+
+    const element = wrapper.find('.ui-table__wrapper').element as HTMLElement
+    element.scrollTop = 1000
+    element.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(wrapper.findAll('tbody tr').length).toBeLessThan(30)
+    expect(wrapper.findAll('td.is-span-continuation').length).toBeGreaterThan(0)
+  })
+
   it('合计行默认求和与 summaryMethod 自定义', async () => {
     const wrapper = await setup({ showSummary: true, sumText: '小计' })
     const cells = wrapper.findAll('.ui-table__footer td')

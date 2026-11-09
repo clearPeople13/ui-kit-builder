@@ -270,3 +270,28 @@
 .ui-table--overflow-tooltip .ui-table__body td {
   text-overflow: ellipsis;
 }
+
+/* 虚拟滚动把大 rowspan 拆成逐行续接单元格：统一底色、隐藏块内横线，视觉上仍是一块 */
+.ui-table__body td.is-span-start,
+.ui-table__body td.is-span-continuation {
+  background: var(--ui-table-cell-bg);
+}
+
+/* 伪 rowspan 必须压过斑马纹/悬停/当前行背景，否则合并块会被条纹切成一条条 */
+.ui-table--striped .ui-table__body tr.is-striped td.is-span-start,
+.ui-table--striped .ui-table__body tr.is-striped td.is-span-continuation,
+.ui-table__body tr:hover td.is-span-start,
+.ui-table__body tr:hover td.is-span-continuation,
+.ui-table__body tr.current-row td.is-span-start,
+.ui-table__body tr.current-row td.is-span-continuation {
+  background: var(--ui-table-cell-bg);
+}
+
+.ui-table__body td.is-span-continuation {
+  border-top-color: transparent;
+}
+
+.ui-table__body td.is-span-continuation:not(.is-span-end),
+.ui-table__body td.is-span-start:not(.is-span-end) {
+  border-bottom-color: transparent;
+}

@@ -224,6 +224,54 @@ describe('浏览器层 · 表格', () => {
   })
 })
 
+describe('浏览器层 · 表格合并块虚拟化', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table-span-virtual')
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  it('大合并块只渲染可见行，续接单元格保持连续', async () => {
+    const data = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-span .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到合并块虚拟表格')
+      }
+      const read = () => {
+        const table = wrapper.querySelector('table')
+        return {
+          rows: table?.querySelectorAll('tbody tr[data-row-index]').length ?? 0,
+          starts: table?.querySelectorAll('td.is-span-start').length ?? 0,
+          continuations: table?.querySelectorAll('td.is-span-continuation').length ?? 0,
+          realSpans: table?.querySelectorAll('tbody td[rowspan="50"]').length ?? 0,
+          borderTop: table?.querySelector<HTMLElement>('td.is-span-continuation')
+            ? getComputedStyle(table.querySelector<HTMLElement>('td.is-span-continuation')!).borderTopColor
+            : '',
+          background: table?.querySelector<HTMLElement>('td.is-span-continuation')
+            ? getComputedStyle(table.querySelector<HTMLElement>('td.is-span-continuation')!).backgroundColor
+            : ''
+        }
+      }
+      const top = read()
+      wrapper.scrollTop = 600
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))
+      return { top, middle: read() }
+    })
+
+    expect(data.top.rows).toBeLessThan(30)
+    expect(data.top.starts).toBeGreaterThan(0)
+    expect(data.top.realSpans).toBe(0)
+    expect(data.top.borderTop).toBe('rgba(0, 0, 0, 0)')
+    expect(data.middle.rows).toBeLessThan(30)
+    expect(data.middle.continuations).toBeGreaterThan(0)
+    expect(data.middle.background).not.toBe('rgba(0, 0, 0, 0)')
+  })
+})
+
 describe('浏览器层 · 表格铺满余量', () => {
   let session: Session
 

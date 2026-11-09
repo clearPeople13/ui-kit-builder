@@ -312,6 +312,47 @@ function sceneTableVirtualVariable() {
     )
 }
 
+/** 虚拟滚动 + 大 rowspan：合并块不能整块入窗，续接单元格要视觉连续 */
+function sceneTableSpanVirtual() {
+  const rows = Array.from({ length: 200 }, (_, index) => ({
+    id: index + 1,
+    name: `行 ${index + 1}`,
+    owner: index % 2 ? '李四' : '张三',
+    amount: (index + 1) * 17
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'width: 720px' },
+      h(
+        Table,
+        {
+          data: rows,
+          height: 320,
+          virtual: true,
+          rowKey: 'id',
+          id: 'probe-table-span',
+          style: 'width: 100%',
+          spanMethod: ({ rowIndex, columnIndex }: { rowIndex: number; columnIndex: number }) => {
+            if (columnIndex !== 0) {
+              return { rowspan: 1, colspan: 1 }
+            }
+            return rowIndex % 50 === 0 ? { rowspan: 50, colspan: 1 } : { rowspan: 0, colspan: 0 }
+          }
+        },
+        {
+          default: () => [
+            h(TableColumn, { prop: 'id', label: '编号', width: 90, fixed: 'left' }),
+            h(TableColumn, { prop: 'name', label: '名称', minWidth: 160 }),
+            h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
+            h(TableColumn, { prop: 'amount', label: '金额', width: 120 })
+          ]
+        }
+      )
+    )
+}
+
 /** 树形大数据：展开一层的耗时（性能回归口径与消费者 demo 一致） */
 function sceneTree() {
   function build(prefix: string, depth: number): any[] {
@@ -715,6 +756,7 @@ const scenes: Record<string, () => any> = {
   table: sceneTable(),
   'table-fit': sceneTableFit(),
   'table-virtual-variable': sceneTableVirtualVariable(),
+  'table-span-virtual': sceneTableSpanVirtual(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),
