@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T13:32:12.843Z",
-  "sourceDigest": "57c5a6b43ec2f8aa",
+  "generatedAt": "2026-11-09T14:05:18.439Z",
+  "sourceDigest": "3f9b4f180050dfc5",
   "stats": {
     "nodes": 3006,
-    "edges": 4172,
+    "edges": 4171,
     "components": 87,
     "features": 172,
     "props": 1312,
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1389
+        "lines": 1390
       }
     },
     {
@@ -5356,8 +5356,8 @@
     {
       "id": "doc:REQUIREMENTS.md#162",
       "type": "doc-section",
-      "label": "47. 表格假横向滚动条 + 调试台 Edge 旧模块缓存（F-116 / F-117）",
-      "summary": "> 触发：Edge 打开调试台表格页，浏览器缩放到 110% 时出现横向滚动条但几乎没有可滚内容；切到「大数据：5 万行 · 行高不一」后第 18 行之后不再渲染，树形大数据场景控制台报 `Cannot destructure property 'size' of 'gu(...)' as it is undefined`，其他浏览器正常。",
+      "label": "47. 页面缩放假横向滚动条 + 调试台 Edge 旧模块缓存（F-116 / F-117）",
+      "summary": "> 触发：页面缩放到 100% / 110% / 125% 后，Chrome / Firefox 在表格底部露出横向滚动条，但实际几乎没有可滚内容；Edge 的叠加式滚动条不显示。表格列宽与内容本身正常。另在 Edge 切到「大数据：5 万行 · 行高不一」后第 18 行之后不再渲染，树形大数据场景控制台报 `Cannot destructure property 'size' of 'gu(...)' as it is undefin",
       "path": "REQUIREMENTS.md#162",
       "tags": [
         "doc",
@@ -5385,7 +5385,7 @@
       "id": "doc:REQUIREMENTS.md#164",
       "type": "doc-section",
       "label": "47.2 验证",
-      "summary": "- 红用例反证：先还原 `layoutColumnWidths` 改前实现，`table-shrink` 场景断言 `scrollWidth 790 <= clientWidth + 1` 失败；恢复修复后 10/10 绿。\n- 浏览器层：`npx vitest run --config vitest.browser.config.ts tests/browser/table.spec.ts`，新增「窄容器按 minWidth 收缩」「",
+      "summary": "- 方案修正：初版把现象误判为「列宽总和超过容器」并按 `minWidth` 收缩，已整体撤销；该方案会改列宽并增加 resize 重测开销，与实测不符。\n- 现有修复：表格铺满时只留 1px 余量，列宽分配逻辑不变；调试台 `html, body { overflow-x: clip }` 只裁页面级小数溢出，不影响表格内部横向滚动。\n- 回归：`npx vitest run --config vitest.browser.confi",
       "path": "REQUIREMENTS.md#164",
       "tags": [
         "doc",
@@ -17657,7 +17657,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1685
+        "lines": 1650
       }
     },
     {
@@ -17839,7 +17839,7 @@
         "mjs"
       ],
       "meta": {
-        "lines": 480
+        "lines": 479
       }
     },
     {
@@ -37582,7 +37582,7 @@
       "id": "prop:table.Table.fit",
       "type": "prop",
       "label": "Table.fit",
-      "summary": "自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间；空间不足时按 minWidth 收缩，收缩到底仍不足才横向滚动",
+      "summary": "自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间",
       "path": "packages/ui-kit/src/components/table/core.ts",
       "tags": [
         "table",
@@ -44007,7 +44007,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 722
+        "lines": 690
       }
     },
     {
@@ -44111,7 +44111,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 191
+        "lines": 122
       }
     },
     {
@@ -54874,11 +54874,6 @@
     {
       "from": "doc:REQUIREMENTS.md#163",
       "to": "component:table",
-      "type": "mentions"
-    },
-    {
-      "from": "doc:REQUIREMENTS.md#164",
-      "to": "component:col",
       "type": "mentions"
     },
     {
