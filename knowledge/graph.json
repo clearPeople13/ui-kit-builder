@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T17:22:05.267Z",
-  "sourceDigest": "a3918f4725ecafa7",
+  "generatedAt": "2026-11-09T17:35:23.262Z",
+  "sourceDigest": "2926bb9b0ee7ee07",
   "stats": {
-    "nodes": 3031,
-    "edges": 4216,
+    "nodes": 3034,
+    "edges": 4220,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 346,
+    "docs": 349,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 256
+        "lines": 257
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1532
+        "lines": 1550
       }
     },
     {
@@ -5749,7 +5749,7 @@
       "id": "doc:REQUIREMENTS.md#188",
       "type": "doc-section",
       "label": "55.1 改动",
-      "summary": "- 虚拟模式下 `rowspan > 1` 不再加入 `spanPlan.anchors`，窗口只按可见行 + overscan 渲染。\n- 合并块改为「起始行真实单元格 + 后续行续接单元格」：起始行保留内容和 `is-span-start`，后续行渲染空 `td.is-span-continuation`；块最后一行带 `is-span-end`。\n- 续接单元格统一底色、隐藏块内上下边框；非虚拟模式仍走原生 `rowspan`，不",
+      "summary": "- 虚拟模式下 `rowspan > 1` 不再加入 `spanPlan.anchors`，窗口只按可见行 + overscan 渲染。\n- 合并块改为「起始行标签 + 中间行内容 + 后续行续接单元格」：起始行 `is-span-start` 负责块顶边框；内容行按块中线所在行渲染，实际编辑的仍是起始行数据；其余行渲染空 `td.is-span-continuation`。\n- 内容行对齐原生 `rowspan` 的垂直居中语义：块中",
       "path": "REQUIREMENTS.md#188",
       "tags": [
         "doc",
@@ -5779,6 +5779,48 @@
       "label": "9.4 交付说明与已知限制",
       "summary": "行为变化只有两处，且都是\"补齐键盘通路\"：触发型浮层现在响应 Enter / Space 开合，以及 Escape 收起栈顶浮层；依赖\"按 Enter 不展开\"的宿主写法需要复查。`style` 的路由口径同步写进文档与用例：Aside 的宽度由 `width` 属性决定、Popover 的 `style` / `className` 落到面板，这两点在 attributes.spec 里以白名单形式钉住并写明理由，新增同类例外必须附理",
       "path": "REQUIREMENTS.md#19",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#190",
+      "type": "doc-section",
+      "label": "56. 合并块虚拟化内容位置错（F-123）",
+      "summary": "> 触发：「复杂：大表编辑 + 冻结 + 合计 + 合并」里，模块列输入框出现在合并块首行，而原生 rowspan 是整块垂直居中。",
+      "path": "REQUIREMENTS.md#190",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#191",
+      "type": "doc-section",
+      "label": "56.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                                            | 现象                                                                                                  ",
+      "path": "REQUIREMENTS.md#191",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#192",
+      "type": "doc-section",
+      "label": "56.2 验证",
+      "summary": "- 组件层：虚拟 span 场景仍保持 < 30 行；顶部有 `is-span-start`，没有真实 `rowspan=50`。\n- 浏览器层：顶部 `is-span-content` 为 0；滚到块中线后存在内容单元格，行号 > 10；输入框出现在块中部而不是首行。\n- 真实调试台截图：顶部模块列为空（内容在中线视口外）；滚到中线后输入框位于合并列中部，和原生 rowspan 的垂直居中一致。\n- 缺陷口径：F-1…F-123 全部",
+      "path": "REQUIREMENTS.md#192",
       "tags": [
         "doc",
         "subsection"
@@ -18007,7 +18049,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1784
+        "lines": 1815
       }
     },
     {
@@ -44461,7 +44503,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 392
+        "lines": 399
       }
     },
     {
@@ -53513,6 +53555,21 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#190",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#191",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#192",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#2",
       "type": "contains"
     },
@@ -55574,6 +55631,11 @@
     {
       "from": "doc:REQUIREMENTS.md#19",
       "to": "component:space",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#191",
+      "to": "component:table",
       "type": "mentions"
     },
     {
