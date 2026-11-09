@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T15:06:20.030Z",
-  "sourceDigest": "d0ce147a714b117d",
+  "generatedAt": "2026-11-09T15:37:25.032Z",
+  "sourceDigest": "7f677a4b32a44dce",
   "stats": {
-    "nodes": 3012,
-    "edges": 4182,
+    "nodes": 3015,
+    "edges": 4192,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 327,
+    "docs": 330,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 253
+        "lines": 254
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1422
+        "lines": 1439
       }
     },
     {
@@ -5483,8 +5483,50 @@
       "id": "doc:REQUIREMENTS.md#170",
       "type": "doc-section",
       "label": "49.2 验证",
-      "summary": "- 红用例反证：改前浏览器层断言 `--ui-table-fixed-left` 为空、伪元素 `content: none`，用例红；改后 9/9 绿。\n- 用 `table` 场景横向滚动后截图确认：表头 → 表体 → 合计的阴影是一条连续竖线，左右冻结列均生效。\n- 缺陷口径：F-1…F-119 全部修复，三处文档同步为 119 条。",
+      "summary": "- 红用例反证：改前浏览器层断言 `--ui-table-fixed-left` 为空、伪元素 `content: none`，用例红；改后 9/9 绿。\n- 用 `table` 场景横向滚动后截图确认：表头 → 表体 → 合计的阴影是一条连续竖线，左右冻结列均生效。\n- 缺陷口径：F-1…F-120 全部修复，三处文档同步为 120 条。",
       "path": "REQUIREMENTS.md#170",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#171",
+      "type": "doc-section",
+      "label": "50. Select 未展开也预渲染下拉面板（F-120）",
+      "summary": "> 触发：调试台表格「复杂：表内编辑 + 双向冻结」场景，页面加载后尚未点开任何下拉，DOM 里已经有 80 个 `.ui-select__dropdown` 与 520 个 `.ui-select__option`；表格行数越多，不可见面板越多。",
+      "path": "REQUIREMENTS.md#171",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#172",
+      "type": "doc-section",
+      "label": "50.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                    | 现象                                                                                                                   | 根因                   ",
+      "path": "REQUIREMENTS.md#172",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#173",
+      "type": "doc-section",
+      "label": "50.2 验证",
+      "summary": "- 红用例反证：改前 `tests/components/select.spec.ts` 新增用例断言挂载后无 `.ui-select__dropdown`，实际拿到 `display: none` 的完整面板，用例红；改后 40/40 绿。\n- 真实调试台：改前「表内编辑」场景 `selects 80 / dropdowns 80 / options 520`；改后同一场景未展开时为 `selects 80 / dropdowns 0",
+      "path": "REQUIREMENTS.md#173",
       "tags": [
         "doc",
         "subsection"
@@ -16935,7 +16977,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 692
+        "lines": 696
       }
     },
     {
@@ -45482,7 +45524,7 @@
         "component"
       ],
       "meta": {
-        "lines": 426
+        "lines": 445
       }
     },
     {
@@ -52722,6 +52764,11 @@
     },
     {
       "from": "doc:README.md#5",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:README.md#5",
       "to": "component:switch",
       "type": "mentions"
     },
@@ -53133,6 +53180,21 @@
     {
       "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#170",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#171",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#172",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#173",
       "type": "contains"
     },
     {
@@ -55043,6 +55105,36 @@
     {
       "from": "doc:REQUIREMENTS.md#170",
       "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#171",
+      "to": "component:dropdown",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#171",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#172",
+      "to": "component:popper",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#172",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#173",
+      "to": "component:dropdown",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#173",
+      "to": "component:select",
       "type": "mentions"
     },
     {
