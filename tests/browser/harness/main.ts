@@ -301,7 +301,7 @@ function sceneTableVirtualVariable() {
         },
         {
           default: () => [
-            h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
+            h(TableColumn, { prop: 'id', label: '编号', width: 90, fixed: 'left' }),
             h(TableColumn, { prop: 'name', label: '名称', minWidth: 160 }),
             h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
             h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),

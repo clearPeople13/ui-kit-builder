@@ -295,6 +295,9 @@ export function createTable(features: UiFeature[] = []) {
       const bodyScrollTop = ref(0)
       const measuredRowHeight = ref(0)
       let latestColumns: TableColumn[] = []
+      let latestColumnsKey = ''
+      let measuredColumnsKey = ''
+      let summaryCache: { key: string; rows: any[]; cells: any[][] } | null = null
       let measureFrame = 0
       let resizeObserver: ResizeObserver | null = null
 
@@ -508,6 +511,7 @@ export function createTable(features: UiFeature[] = []) {
         state
       }
       const states = resolveFeatureStates(features, resolved, featureContext)
+      const summaryHooks = flattenHooks(states, 'tableSummary')
       const exposed = collectFeatureExposed(features, { ...featureContext, props: resolved })
       if (Object.keys(exposed).length) {
         expose(exposed)
@@ -529,6 +533,23 @@ export function createTable(features: UiFeature[] = []) {
         void slots.default
         return visibleRowsOf(resolved.data)
       })
+
+      // 合计按「数据引用 + 列签名」缓存：滚动帧只换滚动位置，不重算全表；数据/列变化才更新
+      function summaryCellsOf(columns: TableColumn[], rows: any[]): any[][] {
+        const scrolling = scrollActive || scrollFrame !== 0
+        if (scrolling && summaryCache && summaryCache.key === latestColumnsKey && summaryCache.rows === rows) {
+          return summaryCache.cells
+        }
+        const cells: any[][] = []
+        for (const hook of summaryHooks) {
+          const result = hook(columns, rows)
+          if (Array.isArray(result) && result.length) {
+            cells.push(result)
+          }
+        }
+        summaryCache = { key: latestColumnsKey, rows, cells }
+        return cells
+      }
 
       // 行高实测值（按 rowKey），虚拟滚动撑占位高度用；未测到的行用回退行高
       const measuredRowHeights = shallowRef<Map<any, number>>(new Map())
@@ -981,6 +1002,7 @@ export function createTable(features: UiFeature[] = []) {
       onMounted(() => {
         wrapper.value?.addEventListener('scroll', handleScroll, { passive: true })
         measureColumns()
+        measuredColumnsKey = latestColumnsKey
         measureRowHeight()
         updateScrollState()
         syncFixedSections()
@@ -993,9 +1015,11 @@ export function createTable(features: UiFeature[] = []) {
       })
 
       onUpdated(() => {
-        measureAvailableWidth()
         measureRowHeight()
-        scheduleMeasure()
+        if (latestColumnsKey !== measuredColumnsKey) {
+          measuredColumnsKey = latestColumnsKey
+          scheduleMeasure()
+        }
         scheduleRowMeasure()
         updateScrollState()
         syncFixedSections()
@@ -1200,6 +1224,12 @@ export function createTable(features: UiFeature[] = []) {
         }
 
         const layoutWidths = layoutColumnWidths(columns)
+        latestColumnsKey = columns
+          .map(
+            (column, index) =>
+              `${column.prop ?? ''}:${column.type ?? ''}:${column.label ?? ''}:${String(layoutWidths[index] ?? '')}`
+          )
+          .join('|')
         const layoutTotal = layoutWidths.every((width) => typeof width === 'number')
           ? (layoutWidths as number[]).reduce((sum, width) => sum + width, 0)
           : null
@@ -1569,32 +1599,29 @@ export function createTable(features: UiFeature[] = []) {
         const body = h('tbody', { class: 'ui-table__body' }, bodyRows)
 
         const summaryNodes: VNodeChild[] = []
-        for (const hook of flattenHooks(states, 'tableSummary')) {
-          const cells = hook(columns, rows)
-          if (Array.isArray(cells) && cells.length) {
-            summaryNodes.push(
-              h(
-                'tr',
-                { class: 'ui-table__summary-row' },
-                groupSummaryCells(cells, columns).map((group) => {
-                  const column = columns[group.index]
-                  const classes = [column?.align ? `is-${column.align}` : '', ...fixedCellClass(group.index)]
-                  if (group.span > 1 && group.index + group.span - 1 === offsets.lastLeft) {
-                    classes.push('is-fixed-left-edge')
-                  }
-                  return h(
-                    'td',
-                    {
-                      class: classes,
-                      style: fixedCellStyle(group.index),
-                      colspan: group.span > 1 ? group.span : undefined
-                    },
-                    group.cell
-                  )
-                })
-              )
+        for (const cells of summaryCellsOf(columns, rows)) {
+          summaryNodes.push(
+            h(
+              'tr',
+              { class: 'ui-table__summary-row' },
+              groupSummaryCells(cells, columns).map((group) => {
+                const column = columns[group.index]
+                const classes = [column?.align ? `is-${column.align}` : '', ...fixedCellClass(group.index)]
+                if (group.span > 1 && group.index + group.span - 1 === offsets.lastLeft) {
+                  classes.push('is-fixed-left-edge')
+                }
+                return h(
+                  'td',
+                  {
+                    class: classes,
+                    style: fixedCellStyle(group.index),
+                    colspan: group.span > 1 ? group.span : undefined
+                  },
+                  group.cell
+                )
+              })
             )
-          }
+          )
         }
         const footer = summaryNodes.length ? h('tfoot', { class: 'ui-table__footer' }, summaryNodes) : null
 

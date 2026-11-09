@@ -237,4 +237,37 @@ describe('浏览器层 · 表格虚拟滚动锚定', () => {
     expect(data.after?.index).toBe(data.before?.index)
     expect(Math.abs((data.after?.offset ?? 0) - (data.before?.offset ?? 0))).toBeLessThanOrEqual(1.5)
   })
+
+  it('滚动帧不再重复测量表头列宽', async () => {
+    const count = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-virtual .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到虚拟滚动表格')
+      }
+      const original = Element.prototype.getBoundingClientRect
+      let thCount = 0
+      Element.prototype.getBoundingClientRect = function (this: Element) {
+        if (this instanceof HTMLElement && this.tagName === 'TH') {
+          thCount += 1
+        }
+        return original.call(this)
+      }
+      const frame = () =>
+        new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))
+      try {
+        wrapper.scrollTop = 0
+        await frame()
+        thCount = 0
+        for (let step = 0; step < 10; step += 1) {
+          wrapper.scrollTop += 120
+          await frame()
+        }
+        await frame()
+        return thCount
+      } finally {
+        Element.prototype.getBoundingClientRect = original
+      }
+    })
+    expect(count).toBeLessThanOrEqual(6)
+  })
 })

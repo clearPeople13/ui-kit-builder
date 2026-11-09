@@ -413,6 +413,28 @@ describe('Table', () => {
     expect(custom.findAll('.ui-table__footer td').map((cell) => cell.text())).toEqual(['C0', 'C1', 'C2'])
   })
 
+  it('滚动重渲染不重复计算合计，数据变化后重新计算', async () => {
+    const big = Array.from({ length: 200 }, (_, index) => ({ id: index, name: `N${index}`, age: index }))
+    const summaryMethod = vi.fn(({ columns: cols, data }: any) =>
+      cols.map((_: any, index: number) =>
+        index === 0 ? '合计' : String(data.reduce((sum: number, row: any) => sum + Number(row.age ?? 0), 0))
+      )
+    )
+    const wrapper = await setup({ data: big, height: 100, virtual: true, showSummary: true, summaryMethod })
+    summaryMethod.mockClear()
+
+    const element = wrapper.find('.ui-table__wrapper').element as HTMLElement
+    element.scrollTop = 200
+    element.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(summaryMethod).not.toHaveBeenCalled()
+
+    await wrapper.setProps({ data: [...big, { id: 999, name: 'Z', age: 1000 }] })
+    await nextTick()
+    expect(summaryMethod).toHaveBeenCalled()
+  })
+
   it('loading 遮罩与文案', async () => {
     const wrapper = await setup({ loading: true })
     expect(wrapper.classes()).toContain('is-loading')
