@@ -21,6 +21,38 @@
   scrollbar-gutter: stable;
 }
 
+/* Firefox 的叠加式滚动条不会常驻；只在 Firefox 显示自定义横向条，其他浏览器继续用原生条 */
+.ui-table__hscroll {
+  display: none;
+  flex: none;
+  height: 10px;
+  padding: 1px 0;
+}
+
+@supports (-moz-appearance: none) {
+  .ui-table__hscroll {
+    display: block;
+  }
+}
+
+.ui-table__hscroll-track {
+  position: relative;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ui-scrollbar-track, transparent);
+  cursor: pointer;
+}
+
+.ui-table__hscroll-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--ui-scrollbar-thumb, #c0c4cc);
+  cursor: grab;
+}
+
 /* 表头 / 合计各自独立成视口，只跟 body 同步横向滚动，纵向滚动条只出现在 body */
 .ui-table__header-view,
 .ui-table__footer-view {

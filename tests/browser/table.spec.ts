@@ -149,8 +149,46 @@ describe('浏览器层 · 表格', () => {
     expect(data.shadow).not.toBe('none')
   })
 
+  it('Chromium 保留原生横向条，不重复渲染自定义条', async () => {
+    const display = await session.page.evaluate(() => {
+      const bar = document.querySelector<HTMLElement>('#probe-table .ui-table__hscroll')
+      return bar ? getComputedStyle(bar).display : 'none'
+    })
+    expect(display).toBe('none')
+  })
+
   it('全流程控制台无告警', () => {
     expectSilent(session.messages, 'table 场景')
+  })
+})
+
+describe('浏览器层 · Firefox 横向滚动条', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table', { engine: 'firefox' })
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  it('表格横向溢出时提供常驻自定义横向滚动条', async () => {
+    const data = await session.page.evaluate(() => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table .ui-table__wrapper')
+      const bar = document.querySelector<HTMLElement>('#probe-table .ui-table__hscroll')
+      const thumb = bar?.querySelector<HTMLElement>('.ui-table__hscroll-thumb')
+      return {
+        overflow: wrapper ? wrapper.scrollWidth > wrapper.clientWidth + 1 : false,
+        hasBar: Boolean(bar),
+        display: bar ? getComputedStyle(bar).display : 'none',
+        thumbWidth: thumb ? thumb.getBoundingClientRect().width : 0
+      }
+    })
+    expect(data.overflow).toBe(true)
+    expect(data.hasBar).toBe(true)
+    expect(data.display).not.toBe('none')
+    expect(data.thumbWidth).toBeGreaterThan(0)
   })
 })
 

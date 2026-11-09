@@ -293,6 +293,9 @@ export function createTable(features: UiFeature[] = []) {
       const scrollbarGutter = ref(0)
       const bodyScrollTop = ref(0)
       const measuredRowHeight = ref(0)
+      const horizontalOverflow = ref(false)
+      const horizontalScrollLeft = ref(0)
+      const hscrollTrack = shallowRef<HTMLElement | null>(null)
       let latestColumns: TableColumn[] = []
       let measureFrame = 0
       let resizeObserver: ResizeObserver | null = null
@@ -537,6 +540,19 @@ export function createTable(features: UiFeature[] = []) {
       // 跟着大幅漂移；中位数对极端值零影响。首行只采样一次会远低于变量行高的真实
       // 分布，总滚动高被严重低估，拖滚动条时每次实测顶高总高、浏览器又按拇指位重算
       // scrollTop，互相喂成无限更新；首窗实测后中位数即贴近真实分布，总高一次到位
+      // Firefox 的叠加式滚动条不会常驻显示，横向溢出时用自定义条保证可见可拖
+      const hscrollThumbStyle = computed(() => {
+        const element = wrapper.value
+        if (!element || !horizontalOverflow.value || !element.clientWidth || !element.scrollWidth) {
+          return {}
+        }
+        const width = Math.max(24, Math.round(element.clientWidth * (element.clientWidth / element.scrollWidth)))
+        const maxScroll = Math.max(1, element.scrollWidth - element.clientWidth)
+        const maxLeft = Math.max(0, element.clientWidth - width)
+        const left = Math.round((horizontalScrollLeft.value / maxScroll) * maxLeft)
+        return { width: `${width}px`, transform: `translateX(${left}px)` }
+      })
+
       const fallbackRowHeight = computed(() => {
         const heights = measuredRowHeights.value
         if (!heights.size) {
@@ -651,6 +667,10 @@ export function createTable(features: UiFeature[] = []) {
         const width = element.clientWidth
         if (Math.abs(availableWidth.value - width) > 0.5) {
           availableWidth.value = width
+        }
+        const overflow = element.scrollWidth > element.clientWidth + 1
+        if (horizontalOverflow.value !== overflow) {
+          horizontalOverflow.value = overflow
         }
         const gutter = Math.max(0, element.offsetWidth - element.clientWidth)
         if (scrollbarGutter.value !== gutter) {
@@ -900,6 +920,7 @@ export function createTable(features: UiFeature[] = []) {
         if (!element) {
           return
         }
+        horizontalScrollLeft.value = element.scrollLeft
         if (resolved.virtual) {
           const maxTop = element.scrollHeight - element.clientHeight
           if (element.scrollTop >= maxTop - 1) {
@@ -918,7 +939,45 @@ export function createTable(features: UiFeature[] = []) {
         }
       }
 
+      function hscrollTrackPointerDown(event: PointerEvent) {
+        const track = hscrollTrack.value
+        const element = wrapper.value
+        if (!track || !element) {
+          return
+        }
+        const rect = track.getBoundingClientRect()
+        if (!rect.width) {
+          return
+        }
+        const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width))
+        element.scrollLeft = ratio * (element.scrollWidth - element.clientWidth)
+      }
+
+      function hscrollThumbPointerDown(event: PointerEvent) {
+        const track = hscrollTrack.value
+        const element = wrapper.value
+        if (!track || !element) {
+          return
+        }
+        event.preventDefault()
+        event.stopPropagation()
+        const thumbWidth = Number.parseFloat(String(hscrollThumbStyle.value.width ?? 24)) || 24
+        const scale = (element.scrollWidth - element.clientWidth) / Math.max(1, track.clientWidth - thumbWidth)
+        const startX = event.clientX
+        const startScroll = element.scrollLeft
+        const move = (next: PointerEvent) => {
+          element.scrollLeft = startScroll + (next.clientX - startX) * scale
+        }
+        const up = () => {
+          window.removeEventListener('pointermove', move)
+          window.removeEventListener('pointerup', up)
+        }
+        window.addEventListener('pointermove', move)
+        window.addEventListener('pointerup', up)
+      }
+
       function handleScroll() {
+        horizontalScrollLeft.value = wrapper.value?.scrollLeft ?? 0
         if (resolved.virtual) {
           scrollActive = true
           if (scrollSettleTimer) {
@@ -1619,6 +1678,29 @@ export function createTable(features: UiFeature[] = []) {
               )
             : null
 
+        const hscrollBar = horizontalOverflow.value
+          ? h(
+              'div',
+              {
+                class: 'ui-table__hscroll',
+                style: { width: availableWidth.value ? `${availableWidth.value}px` : '100%' }
+              },
+              [
+                h(
+                  'div',
+                  { ref: hscrollTrack, class: 'ui-table__hscroll-track', onPointerdown: hscrollTrackPointerDown },
+                  [
+                    h('div', {
+                      class: 'ui-table__hscroll-thumb',
+                      style: hscrollThumbStyle.value,
+                      onPointerdown: hscrollThumbPointerDown
+                    })
+                  ]
+                )
+              ]
+            )
+          : null
+
         const prefixNodes = collectFeatureFragments(states, 'prefix').map((fragment) => fragment())
         const suffixNodes = collectFeatureFragments(states, 'suffix').map((fragment) => fragment())
 
@@ -1633,6 +1715,7 @@ export function createTable(features: UiFeature[] = []) {
           [
             ...prefixNodes,
             ...(autoLayout ? [bodyWrapper] : [headerSection, bodyWrapper, footerSection]),
+            hscrollBar,
             ...suffixNodes
           ]
         )
