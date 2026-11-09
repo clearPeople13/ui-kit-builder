@@ -9,6 +9,8 @@ interface RuntimePackage extends DemoPackage {
 const loadedVersions = new Map<string, string>()
 const failedVersions = new Set<string>()
 const packageStyles = new Map<string, { url: string; link: HTMLLinkElement }>()
+// 动态产物 URL 只带文件 mtime；Vite 预构建哈希变化时 Edge 会复用旧模块体，里面指向另一份 Vue 导致 inject 失败，页面级 token 强制绕开缓存
+const PREVIEW_CACHE_TOKEN = String(Date.now())
 
 let activePackageId = ''
 let syncing = false
@@ -69,7 +71,8 @@ async function loadModule(item: RuntimePackage): Promise<void> {
     return
   }
   try {
-    const module = await import(/* @vite-ignore */ item.moduleUrl)
+    const moduleUrl = `${item.moduleUrl}${item.moduleUrl.includes('?') ? '&' : '?'}preview=${PREVIEW_CACHE_TOKEN}`
+    const module = await import(/* @vite-ignore */ moduleUrl)
     registerKit(item.id, module)
     loadedVersions.set(item.id, item.moduleUrl)
   } catch (error) {
