@@ -298,6 +298,7 @@ export function createTable(features: UiFeature[] = []) {
       let latestColumnsKey = ''
       let measuredColumnsKey = ''
       let summaryCache: { key: string; rows: any[]; cells: any[][] } | null = null
+      let rowVNodeCache = new Map<string, VNode>()
       let measureFrame = 0
       let resizeObserver: ResizeObserver | null = null
 
@@ -1293,6 +1294,9 @@ export function createTable(features: UiFeature[] = []) {
           return undefined
         }
 
+        const fixedClasses = columns.map((_column, index) => fixedCellClass(index))
+        const fixedStyles = columns.map((_column, index) => fixedCellStyle(index))
+
         function cellTitle(column: TableColumn, row: any): string | undefined {
           const enabled =
             column.showOverflowTooltip === true ||
@@ -1396,9 +1400,9 @@ export function createTable(features: UiFeature[] = []) {
                           column.headerAlign || column.align ? `is-${column.headerAlign || column.align}` : '',
                           sortable ? 'is-sortable' : '',
                           sortState.order ? `is-${sortState.order}` : '',
-                          ...fixedCellClass(index)
+                          ...(fixedClasses[index] ?? [])
                         ],
-                        style: fixedCellStyle(index),
+                        style: fixedStyles[index],
                         'aria-sort':
                           sortState.order === 'ascending'
                             ? 'ascending'
@@ -1481,16 +1485,26 @@ export function createTable(features: UiFeature[] = []) {
         if (topSpacer) {
           bodyRows.push(topSpacer)
         }
+        // 滚动帧复用未变化行的 VNode：父级每帧重渲染时，只有进入窗口的新行需要建树与 patch
+        const scrolling = scrollActive || scrollFrame !== 0
+        const nextRowCache = new Map<string, VNode>()
         for (let rowIndex = windowStart; rowIndex < windowEnd; rowIndex += 1) {
           const row = rows[rowIndex]
+          const key = rowKeyOf(row, rowIndex)
+          const isExpanded = expandedKeys.value.has(key)
+          const cacheKey = String(key)
+          const cached = scrolling && !isExpanded ? rowVNodeCache.get(cacheKey) : undefined
+          if (cached) {
+            bodyRows.push(cached)
+            nextRowCache.set(cacheKey, cached)
+            continue
+          }
           const rowClass =
             typeof resolved.rowClassName === 'function'
               ? resolved.rowClassName({ row, rowIndex })
               : resolved.rowClassName
           const rowStyle =
             typeof resolved.rowStyle === 'function' ? resolved.rowStyle({ row, rowIndex }) : resolved.rowStyle
-          const key = rowKeyOf(row, rowIndex)
-          const isExpanded = expandedKeys.value.has(key)
           const meta = mergeHookResults(rowMetaHooks, [row, rowIndex, columns])
           const cells: VNode[] = []
           for (let columnIndex = 0; columnIndex < columns.length; columnIndex += 1) {
@@ -1532,8 +1546,12 @@ export function createTable(features: UiFeature[] = []) {
               h(
                 'td',
                 {
-                  class: [column.className, column.align ? `is-${column.align}` : '', ...fixedCellClass(columnIndex)],
-                  style: fixedCellStyle(columnIndex),
+                  class: [
+                    column.className,
+                    column.align ? `is-${column.align}` : '',
+                    ...(fixedClasses[columnIndex] ?? [])
+                  ],
+                  style: fixedStyles[columnIndex],
                   title: cellTitle(column, row),
                   rowspan: rowspan > 1 ? rowspan : undefined,
                   colspan: colspan > 1 ? colspan : undefined
@@ -1551,23 +1569,25 @@ export function createTable(features: UiFeature[] = []) {
               )
             )
           }
-          bodyRows.push(
-            h(
-              'tr',
-              {
-                key: String(key),
-                class: [
-                  rowClass,
-                  resolved.stripe && rowIndex % 2 === 1 ? 'is-striped' : '',
-                  resolved.highlightCurrentRow && currentKey.value === key ? 'current-row' : ''
-                ],
-                style: rowStyle,
-                'data-row-index': virtualActive ? rowIndex : undefined,
-                onClick: () => handleRowClick(row, rowIndex)
-              },
-              cells
-            )
+          const rowNode = h(
+            'tr',
+            {
+              key: String(key),
+              class: [
+                rowClass,
+                resolved.stripe && rowIndex % 2 === 1 ? 'is-striped' : '',
+                resolved.highlightCurrentRow && currentKey.value === key ? 'current-row' : ''
+              ],
+              style: rowStyle,
+              'data-row-index': virtualActive ? rowIndex : undefined,
+              onClick: () => handleRowClick(row, rowIndex)
+            },
+            cells
           )
+          bodyRows.push(rowNode)
+          if (scrolling && !isExpanded) {
+            nextRowCache.set(cacheKey, rowNode)
+          }
           if (isExpanded) {
             const expandColumn = columns.find((column) => column.type === 'expand')
             const scope = { row, $index: rowIndex, rowIndex }
@@ -1579,6 +1599,11 @@ export function createTable(features: UiFeature[] = []) {
               ])
             )
           }
+        }
+        if (scrolling) {
+          rowVNodeCache = nextRowCache
+        } else {
+          rowVNodeCache.clear()
         }
         const bottomSpacer =
           virtualActive && rowOffsets ? spacerRow(rowOffsets[rows.length] - rowOffsets[windowEnd]) : null
@@ -1606,7 +1631,7 @@ export function createTable(features: UiFeature[] = []) {
               { class: 'ui-table__summary-row' },
               groupSummaryCells(cells, columns).map((group) => {
                 const column = columns[group.index]
-                const classes = [column?.align ? `is-${column.align}` : '', ...fixedCellClass(group.index)]
+                const classes = [column?.align ? `is-${column.align}` : '', ...(fixedClasses[group.index] ?? [])]
                 if (group.span > 1 && group.index + group.span - 1 === offsets.lastLeft) {
                   classes.push('is-fixed-left-edge')
                 }
@@ -1614,7 +1639,7 @@ export function createTable(features: UiFeature[] = []) {
                   'td',
                   {
                     class: classes,
-                    style: fixedCellStyle(group.index),
+                    style: fixedStyles[group.index],
                     colspan: group.span > 1 ? group.span : undefined
                   },
                   group.cell

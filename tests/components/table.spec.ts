@@ -435,6 +435,28 @@ describe('Table', () => {
     expect(summaryMethod).toHaveBeenCalled()
   })
 
+  it('滚动重渲染复用未变更的行，不重复计算行类名', async () => {
+    const big = Array.from({ length: 200 }, (_, index) => ({ id: index, name: `N${index}`, age: index }))
+    const rowClassName = vi.fn(() => '')
+    const wrapper = await setup({ data: big, height: 100, virtual: true, rowClassName })
+    const initial = rowClassName.mock.calls.length
+    expect(initial).toBeGreaterThan(2)
+    rowClassName.mockClear()
+
+    const element = wrapper.find('.ui-table__wrapper').element as HTMLElement
+    element.scrollTop = 5
+    element.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    rowClassName.mockClear()
+
+    element.scrollTop = 10
+    element.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(rowClassName).not.toHaveBeenCalled()
+  })
+
   it('loading 遮罩与文案', async () => {
     const wrapper = await setup({ loading: true })
     expect(wrapper.classes()).toContain('is-loading')
