@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T16:33:19.096Z",
-  "sourceDigest": "e74bdb6fa2c6781c",
+  "generatedAt": "2026-11-09T16:58:30.420Z",
+  "sourceDigest": "2a60b4f2aa07c390",
   "stats": {
-    "nodes": 3018,
-    "edges": 4198,
+    "nodes": 3021,
+    "edges": 4202,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 333,
+    "docs": 336,
     "tests": 162
   },
   "nodes": [
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1458
+        "lines": 1474
       }
     },
     {
@@ -5511,7 +5511,7 @@
       "id": "doc:REQUIREMENTS.md#172",
       "type": "doc-section",
       "label": "50.1 缺陷登记",
-      "summary": "| 编号  | 文件                                                                    | 现象                                                                                                                   | 根因                   ",
+      "summary": "| 编号  | 文件                                                                               | 现象                                                                                                                               ",
       "path": "REQUIREMENTS.md#172",
       "tags": [
         "doc",
@@ -5553,7 +5553,7 @@
       "id": "doc:REQUIREMENTS.md#175",
       "type": "doc-section",
       "label": "51.1 缺陷登记",
-      "summary": "| 编号  | 文件                                                                                                          | 现象                                                                                     | 根因           ",
+      "summary": "| 编号  | 文件                                                                                                           | 现象                                                                                 | 根因              ",
       "path": "REQUIREMENTS.md#175",
       "tags": [
         "doc",
@@ -5569,6 +5569,48 @@
       "label": "51.2 验证",
       "summary": "- 红用例反证：浏览器层新增 `table-virtual-variable` 场景（行高 40/64/120 交替），滚动到 63946px 后等待实测提交，改前顶部行从 996 变成 995、相对位置从 -10px 变成 -66px，用例红。\n- 改后同一场景：顶部仍是 996 行、相对位置仍是 -10px，等待 1.2s 也不再变化。\n- 真实调试台「大数据：5 万行 · 行高不一」：滚动到 300000px，改前顶部行从 379",
       "path": "REQUIREMENTS.md#176",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#177",
+      "type": "doc-section",
+      "label": "52. 表格滚动帧性能优化（第一批）",
+      "summary": "> 目标：不改变行为，降低「大表编辑 + 冻结 + 合计 + 合并」场景每帧的重复计算与强制布局。",
+      "path": "REQUIREMENTS.md#177",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#178",
+      "type": "doc-section",
+      "label": "52.1 改动",
+      "summary": "- **合计缓存**：`summaryMethod` / 默认合计只在数据引用或列签名变化、或非滚动渲染时重算；滚动帧复用上次结果。此前每个滚动帧都会对全表 `map → filter → reduce`，2000×10 的响应式行约 1.8ms/帧，5 万行会到几十毫秒。\n- **列宽测量节流**：`onUpdated` 不再每帧调用 `measureAvailableWidth` / `measureColumns`，只在列签名（含",
+      "path": "REQUIREMENTS.md#178",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#179",
+      "type": "doc-section",
+      "label": "52.2 实测",
+      "summary": "- 环境：Chromium 1440×1000，「复杂：大表编辑 + 冻结 + 合计 + 合并」，2000 行、50 行合并块。\n- 普通滚动帧：约 28–33ms → 约 25–28ms；编辑输入首帧：31.3ms → 22.1ms。\n- 红用例：组件层 `summaryMethod` spy 在滚动重渲染时被调用 2 次（应 0 次）；浏览器层滚动 10 帧读取表头 `th` 50 次（应 ≤6 次）。改后均绿。\n- 仍存在的瓶颈：",
+      "path": "REQUIREMENTS.md#179",
       "tags": [
         "doc",
         "subsection"
@@ -17825,7 +17867,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1687
+        "lines": 1714
       }
     },
     {
@@ -44279,7 +44321,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 241
+        "lines": 274
       }
     },
     {
@@ -45696,7 +45738,7 @@
         "component"
       ],
       "meta": {
-        "lines": 669
+        "lines": 691
       }
     },
     {
@@ -53256,6 +53298,21 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#177",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#178",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#179",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#18",
       "type": "contains"
     },
@@ -55207,6 +55264,11 @@
     {
       "from": "doc:REQUIREMENTS.md#176",
       "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#178",
+      "to": "component:col",
       "type": "mentions"
     },
     {
