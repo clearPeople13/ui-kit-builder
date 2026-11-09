@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T13:14:19.019Z",
-  "sourceDigest": "fcb0ccec8e2c915d",
+  "generatedAt": "2026-11-09T13:32:12.843Z",
+  "sourceDigest": "57c5a6b43ec2f8aa",
   "stats": {
-    "nodes": 3003,
-    "edges": 4165,
+    "nodes": 3006,
+    "edges": 4172,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 318,
+    "docs": 321,
     "tests": 162
   },
   "nodes": [
@@ -2364,7 +2364,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 192
+        "lines": 193
       }
     },
     {
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 250
+        "lines": 251
       }
     },
     {
@@ -4231,7 +4231,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 123
+        "lines": 128
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1370
+        "lines": 1389
       }
     },
     {
@@ -5345,6 +5345,48 @@
       "label": "46.2 验证",
       "summary": "- 红用例反证：改前代码跑新用例红（F-115 用例 1 failed / 31 passed）；整文件注入 GIT_DIR 复现钩子内同款 2 红；修复后常规与 GIT_DIR 注入两种环境均 32/32 绿，且注入环境跑完 main 无新增提交。\n- 已知边界：仓库内其他脚本若在钩子上下文 shell git 且依赖真实仓库解析，需要同样评估；本次只修 task-claim 的三处调用与对应测试。\n- 门禁：合入后在 main 执行",
       "path": "REQUIREMENTS.md#161",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#162",
+      "type": "doc-section",
+      "label": "47. 表格假横向滚动条 + 调试台 Edge 旧模块缓存（F-116 / F-117）",
+      "summary": "> 触发：Edge 打开调试台表格页，浏览器缩放到 110% 时出现横向滚动条但几乎没有可滚内容；切到「大数据：5 万行 · 行高不一」后第 18 行之后不再渲染，树形大数据场景控制台报 `Cannot destructure property 'size' of 'gu(...)' as it is undefined`，其他浏览器正常。",
+      "path": "REQUIREMENTS.md#162",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#163",
+      "type": "doc-section",
+      "label": "47.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                          | 现象                                                                                                         | 根因                       ",
+      "path": "REQUIREMENTS.md#163",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#164",
+      "type": "doc-section",
+      "label": "47.2 验证",
+      "summary": "- 红用例反证：先还原 `layoutColumnWidths` 改前实现，`table-shrink` 场景断言 `scrollWidth 790 <= clientWidth + 1` 失败；恢复修复后 10/10 绿。\n- 浏览器层：`npx vitest run --config vitest.browser.config.ts tests/browser/table.spec.ts`，新增「窄容器按 minWidth 收缩」「",
+      "path": "REQUIREMENTS.md#164",
       "tags": [
         "doc",
         "subsection"
@@ -17615,7 +17657,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1644
+        "lines": 1685
       }
     },
     {
@@ -17797,7 +17839,7 @@
         "mjs"
       ],
       "meta": {
-        "lines": 479
+        "lines": 480
       }
     },
     {
@@ -37540,7 +37582,7 @@
       "id": "prop:table.Table.fit",
       "type": "prop",
       "label": "Table.fit",
-      "summary": "自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间",
+      "summary": "自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间；空间不足时按 minWidth 收缩，收缩到底仍不足才横向滚动",
       "path": "packages/ui-kit/src/components/table/core.ts",
       "tags": [
         "table",
@@ -43965,7 +44007,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 690
+        "lines": 722
       }
     },
     {
@@ -44069,7 +44111,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 122
+        "lines": 191
       }
     },
     {
@@ -52570,6 +52612,11 @@
       "type": "mentions"
     },
     {
+      "from": "doc:README.md#3",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
       "from": "doc:README.md#5",
       "to": "component:cascader",
       "type": "mentions"
@@ -52947,6 +52994,21 @@
     {
       "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#161",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#162",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#163",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#164",
       "type": "contains"
     },
     {
@@ -54807,6 +54869,21 @@
     {
       "from": "doc:REQUIREMENTS.md#158",
       "to": "component:tooltip",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#163",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#164",
+      "to": "component:col",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#164",
+      "to": "component:table",
       "type": "mentions"
     },
     {
