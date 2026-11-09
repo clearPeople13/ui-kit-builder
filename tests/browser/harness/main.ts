@@ -343,7 +343,24 @@ function sceneTableSpanVirtual() {
         },
         {
           default: () => [
-            h(TableColumn, { prop: 'id', label: '编号', width: 90, fixed: 'left' }),
+            h(
+              TableColumn,
+              { prop: 'id', label: '编号', width: 220, fixed: 'left' },
+              {
+                default: (scope: any) => [
+                  h(Input, { modelValue: String(scope.row.id), readonly: true, style: 'width: 140px' }),
+                  h(Select, {
+                    modelValue: '稳定',
+                    options: [
+                      { label: '稳定', value: '稳定' },
+                      { label: '内测', value: '内测' }
+                    ],
+                    style: 'width: 140px'
+                  }),
+                  h('span', {}, '2234324')
+                ]
+              }
+            ),
             h(TableColumn, { prop: 'name', label: '名称', minWidth: 160 }),
             h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
             h(TableColumn, { prop: 'amount', label: '金额', width: 120 })

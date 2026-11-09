@@ -295,3 +295,11 @@
 .ui-table__body td.is-span-start:not(.is-span-end) {
   border-bottom-color: transparent;
 }
+
+/* 合并内容可能包含多个 Input/Select/文本，单行 nowrap 会把后面的元素裁成省略号 */
+.ui-table__body td.is-span-content {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  word-break: break-word;
+}

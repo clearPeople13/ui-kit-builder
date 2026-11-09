@@ -277,6 +277,42 @@ describe('浏览器层 · 表格合并块虚拟化', () => {
     expect(data.middle.contentRow).toBeGreaterThan(10)
     expect(data.middle.background).not.toBe('rgba(0, 0, 0, 0)')
   })
+
+  it('合并内容允许换行，多个元素不会被省略号裁掉', async () => {
+    const data = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-span .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到合并块虚拟表格')
+      }
+      wrapper.scrollTop = 900
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))
+      const cell = wrapper.querySelector<HTMLElement>('td.is-span-content')
+      if (!cell) {
+        throw new Error('找不到合并内容单元格')
+      }
+      const cellRect = cell.getBoundingClientRect()
+      const style = getComputedStyle(cell)
+      return {
+        whiteSpace: style.whiteSpace,
+        textOverflow: style.textOverflow,
+        overflow: style.overflow,
+        cell: { left: cellRect.left, right: cellRect.right },
+        children: Array.from(cell.children).map((child) => {
+          const rect = child.getBoundingClientRect()
+          return { tag: child.tagName, left: rect.left, right: rect.right, height: rect.height }
+        })
+      }
+    })
+
+    expect(data.whiteSpace).toBe('normal')
+    expect(data.textOverflow).toBe('clip')
+    expect(data.children.length).toBeGreaterThan(2)
+    for (const child of data.children) {
+      expect(child.height).toBeGreaterThan(0)
+      expect(child.left).toBeGreaterThanOrEqual(data.cell.left - 1)
+      expect(child.right).toBeLessThanOrEqual(data.cell.right + 1)
+    }
+  })
 })
 
 describe('浏览器层 · 表格铺满余量', () => {
