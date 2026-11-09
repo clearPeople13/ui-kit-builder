@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T17:09:55.956Z",
-  "sourceDigest": "48d905dcab0c6a59",
+  "generatedAt": "2026-11-09T17:22:05.267Z",
+  "sourceDigest": "a3918f4725ecafa7",
   "stats": {
-    "nodes": 3028,
-    "edges": 4212,
+    "nodes": 3031,
+    "edges": 4216,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 343,
+    "docs": 346,
     "tests": 162
   },
   "nodes": [
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1514
+        "lines": 1532
       }
     },
     {
@@ -5721,8 +5721,50 @@
       "id": "doc:REQUIREMENTS.md#186",
       "type": "doc-section",
       "label": "54.3 未做",
-      "summary": "- 合并块窗口收缩需要把 rowspan 从表格语义改成「可见行 + 绝对定位合并层」，属于布局模型改造，单独立项；否则会破坏合并单元格高度与内容定位。\n\n(fix: 冻结列阴影改渐变带恢复可见并保持连贯（F-122）)",
+      "summary": "- 合并块窗口收缩需要把 rowspan 从表格语义改成「可见行 + 绝对定位合并层」，属于布局模型改造，单独立项；否则会破坏合并单元格高度与内容定位。",
       "path": "REQUIREMENTS.md#186",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#187",
+      "type": "doc-section",
+      "label": "55. 合并块虚拟化（第三批）",
+      "summary": "> 目标：虚拟滚动下大 `rowspan` 不再把整块行塞进 DOM，同时保持合并区域视觉连续。",
+      "path": "REQUIREMENTS.md#187",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#188",
+      "type": "doc-section",
+      "label": "55.1 改动",
+      "summary": "- 虚拟模式下 `rowspan > 1` 不再加入 `spanPlan.anchors`，窗口只按可见行 + overscan 渲染。\n- 合并块改为「起始行真实单元格 + 后续行续接单元格」：起始行保留内容和 `is-span-start`，后续行渲染空 `td.is-span-continuation`；块最后一行带 `is-span-end`。\n- 续接单元格统一底色、隐藏块内上下边框；非虚拟模式仍走原生 `rowspan`，不",
+      "path": "REQUIREMENTS.md#188",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#189",
+      "type": "doc-section",
+      "label": "55.2 实测",
+      "summary": "- 「复杂：大表编辑 + 冻结 + 合计 + 合并」：渲染行数 50 → 16，DOM 元素 6017 → 2836。\n- 滚动帧：平均 43.1ms → **26.6ms**，P50 29ms → **26.5ms**，最大长帧 172.6ms → **28.9ms**。\n- 红用例：虚拟 span 场景改前渲染 51 行（要求 < 30），用例红；改后组件层 46/46、浏览器层 13/13 绿。\n- 浏览器层新增 `table-s",
+      "path": "REQUIREMENTS.md#189",
       "tags": [
         "doc",
         "subsection"
@@ -17952,7 +17994,7 @@
         "css"
       ],
       "meta": {
-        "lines": 273
+        "lines": 298
       }
     },
     {
@@ -17965,7 +18007,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1739
+        "lines": 1784
       }
     },
     {
@@ -44315,7 +44357,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 762
+        "lines": 804
       }
     },
     {
@@ -44419,7 +44461,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 344
+        "lines": 392
       }
     },
     {
@@ -45836,7 +45878,7 @@
         "component"
       ],
       "meta": {
-        "lines": 713
+        "lines": 738
       }
     },
     {
@@ -53451,6 +53493,21 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#187",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#188",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#189",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#19",
       "type": "contains"
     },
@@ -55501,6 +55558,11 @@
     },
     {
       "from": "doc:REQUIREMENTS.md#182",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#189",
       "to": "component:table",
       "type": "mentions"
     },
