@@ -69,6 +69,10 @@
     "test:coverage:run": "vitest run --coverage --config vitest.coverage.config.ts",
     "verify:consumer": "npm --prefix examples/consumer run check:all",
     "demo:consumer": "npm --prefix examples/consumer run dev",
+    "knowledge:build": "node scripts/knowledge.mjs build",
+    "knowledge:search": "node scripts/knowledge.mjs search",
+    "knowledge:explain": "node scripts/knowledge.mjs explain",
+    "knowledge:stats": "node scripts/knowledge.mjs stats",
     "guardian": "node tools/guardian/guardian.mjs",
     "guardian:once": "node tools/guardian/guardian.mjs --once"
   },
