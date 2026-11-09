@@ -1,7 +1,7 @@
 # 项目知识图谱
 
 > 由 `npm run knowledge:build` 从 `registry.mjs`、各组件 `spec.mjs`、profiles、文档、测试与脚本生成；不要手改。
-> 当前 digest：`8f513eea94855eee`（节点 3015 / 边 4190）。
+> 当前 digest：`d0ce147a714b117d`（节点 3012 / 边 4182）。
 
 ## 快速检索
 
