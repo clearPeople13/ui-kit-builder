@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-08T15:53:13.684Z",
+  "generatedAt": "2026-11-09T01:59:01.560Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -26725,10 +26725,10 @@
     "date-picker-panel.appearance": {
       "title": "外观变体",
       "component": "date-picker-panel",
-      "jsBytes": 687447,
-      "cssBytes": 246339,
-      "totalBytes": 933786,
-      "gzipBytes": 202421
+      "jsBytes": 221,
+      "cssBytes": 146,
+      "totalBytes": 367,
+      "gzipBytes": 37
     },
     "date-picker-panel.format": {
       "title": "格式化",
@@ -26789,10 +26789,10 @@
     "dialog.fullscreen": {
       "title": "全屏",
       "component": "dialog",
-      "jsBytes": 687447,
-      "cssBytes": 246339,
-      "totalBytes": 933786,
-      "gzipBytes": 202421
+      "jsBytes": 183,
+      "cssBytes": 130,
+      "totalBytes": 313,
+      "gzipBytes": 46
     },
     "drawer.closable": {
       "title": "可关闭",
