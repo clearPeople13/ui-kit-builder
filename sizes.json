@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T16:56:28.479Z",
+  "generatedAt": "2026-11-09T17:02:05.390Z",
   "profiles": {
     "core": {
       "name": "core",
@@ -924,14 +924,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 225241,
-          "gzipBytes": 31275
+          "bytes": 225298,
+          "gzipBytes": 31277
         }
       ],
       "jsBytes": 603465,
-      "cssBytes": 225241,
-      "totalBytes": 828706,
-      "gzipBytes": 178835
+      "cssBytes": 225298,
+      "totalBytes": 828763,
+      "gzipBytes": 178837
     },
     "full": {
       "name": "full",
@@ -2261,14 +2261,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 246220,
-          "gzipBytes": 34168
+          "bytes": 246277,
+          "gzipBytes": 34171
         }
       ],
       "jsBytes": 688852,
-      "cssBytes": 246220,
-      "totalBytes": 935072,
-      "gzipBytes": 202847
+      "cssBytes": 246277,
+      "totalBytes": 935129,
+      "gzipBytes": 202851
     },
     "branded": {
       "name": "branded",
@@ -3598,14 +3598,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258212,
-          "gzipBytes": 34923
+          "bytes": 258269,
+          "gzipBytes": 34926
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 258212,
-      "totalBytes": 948890,
-      "gzipBytes": 203705
+      "cssBytes": 258269,
+      "totalBytes": 948947,
+      "gzipBytes": 203708
     },
     "chinese": {
       "name": "chinese",
@@ -4935,14 +4935,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 294096,
-          "gzipBytes": 38586
+          "bytes": 294153,
+          "gzipBytes": 38588
         }
       ],
       "jsBytes": 693417,
-      "cssBytes": 294096,
-      "totalBytes": 987513,
-      "gzipBytes": 207551
+      "cssBytes": 294153,
+      "totalBytes": 987570,
+      "gzipBytes": 207553
     },
     "cute": {
       "name": "cute",
@@ -6272,14 +6272,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 273663,
-          "gzipBytes": 37871
+          "bytes": 273720,
+          "gzipBytes": 37873
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 273663,
-      "totalBytes": 964341,
-      "gzipBytes": 206670
+      "cssBytes": 273720,
+      "totalBytes": 964398,
+      "gzipBytes": 206673
     },
     "antd": {
       "name": "antd",
@@ -7609,14 +7609,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 278419,
-          "gzipBytes": 38026
+          "bytes": 278476,
+          "gzipBytes": 38029
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 278419,
-      "totalBytes": 969097,
-      "gzipBytes": 206819
+      "cssBytes": 278476,
+      "totalBytes": 969154,
+      "gzipBytes": 206823
     },
     "arco": {
       "name": "arco",
@@ -8946,14 +8946,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258584,
-          "gzipBytes": 35018
+          "bytes": 258641,
+          "gzipBytes": 35021
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 258584,
-      "totalBytes": 949262,
-      "gzipBytes": 203800
+      "cssBytes": 258641,
+      "totalBytes": 949319,
+      "gzipBytes": 203804
     },
     "tdesign": {
       "name": "tdesign",
@@ -10283,14 +10283,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274802,
-          "gzipBytes": 35433
+          "bytes": 274859,
+          "gzipBytes": 35435
         }
       ],
       "jsBytes": 693417,
-      "cssBytes": 274802,
-      "totalBytes": 968219,
-      "gzipBytes": 204377
+      "cssBytes": 274859,
+      "totalBytes": 968276,
+      "gzipBytes": 204379
     },
     "naive": {
       "name": "naive",
@@ -11620,13 +11620,13 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 263865,
-          "gzipBytes": 35093
+          "bytes": 263922,
+          "gzipBytes": 35094
         }
       ],
       "jsBytes": 691591,
-      "cssBytes": 263865,
-      "totalBytes": 955456,
+      "cssBytes": 263922,
+      "totalBytes": 955513,
       "gzipBytes": 203925
     },
     "viewui": {
@@ -12957,14 +12957,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269332,
-          "gzipBytes": 35279
+          "bytes": 269389,
+          "gzipBytes": 35281
         }
       ],
       "jsBytes": 692504,
-      "cssBytes": 269332,
-      "totalBytes": 961836,
-      "gzipBytes": 204156
+      "cssBytes": 269389,
+      "totalBytes": 961893,
+      "gzipBytes": 204158
     },
     "vant": {
       "name": "vant",
@@ -14294,14 +14294,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258724,
-          "gzipBytes": 35024
+          "bytes": 258781,
+          "gzipBytes": 35027
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 258724,
-      "totalBytes": 949402,
-      "gzipBytes": 203807
+      "cssBytes": 258781,
+      "totalBytes": 949459,
+      "gzipBytes": 203810
     },
     "varlet": {
       "name": "varlet",
@@ -15631,14 +15631,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269372,
-          "gzipBytes": 35293
+          "bytes": 269429,
+          "gzipBytes": 35295
         }
       ],
       "jsBytes": 692504,
-      "cssBytes": 269372,
-      "totalBytes": 961876,
-      "gzipBytes": 204181
+      "cssBytes": 269429,
+      "totalBytes": 961933,
+      "gzipBytes": 204182
     },
     "semi": {
       "name": "semi",
@@ -16968,14 +16968,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 258280,
-          "gzipBytes": 34909
+          "bytes": 258337,
+          "gzipBytes": 34911
         }
       ],
       "jsBytes": 690678,
-      "cssBytes": 258280,
-      "totalBytes": 948958,
-      "gzipBytes": 203687
+      "cssBytes": 258337,
+      "totalBytes": 949015,
+      "gzipBytes": 203691
     },
     "material3": {
       "name": "material3",
@@ -18305,14 +18305,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 286659,
-          "gzipBytes": 36003
+          "bytes": 286716,
+          "gzipBytes": 36008
         }
       ],
       "jsBytes": 695243,
-      "cssBytes": 286659,
-      "totalBytes": 981902,
-      "gzipBytes": 205036
+      "cssBytes": 286716,
+      "totalBytes": 981959,
+      "gzipBytes": 205040
     },
     "bootstrap": {
       "name": "bootstrap",
@@ -19642,14 +19642,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 285999,
-          "gzipBytes": 35730
+          "bytes": 286056,
+          "gzipBytes": 35735
         }
       ],
       "jsBytes": 695243,
-      "cssBytes": 285999,
-      "totalBytes": 981242,
-      "gzipBytes": 204753
+      "cssBytes": 286056,
+      "totalBytes": 981299,
+      "gzipBytes": 204759
     },
     "shadcn": {
       "name": "shadcn",
@@ -20979,14 +20979,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269737,
-          "gzipBytes": 35377
+          "bytes": 269794,
+          "gzipBytes": 35379
         }
       ],
       "jsBytes": 692504,
-      "cssBytes": 269737,
-      "totalBytes": 962241,
-      "gzipBytes": 204264
+      "cssBytes": 269794,
+      "totalBytes": 962298,
+      "gzipBytes": 204266
     },
     "fluent": {
       "name": "fluent",
@@ -22316,14 +22316,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269288,
-          "gzipBytes": 35290
+          "bytes": 269345,
+          "gzipBytes": 35292
         }
       ],
       "jsBytes": 692504,
-      "cssBytes": 269288,
-      "totalBytes": 961792,
-      "gzipBytes": 204173
+      "cssBytes": 269345,
+      "totalBytes": 961849,
+      "gzipBytes": 204175
     },
     "carbon": {
       "name": "carbon",
@@ -23653,14 +23653,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 269377,
-          "gzipBytes": 35312
+          "bytes": 269434,
+          "gzipBytes": 35314
         }
       ],
       "jsBytes": 692504,
-      "cssBytes": 269377,
-      "totalBytes": 961881,
-      "gzipBytes": 204198
+      "cssBytes": 269434,
+      "totalBytes": 961938,
+      "gzipBytes": 204200
     },
     "mantine": {
       "name": "mantine",
@@ -24990,14 +24990,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275241,
-          "gzipBytes": 35563
+          "bytes": 275298,
+          "gzipBytes": 35565
         }
       ],
       "jsBytes": 693417,
-      "cssBytes": 275241,
-      "totalBytes": 968658,
-      "gzipBytes": 204521
+      "cssBytes": 275298,
+      "totalBytes": 968715,
+      "gzipBytes": 204523
     },
     "ios": {
       "name": "ios",
@@ -26327,14 +26327,14 @@
         },
         {
           "file": "ui-kit.css",
-          "bytes": 252848,
-          "gzipBytes": 34807
+          "bytes": 252905,
+          "gzipBytes": 34810
         }
       ],
       "jsBytes": 689765,
-      "cssBytes": 252848,
-      "totalBytes": 942613,
-      "gzipBytes": 203536
+      "cssBytes": 252905,
+      "totalBytes": 942670,
+      "gzipBytes": 203538
     }
   },
   "features": {
@@ -27344,7 +27344,7 @@
       "jsBytes": 3733,
       "cssBytes": 761,
       "totalBytes": 4494,
-      "gzipBytes": 1040
+      "gzipBytes": 1041
     },
     "table.resize": {
       "title": "列宽拖拽",
@@ -27352,7 +27352,7 @@
       "jsBytes": 2406,
       "cssBytes": 428,
       "totalBytes": 2834,
-      "gzipBytes": 692
+      "gzipBytes": 682
     },
     "table.span": {
       "title": "合并单元格",
@@ -27368,7 +27368,7 @@
       "jsBytes": 537,
       "cssBytes": 535,
       "totalBytes": 1072,
-      "gzipBytes": 222
+      "gzipBytes": 223
     },
     "table.summary": {
       "title": "合计行",

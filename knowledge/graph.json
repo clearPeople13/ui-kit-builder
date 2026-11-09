@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T16:58:30.420Z",
-  "sourceDigest": "2a60b4f2aa07c390",
+  "generatedAt": "2026-11-09T17:04:22.193Z",
+  "sourceDigest": "fa56fcf98191e0b9",
   "stats": {
-    "nodes": 3021,
-    "edges": 4202,
+    "nodes": 3024,
+    "edges": 4208,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 336,
+    "docs": 339,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 255
+        "lines": 256
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1474
+        "lines": 1494
       }
     },
     {
@@ -5625,6 +5625,48 @@
       "label": "9.3 第四批已知缺陷清单（已修复，与浏览器层同分支）",
       "summary": "| 编号 | 位置                                                                                  | 原现象                                                                                                                            ",
       "path": "REQUIREMENTS.md#18",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#180",
+      "type": "doc-section",
+      "label": "53. 冻结列阴影修复后整条消失（F-122）",
+      "summary": "> 触发：横向滚动带冻结列的表格，表头/表体/合计的边界应当有一条连续阴影；F-119 之后三处阴影全部消失，冻结列与滚动内容之间只剩一条白缝，看不出分界。",
+      "path": "REQUIREMENTS.md#180",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#181",
+      "type": "doc-section",
+      "label": "53.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                           | 现象                                                                                     | 根因                                          ",
+      "path": "REQUIREMENTS.md#181",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#182",
+      "type": "doc-section",
+      "label": "53.2 验证",
+      "summary": "- 红用例反证：改前代码上跑新增断言，伪元素 `width` 为 `1px`（要求 ≥ 8px）、三段亮度差全为 0，两条用例都红。\n- 改后同一用例：表头 24.26 / 表体 24.36 / 合计 24.26 的亮度差，三段一致（极差 0.1）——同一条竖带同时覆盖三张分表。\n- 真实 `table` 场景横向滚动后截图确认：表头 → 表体 → 合计是一条连续竖向阴影，左右冻结列对称，合计行不再被相邻单元格背景盖住。\n- 回归：`t",
+      "path": "REQUIREMENTS.md#182",
       "tags": [
         "doc",
         "subsection"
@@ -17854,7 +17896,7 @@
         "css"
       ],
       "meta": {
-        "lines": 272
+        "lines": 273
       }
     },
     {
@@ -44321,7 +44363,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 274
+        "lines": 344
       }
     },
     {
@@ -53318,6 +53360,21 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#180",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#181",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#182",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#19",
       "type": "contains"
     },
@@ -55354,6 +55411,21 @@
     {
       "from": "doc:REQUIREMENTS.md#18",
       "to": "component:virtual-list",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#181",
+      "to": "component:overlay",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#181",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#182",
+      "to": "component:table",
       "type": "mentions"
     },
     {
