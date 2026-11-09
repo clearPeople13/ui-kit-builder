@@ -224,7 +224,6 @@ function sceneTable() {
           showSummary: true,
           resizable: true,
           minColumnWidth: 80,
-          fit: false,
           id: 'probe-table',
           style: 'width: 100%',
           'onResize-change': log('resize')
@@ -243,8 +242,8 @@ function sceneTable() {
     )
 }
 
-/** 窄容器：列宽总和超过容器时按 minWidth 收缩，收缩到底才横向滚动 */
-function sceneTableShrink() {
+/** 宽容器铺满：列宽总和小于容器，验证表格留 1px 余量避免缩放时小数像素露出横向滚动条 */
+function sceneTableFit() {
   const rows = Array.from({ length: 8 }, (_, index) => ({
     id: index + 1,
     name: `行 ${index + 1}`,
@@ -256,14 +255,14 @@ function sceneTableShrink() {
   return () =>
     h(
       'div',
-      { style: 'width: 780px', id: 'probe-table-shrink-box' },
+      { style: 'width: 900px' },
       h(
         Table,
-        { data: rows, height: 200, id: 'probe-table-shrink', style: 'width: 100%' },
+        { data: rows, height: 200, id: 'probe-table-fit', style: 'width: 100%' },
         {
           default: () => [
             h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
-            h(TableColumn, { prop: 'name', label: '名称', width: 200, minWidth: 100 }),
+            h(TableColumn, { prop: 'name', label: '名称', width: 200 }),
             h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
             h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
             h(TableColumn, { prop: 'note', label: '备注', width: 260, minWidth: 120 })
@@ -674,7 +673,7 @@ const scenes: Record<string, () => any> = {
   form: sceneForm(),
   floating: sceneFloating(),
   table: sceneTable(),
-  'table-shrink': sceneTableShrink(),
+  'table-fit': sceneTableFit(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),

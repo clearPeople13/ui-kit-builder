@@ -120,71 +120,31 @@ describe('浏览器层 · 表格', () => {
   })
 })
 
-describe('浏览器层 · 表格宽度收缩', () => {
+describe('浏览器层 · 表格铺满余量', () => {
   let session: Session
 
   beforeAll(async () => {
-    session = await openScene('table-shrink')
+    session = await openScene('table-fit')
   })
 
   afterAll(async () => {
     await session?.close()
   })
 
-  async function metrics() {
-    return session.page.evaluate(() => {
-      const wrapper = document.querySelector<HTMLElement>('#probe-table-shrink .ui-table__wrapper')
-      if (!wrapper) {
-        throw new Error('找不到窄容器表格')
+  it('铺满时留 1px 余量，缩放的小数像素不会露出横向滚动条', async () => {
+    const data = await session.page.evaluate(() => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-fit .ui-table__wrapper')
+      const table = wrapper?.querySelector('table')
+      if (!wrapper || !table) {
+        throw new Error('找不到铺满场景表格')
       }
       return {
         clientWidth: wrapper.clientWidth,
         scrollWidth: wrapper.scrollWidth,
-        widths: [...wrapper.querySelectorAll<HTMLElement>('colgroup col')].map((col) => parseFloat(col.style.width))
+        tableWidth: table.getBoundingClientRect().width
       }
     })
-  }
-
-  it('窄容器按 minWidth 收缩，不出现没有可滚距离的横向滚动条', async () => {
-    const data = await metrics()
-    expect(data.widths).toHaveLength(5)
-    expect(data.scrollWidth).toBeLessThanOrEqual(data.clientWidth + 1)
-    expect(data.widths[0]).toBeGreaterThanOrEqual(80)
-    expect(data.widths[1]).toBeGreaterThanOrEqual(100)
-    expect(data.widths[2]).toBeGreaterThanOrEqual(80)
-    expect(data.widths[3]).toBeGreaterThanOrEqual(80)
-    expect(data.widths[4]).toBeGreaterThanOrEqual(120)
-    expect(data.widths.reduce((sum, width) => sum + width, 0)).toBeCloseTo(data.clientWidth, 0)
-  })
-
-  it('容器继续变窄到 minWidth 总和以下才横向滚动', async () => {
-    await session.page.evaluate(() => {
-      const box = document.querySelector<HTMLElement>('#probe-table-shrink-box')
-      if (box) {
-        box.style.width = '360px'
-      }
-    })
-    await session.page.waitForTimeout(200)
-    const data = await metrics()
-    expect(data.scrollWidth).toBeGreaterThan(data.clientWidth + 1)
-    expect(data.widths[1]).toBeGreaterThanOrEqual(100)
-    expect(data.widths[4]).toBeGreaterThanOrEqual(120)
-  })
-
-  it('容器恢复变宽后重新铺满，不残留横向滚动条', async () => {
-    await session.page.evaluate(() => {
-      const box = document.querySelector<HTMLElement>('#probe-table-shrink-box')
-      if (box) {
-        box.style.width = '800px'
-      }
-    })
-    await session.page.waitForTimeout(200)
-    const data = await metrics()
-    expect(data.scrollWidth).toBeLessThanOrEqual(data.clientWidth + 1)
-    expect(data.widths.reduce((sum, width) => sum + width, 0)).toBeCloseTo(data.clientWidth, 0)
-  })
-
-  it('窄容器场景控制台无告警', () => {
-    expectSilent(session.messages, 'table-shrink 场景')
+    expect(data.scrollWidth).toBeLessThanOrEqual(data.clientWidth)
+    expect(data.tableWidth).toBeLessThanOrEqual(data.clientWidth - 1)
   })
 })

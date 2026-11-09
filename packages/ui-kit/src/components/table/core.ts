@@ -950,7 +950,6 @@ export function createTable(features: UiFeature[] = []) {
 
       onMounted(() => {
         wrapper.value?.addEventListener('scroll', handleScroll, { passive: true })
-        window.addEventListener('resize', scheduleMeasure)
         measureColumns()
         measureRowHeight()
         updateScrollState()
@@ -974,7 +973,6 @@ export function createTable(features: UiFeature[] = []) {
 
       onBeforeUnmount(() => {
         wrapper.value?.removeEventListener('scroll', handleScroll)
-        window.removeEventListener('resize', scheduleMeasure)
         resizeObserver?.disconnect()
         if (measureFrame && typeof window !== 'undefined') {
           window.cancelAnimationFrame(measureFrame)
@@ -1135,46 +1133,7 @@ export function createTable(features: UiFeature[] = []) {
           const numbers = numeric as number[]
           const total = numbers.reduce((sum, width) => sum + width, 0)
           const available = availableWidth.value
-          if (resolved.fit === false || !available) {
-            return numbers
-          }
-          // 容器变窄时只在溢出很小时按 minWidth 收缩：浏览器缩放或页面滚动条出现后常见十几像素溢出，
-          // 这时横向滚动条没有实际可滚内容；宽表真的放不下时仍保留滚动。拖拽过的列视为用户钉宽，不参与收缩
-          if (total > available) {
-            const maxAutoShrink = Math.max(24, Math.floor(available * 0.05))
-            if (total - available > maxAutoShrink) {
-              return numbers
-            }
-            const lower = numbers.map((width, index) => {
-              if (hasUserWidth(columns[index])) {
-                return width
-              }
-              const min = numericWidth(columns[index].minWidth)
-              return min === null ? width : Math.min(width, min)
-            })
-            const shrinkable = numbers.map((width, index) => Math.max(0, width - lower[index]))
-            const capacity = shrinkable.reduce((sum, width) => sum + width, 0)
-            if (!capacity) {
-              return numbers
-            }
-            const overflow = total - available
-            const ratio = Math.min(1, overflow / capacity)
-            let applied = 0
-            const next = numbers.map((width, index) => {
-              const delta = Math.floor(shrinkable[index] * ratio)
-              applied += delta
-              return width - delta
-            })
-            let remainder = Math.min(overflow, capacity) - applied
-            for (let index = 0; remainder > 0 && index < next.length; index += 1) {
-              while (remainder > 0 && next[index] > lower[index]) {
-                next[index] -= 1
-                remainder -= 1
-              }
-            }
-            return next
-          }
-          if (total === available) {
+          if (resolved.fit === false || !available || total > available) {
             return numbers
           }
           const flexible: number[] = []
@@ -1191,7 +1150,13 @@ export function createTable(features: UiFeature[] = []) {
           if (!targets.length) {
             return numbers
           }
-          const extra = available - total
+          if (total === available) {
+            const last = targets[targets.length - 1]
+            numbers[last] = Math.max(1, numbers[last] - 1)
+            return numbers
+          }
+          // 留 1px 余量：浏览器缩放时小数像素会把 scrollWidth 向上取整，Chrome/Firefox 会因此露出横向滚动条
+          const extra = available - total - 1
           const share = Math.floor(extra / targets.length)
           let remainder = extra - share * targets.length
           for (const index of targets) {

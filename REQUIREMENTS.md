@@ -1368,21 +1368,22 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - 门禁：合入后在 main 执行全量 `npm run quality`（13 阶段）；pre-push 钩子自身即在钩子上下文跑全量门禁，绿即证明修复在真实触发路径生效。
 - 缺陷口径：F-1…F-115 全部修复，三处文档同步为 115 条。
 
-## 47. 表格假横向滚动条 + 调试台 Edge 旧模块缓存（F-116 / F-117）
+## 47. 页面缩放假横向滚动条 + 调试台 Edge 旧模块缓存（F-116 / F-117）
 
-> 触发：Edge 打开调试台表格页，浏览器缩放到 110% 时出现横向滚动条但几乎没有可滚内容；切到「大数据：5 万行 · 行高不一」后第 18 行之后不再渲染，树形大数据场景控制台报 `Cannot destructure property 'size' of 'gu(...)' as it is undefined`，其他浏览器正常。
+> 触发：页面缩放到 100% / 110% / 125% 后，Chrome / Firefox 在表格底部露出横向滚动条，但实际几乎没有可滚内容；Edge 的叠加式滚动条不显示。表格列宽与内容本身正常。另在 Edge 切到「大数据：5 万行 · 行高不一」后第 18 行之后不再渲染，树形大数据场景控制台报 `Cannot destructure property 'size' of 'gu(...)' as it is undefined`。
 
 ### 47.1 缺陷登记
 
 | 编号  | 文件                                                                          | 现象                                                                                                         | 根因                                                                                                                                         | 修复                                                                                                                                                                       |
 | ----- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| F-116 | `packages/ui-kit/src/components/table/core.ts`、`tests/browser/table.spec.ts` | 浏览器缩放或页面滚动条出现后，表格横向滚动条存在但没有实际可滚内容；容器恢复变宽后宽度也不总是重新铺满       | 表格按固定列宽总和设置内层宽度，`availableWidth` 变小十几像素时仍返回原总宽；`window resize` 只靠 ResizeObserver，Edge 下可能晚一拍          | 溢出在可用宽度 5% 以内时按每列 `minWidth` 等比收缩，拖拽列不参与；收缩到底仍不足才保留横向滚动；新增 `window resize` 重测与 `table-shrink` 浏览器场景（改前红：790 > 781） |
+| F-116 | `packages/ui-kit/src/components/table/core.ts`、`examples/consumer/src/demo/style.css` | 页面缩放后 Chrome / Firefox 在表格底部露出横向滚动条，实际几乎没有可滚内容；Edge 叠加式滚动条不显示；表格列宽与内容本身正常                 | 浏览器缩放产生小数 CSS 像素，表格/页面的 `scrollWidth` 被向上取整 1px；表格铺满时宽度没有余量，调试台页面也没有横向裁剪                        | 表格铺满时留 1px 余量（不缩列、不加 resize 监听）；调试台 `html, body` 用 `overflow-x: clip` 裁掉页面级 1px；初版按 `minWidth` 收缩的误判已撤销 |
 | F-117 | `examples/consumer/src/demo/dynamic-packages.ts`                              | Edge 动态加载主题包后表格只渲染部分行，控制台在 Lucide 图标组件内抛 `inject` 解构错误；大数据/树形场景最明显 | 动态产物 URL 只带文件 mtime；Vite 预构建哈希变化后 Edge 复用旧模块体，里面指向另一份 Vue，Lucide 组件拿不到当前 Vue 的 provide/inject 上下文 | 页面加载时生成一次 `preview` token 拼到动态 import URL 上，既绕开旧模块缓存，也不会在 3 秒轮询里重复加载                                                                   |
 
 ### 47.2 验证
 
-- 红用例反证：先还原 `layoutColumnWidths` 改前实现，`table-shrink` 场景断言 `scrollWidth 790 <= clientWidth + 1` 失败；恢复修复后 10/10 绿。
-- 浏览器层：`npx vitest run --config vitest.browser.config.ts tests/browser/table.spec.ts`，新增「窄容器按 minWidth 收缩」「继续变窄才横向滚动」「恢复变宽后重新铺满」三条；原 6 条表格用例保持绿。
-- 组件层：`npm test -- --run tests/components/table.spec.ts` 43/43 绿。
+- 方案修正：初版把现象误判为「列宽总和超过容器」并按 `minWidth` 收缩，已整体撤销；该方案会改列宽并增加 resize 重测开销，与实测不符。
+- 现有修复：表格铺满时只留 1px 余量，列宽分配逻辑不变；调试台 `html, body { overflow-x: clip }` 只裁页面级小数溢出，不影响表格内部横向滚动。
+- 回归：`npx vitest run --config vitest.browser.config.ts tests/browser/table.spec.ts` 7/7（新增 `table-fit` 铺满余量用例，改前反证 900 > 899 失败）；`npm test -- --run tests/components/table.spec.ts` 43/43。
+- 像素：`npm run snap:pixels` 重录 win32 基线；差异图确认为文字 AA / 1px 级漂移，无结构性变化。
 - Edge 复核：Playwright `channel: 'msedge'` 打开调试台表格页，200/50000 行与树形 100~1000px 行高场景均可滚动；动态包缓存串扰以页面级 token 隔离，控制台只剩无关静态资源 404。
 - 缺陷口径：F-1…F-117 全部修复，三处文档同步为 117 条。
