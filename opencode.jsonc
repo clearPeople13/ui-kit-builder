@@ -3,9 +3,9 @@
   "default_agent": "ui-kit-builder",
   "instructions": ["RULES.md", "WORKFLOW.md", "NAMING.md", "KNOWLEDGE.md"],
   "permissions": [
-    { "action": "shell", "resource": "git push *", "effect": "deny" },
-    { "action": "shell", "resource": "npm install*", "effect": "deny" },
-    { "action": "shell", "resource": "npm ci*", "effect": "deny" },
+    { "action": "shell", "resource": "git push *", "effect": "ask" },
+    { "action": "shell", "resource": "npm install*", "effect": "ask" },
+    { "action": "shell", "resource": "npm ci*", "effect": "ask" },
     { "action": "edit", "resource": "dist/**", "effect": "deny" },
     { "action": "edit", "resource": ".build/**", "effect": "deny" },
     { "action": "edit", "resource": "coverage/**", "effect": "deny" },
