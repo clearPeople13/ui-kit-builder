@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T15:37:25.032Z",
-  "sourceDigest": "7f677a4b32a44dce",
+  "generatedAt": "2026-11-09T16:33:19.096Z",
+  "sourceDigest": "e74bdb6fa2c6781c",
   "stats": {
-    "nodes": 3015,
-    "edges": 4192,
+    "nodes": 3018,
+    "edges": 4198,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 330,
+    "docs": 333,
     "tests": 162
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 254
+        "lines": 255
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1439
+        "lines": 1458
       }
     },
     {
@@ -5527,6 +5527,48 @@
       "label": "50.2 验证",
       "summary": "- 红用例反证：改前 `tests/components/select.spec.ts` 新增用例断言挂载后无 `.ui-select__dropdown`，实际拿到 `display: none` 的完整面板，用例红；改后 40/40 绿。\n- 真实调试台：改前「表内编辑」场景 `selects 80 / dropdowns 80 / options 520`；改后同一场景未展开时为 `selects 80 / dropdowns 0",
       "path": "REQUIREMENTS.md#173",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#174",
+      "type": "doc-section",
+      "label": "51. 虚拟表格异步实测后视口内容漂移（F-121）",
+      "summary": "> 触发：调试台「大数据：5 万行 · 行高不一」场景，滚到某一行后停一会，异步实测行高提交会把视口内容整体顶走——原本看到的是 y 行，提交后变成 x 行。",
+      "path": "REQUIREMENTS.md#174",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#175",
+      "type": "doc-section",
+      "label": "51.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                                          | 现象                                                                                     | 根因           ",
+      "path": "REQUIREMENTS.md#175",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#176",
+      "type": "doc-section",
+      "label": "51.2 验证",
+      "summary": "- 红用例反证：浏览器层新增 `table-virtual-variable` 场景（行高 40/64/120 交替），滚动到 63946px 后等待实测提交，改前顶部行从 996 变成 995、相对位置从 -10px 变成 -66px，用例红。\n- 改后同一场景：顶部仍是 996 行、相对位置仍是 -10px，等待 1.2s 也不再变化。\n- 真实调试台「大数据：5 万行 · 行高不一」：滚动到 300000px，改前顶部行从 379",
+      "path": "REQUIREMENTS.md#176",
       "tags": [
         "doc",
         "subsection"
@@ -17783,7 +17825,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1657
+        "lines": 1687
       }
     },
     {
@@ -44133,7 +44175,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 721
+        "lines": 762
       }
     },
     {
@@ -44237,7 +44279,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 193
+        "lines": 241
       }
     },
     {
@@ -53199,6 +53241,21 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#174",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#175",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#176",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#18",
       "type": "contains"
     },
@@ -55135,6 +55192,21 @@
     {
       "from": "doc:REQUIREMENTS.md#173",
       "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#175",
+      "to": "component:row",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#175",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#176",
+      "to": "component:table",
       "type": "mentions"
     },
     {
