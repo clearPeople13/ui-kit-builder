@@ -48,45 +48,47 @@ node scripts/task-claim.mjs claim --id <id> --owner <你> --branch <branch> \
 
 ## 4. 常用命令（全部走 package.json scripts，不手敲底层命令）
 
-| 目的 | 命令 |
-| --- | --- |
-| 唯一门禁（13 段） | `npm run quality` |
-| 内循环门禁（只跑受影响段） | `npm run ci:changed`；先只看影响面 `npm run ci:plan` |
-| 组件单测（跑前自动 build:full） | `npm test` |
-| 构建器契约 / profile 运行时 / 浏览器 / 覆盖率 | `npm run test:build` / `test:profiles` / `test:browser` / `test:coverage`（各有 pre 构建） |
-| 布局/像素基线改动后重录 | `npm run snap:layout` / `npm run snap:pixels`（别手改基线文件） |
-| 视觉体检画廊 | `npm run audit:visual` → `visual-report/index.html` |
-| 构建全部 profile | `npm run build:all`（`UIKIT_NO_BUILD_CACHE=1` 强制重算特性边际体积） |
-| 台账治理 | `node scripts/task-claim.mjs list/check/claim/status/verify-branch/release/gc` |
+| 目的                                          | 命令                                                                                            |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 唯一门禁（13 段）                             | `npm run quality`                                                                               |
+| 内循环门禁（只跑受影响段）                    | `npm run ci:changed`；先只看影响面 `npm run ci:plan`                                            |
+| 组件单测（跑前自动 build:full）               | `npm test`                                                                                      |
+| 构建器契约 / profile 运行时 / 浏览器 / 覆盖率 | `npm run test:build` / `test:profiles` / `test:browser` / `test:coverage`（各有 pre 构建）      |
+| 布局/像素基线改动后重录                       | `npm run snap:layout` / `npm run snap:pixels`（别手改基线文件）                                 |
+| 视觉体检画廊                                  | `npm run audit:visual` → `visual-report/index.html`                                             |
+| 构建全部 profile                              | `npm run build:all`（`UIKIT_NO_BUILD_CACHE=1` 强制重算特性边际体积）                            |
+| 台账治理                                      | `node scripts/task-claim.mjs list/check/claim/status/verify-branch/release/gc`                  |
+| 知识图谱                                      | `npm run knowledge:build` / `knowledge:search -- "<关键词>"` / `knowledge:explain -- <节点 id>` |
 
 注意：组件用例断言对象是**构建产物** `dist/full/ui-kit.js`，改完源码必须先 `npm run build:full`（`npm test` 的 pretest 已自动做）。
 
 ## 5. 检索路由（不确定就查，别猜）
 
-| 问题 | 去哪 |
-| --- | --- |
-| 规则冲突 / 能不能这么写 | `RULES.md`（§0 总则裁决） |
-| 命名（prop/事件/类名/词性） | `NAMING.md`，机器守卫 `tests/build/naming-guard.spec.ts` |
-| 流程 / 认领 / worktree / 派生产物 | `WORKFLOW.md` + `node scripts/task-claim.mjs --help` |
-| 踩坑 / 测试写法 / 环境陷阱 | `KNOWLEDGE.md` |
-| 需求背景 / 缺陷台账 F-x / 波次历史 | `REQUIREMENTS.md` |
-| 架构总览 / 质量分层 / 命令口径 | `README.md` |
-| 组件有哪些、特性 id、规格契约 | `registry.mjs` + 各组件 `spec.mjs` |
-| 语义化检索（知识图谱） | Repo Wiki 知识卡：用 SearchKnowledge 按模块名/语义查（构建器契约、测试分层、profile 运行时等均有卡） |
+| 问题                               | 去哪                                                                                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 规则冲突 / 能不能这么写            | `RULES.md`（§0 总则裁决）                                                                                                                                              |
+| 命名（prop/事件/类名/词性）        | `NAMING.md`，机器守卫 `tests/build/naming-guard.spec.ts`                                                                                                               |
+| 流程 / 认领 / worktree / 派生产物  | `WORKFLOW.md` + `node scripts/task-claim.mjs --help`                                                                                                                   |
+| 踩坑 / 测试写法 / 环境陷阱         | `KNOWLEDGE.md`                                                                                                                                                         |
+| 需求背景 / 缺陷台账 F-x / 波次历史 | `REQUIREMENTS.md`                                                                                                                                                      |
+| 架构总览 / 质量分层 / 命令口径     | `README.md`                                                                                                                                                            |
+| 组件有哪些、特性 id、规格契约      | `registry.mjs` + 各组件 `spec.mjs`                                                                                                                                     |
+| 语义化检索（知识图谱）             | `node scripts/knowledge.mjs search "<关键词>"` / `explain <节点 id>`（`knowledge/graph.json` 由 registry/spec/docs/tests 生成）；OpenCode agent 见 `.opencode/agents/` |
 
 ## 6. 测试五层（各管一段，不许越层）
 
-| 层 | 配置 | 管什么 |
-| --- | --- | --- |
-| 组件 | `vitest.config.ts` | 单组件行为（happy-dom，断言 dist/full 产物） |
-| 构建契约 | `vitest.build.config.ts` | 产物体积/类型/裁剪/主题令牌 + 全部静态守卫（node 环境） |
-| 浏览器 | `vitest.browser.config.ts` | 真渲染：定位、像素、键盘、axe wcag2a/aa；文件名必须含组件 id |
-| profile 运行时 | `vitest.profiles.config.ts` | 各份产物逐个真挂载、前缀隔离、结构同构 |
-| 覆盖率 | `vitest.coverage.config.ts` | 同批组件用例在源码入口重放，卡阈值 |
+| 层             | 配置                        | 管什么                                                       |
+| -------------- | --------------------------- | ------------------------------------------------------------ |
+| 组件           | `vitest.config.ts`          | 单组件行为（happy-dom，断言 dist/full 产物）                 |
+| 构建契约       | `vitest.build.config.ts`    | 产物体积/类型/裁剪/主题令牌 + 全部静态守卫（node 环境）      |
+| 浏览器         | `vitest.browser.config.ts`  | 真渲染：定位、像素、键盘、axe wcag2a/aa；文件名必须含组件 id |
+| profile 运行时 | `vitest.profiles.config.ts` | 各份产物逐个真挂载、前缀隔离、结构同构                       |
+| 覆盖率         | `vitest.coverage.config.ts` | 同批组件用例在源码入口重放，卡阈值                           |
 
 写用例约定：文件名 `tests/components/<组件id>.spec.ts`；describe 用中文组件名；不 mock 被测组件；fake timers 成对 `vi.useRealTimers()`；浏览器用例必须真跑过再提交；断言语义要真（"没有 close 事件"≠"事件数组为空"）。
 
 <!-- aoci:begin -->
+
 ## AOCI 仓库认知
 
 AOCI 为本仓库维护一个稳定、可版本化、可增量更新的仓库级认知层，供模型跨任务复用对系统的理解。
@@ -122,7 +124,6 @@ Entry 的语义必须来自模型对真实证据的理解。不得仅依据路�
 ### 建立、生成和恢复认知
 
 1. 每个新的 Agent Run 开始时，应先判断：
-
    - 本仓库是否已经存在可用的完整AOCI索引；
    - 当前上下文中是否已有与本仓库根、当前索引版本和当前AOCI服务相匹配，并且模型仍可可靠使用的完整仓库认知。
 
@@ -153,7 +154,6 @@ Entry 的语义必须来自模型对真实证据的理解。不得仅依据路�
    不在本文件中自行重建或硬编码完整索引生成状态机。
 
 4. 在长程任务中，模型负责保留当前认知收据并正确使用刷新门禁：
-
    - Host报告上下文压缩或模型已知系统全貌丢失时，执行上述强制 `context_compaction` 重载规则；AOCI不能自行推断Host事件；
    - 进入真正的主要阶段时声明 `phase_transition`，不得把函数、测试运行或小步骤当作阶段；
    - 在有用的稳定检查点通过 `check_only=true` 取得机器语义计数；
@@ -171,7 +171,6 @@ Entry 的语义必须来自模型对真实证据的理解。不得仅依据路�
    没有足够证据且当前布局支持 `aoci_report` 时，使用它而不猜测、套用模板或为消除待办而生成缺乏证据的认知。
 
 8. 必须遵守工具返回的结构化状态和安全边界：
-
    - `repair_required`：只修复明确命中的候选，再重新提交当前机器签发的完整批次；
    - `stopped`：结束当前写入尝试并检查 `failed_step`、错误、正式写入证据与Recovery。auto模式下，已证明零写入则记录closure并重新Plan；完整Intent和可证明postimage则Resume；策略要求Rollback且preimage可证明则精确恢复后重新Plan。只有证据不足、第三方正式字节冲突、需要审批或外部动作，或命中其他真实安全边界时，才停止整个用户任务；
    - 冲突、审批、人工裁决、权限和安全信号不得忽略；
@@ -188,4 +187,5 @@ Entry 的语义必须来自模型对真实证据的理解。不得仅依据路�
 初始化、完整索引生成、Header生成、Entries生成、数据库结构索引、Curation、人工评审和故障恢复，只按当前AOCI Guide或工具在对应阶段返回的指令、命令和安全停点执行。
 
 不预加载、不猜测，也不自行重建这些专项流程。平台调用方式、请求格式、批次上限、审批规则、索引格式细节和恢复步骤由对应Guide、工具说明、模型Prompt和CLI帮助按需提供。
+
 <!-- aoci:end -->
