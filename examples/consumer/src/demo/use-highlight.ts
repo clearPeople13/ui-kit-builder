@@ -1,5 +1,9 @@
 import { ref, watch, type Ref } from 'vue'
-import { createHighlighter, type HighlighterCore } from 'shiki'
+import { createHighlighterCore, type HighlighterCore } from 'shiki/core'
+import { createOnigurumaEngine } from 'shiki/engine/oniguruma'
+import githubLight from '@shikijs/themes/github-light'
+import vue from '@shikijs/langs/vue'
+import wasm from 'shiki/wasm'
 
 let highlighterPromise: Promise<HighlighterCore> | null = null
 
@@ -9,9 +13,10 @@ const MAX_HIGHLIGHT_CHARS = 300_000
 
 function loadHighlighter(): Promise<HighlighterCore> {
   if (!highlighterPromise) {
-    highlighterPromise = createHighlighter({
-      themes: ['github-light'],
-      langs: ['vue']
+    highlighterPromise = createHighlighterCore({
+      themes: [githubLight],
+      langs: [vue],
+      engine: createOnigurumaEngine(wasm)
     })
   }
   return highlighterPromise

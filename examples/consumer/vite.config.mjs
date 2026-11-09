@@ -74,6 +74,16 @@ function configuratorPlugin() {
 
 export default defineConfig({
   plugins: [vue(), configuratorPlugin(), apiPlugin()],
+  // Shiki 的 theme/lang/wasm 是代码面板展开时才用到的子路径，提前纳入预构建，避免交互时 Vite 重新优化导致旧 dep URL 504
+  optimizeDeps: {
+    include: [
+      'shiki/core',
+      'shiki/engine/oniguruma',
+      'shiki/wasm',
+      '@shikijs/themes/github-light',
+      '@shikijs/langs/vue'
+    ]
+  },
   resolve: {
     dedupe: ['vue'],
     // 软链可能跨工作树，这里把 20 份 profile 的 JS 与样式显式钉到本工作树 dist。
