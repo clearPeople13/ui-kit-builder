@@ -590,10 +590,18 @@ export function createTable(features: UiFeature[] = []) {
         rowspan: number
       }
 
+      interface FakeSpanCell {
+        startRow: number
+        endRow: number
+        columnIndex: number
+        colspan: number
+        contentRow: number
+      }
+
       interface SpanPlan {
-        spans: Map<number, Map<number, { rowspan: number; colspan: number; fakeStart?: boolean }>>
+        spans: Map<number, Map<number, { rowspan: number; colspan: number }>>
         covered: Map<number, Set<number>>
-        continuations: Map<number, Map<number, { colspan: number; end: boolean }>>
+        fakeCells: Map<number, Map<number, FakeSpanCell>>
         anchors: SpanAnchor[]
       }
 
@@ -608,7 +616,7 @@ export function createTable(features: UiFeature[] = []) {
         const spanHooks = flattenHooks(states, 'tableSpan')
         const spans: SpanPlan['spans'] = new Map()
         const covered: SpanPlan['covered'] = new Map()
-        const continuations: SpanPlan['continuations'] = new Map()
+        const fakeCells: SpanPlan['fakeCells'] = new Map()
         const anchors: SpanAnchor[] = []
         const fakeRowspan = Boolean(
           resolved.virtual && resolved.tableLayout !== 'auto' && list.length && (resolved.height || resolved.maxHeight)
@@ -633,21 +641,21 @@ export function createTable(features: UiFeature[] = []) {
             if (rowspan <= 1 && colspan <= 1) {
               continue
             }
-            if (!spans.has(rowIndex)) {
-              spans.set(rowIndex, new Map())
-            }
             if (rowspan > 1 && fakeRowspan) {
-              spans.get(rowIndex)!.set(columnIndex, { rowspan: 1, colspan, fakeStart: true })
+              const offsets = rowMetrics.value.offsets
+              const middle = ((offsets[rowIndex] ?? 0) + (offsets[rowIndex + rowspan] ?? 0)) / 2
+              const contentRow = Math.min(rowIndex + rowspan - 1, Math.max(rowIndex, findRowAtOffset(offsets, middle)))
               for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
-                if (spanRow !== rowIndex) {
-                  if (!continuations.has(spanRow)) {
-                    continuations.set(spanRow, new Map())
-                  }
-                  continuations.get(spanRow)!.set(columnIndex, {
-                    colspan,
-                    end: spanRow === rowIndex + rowspan - 1
-                  })
+                if (!fakeCells.has(spanRow)) {
+                  fakeCells.set(spanRow, new Map())
                 }
+                fakeCells.get(spanRow)!.set(columnIndex, {
+                  startRow: rowIndex,
+                  endRow: rowIndex + rowspan - 1,
+                  columnIndex,
+                  colspan,
+                  contentRow
+                })
                 for (let spanColumn = columnIndex + 1; spanColumn < columnIndex + colspan; spanColumn += 1) {
                   if (!covered.has(spanRow)) {
                     covered.set(spanRow, new Set())
@@ -656,6 +664,9 @@ export function createTable(features: UiFeature[] = []) {
                 }
               }
               continue
+            }
+            if (!spans.has(rowIndex)) {
+              spans.set(rowIndex, new Map())
             }
             spans.get(rowIndex)!.set(columnIndex, { rowspan, colspan })
             for (let spanRow = rowIndex; spanRow < rowIndex + rowspan; spanRow += 1) {
@@ -674,7 +685,7 @@ export function createTable(features: UiFeature[] = []) {
             }
           }
         }
-        return { spans, covered, continuations, anchors }
+        return { spans, covered, fakeCells, anchors }
       })
 
       // 最后一个偏移 <= y 的行下标，二分 O(logN)
@@ -1538,21 +1549,42 @@ export function createTable(features: UiFeature[] = []) {
               continue
             }
             const column = columns[columnIndex]
-            const continuation = plan?.continuations.get(rowIndex)?.get(columnIndex)
-            if (continuation) {
+            const fake = plan?.fakeCells.get(rowIndex)?.get(columnIndex)
+            if (fake) {
+              const isContent = rowIndex === fake.contentRow
+              const cellRow = isContent ? rows[fake.startRow] : row
+              const cellMeta = isContent ? mergeHookResults(rowMetaHooks, [cellRow, fake.startRow, columns]) : undefined
               cells.push(
-                h('td', {
-                  class: [
-                    column.className,
-                    column.align ? `is-${column.align}` : '',
-                    ...(fixedClasses[columnIndex] ?? []),
-                    'is-span-continuation',
-                    continuation.end ? 'is-span-end' : ''
-                  ],
-                  style: fixedStyles[columnIndex],
-                  colspan: continuation.colspan > 1 ? continuation.colspan : undefined,
-                  'aria-hidden': 'true'
-                })
+                h(
+                  'td',
+                  {
+                    class: [
+                      column.className,
+                      column.align ? `is-${column.align}` : '',
+                      ...(fixedClasses[columnIndex] ?? []),
+                      'is-span-continuation',
+                      rowIndex === fake.startRow ? 'is-span-start' : '',
+                      rowIndex === fake.endRow ? 'is-span-end' : '',
+                      isContent ? 'is-span-content' : ''
+                    ],
+                    style: fixedStyles[columnIndex],
+                    title: isContent ? cellTitle(column, cellRow) : undefined,
+                    colspan: fake.colspan > 1 ? fake.colspan : undefined,
+                    'aria-hidden': isContent ? undefined : 'true'
+                  },
+                  isContent
+                    ? [
+                        renderCell({
+                          column,
+                          row: cellRow,
+                          rowIndex: fake.startRow,
+                          columnIndex,
+                          meta: cellMeta ?? {},
+                          prependHooks
+                        })
+                      ]
+                    : []
+                )
               )
               continue
             }
@@ -1593,7 +1625,6 @@ export function createTable(features: UiFeature[] = []) {
                   class: [
                     column.className,
                     column.align ? `is-${column.align}` : '',
-                    planned?.fakeStart ? 'is-span-start' : '',
                     ...(fixedClasses[columnIndex] ?? [])
                   ],
                   style: fixedStyles[columnIndex],

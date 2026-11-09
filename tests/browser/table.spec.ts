@@ -247,6 +247,10 @@ describe('浏览器层 · 表格合并块虚拟化', () => {
           rows: table?.querySelectorAll('tbody tr[data-row-index]').length ?? 0,
           starts: table?.querySelectorAll('td.is-span-start').length ?? 0,
           continuations: table?.querySelectorAll('td.is-span-continuation').length ?? 0,
+          contents: table?.querySelectorAll('td.is-span-content').length ?? 0,
+          contentRow: Number(
+            table?.querySelector('td.is-span-content')?.closest('tr')?.getAttribute('data-row-index') ?? -1
+          ),
           realSpans: table?.querySelectorAll('tbody td[rowspan="50"]').length ?? 0,
           borderTop: table?.querySelector<HTMLElement>('td.is-span-continuation')
             ? getComputedStyle(table.querySelector<HTMLElement>('td.is-span-continuation')!).borderTopColor
@@ -257,17 +261,20 @@ describe('浏览器层 · 表格合并块虚拟化', () => {
         }
       }
       const top = read()
-      wrapper.scrollTop = 600
+      wrapper.scrollTop = 900
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))
       return { top, middle: read() }
     })
 
     expect(data.top.rows).toBeLessThan(30)
     expect(data.top.starts).toBeGreaterThan(0)
+    expect(data.top.contents).toBe(0)
     expect(data.top.realSpans).toBe(0)
     expect(data.top.borderTop).toBe('rgba(0, 0, 0, 0)')
     expect(data.middle.rows).toBeLessThan(30)
     expect(data.middle.continuations).toBeGreaterThan(0)
+    expect(data.middle.contents).toBeGreaterThan(0)
+    expect(data.middle.contentRow).toBeGreaterThan(10)
     expect(data.middle.background).not.toBe('rgba(0, 0, 0, 0)')
   })
 })
