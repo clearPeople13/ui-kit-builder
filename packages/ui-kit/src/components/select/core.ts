@@ -151,6 +151,8 @@ export function createSelect(features: UiFeature[] = []) {
       setup(props, { emit, slots }) {
         const locale = useLocale('select')
         const open = ref(false)
+        // 表格一行一个 Select 时，默认 persistent 会在挂载阶段把每行未展开的面板全渲染出来
+        const hasOpened = ref(false)
         const query = ref('')
         // 搜索中清空关键字后不要回填选中项文本，否则输入框内容永远删不干净
         const searching = ref(false)
@@ -355,6 +357,7 @@ export function createSelect(features: UiFeature[] = []) {
             return
           }
           open.value = true
+          hasOpened.value = true
           activeIndex.value = enabledIndexes()[0] ?? -1
           emit('visible-change', true)
           nextTick(() => {
@@ -393,6 +396,7 @@ export function createSelect(features: UiFeature[] = []) {
           emit('filter-change', query.value)
           if (!open.value) {
             open.value = true
+            hasOpened.value = true
             emit('visible-change', true)
           }
           activeIndex.value = enabledIndexes()[0] ?? -1
@@ -534,7 +538,7 @@ export function createSelect(features: UiFeature[] = []) {
 
         function renderPanel(states: UiFeatureState[] = []): VNodeChild {
           featureStates = states
-          if (!open.value && !props.persistent) {
+          if (!open.value && !(props.persistent && hasOpened.value)) {
             return null
           }
           const children: VNodeChild[] = []

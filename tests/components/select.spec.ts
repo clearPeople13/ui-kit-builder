@@ -49,6 +49,25 @@ describe('Select', () => {
     expect(wrapper.classes()).not.toContain('is-open')
   })
 
+  it('挂载后不预渲染下拉面板，首次展开才创建并保留', async () => {
+    const wrapper = mountSelect({ options, modelValue: undefined })
+    expect(document.querySelector('.ui-select__dropdown')).toBeNull()
+    expect(optionItems()).toHaveLength(0)
+    await wrapper.find('.ui-select__trigger').trigger('click')
+    expect(document.querySelector('.ui-select__dropdown')).not.toBeNull()
+    expect(optionItems()).toHaveLength(3)
+    await wrapper.find('.ui-select__trigger').trigger('keydown', { key: 'Escape' })
+    expect(document.querySelector('.ui-select__dropdown')).not.toBeNull()
+  })
+
+  it('persistent=false 时收起后移除面板', async () => {
+    const wrapper = mountSelect({ options, modelValue: undefined, persistent: false })
+    await wrapper.find('.ui-select__trigger').trigger('click')
+    expect(document.querySelector('.ui-select__dropdown')).not.toBeNull()
+    await wrapper.find('.ui-select__trigger').trigger('keydown', { key: 'Escape' })
+    expect(document.querySelector('.ui-select__dropdown')).toBeNull()
+  })
+
   it('空值显示占位文案，缺省回显“请选择”', () => {
     expect(
       mountSelect({ modelValue: undefined, placeholder: '请选择城市' }).find('.ui-select__placeholder').text()
