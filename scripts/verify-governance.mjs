@@ -85,7 +85,19 @@ function hasComponentSpec(id) {
 }
 
 // 1. 改动面与影响面清单
-const base = ['origin/main', 'main'].find((candidate) => git(['rev-parse', '--verify', candidate]).length)
+// 多远端并存时取与 HEAD 差异最小的远端 main 作为基线：落后的远端会把已推送的
+// 历史提交误判为本次改动（origin 落后 222 个提交时曾误报 time-select/tree-select）
+const base = (() => {
+  const remotes = git(['for-each-ref', '--format=%(refname:short)', 'refs/remotes'])
+    .filter((ref) => /\/main$/.test(ref) && !/\/HEAD$/.test(ref))
+    .map((ref) => ({ ref, ahead: git(['rev-list', '--count', `${ref}..HEAD`])[0] }))
+    .filter((item) => item.ahead !== undefined)
+    .sort((a, b) => Number(a.ahead) - Number(b.ahead))
+  if (remotes.length) {
+    return remotes[0].ref
+  }
+  return git(['rev-parse', '--verify', 'main']).length ? 'main' : ''
+})()
 const changed = [
   ...new Set([
     ...(base ? git(['diff', '--name-only', `${base}...HEAD`]) : []),
