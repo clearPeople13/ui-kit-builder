@@ -224,6 +224,7 @@ function sceneTable() {
           showSummary: true,
           resizable: true,
           minColumnWidth: 80,
+          fit: false,
           id: 'probe-table',
           style: 'width: 100%',
           'onResize-change': log('resize')
@@ -236,6 +237,36 @@ function sceneTable() {
             h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
             h(TableColumn, { prop: 'note', label: '备注', minWidth: 240 }),
             h(TableColumn, { prop: 'id', label: '右冻结', width: 110, fixed: 'right' })
+          ]
+        }
+      )
+    )
+}
+
+/** 窄容器：列宽总和超过容器时按 minWidth 收缩，收缩到底才横向滚动 */
+function sceneTableShrink() {
+  const rows = Array.from({ length: 8 }, (_, index) => ({
+    id: index + 1,
+    name: `行 ${index + 1}`,
+    owner: index % 2 ? '李四' : '张三',
+    amount: (index + 1) * 100,
+    note: `备注 ${index + 1}`
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'width: 780px', id: 'probe-table-shrink-box' },
+      h(
+        Table,
+        { data: rows, height: 200, id: 'probe-table-shrink', style: 'width: 100%' },
+        {
+          default: () => [
+            h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
+            h(TableColumn, { prop: 'name', label: '名称', width: 200, minWidth: 100 }),
+            h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
+            h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
+            h(TableColumn, { prop: 'note', label: '备注', width: 260, minWidth: 120 })
           ]
         }
       )
@@ -643,6 +674,7 @@ const scenes: Record<string, () => any> = {
   form: sceneForm(),
   floating: sceneFloating(),
   table: sceneTable(),
+  'table-shrink': sceneTableShrink(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),

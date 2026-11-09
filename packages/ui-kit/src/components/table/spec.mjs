@@ -47,7 +47,8 @@ export default {
           name: 'fit',
           type: 'boolean',
           default: true,
-          description: '自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间'
+          description:
+            '自动铺满容器宽度：显式 width 保持，未设 width 的列均分剩余空间；空间不足时按 minWidth 收缩，收缩到底仍不足才横向滚动'
         },
         {
           name: 'showHeader',
