@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T17:04:22.193Z",
-  "sourceDigest": "fa56fcf98191e0b9",
+  "generatedAt": "2026-11-09T17:09:55.956Z",
+  "sourceDigest": "48d905dcab0c6a59",
   "stats": {
-    "nodes": 3024,
-    "edges": 4208,
+    "nodes": 3028,
+    "edges": 4212,
     "components": 87,
     "features": 172,
     "props": 1312,
     "slots": 86,
     "files": 515,
-    "docs": 339,
+    "docs": 343,
     "tests": 162
   },
   "nodes": [
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1494
+        "lines": 1514
       }
     },
     {
@@ -5667,6 +5667,62 @@
       "label": "53.2 验证",
       "summary": "- 红用例反证：改前代码上跑新增断言，伪元素 `width` 为 `1px`（要求 ≥ 8px）、三段亮度差全为 0，两条用例都红。\n- 改后同一用例：表头 24.26 / 表体 24.36 / 合计 24.26 的亮度差，三段一致（极差 0.1）——同一条竖带同时覆盖三张分表。\n- 真实 `table` 场景横向滚动后截图确认：表头 → 表体 → 合计是一条连续竖向阴影，左右冻结列对称，合计行不再被相邻单元格背景盖住。\n- 回归：`t",
       "path": "REQUIREMENTS.md#182",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#183",
+      "type": "doc-section",
+      "label": "54. 表格滚动性能优化（第二批）",
+      "summary": "> 目标：降低滚动帧里「全窗口 VNode 重建」的成本，保持现有交互与合并单元格行为。",
+      "path": "REQUIREMENTS.md#183",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#184",
+      "type": "doc-section",
+      "label": "54.1 改动",
+      "summary": "- **行级 VNode 复用**：滚动帧内按 rowKey 缓存已经渲染的行 VNode；窗口里保留下来的行直接复用，不再重建 `tr/td` 与整棵单元格子树，只有新进入窗口的行需要建树和 patch。非滚动渲染（编辑、选中、展开、数据变化）会清空缓存，保证状态即时更新。\n- **固定列样式复用**：`is-fixed-left/right` 类名数组与 `left/right` 内联样式按列预计算一次，表头、表体、合计共用，不再为",
+      "path": "REQUIREMENTS.md#184",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#185",
+      "type": "doc-section",
+      "label": "54.2 实测",
+      "summary": "- 环境：Chromium 1440×1000，「复杂：大表编辑 + 冻结 + 合计 + 合并」，2000 行、50 行合并块。\n- 普通滚动帧：第二批后约 20–28ms（第一批约 25–28ms）；保留行不再重复计算 `rowClassName` / 单元格 VNode。\n- 长帧尖刺仍在 150–180ms：跨 50 行合并块边界时会整块换入换出，`rowspan` 语义要求整块入窗，本轮没有改布局模型。\n- 红用例：组件层断言同",
+      "path": "REQUIREMENTS.md#185",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#186",
+      "type": "doc-section",
+      "label": "54.3 未做",
+      "summary": "- 合并块窗口收缩需要把 rowspan 从表格语义改成「可见行 + 绝对定位合并层」，属于布局模型改造，单独立项；否则会破坏合并单元格高度与内容定位。\n\n(fix: 冻结列阴影改渐变带恢复可见并保持连贯（F-122）)",
+      "path": "REQUIREMENTS.md#186",
       "tags": [
         "doc",
         "subsection"
@@ -17909,7 +17965,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1714
+        "lines": 1739
       }
     },
     {
@@ -45780,7 +45836,7 @@
         "component"
       ],
       "meta": {
-        "lines": 691
+        "lines": 713
       }
     },
     {
@@ -53371,6 +53427,26 @@
     {
       "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#182",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#183",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#184",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#185",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#186",
       "type": "contains"
     },
     {
