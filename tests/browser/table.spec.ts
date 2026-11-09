@@ -190,3 +190,53 @@ describe('浏览器层 · 表格铺满余量', () => {
     expect(gutter).toBe('stable')
   })
 })
+
+describe('浏览器层 · 表格虚拟滚动锚定', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table-virtual-variable')
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  it('异步实测行高后视口顶部仍是同一行，相对位置不跳', async () => {
+    const data = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-virtual .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到虚拟滚动表格')
+      }
+      const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+      const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+      const readAnchor = () => {
+        const top = wrapper.getBoundingClientRect().top
+        const rows = Array.from(wrapper.querySelectorAll<HTMLElement>('tr[data-row-index]')).map((tr) => {
+          const rect = tr.getBoundingClientRect()
+          return { index: Number(tr.getAttribute('data-row-index')), top: rect.top, bottom: rect.bottom }
+        })
+        const first = rows.filter((row) => row.bottom > top + 0.5).sort((left, right) => left.top - right.top)[0]
+        return first ? { index: first.index, offset: first.top - top } : null
+      }
+
+      // 先让顶部窗口实测完，回退行高稳定在 64px，再滚进未测区域
+      await wait(1200)
+      wrapper.scrollTop = 63946
+      await nextFrame()
+      await wait(150)
+      const before = readAnchor()
+      const scrollBefore = wrapper.scrollTop
+      // 滚动停稳后实测窗口行并提交（行高 40/64/120 交替，回退高保持 64）
+      await wait(1200)
+      const after = readAnchor()
+      return { before, after, scrollBefore, scrollAfter: wrapper.scrollTop }
+    })
+
+    expect(data.before).not.toBeNull()
+    expect(data.after).not.toBeNull()
+    expect(data.after?.index).toBe(data.before?.index)
+    expect(Math.abs((data.after?.offset ?? 0) - (data.before?.offset ?? 0))).toBeLessThanOrEqual(1.5)
+    expect(data.scrollAfter).toBeGreaterThan(data.scrollBefore)
+  })
+})

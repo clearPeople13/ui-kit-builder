@@ -272,6 +272,46 @@ function sceneTableFit() {
     )
 }
 
+/** 虚拟滚动 + 变量行高：异步实测提交后视口顶部的行与相对位置不能跳 */
+function sceneTableVirtualVariable() {
+  const rows = Array.from({ length: 5000 }, (_, index) => ({
+    id: index + 1,
+    name: `行 ${index + 1}`,
+    owner: index % 2 ? '李四' : '张三',
+    amount: (index + 1) * 17,
+    note: `备注 ${index + 1}`
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'width: 720px' },
+      h(
+        Table,
+        {
+          data: rows,
+          height: 320,
+          virtual: true,
+          rowKey: 'id',
+          rowStyle: ({ rowIndex }: { rowIndex: number }) => ({
+            height: `${[40, 64, 120][rowIndex % 3]}px`
+          }),
+          id: 'probe-table-virtual',
+          style: 'width: 100%'
+        },
+        {
+          default: () => [
+            h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
+            h(TableColumn, { prop: 'name', label: '名称', minWidth: 160 }),
+            h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
+            h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
+            h(TableColumn, { prop: 'note', label: '备注', minWidth: 240 })
+          ]
+        }
+      )
+    )
+}
+
 /** 树形大数据：展开一层的耗时（性能回归口径与消费者 demo 一致） */
 function sceneTree() {
   function build(prefix: string, depth: number): any[] {
@@ -674,6 +714,7 @@ const scenes: Record<string, () => any> = {
   floating: sceneFloating(),
   table: sceneTable(),
   'table-fit': sceneTableFit(),
+  'table-virtual-variable': sceneTableVirtualVariable(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),

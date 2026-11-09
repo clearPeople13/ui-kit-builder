@@ -5,6 +5,7 @@ import {
   defineComponent,
   h,
   isVNode,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   onUpdated,
@@ -790,6 +791,19 @@ export function createTable(features: UiFeature[] = []) {
         return delta
       }
 
+      function captureViewportAnchors(element: HTMLElement): Array<{ index: number; viewTop: number }> {
+        const wrapperTop = element.getBoundingClientRect().top
+        const anchors: Array<{ index: number; viewTop: number }> = []
+        for (const row of element.querySelectorAll<HTMLElement>('tr[data-row-index]')) {
+          const index = Number(row.getAttribute('data-row-index'))
+          if (!Number.isInteger(index)) {
+            continue
+          }
+          anchors.push({ index, viewTop: row.getBoundingClientRect().top - wrapperTop })
+        }
+        return anchors
+      }
+
       function commitPendingRowHeights() {
         if (pendingCommitTimer) {
           clearTimeout(pendingCommitTimer)
@@ -801,16 +815,6 @@ export function createTable(features: UiFeature[] = []) {
           return
         }
         const list = pipelineRows.value
-        const committed = measuredRowHeights.value
-        // 首个高度有变化的行做锚点：偏移修正量回写 scrollTop，视线内容不跳
-        let firstRow = -1
-        for (let index = 0; index < list.length; index += 1) {
-          const key = rowKeyOf(list[index], index)
-          if ((pending.get(key) ?? 0) !== (committed.get(key) ?? 0)) {
-            firstRow = index
-            break
-          }
-        }
         const wrapperEl = wrapper.value
         const viewH = wrapperEl?.clientHeight ?? 0
         const oldTotal = rowMetrics.value.offsets[list.length] ?? 0
@@ -818,27 +822,37 @@ export function createTable(features: UiFeature[] = []) {
         // 可能把 scrollTop 顶离底部，尾部钳制随之失效（最后几行闪现后消失）；
         // 在提交点判定，两个总高和滚动位置都是现值，不依赖 rAF 时序
         const wasAtBottom = wrapperEl ? wrapperEl.scrollTop >= oldTotal - viewH - 1 : false
-        const before = firstRow >= 0 ? (rowMetrics.value.offsets[firstRow] ?? 0) : 0
+        // 锚点必须取渲染后真正位于视口顶部的行：窗口内实际行高与估算不同，按估算偏移会锚到相邻行
+        const anchors = wrapperEl ? captureViewportAnchors(wrapperEl) : []
         measuredRowHeights.value = pending
         if (wasAtBottom) {
           const newTotal = rowMetrics.value.offsets[list.length] ?? 0
           stickToBottom.value = true
           if (wrapperEl) {
             wrapperEl.scrollTop = Math.max(0, newTotal - viewH)
+            bodyScrollTop.value = wrapperEl.scrollTop
           }
           return
         }
-        if (firstRow < 0 || stickToBottom.value) {
+        if (!wrapperEl || stickToBottom.value || !anchors.length) {
           return
         }
-        if (!wrapperEl) {
-          return
-        }
-        const after = rowMetrics.value.offsets[firstRow] ?? 0
-        const delta = after - before
-        if (Math.abs(delta) > 0.5) {
-          wrapperEl.scrollTop += delta
-        }
+        // 提交会先按旧 scrollTop 重排窗口；等 DOM 落地后取仍然存在的最高锚点行回写真实位移
+        nextTick(() => {
+          let delta: number | null = null
+          for (const anchor of anchors) {
+            const row = wrapperEl.querySelector<HTMLElement>(`tr[data-row-index="${anchor.index}"]`)
+            if (!row) {
+              continue
+            }
+            delta = row.getBoundingClientRect().top - wrapperEl.getBoundingClientRect().top - anchor.viewTop
+            break
+          }
+          if (delta !== null && Math.abs(delta) > 0.5) {
+            wrapperEl.scrollTop += delta
+          }
+          bodyScrollTop.value = wrapperEl.scrollTop
+        })
       }
 
       function flushRowMeasure() {
