@@ -1289,6 +1289,13 @@ export function createTable(features: UiFeature[] = []) {
         if (rootMaxHeight) {
           rootStyle.maxHeight = rootMaxHeight
         }
+        // 冻结列阴影由根节点一条 overlay 贯穿表头/表体/合计，逐单元格阴影会在分表边界断开
+        if (hasFixedLeft) {
+          ;(rootStyle as Record<string, string>)['--ui-table-fixed-left'] = `${leftOffset}px`
+        }
+        if (hasFixedRight) {
+          ;(rootStyle as Record<string, string>)['--ui-table-fixed-right'] = `${rightOffset}px`
+        }
 
         function renderColgroup() {
           return h(

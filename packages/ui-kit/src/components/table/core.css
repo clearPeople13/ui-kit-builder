@@ -17,6 +17,8 @@
   min-height: 0;
   width: 100%;
   overflow: auto;
+  /* 预留纵向滚动条槽：Chrome 经典滚动条出现时不再把表体挤窄，避免多出 10px 横向滚动条 */
+  scrollbar-gutter: stable;
 }
 
 /* 表头 / 合计各自独立成视口，只跟 body 同步横向滚动，纵向滚动条只出现在 body */
@@ -66,15 +68,25 @@
   background-color: var(--ui-table-cell-bg);
 }
 
-.ui-table.has-fixed-left.is-scrolled-left .ui-table__header th.is-fixed-left-edge,
-.ui-table.has-fixed-left.is-scrolled-left .ui-table__body td.is-fixed-left-edge,
-.ui-table.has-fixed-left.is-scrolled-left .ui-table__footer td.is-fixed-left-edge {
+/* 一条 overlay 从表头顶到合计底，避免表头/表体/合计三张分表的阴影在边界断开 */
+.ui-table.has-fixed-left.is-scrolled-left::after,
+.ui-table.has-fixed-right.is-scrolled-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.ui-table.has-fixed-left.is-scrolled-left::after {
+  left: var(--ui-table-fixed-left, 0);
   box-shadow: 6px 0 8px -6px var(--ui-table-fixed-shadow-color);
 }
 
-.ui-table.has-fixed-right.is-scrolled-right .ui-table__header th.is-fixed-right-edge,
-.ui-table.has-fixed-right.is-scrolled-right .ui-table__body td.is-fixed-right-edge,
-.ui-table.has-fixed-right.is-scrolled-right .ui-table__footer td.is-fixed-right-edge {
+.ui-table.has-fixed-right.is-scrolled-right::before {
+  right: var(--ui-table-fixed-right, 0);
   box-shadow: -6px 0 8px -6px var(--ui-table-fixed-shadow-color);
 }
 

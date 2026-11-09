@@ -115,6 +115,40 @@ describe('浏览器层 · 表格', () => {
     expect(text).toContain(String((137 * 200 * 201) / 2))
   })
 
+  it('冻结列阴影是一条贯穿表头/表体/合计的 overlay', async () => {
+    const { page } = session
+    await page.evaluate(() => {
+      const wrapper = document.querySelector('.ui-table__wrapper')
+      if (wrapper) {
+        wrapper.scrollLeft = 60
+      }
+    })
+    await page.waitForTimeout(200)
+    const data = await page.evaluate(() => {
+      const root = document.querySelector('#probe-table')
+      if (!(root instanceof HTMLElement)) {
+        throw new Error('找不到表格根节点')
+      }
+      const after = getComputedStyle(root, '::after')
+      return {
+        hasLeft: root.classList.contains('is-scrolled-left'),
+        edge: getComputedStyle(root).getPropertyValue('--ui-table-fixed-left').trim(),
+        content: after.content,
+        top: after.top,
+        bottom: after.bottom,
+        left: after.left,
+        shadow: after.boxShadow
+      }
+    })
+    expect(data.hasLeft).toBe(true)
+    expect(data.edge).not.toBe('')
+    expect(data.content).not.toBe('none')
+    expect(data.left).toBe(data.edge)
+    expect(data.top).toBe('0px')
+    expect(data.bottom).toBe('0px')
+    expect(data.shadow).not.toBe('none')
+  })
+
   it('全流程控制台无告警', () => {
     expectSilent(session.messages, 'table 场景')
   })
@@ -146,5 +180,13 @@ describe('浏览器层 · 表格铺满余量', () => {
     })
     expect(data.scrollWidth).toBeLessThanOrEqual(data.clientWidth)
     expect(data.tableWidth).toBeLessThanOrEqual(data.clientWidth - 1)
+  })
+
+  it('表体预留纵向滚动条槽，经典滚动条出现时不会挤窄表体', async () => {
+    const gutter = await session.page.evaluate(() => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-fit .ui-table__wrapper')
+      return wrapper ? getComputedStyle(wrapper).scrollbarGutter : ''
+    })
+    expect(gutter).toBe('stable')
   })
 })
