@@ -1,4 +1,6 @@
-export const tableSelectionFeature = {
+import type { UiFeature } from '../../../../shared/feature'
+
+export const tableSelectionFeature: UiFeature = {
   id: 'table.selection',
   props: {
     selectable: { type: Function },

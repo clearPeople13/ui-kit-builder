@@ -8,6 +8,19 @@ interface SortState {
   order: string
 }
 
+const DEFAULT_SORT_ORDERS: Array<string | null> = ['ascending', 'descending', null]
+
+const SORT_ORDER_ALIASES = new Map([
+  ['asc', 'ascending'],
+  ['desc', 'descending']
+])
+
+// 方向判定、箭头样式类、sort-change 载荷都只认 ascending/descending；
+// asc/desc 别名不收敛就会静默按升序排，且 is-desc 没有对应 CSS
+function normalizeOrder(value: unknown): string | null {
+  return typeof value === 'string' ? (SORT_ORDER_ALIASES.get(value) ?? value) : null
+}
+
 function compareValues(left: any, right: any): number {
   if (left === right) {
     return 0
@@ -28,12 +41,12 @@ function normalizeDefaultSort(value: unknown): SortState[] {
   if (Array.isArray(value)) {
     return value
       .filter((item) => item && typeof item === 'object' && typeof item.prop === 'string' && item.prop)
-      .map((item) => ({ prop: item.prop, order: item.order ?? 'ascending' }))
+      .map((item) => ({ prop: item.prop, order: normalizeOrder(item.order) ?? 'ascending' }))
   }
   if (value && typeof value === 'object') {
     const item = value as { prop?: string; order?: string }
     if (typeof item.prop === 'string' && item.prop) {
-      return [{ prop: item.prop, order: item.order ?? 'ascending' }]
+      return [{ prop: item.prop, order: normalizeOrder(item.order) ?? 'ascending' }]
     }
   }
   return []
@@ -70,10 +83,9 @@ export const tableSortFeature: UiFeature = {
       if (!column.sortable) {
         return
       }
-      const orders =
-        Array.isArray(column.sortOrders) && column.sortOrders.length
-          ? column.sortOrders
-          : ['ascending', 'descending', null]
+      const configured =
+        Array.isArray(column.sortOrders) && column.sortOrders.length ? column.sortOrders : DEFAULT_SORT_ORDERS
+      const orders = configured.map(normalizeOrder)
       const existingIndex = sorts.value.findIndex((item) => item.prop === column.prop)
       const current = existingIndex >= 0 ? sorts.value[existingIndex].order : ''
       const nextOrder: string | null = orders[(orders.indexOf(current) + 1) % orders.length] ?? null

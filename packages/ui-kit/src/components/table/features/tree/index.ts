@@ -12,6 +12,9 @@ interface TreeRowMeta {
   hasChildren: boolean
 }
 
+// 勾选/序号/展开列由 core 自己渲染内容，树形缩进与箭头只能落在首个内容列
+const NON_CONTENT_COLUMN_TYPES = new Set(['selection', 'index', 'expand'])
+
 function readTreeConfig(value: unknown): Required<Pick<TreeConfig, 'children'>> & TreeConfig {
   const config = value && typeof value === 'object' ? (value as TreeConfig) : {}
   return {
@@ -30,18 +33,9 @@ export const tableTreeFeature: UiFeature = {
   setup(props, { emit, state }) {
     const expandedKeys = ref(new Set<any>())
     const collapsedKeys = ref(new Set<any>())
-    const metaMap = new WeakMap<object, TreeRowMeta>()
-
-    function keyOf(row: any) {
-      const key = props.rowKey
-      if (typeof key === 'function') {
-        return key(row)
-      }
-      if (typeof key === 'string') {
-        return row?.[key]
-      }
-      return row
-    }
+    let metaMap = new WeakMap<object, TreeRowMeta>()
+    // 行键与 core 的选中/展开共用一个出口，缺 rowKey 时两边才不会各算一套身份
+    const rowKeyOf = state!.rowKeyOf as (row: any) => any
 
     function childrenOf(row: any): any[] {
       const config = readTreeConfig(props.treeProps)
@@ -61,7 +55,7 @@ export const tableTreeFeature: UiFeature = {
     }
 
     function isExpanded(row: any) {
-      const key = keyOf(row)
+      const key = rowKeyOf(row)
       if (expandedKeys.value.has(key)) {
         return true
       }
@@ -76,7 +70,7 @@ export const tableTreeFeature: UiFeature = {
         const nextExpanded = new Set(expandedKeys.value)
         const nextCollapsed = new Set(collapsedKeys.value)
         for (const row of rows) {
-          const key = keyOf(row)
+          const key = rowKeyOf(row)
           nextExpanded.add(key)
           nextCollapsed.delete(key)
         }
@@ -86,7 +80,7 @@ export const tableTreeFeature: UiFeature = {
         const nextCollapsed = new Set(collapsedKeys.value)
         const nextExpanded = new Set(expandedKeys.value)
         for (const row of rows) {
-          const key = keyOf(row)
+          const key = rowKeyOf(row)
           nextCollapsed.add(key)
           nextExpanded.delete(key)
         }
@@ -124,6 +118,8 @@ export const tableTreeFeature: UiFeature = {
     function tableRows(rows: any[]) {
       // 普通 flat 数据短路：避免每次渲染都为全量行重建 metaMap（10 万行虚拟滚动时每次滚动帧都跑）
       if (!rows.some((row) => hasChildrenOf(row))) {
+        // 树形变平铺后旧 meta 会让已无子级的行继续挂着展开箭头
+        metaMap = new WeakMap()
         return rows
       }
       const output: any[] = []
@@ -157,8 +153,20 @@ export const tableTreeFeature: UiFeature = {
       }
     }
 
-    function tableCellPrepend(scope: Record<string, any>) {
-      if (scope.columnIndex !== 0) {
+    let contentColumnCache: { columns: Record<string, any>[]; index: number } | null = null
+
+    // 同一轮渲染里所有单元格共用一份列数组，按引用缓存避免每格都扫一遍列
+    function contentColumnIndexOf(columns: Record<string, any>[]) {
+      if (contentColumnCache && contentColumnCache.columns === columns) {
+        return contentColumnCache.index
+      }
+      const index = columns.findIndex((column) => !NON_CONTENT_COLUMN_TYPES.has(column.type))
+      contentColumnCache = { columns, index }
+      return index
+    }
+
+    function tableCellPrepend(scope: Record<string, any>, columns: Record<string, any>[]) {
+      if (scope.columnIndex !== contentColumnIndexOf(columns)) {
         return null
       }
       const row = scope.row

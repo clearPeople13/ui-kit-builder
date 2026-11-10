@@ -1,4 +1,6 @@
-export const tableColumnSortFeature = {
+import type { UiFeature } from '../../../../shared/feature'
+
+export const tableColumnSortFeature: UiFeature = {
   id: 'table.column-sort',
   props: {
     sortable: { type: [Boolean, String], default: false },

@@ -10,7 +10,9 @@ import {
   onMounted,
   onUpdated,
   ref,
-  shallowRef
+  shallowRef,
+  toRaw,
+  watch
 } from 'vue'
 import type { UiFeature, UiFeatureState } from '../../shared/feature'
 import {
@@ -274,7 +276,15 @@ export function createTable(features: UiFeature[] = []) {
     name: 'UiTable',
     inheritAttrs: false,
     props: { ...tableBaseProps, ...mergeFeatureProps(features) },
-    emits: ['row-click', 'selection-change', 'current-change', 'sort-change', 'resize-change', 'tree-expand'],
+    emits: [
+      'row-click',
+      'selection-change',
+      'current-change',
+      'sort-change',
+      'resize-change',
+      'tree-expand',
+      'expand-change'
+    ],
     setup(props, { attrs, slots, emit, expose }) {
       const locale = useLocale('table')
       const resolved = props as Record<string, any>
@@ -302,31 +312,90 @@ export function createTable(features: UiFeature[] = []) {
       let measureFrame = 0
       let resizeObserver: ResizeObserver | null = null
 
-      function rowKeyOf(row: any, index: number) {
+      // 行身份：排序、树形折叠、虚拟窗口都会改变渲染下标，用下标当键会把选中态串到别的行上；
+      // 未配 rowKey 或字段缺失时退化为对象身份，保证逐行可区分
+      const rowIdentity = new WeakMap<object, number>()
+      let rowIdentitySeed = 0
+
+      function rowIdentityOf(row: any) {
+        if (row === null || typeof row !== 'object') {
+          return row
+        }
+        const raw = toRaw(row)
+        let identity = rowIdentity.get(raw)
+        if (identity === undefined) {
+          rowIdentitySeed += 1
+          identity = rowIdentitySeed
+          rowIdentity.set(raw, identity)
+        }
+        return identity
+      }
+
+      function rowKeyOf(row: any) {
         const key = resolved.rowKey
-        if (typeof key === 'function') {
-          return key(row)
-        }
-        if (typeof key === 'string') {
-          return row?.[key]
-        }
-        return index
+        const value = typeof key === 'function' ? key(row) : typeof key === 'string' ? row?.[key] : undefined
+        return value === undefined || value === null ? rowIdentityOf(row) : value
       }
 
-      function selectableOf(columns: TableColumn[], row: any, index: number) {
+      interface RowEligibility {
+        selectable: boolean
+        checkboxVisible: boolean
+      }
+
+      let eligibilityCache: {
+        rows: any[]
+        columnsKey: string
+        rowKey: unknown
+        selectable: unknown
+        showCheckbox: unknown
+        values: Map<any, RowEligibility>
+      } | null = null
+
+      // 滚动帧只换窗口位置，行/列/回调不变时复用全表可用性，逐行重跑 selectable 会把回调摊到每帧
+      function eligibilityOf(row: any): RowEligibility {
+        const rows = flatRowGraph.value.rows
+        const column = latestColumns.find((item) => item.type === 'selection')
+        const selectable = column?.selectable ?? resolved.selectable
+        const showCheckbox = column?.showCheckbox ?? resolved.showCheckbox
+        if (
+          eligibilityCache &&
+          eligibilityCache.rows === rows &&
+          eligibilityCache.columnsKey === latestColumnsKey &&
+          eligibilityCache.rowKey === resolved.rowKey &&
+          eligibilityCache.selectable === selectable &&
+          eligibilityCache.showCheckbox === showCheckbox
+        ) {
+          return eligibilityCache.values.get(toRaw(row)) ?? { selectable: true, checkboxVisible: true }
+        }
+        const values = new Map<any, RowEligibility>()
+        for (const item of rows) {
+          const index = rowIndexOf(item)
+          const allowed = typeof selectable === 'function' ? Boolean(selectable(item, index)) : true
+          const show = typeof showCheckbox === 'function' ? Boolean(showCheckbox(item, index)) : showCheckbox !== false
+          values.set(toRaw(item), { selectable: allowed, checkboxVisible: show })
+        }
+        eligibilityCache = {
+          rows,
+          columnsKey: latestColumnsKey,
+          rowKey: resolved.rowKey,
+          selectable,
+          showCheckbox,
+          values
+        }
+        return values.get(toRaw(row)) ?? { selectable: true, checkboxVisible: true }
+      }
+
+      function selectableOf(row: any) {
+        return eligibilityOf(row).selectable
+      }
+
+      function checkboxVisibleOf(column: TableColumn | undefined, row: any) {
+        return column ? eligibilityOf(row).checkboxVisible : false
+      }
+
+      function checkStrictlyOf(columns: TableColumn[]) {
         const column = columns.find((item) => item.type === 'selection')
-        return column?.selectable ? Boolean(column.selectable(row, index)) : true
-      }
-
-      function checkboxVisibleOf(column: TableColumn | undefined, row: any, index: number) {
-        if (!column) {
-          return false
-        }
-        const show = column.showCheckbox
-        if (typeof show === 'function') {
-          return Boolean(show(row, index))
-        }
-        return show !== false
+        return Boolean(column?.checkStrictly ?? resolved.checkStrictly)
       }
 
       function treeChildrenKey() {
@@ -340,54 +409,82 @@ export function createTable(features: UiFeature[] = []) {
         return 'children'
       }
 
-      function descendantsOf(row: any): any[] {
+      function collectFlatRows(list: any[], output: any[]) {
         const childrenKey = treeChildrenKey()
-        const output: any[] = []
-        const walk = (item: any) => {
-          const children = item?.[childrenKey]
-          if (!Array.isArray(children)) {
-            return
-          }
-          for (const child of children) {
-            output.push(child)
-            walk(child)
+        for (const row of list) {
+          output.push(row)
+          const children = row?.[childrenKey]
+          if (Array.isArray(children) && children.length) {
+            collectFlatRows(children, output)
           }
         }
-        walk(row)
+      }
+
+      // 全量行的 DFS 图：选择载荷、回调下标、祖先链共用一份，折叠/排序/虚拟窗口都不改变行身份
+      const flatRowGraph = computed(() => {
+        const childrenKey = treeChildrenKey()
+        const rows: any[] = []
+        const indexes = new Map<any, number>()
+        const parents = new Map<any, any>()
+        function walk(list: any[], parent: any) {
+          for (const row of list) {
+            const raw = toRaw(row)
+            indexes.set(raw, rows.length)
+            rows.push(row)
+            if (parent !== null) {
+              parents.set(raw, parent)
+            }
+            const children = row?.[childrenKey]
+            if (Array.isArray(children) && children.length) {
+              walk(children, row)
+            }
+          }
+        }
+        walk(Array.isArray(resolved.data) ? resolved.data : [], null)
+        return { rows, indexes, parents }
+      })
+
+      function rowIndexOf(row: any) {
+        return flatRowGraph.value.indexes.get(toRaw(row)) ?? -1
+      }
+
+      function descendantsOf(row: any): any[] {
+        const children = row?.[treeChildrenKey()]
+        if (!Array.isArray(children) || !children.length) {
+          return []
+        }
+        const output: any[] = []
+        collectFlatRows(children, output)
         return output
       }
 
       function ancestorRowsOf(row: any): any[] {
-        const childrenKey = treeChildrenKey()
+        const parents = flatRowGraph.value.parents
         const trail: any[] = []
-        const walk = (list: any[], parents: any[]): boolean => {
-          for (const item of list) {
-            if (item === row) {
-              trail.push(...parents)
-              return true
-            }
-            const children = item?.[childrenKey]
-            if (Array.isArray(children) && children.length && walk(children, [...parents, item])) {
-              return true
-            }
-          }
-          return false
+        let ancestor = parents.get(toRaw(row))
+        while (ancestor !== undefined) {
+          trail.push(ancestor)
+          ancestor = parents.get(toRaw(ancestor))
         }
-        walk(Array.isArray(resolved.data) ? resolved.data : [], [])
-        return trail
+        return trail.reverse()
       }
 
-      // 0 未选 / 1 部分选（半选）/ 2 全选，只统计可选且勾选框可见的后代
-      function descendantCheckState(row: any, column: TableColumn | undefined): 0 | 1 | 2 {
+      // 0 未选 / 1 部分选（半选）/ 2 全选，只统计可选且勾选框可见的后代；
+      // keys 由调用方传入本次提交中的集合，读已提交的 selectedKeys 会拿到上一轮的旧状态
+      function descendantCheckState(
+        row: any,
+        column: TableColumn | undefined,
+        keys: Set<any> = selectedKeys.value
+      ): 0 | 1 | 2 {
         const descendants = descendantsOf(row).filter(
-          (child) => selectableOf(column ? [column] : [], child, -1) && checkboxVisibleOf(column, child, -1)
+          (child) => selectableOf(child) && checkboxVisibleOf(column, child)
         )
         if (!descendants.length) {
           return 0
         }
         let checked = 0
         for (const child of descendants) {
-          if (selectedKeys.value.has(rowKeyOf(child, -1))) {
+          if (keys.has(rowKeyOf(child))) {
             checked += 1
           }
         }
@@ -398,43 +495,31 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       function emitSelection(next: Set<any>) {
-        const data = Array.isArray(resolved.data) ? resolved.data : []
-        const flat: any[] = []
-        const collect = (list: any[]) => {
-          for (const item of list) {
-            flat.push(item)
-            const children = item?.[treeChildrenKey()]
-            if (Array.isArray(children) && children.length) {
-              collect(children)
-            }
-          }
-        }
-        collect(data)
         emit(
           'selection-change',
-          flat.filter((item, itemIndex) => next.has(rowKeyOf(item, itemIndex)))
+          flatRowGraph.value.rows.filter((row) => next.has(rowKeyOf(row)))
         )
       }
 
-      function toggleRow(row: any, index: number, checked: boolean, columns: TableColumn[]) {
-        if (!selectableOf(columns, row, index)) {
+      function toggleRow(row: any, checked: boolean, columns: TableColumn[]) {
+        if (!selectableOf(row)) {
           return
         }
         const column = columns.find((item) => item.type === 'selection')
-        const key = rowKeyOf(row, index)
+        const key = rowKeyOf(row)
         const next = new Set(selectedKeys.value)
         if (checked) {
           next.add(key)
         } else {
           next.delete(key)
         }
-        if (!resolved.checkStrictly) {
+        if (!checkStrictlyOf(columns)) {
           // 树形联动：勾选向下传播给可选且可见的后代，向上传播保持祖先全选/半选状态
           for (const child of descendantsOf(row)) {
-            if (!selectableOf(columns, child, -1) || !checkboxVisibleOf(column, child, -1)) {
+            if (!selectableOf(child) || !checkboxVisibleOf(column, child)) {
               continue
             }
-            const childKey = rowKeyOf(child, -1)
+            const childKey = rowKeyOf(child)
             if (checked) {
               next.add(childKey)
             } else {
@@ -442,8 +527,8 @@ export function createTable(features: UiFeature[] = []) {
             }
           }
           for (const ancestor of ancestorRowsOf(row)) {
-            const ancestorKey = rowKeyOf(ancestor, -1)
-            if (descendantCheckState(ancestor, column) === 2) {
+            const ancestorKey = rowKeyOf(ancestor)
+            if (descendantCheckState(ancestor, column, next) === 2) {
               next.add(ancestorKey)
             } else {
               next.delete(ancestorKey)
@@ -459,48 +544,109 @@ export function createTable(features: UiFeature[] = []) {
         const next = new Set<any>()
         if (checked) {
           // 展开后的行 + 联动时的后代：隐藏行与不可选行始终不进集合
-          rows.forEach((row, index) => {
-            if (!selectableOf(columns, row, index) || !checkboxVisibleOf(column, row, index)) {
-              return
+          for (const row of rows) {
+            if (!selectableOf(row) || !checkboxVisibleOf(column, row)) {
+              continue
             }
-            next.add(rowKeyOf(row, index))
-            if (!resolved.checkStrictly) {
+            next.add(rowKeyOf(row))
+            if (!checkStrictlyOf(columns)) {
               for (const child of descendantsOf(row)) {
-                if (selectableOf(columns, child, -1) && checkboxVisibleOf(column, child, -1)) {
-                  next.add(rowKeyOf(child, -1))
+                if (selectableOf(child) && checkboxVisibleOf(column, child)) {
+                  next.add(rowKeyOf(child))
                 }
               }
             }
-          })
+          }
         }
         selectedKeys.value = next
         emitSelection(next)
       }
 
-      function toggleExpand(row: any, index: number) {
-        const key = rowKeyOf(row, index)
+      function toggleExpand(row: any) {
+        const key = rowKeyOf(row)
         const next = new Set(expandedKeys.value)
-        if (next.has(key)) {
-          next.delete(key)
-        } else {
+        const expanded = !next.has(key)
+        if (expanded) {
           next.add(key)
+        } else {
+          next.delete(key)
         }
         expandedKeys.value = next
+        emit('expand-change', { row, expanded })
       }
 
-      function handleRowClick(row: any, index: number) {
+      function handleRowClick(row: any) {
         if (resolved.highlightCurrentRow) {
-          currentKey.value = rowKeyOf(row, index)
+          currentKey.value = rowKeyOf(row)
           emit('current-change', row)
         }
         emit('row-click', row)
       }
 
+      let selectionCache: {
+        rows: any[]
+        columnsKey: string
+        rowKey: unknown
+        selectable: unknown
+        showCheckbox: unknown
+        keys: Set<any>
+        selectableCount: number
+        selectedCount: number
+        allSelected: boolean
+      } | null = null
+
+      // 表头全选态按「行引用 + 列签名 + 回调身份 + 选中集合」缓存：滚动帧只换窗口位置，
+      // 不缓存会让 selectable/showCheckbox 这类全表回调在每个滚动帧上重跑一遍
+      function selectionSummaryOf(rows: any[], columns: TableColumn[]) {
+        const column = columns.find((item) => item.type === 'selection')
+        const selectable = column?.selectable ?? resolved.selectable
+        const showCheckbox = column?.showCheckbox ?? resolved.showCheckbox
+        const keys = selectedKeys.value
+        if (
+          selectionCache &&
+          selectionCache.rows === rows &&
+          selectionCache.columnsKey === latestColumnsKey &&
+          selectionCache.rowKey === resolved.rowKey &&
+          selectionCache.selectable === selectable &&
+          selectionCache.showCheckbox === showCheckbox &&
+          selectionCache.keys === keys
+        ) {
+          return selectionCache
+        }
+        let selectableCount = 0
+        let selectedCount = 0
+        if (column) {
+          for (const row of rows) {
+            if (!selectableOf(row) || !checkboxVisibleOf(column, row)) {
+              continue
+            }
+            selectableCount += 1
+            if (keys.has(rowKeyOf(row))) {
+              selectedCount += 1
+            }
+          }
+        }
+        selectionCache = {
+          rows,
+          columnsKey: latestColumnsKey,
+          rowKey: resolved.rowKey,
+          selectable,
+          showCheckbox,
+          keys,
+          selectableCount,
+          selectedCount,
+          allSelected: selectableCount > 0 && selectedCount === selectableCount
+        }
+        return selectionCache
+      }
+
       const state = {
         selectedKeys,
         latestColumns: () => latestColumns,
+        flatRows: () => flatRowGraph.value.rows,
         rowKeyOf,
         selectableOf,
+        selectionSummaryOf,
         toggleRow,
         toggleAll
       }
@@ -579,7 +725,7 @@ export function createTable(features: UiFeature[] = []) {
         let total = 0
         for (let index = 0; index < list.length; index += 1) {
           offsets[index] = total
-          total += heights.get(rowKeyOf(list[index], index)) ?? fallback
+          total += heights.get(rowKeyOf(list[index])) ?? fallback
         }
         offsets[list.length] = total
         return { offsets, total }
@@ -838,13 +984,36 @@ export function createTable(features: UiFeature[] = []) {
       let pendingRowHeights: Map<any, number> | null = null
       let pendingCommitTimer: ReturnType<typeof setTimeout> | undefined
 
+      // 行身份键随数据替换不断新增，不清掉已移除行的高度表会无限增长（分页/搜索换数据场景）
+      watch([() => flatRowGraph.value.rows, () => resolved.rowKey], ([rows]) => {
+        const live = new Set(rows.map((row) => rowKeyOf(row)))
+        const committed = measuredRowHeights.value
+        let removed = false
+        for (const key of committed.keys()) {
+          if (!live.has(key)) {
+            committed.delete(key)
+            removed = true
+          }
+        }
+        if (removed) {
+          measuredRowHeights.value = new Map(committed)
+        }
+        if (pendingRowHeights) {
+          for (const key of pendingRowHeights.keys()) {
+            if (!live.has(key)) {
+              pendingRowHeights.delete(key)
+            }
+          }
+        }
+      })
+
       function pendingTotalDelta(next: Map<any, number>): number {
         const list = pipelineRows.value
         const committed = measuredRowHeights.value
         const fallback = fallbackRowHeight.value
         let delta = 0
         for (let index = 0; index < list.length; index += 1) {
-          const key = rowKeyOf(list[index], index)
+          const key = rowKeyOf(list[index])
           delta += (next.get(key) ?? committed.get(key) ?? fallback) - (committed.get(key) ?? fallback)
         }
         return delta
@@ -947,7 +1116,7 @@ export function createTable(features: UiFeature[] = []) {
           if (!Number.isInteger(index) || index < 0 || index >= list.length) {
             continue
           }
-          const key = rowKeyOf(list[index], index)
+          const key = rowKeyOf(list[index])
           const height = (tr as HTMLElement).getBoundingClientRect().height
           if (Math.abs((next.get(key) ?? 0) - height) > 0.5) {
             next.set(key, height)
@@ -1098,21 +1267,26 @@ export function createTable(features: UiFeature[] = []) {
         prependHooks: ((...args: any[]) => any)[]
       }
 
+      // 半选只落在原生 indeterminate property 上时选择器观测不到，统一补 is-* 状态类
+      function tableCheckboxClass(indeterminate: boolean) {
+        return indeterminate ? 'ui-table__checkbox is-indeterminate' : 'ui-table__checkbox'
+      }
+
       function renderCell(options: CellOptions): VNodeChild {
         const { column, row, rowIndex, meta, prependHooks } = options
         if (column.type === 'selection') {
-          if (!checkboxVisibleOf(column, row, rowIndex)) {
+          if (!checkboxVisibleOf(column, row)) {
             return null
           }
-          const key = rowKeyOf(row, rowIndex)
-          const childState = resolved.checkStrictly ? 0 : descendantCheckState(row, column)
+          const key = rowKeyOf(row)
+          const childState = checkStrictlyOf([column]) ? 0 : descendantCheckState(row, column)
           return h(TableCheckbox, {
-            class: 'ui-table__checkbox',
+            class: tableCheckboxClass(childState === 1),
             modelValue: selectedKeys.value.has(key) || childState === 2,
             indeterminate: childState === 1,
-            disabled: !selectableOf([column], row, rowIndex),
+            disabled: !selectableOf(row),
             onClick: (event: Event) => event.stopPropagation(),
-            'onUpdate:modelValue': (checked: boolean) => toggleRow(row, rowIndex, checked, [column])
+            'onUpdate:modelValue': (checked: boolean) => toggleRow(row, checked, [column])
           })
         }
         if (column.type === 'index') {
@@ -1120,7 +1294,7 @@ export function createTable(features: UiFeature[] = []) {
           return typeof column.index === 'number' ? rowIndex + column.index : value
         }
         if (column.type === 'expand') {
-          const key = rowKeyOf(row, rowIndex)
+          const key = rowKeyOf(row)
           const expanded = expandedKeys.value.has(key)
           return h(
             'button',
@@ -1131,7 +1305,7 @@ export function createTable(features: UiFeature[] = []) {
               'aria-expanded': expanded ? 'true' : 'false',
               onClick: (event: Event) => {
                 event.stopPropagation()
-                toggleExpand(row, rowIndex)
+                toggleExpand(row)
               }
             },
             [h('span', { class: 'ui-table__expand-arrow', 'aria-hidden': 'true' })]
@@ -1156,7 +1330,7 @@ export function createTable(features: UiFeature[] = []) {
         }
         const prepend: VNodeChild[] = []
         for (const hook of prependHooks) {
-          const fragment = hook(scope)
+          const fragment = hook(scope, latestColumns)
           if (fragment !== undefined && fragment !== null) {
             prepend.push(fragment)
           }
@@ -1354,17 +1528,7 @@ export function createTable(features: UiFeature[] = []) {
           }
         }
 
-        const selectableKeys: any[] = []
-        const selectionColumn = columns.find((column) => column.type === 'selection')
-        if (selectionColumn) {
-          rows.forEach((row, index) => {
-            if (selectableOf(columns, row, index) && checkboxVisibleOf(selectionColumn, row, index)) {
-              selectableKeys.push(rowKeyOf(row, index))
-            }
-          })
-        }
-        const selectedCount = selectableKeys.filter((key) => selectedKeys.value.has(key)).length
-        const allSelected = selectableKeys.length > 0 && selectedCount === selectableKeys.length
+        const selection = selectionSummaryOf(rows, columns)
 
         const featureClasses = collectFeatureClasses(states)
         const rootClass = [
@@ -1451,10 +1615,10 @@ export function createTable(features: UiFeature[] = []) {
                       column.type === 'selection'
                         ? [
                             h(TableCheckbox, {
-                              class: 'ui-table__checkbox',
-                              modelValue: allSelected,
-                              indeterminate: selectedCount > 0 && !allSelected,
-                              disabled: !selectableKeys.length,
+                              class: tableCheckboxClass(selection.selectedCount > 0 && !selection.allSelected),
+                              modelValue: selection.allSelected,
+                              indeterminate: selection.selectedCount > 0 && !selection.allSelected,
+                              disabled: !selection.selectableCount,
                               'onUpdate:modelValue': (checked: boolean) => toggleAll(checked, columns, rows)
                             }),
                             ...extras
@@ -1527,7 +1691,7 @@ export function createTable(features: UiFeature[] = []) {
         const nextRowCache = new Map<string, VNode>()
         for (let rowIndex = windowStart; rowIndex < windowEnd; rowIndex += 1) {
           const row = rows[rowIndex]
-          const key = rowKeyOf(row, rowIndex)
+          const key = rowKeyOf(row)
           const isExpanded = expandedKeys.value.has(key)
           const cacheKey = String(key)
           const cached = scrolling && !isExpanded ? rowVNodeCache.get(cacheKey) : undefined
@@ -1656,7 +1820,7 @@ export function createTable(features: UiFeature[] = []) {
               ],
               style: rowStyle,
               'data-row-index': virtualActive ? rowIndex : undefined,
-              onClick: () => handleRowClick(row, rowIndex)
+              onClick: () => handleRowClick(row)
             },
             cells
           )

@@ -2,7 +2,7 @@ export default {
   id: 'table',
   title: 'Table 表格',
   description:
-    '单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。',
+    '单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总；expand 列展开/收起抛 expand-change {row, expanded}。',
   order: 10,
   exports: [
     {
@@ -447,7 +447,7 @@ export default {
         'table.selection': {
           title: '选择列配置',
           description:
-            '为 selection 列配置 selectable 判断哪些行可勾选、showCheckbox 控制勾选框显隐，树形数据下用 checkStrictly 控制父子是否联动勾选。',
+            '为 selection 列配置 selectable 判断哪些行可勾选、showCheckbox 控制勾选框显隐，树形数据下用 checkStrictly 控制父子是否联动勾选；Table 级同名 prop 是列未声明时的回退，列级声明优先。',
           module: 'packages/ui-kit/src/components/table/features/selection/index.ts',
           exportName: 'tableSelectionFeature',
           requires: [],

@@ -735,3 +735,285 @@ describe('TableColumn', () => {
     wrapper.unmount()
   })
 })
+
+// 行键契约：选中/展开/当前行都以「行身份」为键，身份不随渲染下标、排序、树形折叠而变；
+// 未配 rowKey 或 rowKey 字段缺失时也必须逐行可区分，否则勾选一行等于勾选全表
+describe('Table 行键与选择回归', () => {
+  const treeRows = [
+    {
+      id: 1,
+      name: '父',
+      children: [
+        { id: 11, name: '子1' },
+        { id: 12, name: '子2' }
+      ]
+    },
+    { id: 2, name: '叶' }
+  ]
+  const treeChildren = treeRows[0].children ?? []
+
+  function selectionSlots(columnProps: Record<string, any> = {}) {
+    return {
+      default: () => [
+        h(TableColumn, { type: 'selection', width: 40, ...columnProps }),
+        h(TableColumn, { prop: 'name', label: '名称', sortable: true })
+      ]
+    }
+  }
+
+  function checkedOf(wrapper: ReturnType<typeof mountTable>) {
+    return wrapper.findAll('tbody input').map((item) => inputOf(item).checked)
+  }
+
+  function apiOf(wrapper: ReturnType<typeof mountTable>) {
+    return wrapper.vm as unknown as Record<string, any>
+  }
+
+  it('F-125 回归：无 rowKey 时勾选折叠树的叶子行，载荷是该行而非同下标的隐藏子行', async () => {
+    const wrapper = await setup({ data: treeRows }, selectionSlots())
+    expect(wrapper.findAll('tbody tr')).toHaveLength(2)
+    await wrapper.findAll('tbody input')[1].setValue(true)
+    await nextTick()
+    expect(wrapper.emitted('selection-change')?.[0]).toEqual([[treeRows[1]]])
+    expect(apiOf(wrapper).getSelectionRows()).toEqual([treeRows[1]])
+  })
+
+  it('F-125 回归：无 rowKey 时勾选父行联动选中全部子行', async () => {
+    const wrapper = await setup({ data: treeRows }, selectionSlots())
+    await wrapper.findAll('tbody input')[0].setValue(true)
+    await nextTick()
+    expect(wrapper.emitted('selection-change')?.[0]).toEqual([[treeRows[0], treeChildren[0], treeChildren[1]]])
+  })
+
+  it('F-125 回归：无 rowKey 时排序后选中态跟随行而不是下标', async () => {
+    const wrapper = await setup({}, selectionSlots())
+    await wrapper.findAll('tbody input')[0].setValue(true)
+    await nextTick()
+    const head = wrapper.findAll('th')[1]
+    await head.trigger('click')
+    await head.trigger('click')
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['C', 'B', 'A'])
+    expect(checkedOf(wrapper)).toEqual([false, false, true])
+    expect(apiOf(wrapper).getSelectionRows()).toEqual([rows[0]])
+  })
+
+  it('F-125 回归：rowKey 字段缺失时不得让所有行共用一个键', async () => {
+    const data = [{ name: 'A' }, { name: 'B' }, { name: 'C' }]
+    const wrapper = await setup({ data, rowKey: 'id' }, selectionSlots())
+    await wrapper.findAll('tbody input')[0].setValue(true)
+    await nextTick()
+    expect(checkedOf(wrapper)).toEqual([true, false, false])
+    expect(wrapper.emitted('selection-change')?.[0]).toEqual([[data[0]]])
+  })
+
+  it('F-125 回归：rowKey 字段缺失时展开一个父行不连带展开其他父行', async () => {
+    const data = [
+      { name: '父1', children: [{ name: '子1' }] },
+      { name: '父2', children: [{ name: '子2' }] }
+    ]
+    const wrapper = await setup(
+      { data, rowKey: 'id' },
+      { default: () => h(TableColumn, { prop: 'name', label: '名称' }) }
+    )
+    expect(wrapper.findAll('.ui-table__tree-toggle')).toHaveLength(2)
+    await wrapper.findAll('.ui-table__tree-toggle')[0].trigger('click')
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['父1', '子1', '父2'])
+  })
+
+  it('F-125 回归：树形联动传给 selectable 的下标是扁平数据下标而不是 -1', async () => {
+    const seen: Array<[string, number]> = []
+    const wrapper = await setup(
+      { data: treeRows, rowKey: 'id' },
+      selectionSlots({
+        selectable: (row: any, index: number) => {
+          seen.push([row.name, index])
+          return true
+        }
+      })
+    )
+    expect(wrapper.findAll('tbody tr')).toHaveLength(2)
+    expect(seen.length).toBeGreaterThan(0)
+    expect(seen.filter(([, index]) => index < 0)).toEqual([])
+    expect(seen.filter(([name]) => name === '子1').map(([, index]) => index)).toEqual([1])
+  })
+
+  it('F-126 回归：Table 上的 selectable 在列未声明时生效', async () => {
+    const wrapper = await setup({ rowKey: 'id', selectable: (row: any) => row.id !== 2 }, selectionSlots())
+    expect(wrapper.findAll('tbody input')[1].attributes('disabled')).toBeDefined()
+    await wrapper.find('thead input').setValue(true)
+    await nextTick()
+    expect(wrapper.emitted('selection-change')?.slice(-1)?.[0]).toEqual([[rows[0], rows[2]]])
+  })
+
+  it('F-126 回归：Table 上的 showCheckbox=false 隐藏勾选框且该行不参与全选', async () => {
+    const wrapper = await setup({ rowKey: 'id', showCheckbox: false }, selectionSlots())
+    expect(wrapper.findAll('tbody input')).toHaveLength(0)
+    apiOf(wrapper).toggleAllSelection()
+    await nextTick()
+    expect(apiOf(wrapper).getSelectionRows()).toEqual([])
+  })
+
+  it('F-126 回归：列上的 showCheckbox 覆盖 Table 上的同名开关', async () => {
+    const wrapper = await setup({ rowKey: 'id', showCheckbox: false }, selectionSlots({ showCheckbox: true }))
+    expect(checkedOf(wrapper)).toEqual([false, false, false])
+  })
+
+  it('F-126 回归：列上的 selectable 优先于 Table 上的 selectable', async () => {
+    const wrapper = await setup(
+      { rowKey: 'id', selectable: () => false },
+      selectionSlots({ selectable: (row: any) => row.id !== 2 })
+    )
+    expect(wrapper.findAll('tbody input').map((item) => inputOf(item).disabled)).toEqual([false, true, false])
+  })
+
+  it('F-126 回归：TableColumn 上的 checkStrictly 覆盖 Table 级联动设置', async () => {
+    const wrapper = await setup({ data: treeRows, rowKey: 'id' }, selectionSlots({ checkStrictly: true }))
+    await wrapper.findAll('tbody input')[0].setValue(true)
+    await nextTick()
+    expect(wrapper.emitted('selection-change')?.[0]).toEqual([[treeRows[0]]])
+  })
+
+  it('F-127 回归：虚拟滚动帧不重跑全表 selectable 回调', async () => {
+    const big = Array.from({ length: 200 }, (_, index) => ({ id: index, name: `N${index}`, age: index }))
+    const selectable = vi.fn(() => true)
+    const wrapper = await setup({ data: big, rowKey: 'id', height: 100, virtual: true }, selectionSlots({ selectable }))
+    expect(selectable).toHaveBeenCalled()
+    selectable.mockClear()
+
+    const element = wrapper.find('.ui-table__wrapper').element as HTMLElement
+    element.scrollTop = 200
+    element.dispatchEvent(new Event('scroll'))
+    await nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(selectable).not.toHaveBeenCalled()
+  })
+
+  it('F-128 回归：toggleRowSelection 能选中折叠态的树子行', async () => {
+    const wrapper = await setup({ data: treeRows, rowKey: 'id', checkStrictly: true }, selectionSlots())
+    const child = treeChildren[0]
+    apiOf(wrapper).toggleRowSelection(child, true)
+    await nextTick()
+    expect(apiOf(wrapper).getSelectionRows()).toEqual([child])
+    expect(wrapper.emitted('selection-change')?.[0]).toEqual([[child]])
+  })
+
+  it('F-128 回归：toggleAllSelection 与表头全选同口径，隐藏勾选框的行不算进全选判定', async () => {
+    const wrapper = await setup({ rowKey: 'id' }, selectionSlots({ showCheckbox: (row: any) => row.id !== 2 }))
+    const api = apiOf(wrapper)
+    api.toggleAllSelection()
+    await nextTick()
+    expect(api.getSelectionRows()).toEqual([rows[0], rows[2]])
+    api.toggleAllSelection()
+    await nextTick()
+    expect(api.getSelectionRows()).toEqual([])
+  })
+
+  it('F-129 回归：树形数据变平铺后不残留展开箭头', async () => {
+    const parent: Record<string, any> = { id: 1, name: '父', children: [{ id: 11, name: '子' }] }
+    const wrapper = await setup(
+      { data: [parent], rowKey: 'id' },
+      { default: () => h(TableColumn, { prop: 'name', label: '名称' }) }
+    )
+    expect(wrapper.findAll('.ui-table__tree-toggle')).toHaveLength(1)
+    delete parent.children
+    await wrapper.setProps({ data: [parent] })
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['父'])
+    expect(wrapper.findAll('.ui-table__tree-toggle')).toHaveLength(0)
+  })
+
+  it('F-130 回归：sortOrders 用 desc/asc 别名时排序方向与箭头一致', async () => {
+    const wrapper = await setup(
+      {},
+      {
+        default: () => h(TableColumn, { prop: 'age', label: '年龄', sortable: true, sortOrders: ['desc', 'asc', null] })
+      }
+    )
+    await wrapper.find('th').trigger('click')
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['22', '21', '20'])
+    expect(wrapper.find('.ui-table__sort-caret').classes()).toContain('is-descending')
+    expect(sortEvents(wrapper)[0]?.[0]?.order).toBe('descending')
+    await wrapper.find('th').trigger('click')
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['20', '21', '22'])
+    expect(wrapper.find('.ui-table__sort-caret').classes()).toContain('is-ascending')
+  })
+
+  it('F-130 回归：defaultSort 的 desc 别名按降序排序', async () => {
+    const wrapper = await setup(
+      { defaultSort: { prop: 'age', order: 'desc' } },
+      { default: () => h(TableColumn, { prop: 'age', label: '年龄', sortable: true }) }
+    )
+    expect(bodyTexts(wrapper)).toEqual(['22', '21', '20'])
+    expect(wrapper.find('.ui-table__sort-caret').classes()).toContain('is-descending')
+  })
+
+  it('F-131 回归：expand 列展开与收起抛出 expand-change', async () => {
+    const wrapper = await setup(
+      {},
+      {
+        default: () => [
+          h(TableColumn, { type: 'expand' }, { default: ({ row }: any) => h('span', row.name) }),
+          h(TableColumn, { prop: 'name', label: '名称' })
+        ]
+      }
+    )
+    await wrapper.find('.ui-table__expand').trigger('click')
+    await nextTick()
+    expect(wrapper.find('.ui-table__expanded-row').exists()).toBe(true)
+    expect(wrapper.emitted('expand-change')?.[0]).toEqual([{ row: rows[0], expanded: true }])
+    await wrapper.find('.ui-table__expand').trigger('click')
+    await nextTick()
+    expect(wrapper.find('.ui-table__expanded-row').exists()).toBe(false)
+    expect(wrapper.emitted('expand-change')?.[1]).toEqual([{ row: rows[0], expanded: false }])
+  })
+
+  it('F-132 回归：selection 列在首位时树形展开箭头仍落在首个内容列', async () => {
+    const wrapper = await setup({ data: treeRows, rowKey: 'id' }, selectionSlots())
+    const toggles = wrapper.findAll('.ui-table__tree-toggle')
+    expect(toggles).toHaveLength(1)
+    expect(wrapper.findAll('tbody tr')[0].findAll('td')[1].find('.ui-table__tree-toggle').exists()).toBe(true)
+    await toggles[0].trigger('click')
+    await nextTick()
+    expect(bodyTexts(wrapper)).toEqual(['父', '子1', '子2', '叶'])
+  })
+
+  it('F-132 回归：index 列在首位时树形展开箭头仍落在首个内容列', async () => {
+    const wrapper = await setup(
+      { data: treeRows, rowKey: 'id' },
+      {
+        default: () => [h(TableColumn, { type: 'index', width: 40 }), h(TableColumn, { prop: 'name', label: '名称' })]
+      }
+    )
+    expect(wrapper.findAll('.ui-table__tree-toggle')).toHaveLength(1)
+    await wrapper.find('.ui-table__tree-toggle').trigger('click')
+    await nextTick()
+    expect(wrapper.findAll('tbody tr')).toHaveLength(4)
+  })
+
+  it('F-133 回归：父行全选/半选按本次提交后的子行集合重算', async () => {
+    const wrapper = await setup(
+      { data: treeRows, rowKey: 'id' },
+      {
+        default: () => [
+          h(TableColumn, { prop: 'name', label: '名称' }),
+          h(TableColumn, { type: 'selection', width: 40 })
+        ]
+      }
+    )
+    await wrapper.find('.ui-table__tree-toggle').trigger('click')
+    await nextTick()
+    const inputs = wrapper.findAll('tbody input')
+    await inputs[1].setValue(true)
+    await inputs[2].setValue(true)
+    expect(checkedOf(wrapper)).toEqual([true, true, true, false])
+    await inputs[1].setValue(false)
+    expect(checkedOf(wrapper)).toEqual([false, false, true, false])
+    expect(wrapper.findAll('tbody .is-indeterminate')).toHaveLength(1)
+    const payloads = wrapper.emitted('selection-change') as any[][]
+    expect(payloads[payloads.length - 1][0]).toEqual([treeChildren[1]])
+  })
+})
