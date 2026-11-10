@@ -272,6 +272,40 @@ function sceneTableFit() {
     )
 }
 
+/** 内容定宽的居中容器：父宽由表格自身撑出，铺满回写改变父宽后列宽必须收敛，不能逐帧来回抖 */
+function sceneTableAuto() {
+  const rows = Array.from({ length: 6 }, (_, index) => ({
+    id: index + 1,
+    name: `行 ${index + 1}`,
+    owner: index % 2 ? '李四' : '张三',
+    amount: (index + 1) * 100,
+    note: `备注 ${index + 1}`
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'display: flex; justify-content: center' },
+      h(
+        'div',
+        { id: 'probe-table-auto-box', style: 'max-width: 100%' },
+        h(
+          Table,
+          { data: rows, resizable: true, id: 'probe-table-auto' },
+          {
+            default: () => [
+              h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
+              h(TableColumn, { prop: 'name', label: '名称', minWidth: 160 }),
+              h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
+              h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
+              h(TableColumn, { prop: 'note', label: '备注', minWidth: 240 })
+            ]
+          }
+        )
+      )
+    )
+}
+
 /** 列宽拖拽边界：多选 / 序号列窄于 minColumnWidth，末尾是右冻结列 */
 function sceneTableResize() {
   const rows = Array.from({ length: 8 }, (_, index) => ({
@@ -846,6 +880,7 @@ const scenes: Record<string, () => any> = {
   floating: sceneFloating(),
   table: sceneTable(),
   'table-fit': sceneTableFit(),
+  'table-auto': sceneTableAuto(),
   'table-resize': sceneTableResize(),
   'table-virtual-variable': sceneTableVirtualVariable(),
   'table-span-virtual': sceneTableSpanVirtual(),

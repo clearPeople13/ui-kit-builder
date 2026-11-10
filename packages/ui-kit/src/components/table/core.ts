@@ -854,7 +854,9 @@ export function createTable(features: UiFeature[] = []) {
           return
         }
         const width = element.clientWidth
-        if (Math.abs(availableWidth.value - width) > 0.5) {
+        // 容器宽度可能由表格自身撑出（flex 居中 / fit-content）：铺满分摊改表宽会改变下一次测得的
+        // 可用宽度，1px 内只可能是自己上一轮布局的回显，重算会让列宽逐帧生长或来回抖动
+        if (Math.abs(availableWidth.value - width) > 1) {
           availableWidth.value = width
         }
         const gutter = Math.max(0, element.offsetWidth - element.clientWidth)

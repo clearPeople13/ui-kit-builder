@@ -375,6 +375,53 @@ describe('浏览器层 · 表格铺满余量', () => {
   })
 })
 
+describe('浏览器层 · 表格自适应容器', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table-auto')
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  it('父宽由表格撑出时列宽收敛，连续帧不再来回抖动', async () => {
+    const samples = await session.page.evaluate(async () => {
+      const table = document.querySelector<HTMLElement>('#probe-table-auto .ui-table__inner')
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-auto .ui-table__wrapper')
+      if (!table || !wrapper) {
+        throw new Error('找不到自适应容器表格')
+      }
+      const frame = () => new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
+      const values: string[] = []
+      for (let index = 0; index < 12; index += 1) {
+        await frame()
+        values.push(`${table.style.width}/${wrapper.clientWidth}`)
+      }
+      return values
+    })
+    expect(new Set(samples.slice(4)).size).toBe(1)
+  })
+
+  it('收敛后表格不超出容器，横向没有可滚距离', async () => {
+    const data = await session.page.evaluate(() => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-auto .ui-table__wrapper')
+      const table = wrapper?.querySelector('table')
+      if (!wrapper || !table) {
+        throw new Error('找不到自适应容器表格')
+      }
+      return {
+        clientWidth: wrapper.clientWidth,
+        scrollWidth: wrapper.scrollWidth,
+        tableWidth: table.getBoundingClientRect().width
+      }
+    })
+    expect(data.scrollWidth).toBeLessThanOrEqual(data.clientWidth + 1)
+    expect(data.tableWidth).toBeLessThanOrEqual(data.clientWidth + 1)
+  })
+})
+
 describe('浏览器层 · 表格列宽拖拽边界', () => {
   let session: Session
 
