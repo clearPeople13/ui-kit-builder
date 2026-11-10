@@ -1643,3 +1643,11 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - `features/loading/style.css` 的 `font-size: 14px` 改走 `--ui-font-size-base` 令牌，消除硬编码字号。
 - `spec.mjs` 未新增 `events` schema：全库 spec 只有 `slots` 经 `registry.mjs` 校验，凭空加一段无人消费的元数据会形成第二份事实来源；事件口径改在组件 `description` 与 KNOWLEDGE 断言口径表里同步。
 - 缺陷索引补齐 F-86…F-133 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 133 条。
+
+### 58.4 像素基线漂移归因（floating / table）
+
+- 现象：main 全量门禁 `test:browser` 只有 `floating`（1017 / 921600，0.110%）与 `table`（1790 / 921600，0.194%）越过 0.1% 上限，其余 4 场景绿，布局指纹段零漂移；同一次运行连跑两遍数值完全一致，排除随机抖动（归因 ①）。
+- 基线来源：`tests/browser/__snapshots__/pixels/win32/` 最后一次录入在 `638f399`（2026-11-09 22:08）。此后到 `10276cf` 的 30 余个提交改过 `table/core.css`（F-119 / F-120 / F-122 / F-124）、`table/core.ts`、`tests/browser/harness/main.ts` 与 `select/core.ts`（F-120 起未展开不再预渲染下拉面板，浮层场景含 `#select-flow` / `#select-right` 两个实例），这段链上没有一次刷新像素基线（归因 ③ 成立）。本次 `features/loading/style.css` 的字号也由硬编码改走 `--ui-font-size-base`。
+- 差异核对：放大比对两版截图，表格表头 / 7 行数据 / 合计 `2753700` 与 `20100`、浮层文案「文档坐标 Popover」逐字一致，坐标无位移；差异集中在 ClearType 亚像素彩边（旧基线偏橙、当前偏蓝）与 1~2 级底色差（归因 ②）。`color` / `gallery` 逐像素完全一致，`tree`（0.044%）与 `a11y`（0.066%）仍在容差内。判定为文字 AA 漂移叠加上述预期样式/结构变更，不是结构回归。
+- 处理：按 KNOWLEDGE §5.1 口径只重录 `floating` / `table` 两张 win32 基线，`tree` / `a11y` / `color` / `gallery` 还原为零漂移，场景与原因写进提交信息；不新增缺陷编号，三处口径仍为 133 条。
+- 环境备注：本轮 Git Bash 会话注入的 `NODE_OPTIONS` 会让 vitest 收集器丢失（最小用例也报 `Vitest failed to find the current suite`），同一命令在 PowerShell 下正常；属本机 shell 环境问题，门禁结论以后者为准。
