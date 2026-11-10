@@ -121,6 +121,54 @@
 | F-83 | [§20](#s20) |
 | F-84 | [§25](#s25) |
 | F-85 | [§25](#s25) |
+| F-86 | [§26](#s26) |
+| F-87 | [§26](#s26) |
+| F-88 | [§27](#s27) |
+| F-89 | [§27](#s27) |
+| F-90 | [§27](#s27) |
+| F-91 | [§27](#s27) |
+| F-92 | [§27](#s27) |
+| F-93 | [§27](#s27) |
+| F-94 | [§27](#s27) |
+| F-95 | [§27](#s27) |
+| F-96 | [§27](#s27) |
+| F-97 | [§28](#s28) |
+| F-98 | [§28](#s28) |
+| F-99 | [§29](#s29) |
+| F-100 | [§30](#s30) |
+| F-101 | [§30](#s30) |
+| F-102 | [§31](#s31) |
+| F-103 | [§31](#s31) |
+| F-104 | [§33](#s33) |
+| F-105 | [§34](#s34) |
+| F-106 | [§35](#s35) |
+| F-107 | [§36](#s36) |
+| F-108 | [§38](#s38) |
+| F-109 | [§39](#s39) |
+| F-110 | [§40](#s40) |
+| F-111 | [§41](#s41) |
+| F-112 | [§42](#s42) |
+| F-113 | [§43](#s43) |
+| F-114 | [§45](#s45) |
+| F-115 | [§46](#s46) |
+| F-116 | [§47](#s47) |
+| F-117 | [§47](#s47) |
+| F-118 | [§48](#s48) |
+| F-119 | [§49](#s49) |
+| F-120 | [§50](#s50) |
+| F-121 | [§51](#s51) |
+| F-122 | [§53](#s53) |
+| F-123 | [§56](#s56) |
+| F-124 | [§57](#s57) |
+| F-125 | [§58](#s58) |
+| F-126 | [§58](#s58) |
+| F-127 | [§58](#s58) |
+| F-128 | [§58](#s58) |
+| F-129 | [§58](#s58) |
+| F-130 | [§58](#s58) |
+| F-131 | [§58](#s58) |
+| F-132 | [§58](#s58) |
+| F-133 | [§58](#s58) |
 
 <a id="s1"></a>
 
@@ -1564,3 +1612,34 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - 缺陷口径：F-1…F-124 全部修复，三处文档同步为 124 条。
 
 (fix: 冻结列阴影改渐变带恢复可见并保持连贯（F-122）)
+
+## 58. 表格行键与选择修复集（F-125…F-133）
+
+> 触发：调试台表格场景探针 A/B/E/F/G/H/L/M/N 暴露「无 rowKey 时以渲染下标当行身份」引发的一串选中/展开错位，以及选择类 prop 声明侧与读取侧不一致。本波次在 `fix/20261110-table-selection-keys` 上用 21 条回归用例锁定 9 条缺陷。
+
+### 58.1 缺陷登记
+
+| 编号  | 文件                                                                                                                                                     | 现象                                                                                                                          | 根因                                                                                                              | 修复                                                                                                                                                        |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-125 | `packages/ui-kit/src/components/table/core.ts`、`features/tree/index.ts`、`features/methods/index.ts`、`tests/components/table.spec.ts`                    | 未配 rowKey 或字段缺失时，勾选折叠树叶子行命中同下标隐藏子行、排序后选中态跟着下标跑、所有缺字段行共用一个键、展开一个父行连带展开其他父行 | `rowKeyOf` 用 index 兜底，tree 特性另算一套 `keyOf`，高度缓存与行 VNode 缓存都按这个不可靠键索引                        | `WeakMap` 对象身份兜底；`flatRowGraph` 统一 DFS 行图（rows / indexes / parents），选择载荷、回调下标、祖先链共用；tree 与 methods 收敛到 `state.rowKeyOf`；按存活行清理高度缓存 |
+| F-126 | `packages/ui-kit/src/components/table/core.ts`、`features/selection/index.ts`、`packages/ui-kit/src/components/table/spec.mjs`                              | Table 级 `selectable` / `showCheckbox` 在列未声明时不生效，列级 `checkStrictly` 覆盖不了表级联动设置                              | 读取侧只认列上的配置，`checkStrictly` 只读 `resolved`，与声明侧口径不一致                                             | `column?.x ?? resolved.x` 作回退，`checkStrictlyOf` 收成单一出口；spec 的 selection 特性描述写清「列级优先于表级」                                              |
+| F-127 | `packages/ui-kit/src/components/table/core.ts`、`tests/components/table.spec.ts`                                                                             | 200 行虚拟表一次滚动仍重跑全表 `selectable` 回调（接手实测 26 次）                                                                | 全选态在 render 内逐行算 `selectableKeys`，且每个选择单元格渲染时再调一次回调，滚动帧把成本摊到每帧                  | 选择可用性按「全量行引用 + 列签名 + 回调身份」缓存一次全表计算，表头全选态、单元格 disabled、联动过滤全部查同一份结果；滚动帧回调次数归零                            |
+| F-128 | `packages/ui-kit/src/components/table/features/methods/index.ts`、`packages/ui-kit/src/components/table/core.ts`                                           | `toggleRowSelection` 选不中折叠态树子行；`toggleAllSelection` 把隐藏勾选框的行也算进全选                                        | 实例方法按可见行定位；全选判定与表头全选框各写一套，口径不一致                                                          | 改用 `flatRows()` 全量 DFS 定位行；`toggleAllSelection` 复用 `selectionSummaryOf` 的表头判定                                                                    |
+| F-129 | `packages/ui-kit/src/components/table/features/tree/index.ts`                                                                                                | 树形数据删掉 `children` 变平铺后，旧行仍挂着展开箭头                                                                              | flat 数据短路分支不重置 `metaMap`，残留 `hasChildren` 元数据                                                            | 短路时重建 `metaMap`                                                                                                                                            |
+| F-130 | `packages/ui-kit/src/components/table/features/sort/index.ts`                                                                                                | `sortOrders` / `defaultSort` 写 `desc` / `asc` 别名时按升序排、箭头方向与 `sort-change` 载荷不一致                                | 方向字符串没有归一化，别名落到 neither 分支且没有对应 `is-descending` 样式                                             | `normalizeOrder` 单一出口收敛到 `ascending` / `descending` / `null`，方向、箭头类、事件载荷同源                                                                  |
+| F-131 | `packages/ui-kit/src/components/table/core.ts`、`packages/ui-kit/src/components/table/spec.mjs`、`KNOWLEDGE.md`                                            | expand 列展开与收起没有任何事件抛出                                                                                                | `toggleExpand` 只维护内部 `expandedKeys`，`emits` 未声明                                                               | 抛 `expand-change` 载荷 `{row, expanded}` 并进 `emits`；spec 描述与 KNOWLEDGE 断言口径表同步                                                                    |
+| F-132 | `packages/ui-kit/src/components/table/features/tree/index.ts`                                                                                                | selection / index 列排在首位时，树形展开箭头被画进选择列而不是首个内容列                                                          | `tableCellPrepend` 只认 `columnIndex === 0`                                                                            | 跳过 selection / index / expand 三类非内容列，按列数组引用缓存首个内容列下标                                                                                      |
+| F-133 | `packages/ui-kit/src/components/table/core.ts`、`tests/components/table.spec.ts`                                                                             | 取消一个子行后父行不显半选，父行全选/半选与本次提交的选中集合不一致                                                                | 祖先回溯读已提交的 `selectedKeys` 拿上一轮旧集合；半选只落在原生 `indeterminate` property 上，选择器观测不到          | `descendantCheckState` 接收本次 `next` 集合；`tableCheckboxClass` 统一给表头/表体 checkbox 补 `is-indeterminate` 状态类                                          |
+
+### 58.2 反证与验证
+
+- 红用例反证：21 条新回归用例在改前代码上跑出 `18 failed | 48 passed (66)`（Qoder CN 会话记录，2026-11-10），证明用例非空转。
+- 接手基线：`2 failed | 65 passed (67)`；F-127 报 `selectable` 在滚动帧被调用 26 次，F-133 报 `tbody .is-indeterminate` 命中 0 个。
+- 修复后：`tests/components/table.spec.ts` 67/67 绿，`npm run typecheck` 通过。
+- 全量门禁：分支内循环 10 段（build / format / typecheck / lint / verify / governance / test / test:build / test:browser / visual）除 worktree 依赖链导致的视觉体检环境假红外全绿；权威验收由 main 上 `npm run quality` 13 段统一执行，主树在门禁环境下视觉体检 0 项阻断。
+
+### 58.3 顺带收敛（不新增缺陷编号）
+
+- `features/loading/style.css` 的 `font-size: 14px` 改走 `--ui-font-size-base` 令牌，消除硬编码字号。
+- `spec.mjs` 未新增 `events` schema：全库 spec 只有 `slots` 经 `registry.mjs` 校验，凭空加一段无人消费的元数据会形成第二份事实来源；事件口径改在组件 `description` 与 KNOWLEDGE 断言口径表里同步。
+- 缺陷索引补齐 F-86…F-133 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 133 条。
