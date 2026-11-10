@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-10T10:32:37.536Z",
-  "sourceDigest": "954be1a4092e4581",
+  "generatedAt": "2026-11-10T12:09:05.597Z",
+  "sourceDigest": "1ef9e2bade14da94",
   "stats": {
-    "nodes": 3057,
-    "edges": 4293,
+    "nodes": 3065,
+    "edges": 4305,
     "components": 87,
     "features": 173,
     "props": 1311,
     "slots": 86,
     "files": 517,
-    "docs": 368,
+    "docs": 376,
     "tests": 164
   },
   "nodes": [
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 262
+        "lines": 265
       }
     },
     {
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1718
+        "lines": 1762
       }
     },
     {
@@ -6129,6 +6129,118 @@
       "label": "61.2 反证与验证",
       "summary": "- 浏览器层：`tests/browser/table.spec.ts` 新增「表格自适应容器」两条——父宽由表格撑出时连续 12 帧采样内联宽度与 `clientWidth`，第 5 帧后必须唯一；收敛后 `scrollWidth` 不超过 `clientWidth` 且表宽不越界。把阈值回退为 `0.5` 时首条必红（宽度逐帧 +1px），修复后整文件 21/21 绿。\n- 真机验证：调试台 `#/c/table` 的「实例方法控制",
       "path": "REQUIREMENTS.md#211",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#212",
+      "type": "doc-section",
+      "label": "62. 表格滚动帧布局读取收敛（F-139）",
+      "summary": "> 触发：真实反馈「综合：冻结 + 多选 + 排序 + 拖拽 + 合计」示例快速拖滚动条会大面积白屏，但拖动本身不卡；同机「大数据」「复杂」示例不白。定位结论：虚拟窗口每帧都在、丢的不是行——综合场景每帧管线超预算（实测约 30ms/帧，5000 行虚拟场景同机 14.6ms），瓶颈是每帧重复读容器几何宽度触发的强制同步布局；滚动条拇指由合成器驱动所以照旧跟手，内容重绘跟不上就露白。",
+      "path": "REQUIREMENTS.md#212",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#213",
+      "type": "doc-section",
+      "label": "62.1 缺陷登记",
+      "summary": "| 编号  | 文件 | 现象 | 根因 | 修复 |\n| ----- | ---- | ---- | ---- | ---- |\n| F-139 | `packages/ui-kit/src/components/table/core.ts`、`tests/browser/table.spec.ts` | 综合示例（5000 行虚拟宽表 + 双向冻结 + 合计）快速拖动滚动条时白屏闪断，每帧约 30ms；每个滚动步对 `.ui-tab",
+      "path": "REQUIREMENTS.md#213",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#214",
+      "type": "doc-section",
+      "label": "62.2 反证与验证",
+      "summary": "- 红用例反证：新增「滚动 10 帧读写容器宽度与滚动偏移不超过每帧一次」，在综合示例同一条渲染路径（5000 行虚拟 + 双向冻结 + 合计，`#probe-table`）上对 wrapper 的 `clientWidth` / `scrollWidth` / `scrollLeft` getter 计数，10 帧来回横滚 + 纵滚。改前实测 `20 / 20 / 60`（每帧 `2 / 2 / 6`），修复后 `0 / 0 / 10",
+      "path": "REQUIREMENTS.md#214",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#215",
+      "type": "doc-section",
+      "label": "62.3 顺带收敛（不新增缺陷编号）",
+      "summary": "- 缺陷索引补齐 F-139 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 139 条。",
+      "path": "REQUIREMENTS.md#215",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#216",
+      "type": "doc-section",
+      "label": "63. 表格拖拽滚动窗口帧内滞后（F-140）",
+      "summary": "> 触发：F-139 合入后同一反馈仍在——「综合：冻结 + 多选 + 排序 + 拖拽 + 合计」快速拖滚动条依旧白屏闪断。F-139 只削掉每帧的布局读取（卡顿面），没处理窗口推进本身：`handleScroll` 每帧只记录第一个 scroll 事件的偏移，同帧后续事件被丢弃，渲染窗口落后拇指最新位置，快拖时视口落到已渲染区间之外，spacer 行单元格透明即露白。综合示例的拇指映射约 700px 内容 / 1px 拇指位移（500",
+      "path": "REQUIREMENTS.md#216",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#217",
+      "type": "doc-section",
+      "label": "63.1 缺陷登记",
+      "summary": "| 编号 | 文件 | 现象 | 根因 | 修复 |\n| ---- | ---- | ---- | ---- | ---- |\n| F-140 | `packages/ui-kit/src/components/table/core.ts`、`tests/browser/table.spec.ts` | 综合示例快速拖动滚动条时视口大段露白，拖动本身不卡；拇指位置正确、内容落后一整段 | `handleScroll` 只在 `scrol",
+      "path": "REQUIREMENTS.md#217",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#218",
+      "type": "doc-section",
+      "label": "63.2 反证与验证",
+      "summary": "- 红用例反证：新增「同一帧内连发多个滚动事件时按最新偏移推进窗口」——先 `scrollTop = 2000` 派发 scroll、同帧再 `scrollTop = 20000` 派发 scroll，断言下一帧渲染的最大行号。改前渲染到第 60 行（停在本帧第一个事件的位置）即 `expected 60 to be greater than 200`；修复后按最新偏移推进到 200 行以外，用例转绿。\n- 真机复现限制：本机（head",
+      "path": "REQUIREMENTS.md#218",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#219",
+      "type": "doc-section",
+      "label": "63.3 顺带收敛（不新增缺陷编号）",
+      "summary": "- 修正 F-139 的现象描述：综合示例是虚拟表格（5000 行、`scrollHeight` 231875、视口内 16 个数据行 + 1 个 spacer），此前写的「非虚拟宽表」不成立；F-139 的收益（每帧 10 次布局读取 → 0~1 次）不变。\n- 缺陷索引补齐 F-140 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 140 条。",
+      "path": "REQUIREMENTS.md#219",
       "tags": [
         "doc",
         "subsection"
@@ -18331,7 +18443,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 2030
+        "lines": 2059
       }
     },
     {
@@ -44807,7 +44919,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 589
+        "lines": 686
       }
     },
     {
@@ -54042,6 +54154,46 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#212",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#213",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#214",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#215",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#216",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#217",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#218",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#219",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#22",
       "type": "contains"
     },
@@ -56307,6 +56459,26 @@
     },
     {
       "from": "doc:REQUIREMENTS.md#211",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#213",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#214",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#217",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#218",
       "to": "component:table",
       "type": "mentions"
     },
