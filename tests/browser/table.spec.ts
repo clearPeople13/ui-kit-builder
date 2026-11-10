@@ -350,6 +350,113 @@ describe('浏览器层 · 表格铺满余量', () => {
     })
     expect(gutter).toBe('stable')
   })
+
+  it('拖拽一列只改这一列，其余列保持铺满后的宽度', async () => {
+    const { page } = session
+    const readWidths = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll<HTMLElement>('#probe-table-fit .ui-table__wrapper colgroup col')].map((col) =>
+          parseFloat(col.style.width)
+        )
+      )
+    const before = await readWidths()
+    const handle = await rect(page, '#probe-table-fit .ui-table__header th .ui-table__resizer')
+    const x = handle.left + handle.width / 2
+    const y = handle.top + handle.height / 2
+    await page.mouse.move(x, y)
+    await page.mouse.down()
+    await page.mouse.move(x + 60, y, { steps: 10 })
+    await page.mouse.up()
+    await page.waitForTimeout(300)
+
+    const after = await readWidths()
+    expect(after[0] - before[0]).toBeCloseTo(60, -1)
+    expect(after.slice(1)).toEqual(before.slice(1))
+  })
+})
+
+describe('浏览器层 · 表格列宽拖拽边界', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table-resize')
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  async function columnWidths() {
+    return session.page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>('#probe-table-resize .ui-table__wrapper colgroup col')].map((col) =>
+        parseFloat(col.style.width)
+      )
+    )
+  }
+
+  async function dragHandle(selector: string, dx: number) {
+    const handle = await rect(session.page, selector)
+    const x = handle.left + handle.width / 2
+    const y = handle.top + handle.height / 2
+    await session.page.mouse.move(x, y)
+    await session.page.mouse.down()
+    await session.page.mouse.move(x + dx, y, { steps: 10 })
+    await session.page.mouse.up()
+    await session.page.waitForTimeout(300)
+  }
+
+  it('勾选表头 checkbox 不改变多选列宽度', async () => {
+    const before = await columnWidths()
+    await session.page.click('#probe-table-resize .ui-table__header th input[type="checkbox"]')
+    await session.page.waitForTimeout(300)
+    expect(await columnWidths()).toEqual(before)
+    await session.page.click('#probe-table-resize .ui-table__header th input[type="checkbox"]')
+    await session.page.waitForTimeout(300)
+  })
+
+  it('窄于 minColumnWidth 的多选列左拖不被下限顶宽', async () => {
+    const before = await columnWidths()
+    expect(before[0]).toBe(48)
+    await dragHandle('#probe-table-resize .ui-table__header th:nth-child(1) .ui-table__resizer', -6)
+    expect((await columnWidths())[0]).toBe(48)
+  })
+
+  it('右冻结列左邻列的手柄可达，可拖窄且冻结列宽度不变', async () => {
+    const { page } = session
+    await page.evaluate(() => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-resize .ui-table__wrapper')
+      if (wrapper) {
+        wrapper.scrollLeft = wrapper.scrollWidth
+      }
+    })
+    await page.waitForTimeout(300)
+
+    const reachable = await page.evaluate(() => {
+      const th = document.querySelector<HTMLElement>('#probe-table-resize .ui-table__header th:nth-last-child(2)')
+      const handle = th?.querySelector<HTMLElement>('.ui-table__resizer')
+      if (!th || !handle) {
+        return false
+      }
+      const box = handle.getBoundingClientRect()
+      const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+      return hit?.closest('th') === th
+    })
+    expect(reachable).toBe(true)
+
+    const before = await columnWidths()
+    await dragHandle('#probe-table-resize .ui-table__header th:nth-last-child(2) .ui-table__resizer', -60)
+    const after = await columnWidths()
+    expect(before[4] - after[4]).toBeCloseTo(60, -1)
+    expect(after[5]).toBe(before[5])
+  })
+
+  it('双击手柄复位只还原这一列，不牵动已钉住的其它列', async () => {
+    await session.page.dblclick('#probe-table-resize .ui-table__header th:nth-last-child(2) .ui-table__resizer')
+    await session.page.waitForTimeout(300)
+    const widths = await columnWidths()
+    expect(widths[4]).toBe(300)
+    expect(widths[5]).toBe(110)
+  })
 })
 
 describe('浏览器层 · 表格虚拟滚动锚定', () => {

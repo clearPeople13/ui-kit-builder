@@ -169,6 +169,9 @@
 | F-131 | [§58](#s58) |
 | F-132 | [§58](#s58) |
 | F-133 | [§58](#s58) |
+| F-134 | [§59](#s59) |
+| F-135 | [§59](#s59) |
+| F-136 | [§59](#s59) |
 
 <a id="s1"></a>
 
@@ -1651,3 +1654,25 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - 差异核对：放大比对两版截图，表格表头 / 7 行数据 / 合计 `2753700` 与 `20100`、浮层文案「文档坐标 Popover」逐字一致，坐标无位移；差异集中在 ClearType 亚像素彩边（旧基线偏橙、当前偏蓝）与 1~2 级底色差（归因 ②）。`color` / `gallery` 逐像素完全一致，`tree`（0.044%）与 `a11y`（0.066%）仍在容差内。判定为文字 AA 漂移叠加上述预期样式/结构变更，不是结构回归。
 - 处理：按 KNOWLEDGE §5.1 口径只重录 `floating` / `table` 两张 win32 基线，`tree` / `a11y` / `color` / `gallery` 还原为零漂移，场景与原因写进提交信息；不新增缺陷编号，三处口径仍为 133 条。
 - 环境备注：本轮 Git Bash 会话注入的 `NODE_OPTIONS` 会让 vitest 收集器丢失（最小用例也报 `Vitest failed to find the current suite`），同一命令在 PowerShell 下正常；属本机 shell 环境问题，门禁结论以后者为准。
+
+## 59. 表格列宽拖拽边界修复集（F-134…F-136）
+
+> 触发：真实调试台反馈「拖一列其他列跟着变」「勾选一下多选列就变宽」「冻结列旁边的列永远拖不小」。本波次在 `fix/20261110-table-resize` 上用 5 条回归用例锁定 3 条缺陷。
+
+### 59.1 缺陷登记
+
+| 编号  | 文件                                                                                                                       | 现象                                                                                         | 根因                                                                                                          | 修复                                                                                                                                                       |
+| ----- | -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| F-134 | `packages/ui-kit/src/components/table/core.ts`、`tests/browser/table.spec.ts`、`tests/browser/harness/main.ts`              | 拖拽任意一列，其余所有列宽度同时变化（铺满容器时整排重新分摊）                                 | `layoutColumnWidths` 每次渲染都按声明的 `width` 重算，且没有记住上次渲染宽度；铺满余量始终分给全部列             | 有用户列宽时其余列按 `renderedColumnWidths` 钉住；余量只分给真正的弹性列，双击复位时清掉该列的冻结宽度让回声明宽                                              |
+| F-135 | `packages/ui-kit/src/components/table/features/resize/index.ts`、`packages/ui-kit/src/components/table/spec.mjs`、`tests/components/table.spec.ts` | 多选列（48）/ 序号列（56）这类本来就窄于 `minColumnWidth` 的列，一拖就被撑宽                  | 下限取 `max(minColumnWidth, start + delta)`，下限高于起始宽，向左拖也被顶到 minColumnWidth                     | 下限取 `min(minColumnWidth, round(startWidth))`；spec 的 `minColumnWidth` 描述写清窄列按起始宽兜底                                                            |
+| F-136 | `packages/ui-kit/src/components/table/features/resize/style.css`、`packages/ui-kit/src/components/table/core.ts`、`tests/browser/table.spec.ts` | 冻结列左邻列的手柄点不到、永远拖不小；右冻结列贴住视口右缘时还会压住邻列右缘 8px                | 手柄 `right: -5px` 跨进下一格，被后绘制且 z-index 更高的冻结 th 盖住；右冻结列 sticky 时左移一个滚动条槽宽叠在邻列上 | 手柄整体收进 th 内；根节点暴露 `--ui-table-scrollbar-gutter`，紧邻右冻结组的 th 加 `is-before-fixed-right` 让手柄左移槽宽                                        |
+
+### 59.2 反证与验证
+
+- 红用例反证：三处源码回退到改前，`tests/browser/table.spec.ts` 跑出 `3 failed | 16 passed (19)`（拖一列牵动他列 / 右冻结左邻列手柄不可达 / 双击复位），`tests/components/table.spec.ts` 跑出 `1 failed | 66 passed (67)`（窄列下限兜底），证明用例非空转。
+- 修复后：`tests/components/table.spec.ts` 67/67 绿，`tests/browser/table.spec.ts` 19/19 绿。
+- 真机验证：worktree 调试台（5177）综合场景——勾选表头/行 checkbox 列宽不变；拖城市列 +40 只有该列变化；多选列左拖 -6 保持 48、序号列保持 56；滚到最右拖窄备注列 320→260 且冻结操作列保持 168；冻结序号列 +40 / 右冻结列左缘 -30 均只改自身，双击各自复位。无冻结的「拖拽列宽」场景同样只改当前列。
+
+### 59.3 顺带收敛（不新增缺陷编号）
+
+- 缺陷索引补齐 F-134…F-136 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 136 条。

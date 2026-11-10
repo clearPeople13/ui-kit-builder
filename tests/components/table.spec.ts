@@ -620,7 +620,11 @@ describe('Table 列宽拖拽', () => {
     expect(resolveColumnWidth(100, 50, '80')).toBe(150)
     expect(resolveColumnWidth(100, 50, 'oops')).toBe(150)
     expect(resolveColumnWidth(100.4, 10.2, 60)).toBe(111)
-    expect(resolveColumnWidth(100, 2, 200)).toBe(200)
+    // 起始宽已低于 minColumnWidth（多选 48 / 序号 56）时，左拖不能被下限顶宽
+    expect(resolveColumnWidth(48, -6, 60)).toBe(48)
+    expect(resolveColumnWidth(56, -2, 60)).toBe(56)
+    expect(resolveColumnWidth(48, 2, 60)).toBe(50)
+    expect(resolveColumnWidth(100, 2, 200)).toBe(102)
   })
 
   it('拖拽写入列宽并在 pointerup 抛出 resize-change', async () => {

@@ -1,7 +1,8 @@
+/* 手柄整体落在 th 内：跨到下一格会被后绘制的 th（冻结列 z-index 更高）盖住，拖拽完全收不到指针 */
 .ui-table__resizer {
   position: absolute;
   top: 0;
-  right: -5px;
+  right: 0;
   z-index: 6;
   width: 10px;
   height: 100%;
@@ -11,7 +12,12 @@
 
 .ui-table__resizer.is-left {
   right: auto;
-  left: -5px;
+  left: 0;
+}
+
+/* 右冻结列贴住视口右缘时会左移一个滚动条槽宽盖住相邻列右缘，手柄跟着左移才能被点到 */
+.ui-table__header th.is-before-fixed-right .ui-table__resizer {
+  right: var(--ui-table-scrollbar-gutter, 0px);
 }
 
 .ui-table__resizer::after {
@@ -19,11 +25,15 @@
   position: absolute;
   top: 25%;
   bottom: 25%;
-  left: 50%;
+  right: 0;
   width: 2px;
   border-radius: 1px;
   background: transparent;
-  transform: translateX(-50%);
+}
+
+.ui-table__resizer.is-left::after {
+  right: auto;
+  left: 0;
 }
 
 .ui-table__resizer:hover::after,

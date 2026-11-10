@@ -15,7 +15,8 @@ export function resolveColumnWidth(startWidth: number, delta: number, minColumnW
   if (Math.abs(delta) < 2) {
     return null
   }
-  const minimum = Number(minColumnWidth) || 40
+  // 下限不能高于起始宽：多选列 48 / 序号列 56 本来就窄于 minColumnWidth，按配置值兜底会把它们一拖就撑宽
+  const minimum = Math.min(Number(minColumnWidth) || 40, Math.round(startWidth))
   return Math.max(minimum, Math.round(startWidth + delta))
 }
 

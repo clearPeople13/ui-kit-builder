@@ -307,6 +307,9 @@ export function createTable(features: UiFeature[] = []) {
       let latestColumns: TableColumn[] = []
       let latestColumnsKey = ''
       let measuredColumnsKey = ''
+      // 上一次真正渲染出来的列宽（含铺满余量分摊）：用户拖过列宽后要按它钉住，不能再按声明的 width 重算
+      let renderedColumnWidths = new Map<string, number>()
+      let overriddenColumnKeys = new Set<string>()
       let summaryCache: { key: string; rows: any[]; cells: any[][] } | null = null
       let rowVNodeCache = new Map<string, VNode>()
       let measureFrame = 0
@@ -1373,6 +1376,16 @@ export function createTable(features: UiFeature[] = []) {
 
         function columnColWidth(column: TableColumn): string | number {
           const effective = effectiveWidthOf(column)
+          if (hasUserWidth(column)) {
+            return effective as string | number
+          }
+          // 用户拖过列宽后其余列按上次渲染宽度钉住：否则会退回声明宽度重新分摊，拖一列牵动所有列
+          if (hasUserWidths) {
+            const rendered = renderedColumnWidths.get(column.key)
+            if (rendered !== undefined) {
+              return rendered
+            }
+          }
           if (effective === undefined || effective === null || effective === '') {
             return column.minWidth
           }
@@ -1389,6 +1402,16 @@ export function createTable(features: UiFeature[] = []) {
           }
           return false
         }
+
+        const hasUserWidths = columns.some((column) => hasUserWidth(column))
+        const overriddenKeys = new Set(columns.filter((column) => hasUserWidth(column)).map((column) => column.key))
+        // 双击复位会撤掉覆盖：这一列要回到声明宽度，不能沿用复位前的渲染宽度
+        overriddenColumnKeys.forEach((key) => {
+          if (!overriddenKeys.has(key)) {
+            renderedColumnWidths.delete(key)
+          }
+        })
+        overriddenColumnKeys = overriddenKeys
 
         function layoutColumnWidths(columns: TableColumn[]): Array<number | string> {
           const widths = columns.map((column) => columnColWidth(column))
@@ -1409,8 +1432,9 @@ export function createTable(features: UiFeature[] = []) {
               flexible.push(index)
             }
           })
-          // 所有列都写死宽度时，剩余空间也要分摊，否则宽容器里右侧会留白
-          const targets = (flexible.length ? flexible : columns.map((_column, index) => index)).filter(
+          // 所有列都写死宽度时，剩余空间也要分摊，否则宽容器里右侧会留白；
+          // 用户拖过列宽后只给真正的弹性列补余量，其余列保持钉住的宽度
+          const targets = (flexible.length || hasUserWidths ? flexible : columns.map((_column, index) => index)).filter(
             (index) => !hasUserWidth(columns[index])
           )
           if (!targets.length) {
@@ -1436,6 +1460,14 @@ export function createTable(features: UiFeature[] = []) {
         }
 
         const layoutWidths = layoutColumnWidths(columns)
+        const nextRenderedWidths = new Map<string, number>()
+        columns.forEach((column, index) => {
+          const width = layoutWidths[index]
+          if (typeof width === 'number') {
+            nextRenderedWidths.set(column.key, width)
+          }
+        })
+        renderedColumnWidths = nextRenderedWidths
         latestColumnsKey = columns
           .map(
             (column, index) =>
@@ -1561,6 +1593,10 @@ export function createTable(features: UiFeature[] = []) {
         if (hasFixedRight) {
           ;(rootStyle as Record<string, string>)['--ui-table-fixed-right'] = `${rightOffset}px`
         }
+        // 冻结列贴住视口右缘时会左移一个滚动条槽宽，列宽手柄按这个值挪开才不被盖住
+        if (scrollbarGutter.value) {
+          ;(rootStyle as Record<string, string>)['--ui-table-scrollbar-gutter'] = `${scrollbarGutter.value}px`
+        }
 
         function renderColgroup() {
           return h(
@@ -1601,7 +1637,11 @@ export function createTable(features: UiFeature[] = []) {
                           column.headerAlign || column.align ? `is-${column.headerAlign || column.align}` : '',
                           sortable ? 'is-sortable' : '',
                           sortState.order ? `is-${sortState.order}` : '',
-                          ...(fixedClasses[index] ?? [])
+                          ...(fixedClasses[index] ?? []),
+                          // 紧挨右冻结列的滚动列：右冻结列左移了滚动条槽宽，列宽手柄要跟着左移才不被盖住
+                          index === offsets.firstRight - 1 && fixedSideOf(column) !== 'right'
+                            ? 'is-before-fixed-right'
+                            : ''
                         ],
                         style: fixedStyles[index],
                         'aria-sort':

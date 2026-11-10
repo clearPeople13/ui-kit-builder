@@ -175,7 +175,7 @@ export default {
         },
         'table.resize': {
           title: '列宽拖拽',
-          description: '拖拽表头右侧手柄调整列宽，双击手柄恢复默认宽度。',
+          description: '拖拽表头手柄只调整当前列宽，双击手柄恢复默认宽度。',
           module: 'packages/ui-kit/src/components/table/features/resize/index.ts',
           exportName: 'tableResizeFeature',
           requires: [],
@@ -190,7 +190,7 @@ export default {
               name: 'minColumnWidth',
               type: 'number',
               default: 60,
-              description: '拖拽最小列宽'
+              description: '拖拽最小列宽；起始宽更窄的列（多选 / 序号）按起始宽兜底，不会被撑宽'
             }
           ]
         },

@@ -258,7 +258,7 @@ function sceneTableFit() {
       { style: 'width: 900px' },
       h(
         Table,
-        { data: rows, height: 200, id: 'probe-table-fit', style: 'width: 100%' },
+        { data: rows, height: 200, resizable: true, id: 'probe-table-fit', style: 'width: 100%' },
         {
           default: () => [
             h(TableColumn, { prop: 'id', label: '编号', width: 90 }),
@@ -266,6 +266,44 @@ function sceneTableFit() {
             h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
             h(TableColumn, { prop: 'amount', label: '金额', width: 120 }),
             h(TableColumn, { prop: 'note', label: '备注', width: 260, minWidth: 120 })
+          ]
+        }
+      )
+    )
+}
+
+/** 列宽拖拽边界：多选 / 序号列窄于 minColumnWidth，末尾是右冻结列 */
+function sceneTableResize() {
+  const rows = Array.from({ length: 8 }, (_, index) => ({
+    id: index + 1,
+    name: `行 ${index + 1}`,
+    owner: index % 2 ? '李四' : '张三',
+    amount: (index + 1) * 100,
+    note: `备注 ${index + 1}`
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'width: 720px' },
+      h(
+        Table,
+        {
+          data: rows,
+          height: 240,
+          resizable: true,
+          minColumnWidth: 80,
+          id: 'probe-table-resize',
+          style: 'width: 100%'
+        },
+        {
+          default: () => [
+            h(TableColumn, { type: 'selection', width: 48 }),
+            h(TableColumn, { type: 'index', label: '#', width: 56 }),
+            h(TableColumn, { prop: 'name', label: '名称', width: 240 }),
+            h(TableColumn, { prop: 'owner', label: '负责人', width: 120 }),
+            h(TableColumn, { prop: 'note', label: '备注', width: 300 }),
+            h(TableColumn, { prop: 'id', label: '右冻结', width: 110, fixed: 'right' })
           ]
         }
       )
@@ -772,6 +810,7 @@ const scenes: Record<string, () => any> = {
   floating: sceneFloating(),
   table: sceneTable(),
   'table-fit': sceneTableFit(),
+  'table-resize': sceneTableResize(),
   'table-virtual-variable': sceneTableVirtualVariable(),
   'table-span-virtual': sceneTableSpanVirtual(),
   tree: sceneTree(),
