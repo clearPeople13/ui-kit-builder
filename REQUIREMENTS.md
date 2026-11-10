@@ -1636,7 +1636,7 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 - 红用例反证：21 条新回归用例在改前代码上跑出 `18 failed | 48 passed (66)`（Qoder CN 会话记录，2026-11-10），证明用例非空转。
 - 接手基线：`2 failed | 65 passed (67)`；F-127 报 `selectable` 在滚动帧被调用 26 次，F-133 报 `tbody .is-indeterminate` 命中 0 个。
 - 修复后：`tests/components/table.spec.ts` 67/67 绿，`npm run typecheck` 通过。
-- 全量门禁：分支内循环 10 段（build / format / typecheck / lint / verify / governance / test / test:build / test:browser / visual）除 worktree 依赖链导致的视觉体检环境假红外全绿；权威验收由 main 上 `npm run quality` 13 段统一执行，主树在门禁环境下视觉体检 0 项阻断。
+- 全量门禁：分支内循环 10 段（build / format / typecheck / lint / verify / governance / test / test:build / test:browser / visual）除 worktree 依赖链导致的视觉体检环境假红外全绿；main 上 `npm run quality` 权威验收 13 段全绿（含 `test:browser` 像素 6 场景 7/7、`visual` 0 项阻断、覆盖率 89.42 / 80.81 / 93.65 / 89.4%），主树在门禁环境下视觉体检 0 项阻断。
 
 ### 58.3 顺带收敛（不新增缺陷编号）
 
