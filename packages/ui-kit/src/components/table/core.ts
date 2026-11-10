@@ -298,6 +298,10 @@ export function createTable(features: UiFeature[] = []) {
       const scrollState = ref({ left: false, right: false })
       const availableWidth = ref(0)
       const scrollbarGutter = ref(0)
+      // 滚动期间容器尺寸不变，逐帧读 clientWidth/scrollWidth 会在 DOM 刚 patch 后强制同步布局；
+      // 宽度在测量时机缓存，偏移每帧只读一次供阴影状态与表头/合计对齐共用
+      let contentWidth = 0
+      let lastScrollLeft = 0
       const bodyScrollTop = ref(0)
       const measuredRowHeight = ref(0)
       let latestColumns: TableColumn[] = []
@@ -854,11 +858,14 @@ export function createTable(features: UiFeature[] = []) {
           return
         }
         const width = element.clientWidth
+        contentWidth = element.scrollWidth
         // 容器宽度可能由表格自身撑出（flex 居中 / fit-content）：铺满分摊改表宽会改变下一次测得的
         // 可用宽度，1px 内只可能是自己上一轮布局的回显，重算会让列宽逐帧生长或来回抖动
         if (Math.abs(availableWidth.value - width) > 1) {
           availableWidth.value = width
         }
+        // 列宽或容器宽变化后立即按新内容宽重算阴影，不必等下一次滚动或渲染
+        updateScrollState(lastScrollLeft)
         const gutter = Math.max(0, element.offsetWidth - element.clientWidth)
         if (scrollbarGutter.value !== gutter) {
           scrollbarGutter.value = gutter
@@ -870,6 +877,8 @@ export function createTable(features: UiFeature[] = []) {
           return
         }
         measureAvailableWidth()
+        // 列宽/结构变了之后头尾视口的 scrollLeft 可能被浏览器重新钳制，下次同步按实际重写一遍
+        appliedSectionsLeft = null
         const columns = latestColumns
         if (!columns.some((column) => fixedSideOf(column))) {
           return
@@ -915,29 +924,32 @@ export function createTable(features: UiFeature[] = []) {
         })
       }
 
-      function updateScrollState() {
-        const element = wrapper.value
-        if (!element) {
-          return
-        }
-        const left = element.scrollLeft > 0
-        const right = element.scrollLeft + element.clientWidth < element.scrollWidth - 1
-        if (left !== scrollState.value.left || right !== scrollState.value.right) {
-          scrollState.value = { left, right }
+      function updateScrollState(left: number) {
+        const leftEdge = left > 0
+        const rightEdge = left + availableWidth.value < contentWidth - 1
+        if (leftEdge !== scrollState.value.left || rightEdge !== scrollState.value.right) {
+          scrollState.value = { left: leftEdge, right: rightEdge }
         }
       }
 
-      function syncFixedSections() {
-        const element = wrapper.value
-        if (!element) {
+      // 头/尾视口只被动跟随表体：读回 scrollLeft 会在 DOM 刚 patch 后强制同步布局，
+      // 每帧两次读回的代价顶得上一轮完整布局；只记录自己写进去的值，变化才下发
+      let appliedSectionsLeft: number | null = null
+      function syncFixedSections(left: number) {
+        if (left === appliedSectionsLeft) {
           return
         }
-        const left = element.scrollLeft
+        appliedSectionsLeft = left
         for (const view of [headerView.value, footerView.value]) {
-          if (view && Math.abs(view.scrollLeft - left) >= 0.5) {
+          if (view) {
             view.scrollLeft = left
           }
         }
+      }
+
+      function applyScrollSections(left: number) {
+        updateScrollState(left)
+        syncFixedSections(left)
       }
 
       function measureRowHeight() {
@@ -1151,33 +1163,54 @@ export function createTable(features: UiFeature[] = []) {
       // 全部合并进 rAF，每帧最多一轮：状态同步 + 固定区对齐 + 窗口推进一次完成
       let scrollFrame = 0
       let lastMaxScrollTop = 0
+      // 几何在 scroll 事件里读：此刻上一帧布局已提交，读值不会强制回流。
+      // 放到 rAF 里读会落在本帧 DOM patch 之后，每帧多付一次强制同步布局
+      let pendingScrollLeft = 0
+      let pendingScrollTop = 0
+      let pendingMaxTop = 0
+      let pendingClientHeight = 0
       function flushScrollState() {
         scrollFrame = 0
-        updateScrollState()
-        syncFixedSections()
         const element = wrapper.value
         if (!element) {
           return
         }
+        lastScrollLeft = pendingScrollLeft
+        applyScrollSections(lastScrollLeft)
         if (resolved.virtual) {
-          const maxTop = element.scrollHeight - element.clientHeight
-          if (element.scrollTop >= maxTop - 1) {
+          const maxTop = pendingMaxTop
+          const top = pendingScrollTop
+          if (top >= maxTop - 1) {
             stickToBottom.value = true
           } else if (stickToBottom.value) {
             // 用户上滚：scrollTop 退了一个视口以上且总高没变才解锁；
             // 总高变高是实测提交扩的，把滚动位置钉回新底部，锁不丢
-            if (maxTop - element.scrollTop > element.clientHeight && maxTop <= lastMaxScrollTop + 0.5) {
+            if (maxTop - top > pendingClientHeight && maxTop <= lastMaxScrollTop + 0.5) {
               stickToBottom.value = false
-            } else if (maxTop > lastMaxScrollTop + 0.5 && element.scrollTop < maxTop - 1) {
+            } else if (maxTop > lastMaxScrollTop + 0.5 && top < maxTop - 1) {
               element.scrollTop = maxTop
+              pendingScrollTop = maxTop
             }
           }
           lastMaxScrollTop = maxTop
-          bodyScrollTop.value = element.scrollTop
+          bodyScrollTop.value = pendingScrollTop
         }
       }
 
       function handleScroll() {
+        const element = wrapper.value
+        if (!element) {
+          return
+        }
+        // 偏移每个事件都取：拖动原生滚动条时一帧内会到多个 scroll 事件，
+        // 只留帧内第一个事件的偏移会让窗口落后最新位置一个事件位移，快拖时视口露白
+        pendingScrollLeft = element.scrollLeft
+        pendingScrollTop = element.scrollTop
+        if (!scrollFrame) {
+          // 尺寸随内容与容器变，帧内不会变，一帧读一次就够
+          pendingMaxTop = element.scrollHeight - element.clientHeight
+          pendingClientHeight = element.clientHeight
+        }
         if (resolved.virtual) {
           scrollActive = true
           if (scrollSettleTimer) {
@@ -1190,12 +1223,9 @@ export function createTable(features: UiFeature[] = []) {
           // 窗口推进同步做：scroll 事件到 rAF 回调之间内容会滞后拇指约一帧，
           // 快速拖动时拇指与内容暂时错位；bodyScrollTop 写入交给 Vue 调度器
           // 去重（同一渲染 effect 一帧只跑一次），不会恢复成每事件一渲染；
-          // 布局读写与贴底判定仍留在 rAF 里每帧一轮
+          // 帧内后续事件的偏移由 rAF 兜一次，布局读写与贴底判定仍每帧一轮
           if (!scrollFrame) {
-            const element = wrapper.value
-            if (element) {
-              bodyScrollTop.value = element.scrollTop
-            }
+            bodyScrollTop.value = pendingScrollTop
           }
         }
         if (scrollFrame || typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') {
@@ -1212,8 +1242,8 @@ export function createTable(features: UiFeature[] = []) {
         measureColumns()
         measuredColumnsKey = latestColumnsKey
         measureRowHeight()
-        updateScrollState()
-        syncFixedSections()
+        lastScrollLeft = wrapper.value?.scrollLeft ?? 0
+        applyScrollSections(lastScrollLeft)
         scheduleMeasure()
         scheduleRowMeasure()
         if (typeof ResizeObserver !== 'undefined' && wrapper.value) {
@@ -1229,8 +1259,7 @@ export function createTable(features: UiFeature[] = []) {
           scheduleMeasure()
         }
         scheduleRowMeasure()
-        updateScrollState()
-        syncFixedSections()
+        applyScrollSections(lastScrollLeft)
       })
 
       onBeforeUnmount(() => {

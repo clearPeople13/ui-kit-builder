@@ -553,6 +553,36 @@ describe('浏览器层 · 表格虚拟滚动锚定', () => {
     expect(Math.abs((data.after?.offset ?? 0) - (data.before?.offset ?? 0))).toBeLessThanOrEqual(1.5)
   })
 
+  it('同一帧内连发多个滚动事件时按最新偏移推进窗口', async () => {
+    // 拖动原生滚动条时一帧内会到达多个 scroll 事件：只认帧内第一个事件的偏移，
+    // 渲染窗口就会落后真实位置一个事件位移（拇指 1px 对应整屏以外的内容），表现为露白
+    const data = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table-virtual .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到虚拟滚动表格')
+      }
+      const nextFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve(null)))
+      wrapper.scrollTop = 0
+      await nextFrame()
+      await nextFrame()
+      wrapper.scrollTop = 2000
+      wrapper.dispatchEvent(new Event('scroll'))
+      wrapper.scrollTop = 20000
+      wrapper.dispatchEvent(new Event('scroll'))
+      return new Promise<{ min: number; max: number }>((resolve) => {
+        requestAnimationFrame(() => {
+          const indices = Array.from(wrapper.querySelectorAll<HTMLElement>('tr[data-row-index]')).map((tr) =>
+            Number(tr.getAttribute('data-row-index'))
+          )
+          resolve({ min: Math.min(...indices), max: Math.max(...indices) })
+        })
+      })
+    })
+
+    // 行高 40/64/120 交替（均值约 74.7px）：20000px 处行号约 268，2000px 处只有约 27
+    expect(data.max).toBeGreaterThan(200)
+  })
+
   it('滚动帧不再重复测量表头列宽', async () => {
     const count = await session.page.evaluate(async () => {
       const wrapper = document.querySelector<HTMLElement>('#probe-table-virtual .ui-table__wrapper')
@@ -584,5 +614,72 @@ describe('浏览器层 · 表格虚拟滚动锚定', () => {
       }
     })
     expect(count).toBeLessThanOrEqual(6)
+  })
+})
+
+describe('浏览器层 · 表格滚动帧布局读取', () => {
+  let session: Session
+
+  beforeAll(async () => {
+    session = await openScene('table')
+  })
+
+  afterAll(async () => {
+    await session?.close()
+  })
+
+  it('滚动 10 帧读写容器宽度与滚动偏移不超过每帧一次', async () => {
+    const reads = await session.page.evaluate(async () => {
+      const wrapper = document.querySelector<HTMLElement>('#probe-table .ui-table__wrapper')
+      if (!wrapper) {
+        throw new Error('找不到表格')
+      }
+      const names = ['clientWidth', 'scrollWidth', 'scrollLeft'] as const
+      const counts: Record<(typeof names)[number], number> = { clientWidth: 0, scrollWidth: 0, scrollLeft: 0 }
+      const patched = names.map((name) => {
+        const descriptor = Object.getOwnPropertyDescriptor(Element.prototype, name)
+        if (!descriptor?.get) {
+          throw new Error(`Element.prototype.${name} 没有 getter，无法计数`)
+        }
+        Object.defineProperty(Element.prototype, name, {
+          configurable: true,
+          get(this: Element) {
+            if (this === wrapper) {
+              counts[name] += 1
+            }
+            return descriptor.get!.call(this)
+          },
+          set: descriptor.set
+        })
+        return { name, descriptor }
+      })
+      const frame = () =>
+        new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(null))))
+      try {
+        wrapper.scrollTop = 0
+        wrapper.scrollLeft = 0
+        await frame()
+        counts.clientWidth = 0
+        counts.scrollWidth = 0
+        counts.scrollLeft = 0
+        for (let step = 0; step < 10; step += 1) {
+          wrapper.scrollTop += 120
+          // 来回横向滚动让冻结阴影类名每帧翻转，覆盖"滚动引发的渲染后再同步一遍"的路径
+          wrapper.scrollLeft = step % 2 === 0 ? 60 : 0
+          await frame()
+        }
+        await frame()
+        return { ...counts }
+      } finally {
+        for (const { name, descriptor } of patched) {
+          Object.defineProperty(Element.prototype, name, descriptor)
+        }
+      }
+    })
+
+    // 滚动期间容器尺寸不变：宽度只该在挂载/尺寸变化时测量，偏移每帧最多读一次
+    expect(reads.clientWidth).toBeLessThanOrEqual(2)
+    expect(reads.scrollWidth).toBeLessThanOrEqual(2)
+    expect(reads.scrollLeft).toBeLessThanOrEqual(12)
   })
 })
