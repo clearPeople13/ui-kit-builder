@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-09T17:46:25.847Z",
-  "sourceDigest": "4da2779a8961cc28",
+  "generatedAt": "2026-11-10T00:26:12.924Z",
+  "sourceDigest": "e6af8228b21a9b54",
   "stats": {
-    "nodes": 3037,
+    "nodes": 3038,
     "edges": 4237,
     "components": 87,
     "features": 172,
@@ -11,7 +11,7 @@
     "slots": 86,
     "files": 515,
     "docs": 352,
-    "tests": 162
+    "tests": 163
   },
   "nodes": [
     {
@@ -44754,6 +44754,19 @@
       ],
       "meta": {
         "lines": 92
+      }
+    },
+    {
+      "id": "test:tests/build/demo-table-scenes.spec.ts",
+      "type": "test",
+      "label": "tests/build/demo-table-scenes.spec.ts",
+      "summary": "",
+      "path": "tests/build/demo-table-scenes.spec.ts",
+      "tags": [
+        "build"
+      ],
+      "meta": {
+        "lines": 69
       }
     },
     {
