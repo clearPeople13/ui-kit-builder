@@ -10,7 +10,7 @@ import { FORM_EMPTY_MODEL, FORM_MODEL, FORM_PARTIAL_MODEL, FORM_RULES } from './
 import { EXTRA_SCENE_PRESETS } from './presets-extra'
 import { SAMPLE_AVATAR_A, SAMPLE_AVATAR_B } from './sample-image'
 import { SELECT_CITY_OPTIONS, SELECT_VIRTUAL_10K_OPTIONS } from './select-data'
-import { TABLE_LONG_ROWS, TABLE_SPAN_ROWS, TABLE_TREE_ROWS, lazyHeavyRows, lazyHeavyTreeRows } from './table-data'
+import { TABLE_BIG_ROWS, TABLE_BIG_SUBS_ROWS, TABLE_BIG_TREE_ROWS, lazyHeavyRows } from './table-data'
 
 export interface ScenePreset {
   id: string
@@ -27,6 +27,23 @@ export function resolvePresetValue(value: unknown): unknown {
 }
 
 const SELECT_CLEAR_OPTIONS = [{ label: '全部', value: 'all' }, ...SELECT_CITY_OPTIONS]
+
+const TABLE_SCENE_BASE = { rowKey: 'id', height: 420, virtual: true }
+
+function tableScene(
+  id: string,
+  label: string,
+  values: Record<string, unknown> = {},
+  options: { hint?: string; requires?: string | string[] } = {}
+): ScenePreset {
+  return {
+    id,
+    label,
+    hint: options.hint,
+    requires: options.requires,
+    values: { ...TABLE_SCENE_BASE, data: TABLE_BIG_ROWS, ...values }
+  }
+}
 
 const TREE_DATA = [
   {
@@ -925,212 +942,390 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
     { id: 'circle', label: '环形', values: { type: 'circle', percentage: 72 } }
   ],
   Table: [
-    { id: 'base', label: '基础表格', hint: '十行数据、七列，行高与边框走主题令牌', values: {} },
-    {
-      id: 'fit',
-      label: '自动铺满剩余宽度',
-      hint: '设了 width 的列保持原宽，未设 width 的列从 minWidth 起步均分剩余空间',
-      values: {}
-    },
-    {
-      id: 'stripe',
-      label: '斑马纹 + 边框',
-      hint: 'stripe 隔行底色，border 补齐纵向分隔线',
-      values: { stripe: true, border: true }
-    },
-    { id: 'small', label: '紧凑尺寸', values: { size: 'small', height: 240 } },
-    { id: 'large', label: '宽松尺寸', values: { size: 'large' } },
-    {
-      id: 'highlight',
-      label: '高亮当前行',
-      hint: '点击行切换高亮，current-change 带回整行数据',
-      values: { highlightCurrentRow: true }
-    },
-    { id: 'no-header', label: '隐藏表头', values: { showHeader: false } },
-    {
-      id: 'auto-layout',
-      label: '内容自适应布局',
-      hint: 'tableLayout="auto" 由浏览器按内容分配列宽，适合列少且文案长度不固定的表格',
-      values: { tableLayout: 'auto', fit: false }
-    },
-    {
-      id: 'empty-text',
-      label: '自定义空文案',
-      hint: 'emptyText 替换默认“暂无数据”；需要图文内容时改用 empty 插槽',
-      values: { data: [], emptyText: '没有匹配的组件' }
-    },
-    {
-      id: 'fixed-height',
-      label: '固定高度滚动',
-      hint: 'height 锁住可视区，表头 sticky 不随内容滚走',
-      values: { height: 220 }
-    },
-    {
-      id: 'max-height',
-      label: '最大高度 + 24 行',
-      hint: 'maxHeight 只在内容超高时出现内部滚动条',
-      values: { maxHeight: 220, data: TABLE_LONG_ROWS }
-    },
-    {
-      id: 'overflow',
-      label: '列内容省略',
-      hint: '表格级 showOverflowTooltip 让所有文本列单行省略，悬停看 title',
-      values: { showOverflowTooltip: true }
-    },
-    { id: 'empty', label: '空数据', values: { data: [] } },
-    {
-      id: 'empty-slot',
-      label: '自定义空态',
-      hint: 'empty 插槽整块接管空数据区域，可以放插画与重置按钮',
-      values: { data: [] }
-    },
-    {
-      id: 'fixed-left',
-      label: '左冻结两列',
-      hint: '单表结构：选择列与名称列 sticky 在左侧，横向滚动时其余列从下面穿过',
-      values: { height: 300, border: true }
-    },
-    {
-      id: 'fixed-right',
-      label: '右冻结操作列',
-      hint: '右侧 sticky 只需要量出右边界偏移，不复制第二张表',
-      values: { height: 300, border: true }
-    },
-    {
-      id: 'fixed-both',
-      label: '双向冻结',
-      hint: '左名称 + 右操作同时固定，中间六列滚动，接缝阴影跟随滚动方向出现',
-      values: { height: 300, border: true, stripe: true }
-    },
-    {
-      id: 'sort',
-      label: '单列排序',
-      hint: '默认按预算倒序；点击表头在升序 / 降序 / 取消之间循环',
-      requires: ['table.sort', 'table.column-sort'],
-      values: { defaultSort: { prop: 'amount', order: 'descending' } }
-    },
-    {
-      id: 'multi-sort',
-      label: '多列排序',
-      hint: '先按状态升序，再按预算降序；表头上的序号就是比较优先级',
-      requires: ['table.sort', 'table.column-sort'],
-      values: {
+    tableScene(
+      'base',
+      '大数据基础表格',
+      {},
+      {
+        hint: '全部示例统一 5000 行确定性数据；virtual 只渲染可视窗口，滚动不再逐行创建 DOM'
+      }
+    ),
+    tableScene(
+      'fit',
+      '自动铺满剩余宽度',
+      {},
+      {
+        hint: '设了 width 的列保持原宽，未设 width 的列从 minWidth 起步均分剩余空间'
+      }
+    ),
+    tableScene(
+      'fit-false',
+      '关闭自动铺满',
+      { fit: false },
+      {
+        hint: 'fit=false 时列宽按声明宽度排版，右侧留白不再被拉伸'
+      }
+    ),
+    tableScene(
+      'stripe',
+      '斑马纹 + 边框',
+      { stripe: true, border: true },
+      {
+        hint: 'stripe 隔行底色，border 补齐纵向分隔线'
+      }
+    ),
+    tableScene('small', '紧凑尺寸', { size: 'small' }, { hint: 'size=small 压缩行高与内边距，同屏容纳更多行' }),
+    tableScene('large', '宽松尺寸', { size: 'large' }, { hint: 'size=large 放大行高，适合触屏与低密度阅读' }),
+    tableScene(
+      'highlight',
+      '高亮当前行',
+      { highlightCurrentRow: true },
+      {
+        hint: '点击行切换高亮，current-change 带回整行数据'
+      }
+    ),
+    tableScene(
+      'no-header',
+      '隐藏表头',
+      { showHeader: false },
+      { hint: 'showHeader=false 只保留表体，表头 sticky 一并移除' }
+    ),
+    tableScene(
+      'fixed-height',
+      '固定高度滚动',
+      { height: 320 },
+      {
+        hint: 'height 锁住可视区，表头 sticky 不随内容滚走'
+      }
+    ),
+    tableScene(
+      'max-height',
+      '最大高度滚动',
+      { maxHeight: 320 },
+      {
+        hint: 'maxHeight 只在内容超高时出现内部滚动条，5000 行必然触发'
+      }
+    ),
+    tableScene(
+      'overflow',
+      '列内容省略',
+      { showOverflowTooltip: true },
+      {
+        hint: 'showOverflowTooltip 让所有文本列单行省略，悬停看 title'
+      }
+    ),
+    tableScene(
+      'auto-layout',
+      '内容自适应布局',
+      { tableLayout: 'auto', fit: false },
+      {
+        hint: 'tableLayout=auto 由浏览器按内容分配列宽；该模式与 virtual 互斥，5000 行会整表渲染'
+      }
+    ),
+    tableScene(
+      'empty-text',
+      '自定义空文案',
+      { emptyText: '没有匹配的模块' },
+      {
+        hint: '顶部搜索默认无命中，展示 5000 行数据筛选后的空态文案'
+      }
+    ),
+    tableScene(
+      'empty',
+      '空数据（大数据筛选）',
+      {},
+      {
+        hint: '数据源仍是 5000 行，搜索框默认命中 0 条；清空关键字立即恢复全部数据'
+      }
+    ),
+    tableScene(
+      'empty-slot',
+      '自定义空态（大数据筛选）',
+      {},
+      {
+        hint: 'empty 插槽整块接管空数据区域，可以放插画与重置按钮'
+      }
+    ),
+    tableScene(
+      'fixed-left',
+      '左冻结两列',
+      { height: 320, border: true },
+      {
+        hint: '选择列与名称列 sticky 在左侧，横向滚动时其余列从下面穿过'
+      }
+    ),
+    tableScene(
+      'fixed-right',
+      '右冻结操作列',
+      { height: 320, border: true },
+      {
+        hint: '右侧 sticky 只需要量出右边界偏移，不复制第二张表'
+      }
+    ),
+    tableScene(
+      'fixed-both',
+      '双向冻结',
+      { height: 320, border: true, stripe: true },
+      {
+        hint: '左名称 + 右操作同时固定，中间列滚动，接缝阴影跟随滚动方向出现'
+      }
+    ),
+    tableScene(
+      'sort',
+      '单列排序',
+      { defaultSort: { prop: 'amount', order: 'descending' } },
+      {
+        requires: ['table.sort', 'table.column-sort'],
+        hint: '默认按预算倒序；点击表头在升序 / 降序 / 取消之间循环，5000 行排序即时完成'
+      }
+    ),
+    tableScene(
+      'multi-sort',
+      '多列排序',
+      {
         multiSort: true,
         defaultSort: [
           { prop: 'status', order: 'ascending' },
           { prop: 'amount', order: 'descending' }
         ]
+      },
+      {
+        requires: ['table.sort', 'table.column-sort'],
+        hint: '先按状态升序，再按预算降序；表头上的序号就是比较优先级'
       }
-    },
-    {
-      id: 'selection',
-      label: '多选列',
-      hint: '表头全选与行选择联动，selection-change 带回选中行数组',
-      requires: 'table.selection',
-      values: {}
-    },
-    {
-      id: 'selectable',
-      label: '部分行禁选',
-      hint: 'selectable 返回 false 的行复选框禁用，全选只统计可选行',
-      requires: 'table.selection',
-      values: { highlightCurrentRow: true }
-    },
-    {
-      id: 'methods',
-      label: '实例方法控制选择',
-      hint: '通过 ref 调用 toggleAllSelection / clearSelection，选择结果由 selection-change 实时回传',
-      requires: 'table.methods',
-      values: {}
-    },
-    {
-      id: 'expand',
-      label: '展开行',
-      hint: 'expand 列的默认插槽就是展开区内容，展开行跨满整行',
-      values: {}
-    },
-    {
-      id: 'span',
-      label: '合并单元格',
-      hint: 'spanMethod 把同区域首行合并 3 行，被合并的格子不再渲染',
-      requires: 'table.span',
-      values: { data: TABLE_SPAN_ROWS, border: true, stripe: true }
-    },
-    {
-      id: 'tree',
-      label: '树形数据',
-      hint: 'children 嵌套展开为树形行，首列渲染缩进与折叠箭头',
-      requires: 'table.tree',
-      values: { data: TABLE_TREE_ROWS }
-    },
-    {
-      id: 'tree-expanded',
-      label: '树形默认全展开',
-      hint: 'defaultExpandAll=true，挂载即展开所有父节点；仍可逐级收起',
-      requires: 'table.tree',
-      values: { data: TABLE_TREE_ROWS, defaultExpandAll: true }
-    },
-    {
-      id: 'tree-select',
-      label: '树形多选（联动）',
-      hint: '默认父子联动：勾选父级带上全部子孙，子级部分选中时父级显示半选',
-      requires: ['table.tree', 'table.selection'],
-      values: { data: TABLE_TREE_ROWS, rowKey: 'id', defaultExpandAll: true }
-    },
-    {
-      id: 'tree-select-strict',
-      label: '树形多选（严格）',
-      hint: 'checkStrictly：父子互不联动，父级不会带选子孙，也没有半选',
-      requires: ['table.tree', 'table.selection'],
-      values: { data: TABLE_TREE_ROWS, rowKey: 'id', defaultExpandAll: true, checkStrictly: true }
-    },
-    {
-      id: 'checkbox-hidden',
-      label: '勾选框显隐',
-      hint: 'showCheckbox 传函数按行隐藏勾选框，被隐藏的行不入选也不参与全选',
-      requires: 'table.selection',
-      values: {}
-    },
-    {
-      id: 'resize',
-      label: '拖拽列宽',
-      hint: '拖表头右缘改列宽，双击手柄恢复默认；resize-change 输出 key 与宽度',
-      requires: 'table.resize',
-      values: { resizable: true, border: true, height: 240 }
-    },
-    {
-      id: 'summary',
-      label: '合计行',
-      hint: '默认对所有数值列求和，首列显示 sumText，可换 summaryMethod',
-      requires: 'table.summary',
-      values: { showSummary: true, sumText: '合计', height: 240 }
-    },
-    {
-      id: 'loading',
-      label: '加载遮罩',
-      hint: 'loading 覆盖整表并锁住指针，loadingText 可自定义文案',
-      requires: 'table.loading',
-      values: { data: TABLE_LONG_ROWS, loading: true, loadingText: '正在加载组件数据…', height: 260 }
-    },
-    {
-      id: 'custom',
-      label: '自定义单元格与表头',
-      hint: '默认插槽接管单元格（Tag / Progress / 操作按钮），header 插槽在标题后追加标记',
-      values: {}
-    },
-    {
-      id: 'row-style',
-      label: '行类名与行样式',
-      hint: 'rowClassName 给“规划”行加灰底，rowStyle 让需求数 ≥ 100 的行整体加粗',
-      values: {}
-    },
-    {
-      id: 'comprehensive',
-      label: '综合：冻结 + 多选 + 排序 + 拖拽 + 合计',
-      hint: '所有能力同时开：横向滚动、双向冻结、多列排序、列宽拖拽与底部合计',
-      requires: ['table.sort', 'table.column-sort', 'table.selection', 'table.resize', 'table.summary'],
-      values: {
-        height: 320,
+    ),
+    tableScene(
+      'sort-method',
+      '自定义排序比较',
+      { defaultSort: { prop: 'name', order: 'ascending' } },
+      {
+        requires: ['table.sort', 'table.column-sort'],
+        hint: 'sortMethod 按模块名长度比较，不是默认的字符串字典序'
+      }
+    ),
+    tableScene(
+      'sort-orders',
+      '升降序两态',
+      { defaultSort: { prop: 'name', order: 'ascending' } },
+      {
+        requires: ['table.sort', 'table.column-sort'],
+        hint: 'sortOrders 只保留升序 / 降序，第三次点击不会回到取消状态'
+      }
+    ),
+    tableScene(
+      'selection',
+      '多选列',
+      {},
+      {
+        requires: 'table.selection',
+        hint: '表头全选与行选择联动，selection-change 带回选中行数组'
+      }
+    ),
+    tableScene(
+      'selectable',
+      '部分行禁选',
+      { highlightCurrentRow: true },
+      {
+        requires: 'table.selection',
+        hint: 'selectable 返回 false 的行复选框禁用，全选只统计可选行'
+      }
+    ),
+    tableScene(
+      'methods',
+      '实例方法控制选择',
+      {},
+      {
+        requires: 'table.methods',
+        hint: '通过 ref 调用 toggleAllSelection / clearSelection，选择结果由 selection-change 实时回传'
+      }
+    ),
+    tableScene(
+      'expand',
+      '展开行',
+      {},
+      {
+        hint: 'expand 列的默认插槽就是展开区内容，展开行跨满整行'
+      }
+    ),
+    tableScene(
+      'span',
+      '合并单元格（每 5 行）',
+      { border: true, stripe: true },
+      {
+        requires: 'table.span',
+        hint: '5000 行按批次每 5 行合并首列，虚拟滚动只渲染窗口内的合并块'
+      }
+    ),
+    tableScene(
+      'tree',
+      '树形数据（默认折叠）',
+      { data: TABLE_BIG_TREE_ROWS, defaultExpandAll: false },
+      {
+        requires: 'table.tree',
+        hint: '20 个根节点默认折叠，展开后是 3 层 5220 行'
+      }
+    ),
+    tableScene(
+      'tree-expanded',
+      '树形默认全展开',
+      { data: TABLE_BIG_TREE_ROWS },
+      {
+        requires: 'table.tree',
+        hint: 'defaultExpandAll=true，挂载即展开 5220 行；virtual 仍只渲染可视窗口'
+      }
+    ),
+    tableScene(
+      'tree-select',
+      '树形多选（联动）',
+      { data: TABLE_BIG_TREE_ROWS },
+      {
+        requires: ['table.tree', 'table.selection'],
+        hint: '默认父子联动：勾选父级带上全部子孙，子级部分选中时父级显示半选'
+      }
+    ),
+    tableScene(
+      'tree-select-strict',
+      '树形多选（严格）',
+      { data: TABLE_BIG_TREE_ROWS, checkStrictly: true },
+      {
+        requires: ['table.tree', 'table.selection'],
+        hint: 'checkStrictly：父子互不联动，父级不会带选子孙，也没有半选'
+      }
+    ),
+    tableScene(
+      'tree-props',
+      '自定义 children 键',
+      { data: TABLE_BIG_SUBS_ROWS, treeProps: { children: 'subs' } },
+      {
+        requires: 'table.tree',
+        hint: 'treeProps.children 指向 subs，同一份 5220 行树数据换字段名照样展开'
+      }
+    ),
+    tableScene(
+      'tree-indent',
+      '自定义缩进',
+      { data: TABLE_BIG_TREE_ROWS, treeIndent: 32 },
+      {
+        requires: 'table.tree',
+        hint: 'treeIndent 放大到 32px，层级关系更明显'
+      }
+    ),
+    tableScene(
+      'checkbox-hidden',
+      '勾选框显隐',
+      {},
+      {
+        requires: 'table.selection',
+        hint: 'showCheckbox 传函数按行隐藏勾选框，被隐藏的行不入选也不参与全选'
+      }
+    ),
+    tableScene(
+      'resize',
+      '拖拽列宽',
+      { resizable: true, border: true },
+      {
+        requires: 'table.resize',
+        hint: '拖表头右缘改列宽，双击手柄恢复默认；resize-change 输出 key 与宽度'
+      }
+    ),
+    tableScene(
+      'resize-min',
+      '拖拽最小列宽',
+      { resizable: true, minColumnWidth: 140, border: true },
+      {
+        requires: 'table.resize',
+        hint: 'minColumnWidth 限制拖拽下限，列不会再被拖到看不清内容'
+      }
+    ),
+    tableScene(
+      'summary',
+      '合计行',
+      { showSummary: true, sumText: '合计' },
+      {
+        requires: 'table.summary',
+        hint: '默认对所有数值列求和，首列显示 sumText，可换 summaryMethod'
+      }
+    ),
+    tableScene(
+      'summary-method',
+      '自定义合计',
+      { showSummary: true, sumText: '统计' },
+      {
+        requires: 'table.summary',
+        hint: 'summaryMethod 接管整行：需求数求和，预算输出 5000 行平均值'
+      }
+    ),
+    tableScene(
+      'loading',
+      '加载遮罩',
+      { loading: true, loadingText: '正在加载 5000 行数据…' },
+      {
+        requires: 'table.loading',
+        hint: 'loading 覆盖整表并锁住指针，loadingText 可自定义文案'
+      }
+    ),
+    tableScene(
+      'custom',
+      '自定义单元格与表头',
+      {},
+      {
+        hint: '默认插槽接管单元格（Tag / Progress / 操作按钮），header 插槽在标题后追加标记'
+      }
+    ),
+    tableScene(
+      'row-style',
+      '行类名与行样式',
+      {},
+      {
+        hint: 'rowClassName 给“规划”行加灰底，rowStyle 让需求数 ≥ 100 的行整体加粗'
+      }
+    ),
+    tableScene(
+      'index-method',
+      '序号函数',
+      {},
+      {
+        hint: 'TableColumn.index 传函数，序号按 (index + 1) * 10 生成'
+      }
+    ),
+    tableScene(
+      'formatter',
+      '列格式化',
+      {},
+      {
+        hint: 'TableColumn.formatter 把预算格式化成 ¥ 千分位，优先级低于默认插槽'
+      }
+    ),
+    tableScene(
+      'column-class',
+      '列类名与表头类名',
+      {},
+      {
+        hint: 'className / labelClassName 分别落到 td 与 th，用来做单列强调'
+      }
+    ),
+    tableScene(
+      'align',
+      '列对齐',
+      {},
+      {
+        hint: 'align 控制单元格，headerAlign 单独控制表头，两处可以不一致'
+      }
+    ),
+    tableScene(
+      'events',
+      '事件日志',
+      {},
+      {
+        requires: ['table.sort', 'table.column-sort', 'table.selection', 'table.resize'],
+        hint: '点击行、排序表头、拖列宽、勾选行，日志实时记录 row-click / sort-change / resize-change / selection-change'
+      }
+    ),
+    tableScene(
+      'comprehensive',
+      '综合：冻结 + 多选 + 排序 + 拖拽 + 合计',
+      {
+        height: 440,
         stripe: true,
         border: true,
         highlightCurrentRow: true,
@@ -1139,82 +1334,82 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
         sumText: '合计',
         multiSort: true,
         defaultSort: [{ prop: 'amount', order: 'descending' }]
+      },
+      {
+        requires: ['table.sort', 'table.column-sort', 'table.selection', 'table.resize', 'table.summary'],
+        hint: '所有能力同时开：横向滚动、双向冻结、多列排序、列宽拖拽与底部合计'
       }
-    },
-    {
-      id: 'editable',
-      label: '复杂：表内编辑 + 双向冻结',
-      hint: '40 行数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，左右冻结、可拖列宽、底部合计',
-      requires: ['table.selection', 'table.resize', 'table.summary'],
-      values: {
+    ),
+    tableScene(
+      'editable',
+      '复杂：5000 行表内编辑 + 双向冻结',
+      {
         height: 440,
         stripe: true,
         border: true,
         resizable: true,
         showSummary: true,
         sumText: '合计',
-        rowKey: 'id'
+        heavyRows: 5000
+      },
+      {
+        requires: ['table.selection', 'table.resize', 'table.summary'],
+        hint: '每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，左右冻结、可拖列宽、底部合计'
       }
-    },
-    {
-      id: 'heavy-data',
-      label: '大数据：5 千行',
-      hint: '确定性生成的 5000 行压测数据，行字段全部由行号推导；开启 virtual 只渲染可视窗口行',
-      requires: 'table.resize',
-      values: { data: lazyHeavyRows(5000), height: 420, stripe: true, resizable: true, virtual: true }
-    },
-    {
-      id: 'heavy-data-20k',
-      label: '大数据：2 万行',
-      hint: '20000 行同口径压测数据，virtual 窗口化渲染，滚动只重绘可视区',
-      requires: 'table.resize',
-      values: { data: lazyHeavyRows(20000), height: 420, stripe: true, resizable: true, virtual: true }
-    },
-    {
-      id: 'heavy-data-100k',
-      label: '大数据：10 万行',
-      hint: '100000 行同口径压测数据，virtual 窗口化渲染的极限档位，进场景与滚动都保持流畅',
-      requires: 'table.resize',
-      values: { data: lazyHeavyRows(100000), height: 420, stripe: true, resizable: true, virtual: true }
-    },
-    {
-      id: 'editable-heavy',
-      label: '复杂：大表编辑 + 冻结 + 合计 + 合并',
-      hint: '2000 行确定性数据，每行 Input / Select / InputNumber / DatePicker / Slider 与操作按钮，模块列每 50 行合并，双向冻结 + 列宽拖拽 + 底部合计，virtual 窗口化渲染、合并块整体入窗',
-      requires: ['table.selection', 'table.resize', 'table.summary', 'table.span'],
-      values: {
+    ),
+    tableScene(
+      'editable-heavy',
+      '复杂：大表编辑 + 冻结 + 合计 + 合并',
+      {
         height: 440,
         stripe: true,
         border: true,
         resizable: true,
         showSummary: true,
         sumText: '合计',
-        rowKey: 'id',
-        virtual: true,
-        heavyRows: 2000
+        heavyRows: 5000
+      },
+      {
+        requires: ['table.selection', 'table.resize', 'table.summary', 'table.span'],
+        hint: '5000 行，每行 8 个编辑组件，模块列每 10 行合并，双向冻结 + 列宽拖拽 + 底部合计'
       }
-    },
-    {
-      id: 'heavy-variable',
-      label: '大数据：5 万行 · 行高不一',
-      hint: '50000 行压测数据，说明列 1-4 行不等导致行高不一致，virtual 按实测行高定位，滚动不跳行',
-      requires: 'table.resize',
-      values: { data: lazyHeavyRows(50000), height: 420, stripe: true, resizable: true, virtual: true }
-    },
-    {
-      id: 'heavy-tree',
-      label: '树形：大数据 · 行高 100~1000 不等',
-      hint: '三层树全展开 5220 行，说明列 4~48 行不等（行高约 100~1000px），virtual 按实测行高定位，展开收起照常工作',
-      requires: 'table.tree',
-      values: {
-        data: lazyHeavyTreeRows(),
-        rowKey: 'id',
-        defaultExpandAll: true,
-        height: 420,
-        stripe: true,
-        virtual: true
+    ),
+    tableScene(
+      'heavy-data',
+      '大数据：5000 行',
+      { data: lazyHeavyRows(5000), stripe: true, resizable: true },
+      {
+        requires: 'table.resize',
+        hint: '5000 行确定性压测数据，virtual 窗口化渲染'
       }
-    }
+    ),
+    tableScene(
+      'heavy-data-20k',
+      '大数据：2 万行',
+      { data: lazyHeavyRows(20000), stripe: true, resizable: true },
+      { requires: 'table.resize', hint: '20000 行同口径压测数据，滚动只重绘可视区' }
+    ),
+    tableScene(
+      'heavy-data-100k',
+      '大数据：10 万行',
+      { data: lazyHeavyRows(100000), stripe: true, resizable: true },
+      { requires: 'table.resize', hint: '100000 行同口径压测数据，窗口化渲染的极限档位' }
+    ),
+    tableScene(
+      'heavy-variable',
+      '大数据：5 万行 · 行高不一',
+      { data: lazyHeavyRows(50000), stripe: true, resizable: true },
+      { requires: 'table.resize', hint: '50000 行，说明列 1-4 行不等导致行高不一，virtual 按实测行高定位' }
+    ),
+    tableScene(
+      'heavy-tree',
+      '树形：5220 行 · 行高 100~1000 不等',
+      { data: TABLE_BIG_TREE_ROWS, stripe: true },
+      {
+        requires: 'table.tree',
+        hint: '三层树全展开 5220 行，说明列 4~48 行不等，virtual 按实测行高定位'
+      }
+    )
   ],
   Tabs: [
     { id: 'base', label: '基础', values: {} },

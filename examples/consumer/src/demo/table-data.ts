@@ -178,7 +178,7 @@ export function makeHeavyRows(count: number): TableHeavyRow[] {
       date: `2026-${String((index % 4) + 9).padStart(2, '0')}-${String((index % 27) + 1).padStart(2, '0')}`,
       remark: `第 ${Math.floor(index / 50) + 1} 批第 ${(index % 50) + 1} 项，确定性生成的压测数据。`,
       desc: descLines.slice(0, (index % 4) + 1).join('\n'),
-      group: `第 ${Math.floor(index / 50) + 1} 批`
+      group: `第 ${Math.floor(index / 5) + 1} 批`
     }
   })
 }
@@ -234,7 +234,28 @@ export function makeHeavyTreeRows(): TableTreeRow[] {
 }
 
 // 复杂大表（编辑 + 冻结 + 合计 + 合并）每个合并块的行数
-export const HEAVY_GROUP_SIZE = 50
+export const HEAVY_GROUP_SIZE = 10
+
+// 调试台所有表格示例的公共数据底座：5 千行起步，惰性生成后按引用共享
+export const TABLE_BIG_ROW_COUNT = 5000
+export const TABLE_BIG_ROWS = lazyHeavyRows(TABLE_BIG_ROW_COUNT)
+export const TABLE_BIG_TREE_ROWS = lazyHeavyTreeRows()
+
+// treeProps 自定义 children 键的示例数据：结构同压测树，只是把 children 换成 subs
+export interface TableSubsRow extends Omit<TableTreeRow, 'children'> {
+  subs?: TableSubsRow[]
+}
+
+export function makeSubsTreeRows(): TableSubsRow[] {
+  const convert = (rows: TableTreeRow[]): TableSubsRow[] =>
+    rows.map(({ children, ...rest }) => ({ ...rest, subs: children?.length ? convert(children) : undefined }))
+  return convert(makeHeavyTreeRows())
+}
+
+export const TABLE_BIG_SUBS_ROWS = (() => {
+  let cached: TableSubsRow[] | undefined
+  return () => (cached ??= makeSubsTreeRows())
+})()
 
 export interface TableTreeRow {
   id: string

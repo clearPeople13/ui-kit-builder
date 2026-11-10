@@ -1,7 +1,7 @@
 import type { PlaygroundControl, PlaygroundEntry } from './playground'
 import { resolvePresetValue } from './presets'
 import type { SceneView } from './scenes'
-import { TABLE_DEMO_ROWS, TABLE_EDIT_ROWS, makeHeavyRows, makeHeavyTreeRows } from './table-data'
+import { makeHeavyRows, makeHeavyTreeRows, makeSubsTreeRows } from './table-data'
 import { tableSceneBlueprint, type TableColumnSpec } from './table-demo'
 
 export function kebabCase(name: string): string {
@@ -131,6 +131,24 @@ function columnSourceAttrs(spec: TableColumnSpec): string[] {
   }
   if (spec.headerAlign) {
     attrs.push(`header-align="${spec.headerAlign}"`)
+  }
+  if (spec.className) {
+    attrs.push(`class-name="${spec.className}"`)
+  }
+  if (spec.labelClassName) {
+    attrs.push(`label-class-name="${spec.labelClassName}"`)
+  }
+  if (spec.sortOrders) {
+    attrs.push(`:sort-orders="['${spec.sortOrders.join("', '")}']"`)
+  }
+  if (spec.sortMethod === 'name-length') {
+    attrs.push(':sort-method="nameLengthCompare"')
+  }
+  if (spec.indexMethod === 'sequence') {
+    attrs.push(':index="sequenceIndex"')
+  }
+  if (spec.formatter === 'amount') {
+    attrs.push(':formatter="formatAmountCell"')
   }
   if (spec.sortable) {
     attrs.push('sortable')
@@ -287,27 +305,49 @@ function tableOpenTag(attrs: string[]): string[] {
 function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): string {
   const sceneId = scene?.id ?? 'base'
   const values: Record<string, unknown> = { ...(scene?.values ?? {}) }
-  const heavyRows = sceneId === 'editable-heavy' ? (typeof values.heavyRows === 'number' ? values.heavyRows : 2000) : 0
+  const editableScene = sceneId === 'editable' || sceneId === 'editable-heavy'
+  const emptyScene = sceneId === 'empty' || sceneId === 'empty-text' || sceneId === 'empty-slot'
+  const eventsScene = sceneId === 'events'
+  const treeScene = [
+    'tree',
+    'tree-expanded',
+    'tree-select',
+    'tree-select-strict',
+    'tree-indent',
+    'heavy-tree'
+  ].includes(sceneId)
+  const subsScene = sceneId === 'tree-props'
+  const heavyRows = typeof values.heavyRows === 'number' ? values.heavyRows : 5000
   // data 可能是惰性工厂（heavy 场景）：解析出真实数组，工厂带缓存，与渲染共享同一份
   const resolvedData = resolvePresetValue(values.data)
-  const rows =
-    (Array.isArray(resolvedData) ? resolvedData : undefined) ??
-    (sceneId === 'editable' ? TABLE_EDIT_ROWS : sceneId === 'editable-heavy' ? [] : TABLE_DEMO_ROWS)
+  const rows = Array.isArray(resolvedData) ? resolvedData : []
   delete values.data
   delete values.heavyRows
   const rowKey = typeof values.rowKey === 'string' ? values.rowKey : 'id'
   delete values.rowKey
 
   const parts = buildSourceParts(entry, values, new Set())
-  const tableAttrs = [`:data="rows"`, `row-key="${rowKey}"`, ...parts.attrs]
+  const tableAttrs = [emptyScene ? ':data="filteredRows"' : ':data="rows"', `row-key="${rowKey}"`, ...parts.attrs]
   if (sceneId === 'span' || sceneId === 'editable-heavy') {
     tableAttrs.push(':span-method="spanMethod"')
   }
   if (sceneId === 'row-style') {
     tableAttrs.push(':row-class-name="rowClassName"', ':row-style="rowStyle"')
   }
-  if (sceneId === 'methods') {
-    tableAttrs.push('ref="tableRef"', '@selection-change="onSelectionChange"')
+  if (sceneId === 'summary-method') {
+    tableAttrs.push(':summary-method="summaryMethod"')
+  }
+  if (eventsScene) {
+    tableAttrs.push(
+      '@row-click="logEvent(\'row-click\', $event)"',
+      '@current-change="logEvent(\'current-change\', $event)"',
+      '@sort-change="logEvent(\'sort-change\', $event)"',
+      '@resize-change="logEvent(\'resize-change\', $event)"',
+      '@selection-change="logEvent(\'selection-change\', $event)"'
+    )
+  }
+  if (sceneId === 'methods' || eventsScene) {
+    tableAttrs.push('ref="tableRef"')
   }
 
   const blueprint = tableSceneBlueprint(sceneId)
@@ -342,19 +382,23 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     imports.add('Empty')
     imports.add('Button')
   }
-  if (sceneId === 'methods') {
+  if (emptyScene) {
+    imports.add('Input')
+  }
+  if (sceneId === 'methods' || eventsScene) {
     imports.add('Button')
   }
 
   // 大数据示例只输出生成器调用，不内联数据本身：树形场景根节点只有 20 个，
   // 按顶层长度判断兜不住，展开后是 5220 行、序列化近 4MB，代码高亮会同步阻塞数秒
-  const heavyRowSource =
-    sceneId === 'heavy-tree'
+  const heavyRowSource = subsScene
+    ? `const rows = ref((${makeSubsTreeRows.toString()})())`
+    : treeScene
       ? `const rows = ref((${makeHeavyTreeRows.toString()})())`
-      : Array.isArray(rows) && rows.length > 500
-        ? `const rows = ref((${makeHeavyRows.toString()})(${rows.length}))`
-        : sceneId === 'editable-heavy'
-          ? `const rows = ref((${makeHeavyRows.toString()})(${heavyRows}).map((row) => ({ ...row, dirty: false })))`
+      : editableScene
+        ? `const rows = ref((${makeHeavyRows.toString()})(${heavyRows}).map((row) => ({ ...row, dirty: false })))`
+        : rows.length > 500
+          ? `const rows = ref((${makeHeavyRows.toString()})(${rows.length}))`
           : `const rows = ref(${toJsLiteral(rows)})`
   const hoisted = [heavyRowSource, ...parts.hoisted]
   if (blueprint.some((spec) => spec.cell === 'tag')) {
@@ -376,15 +420,16 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     hoisted.push('function checkboxRow(row) {', "  return row.status !== '规划'", '}')
   }
   if (sceneId === 'span') {
-    hoisted.push('const SPAN_GROUPS = { 华东: 3, 华南: 2, 华北: 3 }')
     hoisted.push(
+      'const GROUP_SIZE = 5',
       'function spanMethod({ rowIndex, columnIndex }) {',
       '  if (columnIndex !== 0) {',
       '    return',
       '  }',
-      '  const row = rows.value[rowIndex]',
-      '  const firstIndex = rows.value.findIndex((item) => item.group === row.group)',
-      '  return firstIndex === rowIndex ? [SPAN_GROUPS[row.group] ?? 1, 1] : [0, 0]',
+      '  if (rowIndex % GROUP_SIZE !== 0) {',
+      '    return [0, 0]',
+      '  }',
+      '  return [Math.min(GROUP_SIZE, rows.value.length - rowIndex), 1]',
       '}'
     )
   }
@@ -400,7 +445,7 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
   }
   if (sceneId === 'editable-heavy') {
     hoisted.push(
-      'const HEAVY_GROUP_SIZE = 50',
+      'const HEAVY_GROUP_SIZE = 10',
       'function spanMethod({ rowIndex, columnIndex }) {',
       '  if (columnIndex !== 2) {',
       '    return',
@@ -445,6 +490,74 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     )
   }
 
+  if (sceneId === 'summary-method') {
+    hoisted.push(
+      'function summaryMethod({ columns, data }) {',
+      '  return columns.map((column, index) => {',
+      '    if (index === 0) {',
+      '      return `统计（${data.length} 行）`',
+      '    }',
+      "    if (column.prop === 'orders') {",
+      '      return data.reduce((sum, row) => sum + (Number(row.orders) || 0), 0)',
+      '    }',
+      "    if (column.prop === 'amount') {",
+      '      const total = data.reduce((sum, row) => sum + (Number(row.amount) || 0), 0)',
+      '      return data.length ? Math.round(total / data.length) : 0',
+      '    }',
+      "    return ''",
+      '  })',
+      '}'
+    )
+  }
+  if (blueprint.some((spec) => spec.sortMethod)) {
+    hoisted.push(
+      'function nameLengthCompare(left, right) {',
+      "  return String(left.name ?? '').length - String(right.name ?? '').length || Number(left.id) - Number(right.id)",
+      '}'
+    )
+  }
+  if (blueprint.some((spec) => spec.indexMethod)) {
+    hoisted.push('function sequenceIndex(index) {', '  return (index + 1) * 10', '}')
+  }
+  if (blueprint.some((spec) => spec.formatter)) {
+    hoisted.push(
+      'function formatAmountCell(row, column, value) {',
+      '  const amount = Number(value)',
+      "  return Number.isFinite(amount) ? `¥${amount.toLocaleString('zh-CN')}` : ''",
+      '}'
+    )
+  }
+  if (emptyScene) {
+    hoisted.push(
+      "const emptyQuery = ref('不存在的关键字')",
+      'const filteredRows = computed(() => {',
+      '  const query = emptyQuery.value.trim()',
+      '  return query ? rows.value.filter((row) => String(row.name).includes(query)) : rows.value',
+      '})'
+    )
+  }
+  if (eventsScene) {
+    hoisted.push(
+      'const tableRef = ref()',
+      'const eventLog = ref([])',
+      'function describeEvent(name, payload) {',
+      "  if (name === 'selection-change') {",
+      '    return `${payload.length} 行`',
+      '  }',
+      "  if (name === 'sort-change') {",
+      "    return `${payload.prop} ${payload.order || '取消'}`",
+      '  }',
+      "  if (name === 'resize-change') {",
+      '    return `${payload.key} → ${Math.round(payload.width)}px`',
+      '  }',
+      "  return `#${payload.id} ${payload.name ?? ''}`",
+      '}',
+      'function logEvent(name, payload) {',
+      '  eventLog.value = [{ name, detail: describeEvent(name, payload) }, ...eventLog.value].slice(0, 6)',
+      '}'
+    )
+  }
+
   const columnLines: string[] = []
   for (const spec of blueprint) {
     columnLines.push(...indentLines(columnSourceLines(spec).join('\n'), 4))
@@ -453,16 +566,13 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
     columnLines.push(...indentLines(emptyStateSource(), 4))
   }
 
-  const script = [
-    "import { ref } from 'vue'",
-    `import { ${[...imports].join(', ')} } from '@demo/ui-kit'`,
-    '',
-    ...hoisted
-  ]
+  const vueImports = emptyScene ? "import { computed, ref } from 'vue'" : "import { ref } from 'vue'"
+  const script = [vueImports, `import { ${[...imports].join(', ')} } from '@demo/ui-kit'`, '', ...hoisted]
+
+  const innerOpen = tableOpenTag(tableAttrs).map((line) => `  ${line}`)
+  const innerColumns = columnLines.map((line) => `  ${line}`)
 
   if (sceneId === 'methods') {
-    const innerOpen = tableOpenTag(tableAttrs).map((line) => `  ${line}`)
-    const innerColumns = columnLines.map((line) => `  ${line}`)
     return [
       '<script setup>',
       ...script,
@@ -477,6 +587,54 @@ function tableSource(entry: PlaygroundEntry, scene: SceneView | undefined): stri
       '    </div>',
       ...innerOpen,
       ...innerColumns,
+      '    </Table>',
+      '  </div>',
+      '</template>',
+      ''
+    ].join('\n')
+  }
+
+  if (emptyScene) {
+    return [
+      '<script setup>',
+      ...script,
+      '</' + 'script>',
+      '',
+      '<template>',
+      '  <div class="table-scene">',
+      '    <div class="table-scene__bar">',
+      '      <Input v-model="emptyQuery" clearable placeholder="按模块名筛选 5000 行数据，清空显示全部" style="width: 320px" />',
+      '      <span class="table-methods__count">命中 {{ filteredRows.length }} / {{ rows.length }} 行</span>',
+      '    </div>',
+      ...innerOpen.map((line) => `  ${line}`),
+      ...innerColumns.map((line) => `  ${line}`),
+      '    </Table>',
+      '  </div>',
+      '</template>',
+      ''
+    ].join('\n')
+  }
+
+  if (eventsScene) {
+    return [
+      '<script setup>',
+      ...script,
+      '</' + 'script>',
+      '',
+      '<template>',
+      '  <div class="table-scene">',
+      '    <div class="table-scene__bar">',
+      '      <span class="table-methods__count">事件日志（点击行 / 表头 / 拖列宽 / 勾选）</span>',
+      '      <ul class="table-events">',
+      '        <li v-for="(entry, index) in eventLog" :key="index">',
+      '          <code>{{ entry.name }}</code>',
+      '          <span>{{ entry.detail }}</span>',
+      '        </li>',
+      '        <li v-if="!eventLog.length" class="table-events__empty">暂无事件，试试点击一行或排序表头</li>',
+      '      </ul>',
+      '    </div>',
+      ...innerOpen.map((line) => `  ${line}`),
+      ...innerColumns.map((line) => `  ${line}`),
       '    </Table>',
       '  </div>',
       '</template>',
@@ -518,7 +676,7 @@ function tableColumnSource(entry: PlaygroundEntry, scene: SceneView | undefined)
     "import { ref } from 'vue'",
     "import { Table, TableColumn } from '@demo/ui-kit'",
     '',
-    `const rows = ref(${toJsLiteral(TABLE_DEMO_ROWS)})`,
+    `const rows = ref((${makeHeavyRows.toString()})(5000))`,
     ...parts.hoisted,
     ...extraHoisted
   ]
@@ -528,7 +686,7 @@ function tableColumnSource(entry: PlaygroundEntry, scene: SceneView | undefined)
     '</' + 'script>',
     '',
     '<template>',
-    '  <Table :data="rows" row-key="id" :height="280">',
+    '  <Table :data="rows" row-key="id" :height="280" virtual>',
     '    <TableColumn prop="name" label="组件" :width="160" />',
     `    ${target}`,
     '    <TableColumn prop="city" label="城市" :width="100" />',
