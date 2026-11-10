@@ -8698,12 +8698,6 @@
               "description": "表格布局算法：fixed 固定列宽 / auto 内容撑开"
             },
             {
-              "name": "showOverflowTooltip",
-              "type": "boolean",
-              "default": false,
-              "description": "单元格内容溢出时以省略号显示并带 title 提示"
-            },
-            {
               "name": "virtual",
               "type": "boolean",
               "default": false,
@@ -8868,6 +8862,19 @@
               "title": "实例方法",
               "description": "通过 ref 操作选择：clearSelection、getSelectionRows、toggleRowSelection、toggleAllSelection。",
               "props": []
+            },
+            {
+              "id": "table.overflow-tooltip",
+              "title": "内容溢出提示",
+              "description": "单元格与表头内容溢出时省略并弹出统一提示浮层，true 为单行、{ lineClamp } 指定行数；列级未声明时继承表格级，false 显式关闭。",
+              "props": [
+                {
+                  "name": "showOverflowTooltip",
+                  "type": "boolean | { lineClamp?: number }",
+                  "default": false,
+                  "description": "溢出省略与悬停提示：true 单行，{ lineClamp } 指定行数，作为列级未声明时的回退"
+                }
+              ]
             }
           ],
           "methods": [
@@ -8940,12 +8947,6 @@
               "type": "string",
               "default": "",
               "description": "表头单元格类名"
-            },
-            {
-              "name": "showOverflowTooltip",
-              "type": "boolean",
-              "default": false,
-              "description": "该列内容溢出时省略并显示 title 提示"
             },
             {
               "name": "index",
@@ -9033,6 +9034,19 @@
                   "type": "Boolean",
                   "default": false,
                   "description": "树形数据多选时父子是否联动勾选，默认 false 联动并显示半选，置为 true 后各级独立勾选，仅在选择列配合树形数据时生效"
+                }
+              ]
+            },
+            {
+              "id": "table.overflow-tooltip",
+              "title": "列溢出提示配置",
+              "description": "为单个列覆盖溢出省略与悬停提示，true 单行、{ lineClamp } 指定行数；不声明时继承表格级 showOverflowTooltip，false 显式关闭。",
+              "props": [
+                {
+                  "name": "showOverflowTooltip",
+                  "type": "boolean | { lineClamp?: number }",
+                  "default": false,
+                  "description": "该列溢出省略与悬停提示：true 单行，{ lineClamp } 指定行数，不声明时继承表格级"
                 }
               ]
             }
@@ -11223,20 +11237,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 609756,
-          "gzipBytes": 149249
+          "bytes": 610014,
+          "gzipBytes": 149295
         },
         {
           "file": "ui-kit.css",
-          "bytes": 226061,
-          "gzipBytes": 31401
+          "bytes": 225991,
+          "gzipBytes": 31388
         }
       ],
       "sizes": {
-        "js": 609756,
-        "css": 226061,
-        "total": 835817,
-        "gzip": 180496
+        "js": 610014,
+        "css": 225991,
+        "total": 836005,
+        "gzip": 180531
       }
     },
     {
@@ -11377,6 +11391,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -11672,6 +11687,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -12082,6 +12098,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -12152,20 +12169,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 694859,
-          "gzipBytes": 170204
+          "bytes": 697637,
+          "gzipBytes": 170978
         },
         {
           "file": "ui-kit.css",
-          "bytes": 247184,
-          "gzipBytes": 34383
+          "bytes": 247763,
+          "gzipBytes": 34484
         }
       ],
       "sizes": {
-        "js": 694859,
-        "css": 247184,
-        "total": 942043,
-        "gzip": 204677
+        "js": 697637,
+        "css": 247763,
+        "total": 945400,
+        "gzip": 205541
       }
     },
     {
@@ -12306,6 +12323,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -12601,6 +12619,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -13011,6 +13030,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -13081,20 +13101,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170292
+          "bytes": 699473,
+          "gzipBytes": 171063
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259216,
-          "gzipBytes": 35091
+          "bytes": 259813,
+          "gzipBytes": 35233
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 259216,
-        "total": 955903,
-        "gzip": 205504
+        "js": 699473,
+        "css": 259813,
+        "total": 959286,
+        "gzip": 206419
       }
     },
     {
@@ -13235,6 +13255,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -13530,6 +13551,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -13940,6 +13962,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -14010,20 +14033,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 699429,
-          "gzipBytes": 170398
+          "bytes": 702227,
+          "gzipBytes": 171168
         },
         {
           "file": "ui-kit.css",
-          "bytes": 295160,
-          "gzipBytes": 38729
+          "bytes": 295784,
+          "gzipBytes": 38827
         }
       ],
       "sizes": {
-        "js": 699429,
-        "css": 295160,
-        "total": 994589,
-        "gzip": 209315
+        "js": 702227,
+        "css": 295784,
+        "total": 998011,
+        "gzip": 210171
       }
     },
     {
@@ -14164,6 +14187,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -14459,6 +14483,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -14869,6 +14894,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -14939,20 +14965,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170290
+          "bytes": 699473,
+          "gzipBytes": 171062
         },
         {
           "file": "ui-kit.css",
-          "bytes": 274667,
-          "gzipBytes": 38038
+          "bytes": 275264,
+          "gzipBytes": 38182
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 274667,
-        "total": 971354,
-        "gzip": 208469
+        "js": 699473,
+        "css": 275264,
+        "total": 974737,
+        "gzip": 209385
       }
     },
     {
@@ -15093,6 +15119,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -15388,6 +15415,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -15798,6 +15826,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -15868,20 +15897,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170291
+          "bytes": 699473,
+          "gzipBytes": 171063
         },
         {
           "file": "ui-kit.css",
-          "bytes": 279423,
-          "gzipBytes": 38193
+          "bytes": 280020,
+          "gzipBytes": 38337
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 279423,
-        "total": 976110,
-        "gzip": 208621
+        "js": 699473,
+        "css": 280020,
+        "total": 979493,
+        "gzip": 209538
       }
     },
     {
@@ -16022,6 +16051,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -16317,6 +16347,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -16727,6 +16758,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -16797,20 +16829,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170292
+          "bytes": 699473,
+          "gzipBytes": 171064
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259588,
-          "gzipBytes": 35185
+          "bytes": 260185,
+          "gzipBytes": 35327
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 259588,
-        "total": 956275,
-        "gzip": 205600
+        "js": 699473,
+        "css": 260185,
+        "total": 959658,
+        "gzip": 206516
       }
     },
     {
@@ -16951,6 +16983,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -17246,6 +17279,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -17656,6 +17690,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -17726,20 +17761,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 699429,
-          "gzipBytes": 170392
+          "bytes": 702227,
+          "gzipBytes": 171164
         },
         {
           "file": "ui-kit.css",
-          "bytes": 275866,
-          "gzipBytes": 35578
+          "bytes": 276490,
+          "gzipBytes": 35675
         }
       ],
       "sizes": {
-        "js": 699429,
-        "css": 275866,
-        "total": 975295,
-        "gzip": 206144
+        "js": 702227,
+        "css": 276490,
+        "total": 978717,
+        "gzip": 206996
       }
     },
     {
@@ -17880,6 +17915,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -18175,6 +18211,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -18585,6 +18622,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -18655,20 +18693,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 697601,
-          "gzipBytes": 170325
+          "bytes": 700391,
+          "gzipBytes": 171092
         },
         {
           "file": "ui-kit.css",
-          "bytes": 264889,
-          "gzipBytes": 35291
+          "bytes": 265495,
+          "gzipBytes": 35388
         }
       ],
       "sizes": {
-        "js": 697601,
-        "css": 264889,
-        "total": 962490,
-        "gzip": 205757
+        "js": 700391,
+        "css": 265495,
+        "total": 965886,
+        "gzip": 206610
       }
     },
     {
@@ -18809,6 +18847,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -19104,6 +19143,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -19514,6 +19554,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -19584,20 +19625,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 698515,
-          "gzipBytes": 170355
+          "bytes": 701309,
+          "gzipBytes": 171123
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270376,
-          "gzipBytes": 35433
+          "bytes": 270991,
+          "gzipBytes": 35528
         }
       ],
       "sizes": {
-        "js": 698515,
-        "css": 270376,
-        "total": 968891,
-        "gzip": 205946
+        "js": 701309,
+        "css": 270991,
+        "total": 972300,
+        "gzip": 206799
       }
     },
     {
@@ -19738,6 +19779,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -20033,6 +20075,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -20443,6 +20486,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -20513,20 +20557,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170291
+          "bytes": 699473,
+          "gzipBytes": 171064
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259728,
-          "gzipBytes": 35191
+          "bytes": 260325,
+          "gzipBytes": 35334
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 259728,
-        "total": 956415,
-        "gzip": 205608
+        "js": 699473,
+        "css": 260325,
+        "total": 959798,
+        "gzip": 206525
       }
     },
     {
@@ -20667,6 +20711,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -20962,6 +21007,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -21372,6 +21418,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -21442,20 +21489,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 698515,
-          "gzipBytes": 170368
+          "bytes": 701309,
+          "gzipBytes": 171137
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270416,
-          "gzipBytes": 35448
+          "bytes": 271031,
+          "gzipBytes": 35542
         }
       ],
       "sizes": {
-        "js": 698515,
-        "css": 270416,
-        "total": 968931,
-        "gzip": 205972
+        "js": 701309,
+        "css": 271031,
+        "total": 972340,
+        "gzip": 206824
       }
     },
     {
@@ -21596,6 +21643,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -21891,6 +21939,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -22301,6 +22350,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -22371,20 +22421,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 696687,
-          "gzipBytes": 170291
+          "bytes": 699473,
+          "gzipBytes": 171064
         },
         {
           "file": "ui-kit.css",
-          "bytes": 259284,
-          "gzipBytes": 35076
+          "bytes": 259881,
+          "gzipBytes": 35219
         }
       ],
       "sizes": {
-        "js": 696687,
-        "css": 259284,
-        "total": 955971,
-        "gzip": 205488
+        "js": 699473,
+        "css": 259881,
+        "total": 959354,
+        "gzip": 206404
       }
     },
     {
@@ -22525,6 +22575,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -22820,6 +22871,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -23230,6 +23282,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -23300,20 +23353,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 701257,
-          "gzipBytes": 170465
+          "bytes": 704063,
+          "gzipBytes": 171243
         },
         {
           "file": "ui-kit.css",
-          "bytes": 287763,
-          "gzipBytes": 36167
+          "bytes": 288405,
+          "gzipBytes": 36264
         }
       ],
       "sizes": {
-        "js": 701257,
-        "css": 287763,
-        "total": 989020,
-        "gzip": 206816
+        "js": 704063,
+        "css": 288405,
+        "total": 992468,
+        "gzip": 207674
       }
     },
     {
@@ -23454,6 +23507,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -23749,6 +23803,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -24159,6 +24214,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -24229,20 +24285,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 701257,
-          "gzipBytes": 170463
+          "bytes": 704063,
+          "gzipBytes": 171243
         },
         {
           "file": "ui-kit.css",
-          "bytes": 287103,
-          "gzipBytes": 35894
+          "bytes": 287745,
+          "gzipBytes": 35991
         }
       ],
       "sizes": {
-        "js": 701257,
-        "css": 287103,
-        "total": 988360,
-        "gzip": 206532
+        "js": 704063,
+        "css": 287745,
+        "total": 991808,
+        "gzip": 207393
       }
     },
     {
@@ -24383,6 +24439,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -24678,6 +24735,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -25088,6 +25146,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -25158,20 +25217,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 698515,
-          "gzipBytes": 170370
+          "bytes": 701309,
+          "gzipBytes": 171140
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270781,
-          "gzipBytes": 35531
+          "bytes": 271396,
+          "gzipBytes": 35627
         }
       ],
       "sizes": {
-        "js": 698515,
-        "css": 270781,
-        "total": 969296,
-        "gzip": 206060
+        "js": 701309,
+        "css": 271396,
+        "total": 972705,
+        "gzip": 206912
       }
     },
     {
@@ -25312,6 +25371,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -25607,6 +25667,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -26017,6 +26078,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -26087,20 +26149,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 698515,
-          "gzipBytes": 170360
+          "bytes": 701309,
+          "gzipBytes": 171130
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270332,
-          "gzipBytes": 35445
+          "bytes": 270947,
+          "gzipBytes": 35539
         }
       ],
       "sizes": {
-        "js": 698515,
-        "css": 270332,
-        "total": 968847,
-        "gzip": 205966
+        "js": 701309,
+        "css": 270947,
+        "total": 972256,
+        "gzip": 206819
       }
     },
     {
@@ -26241,6 +26303,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -26536,6 +26599,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -26946,6 +27010,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -27016,20 +27081,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 698515,
-          "gzipBytes": 170368
+          "bytes": 701309,
+          "gzipBytes": 171136
         },
         {
           "file": "ui-kit.css",
-          "bytes": 270421,
-          "gzipBytes": 35467
+          "bytes": 271036,
+          "gzipBytes": 35562
         }
       ],
       "sizes": {
-        "js": 698515,
-        "css": 270421,
-        "total": 968936,
-        "gzip": 205993
+        "js": 701309,
+        "css": 271036,
+        "total": 972345,
+        "gzip": 206843
       }
     },
     {
@@ -27170,6 +27235,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -27465,6 +27531,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -27875,6 +27942,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -27945,20 +28013,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 699429,
-          "gzipBytes": 170399
+          "bytes": 702227,
+          "gzipBytes": 171170
         },
         {
           "file": "ui-kit.css",
-          "bytes": 276305,
-          "gzipBytes": 35709
+          "bytes": 276929,
+          "gzipBytes": 35805
         }
       ],
       "sizes": {
-        "js": 699429,
-        "css": 276305,
-        "total": 975734,
-        "gzip": 206284
+        "js": 702227,
+        "css": 276929,
+        "total": 979156,
+        "gzip": 207137
       }
     },
     {
@@ -28099,6 +28167,7 @@
         "table.summary",
         "table.selection",
         "table.methods",
+        "table.overflow-tooltip",
         "table.column-sort",
         "tabs.closable",
         "tabs.lazy",
@@ -28394,6 +28463,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -28804,6 +28874,7 @@
           "table.summary",
           "table.selection",
           "table.methods",
+          "table.overflow-tooltip",
           "table.column-sort"
         ],
         "tabs": [
@@ -28874,20 +28945,20 @@
       "files": [
         {
           "file": "ui-kit.js",
-          "bytes": 695773,
-          "gzipBytes": 170233
+          "bytes": 698555,
+          "gzipBytes": 171009
         },
         {
           "file": "ui-kit.css",
-          "bytes": 253832,
-          "gzipBytes": 34957
+          "bytes": 254420,
+          "gzipBytes": 35059
         }
       ],
       "sizes": {
-        "js": 695773,
-        "css": 253832,
-        "total": 949605,
-        "gzip": 205309
+        "js": 698555,
+        "css": 254420,
+        "total": 952975,
+        "gzip": 206174
       }
     }
   ]

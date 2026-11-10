@@ -1,7 +1,7 @@
 # 项目知识图谱
 
 > 由 `npm run knowledge:build` 从 `registry.mjs`、各组件 `spec.mjs`、profiles、文档、测试与脚本生成；不要手改。
-> 当前 digest：`e6af8228b21a9b54`（节点 3038 / 边 4237）。
+> 当前 digest：`ed5432c9a23dd564`（节点 3054 / 边 4286）。
 
 ## 快速检索
 
@@ -90,7 +90,7 @@ npm run knowledge:stats
 | `statistic` | 对齐主流组件库的 Statistic，基础 props 与可选特性拆分。 | 1 | 1 |
 | `steps` | 对齐主流组件库的 Step / Steps，基础 props 与可选特性拆分。 | 2 | 1 |
 | `switch` | 对齐主流组件库的 Switch，基础 props 与可选特性拆分。 | 1 | 2 |
-| `table` | 单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。 | 2 | 9 |
+| `table` | 单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总；expand 列展开/收起抛 expand-change {row, expanded}。 | 2 | 10 |
 | `tabs` | 对齐主流组件库的 TabPane / Tabs，基础 props 与可选特性拆分。 | 2 | 5 |
 | `tag` | 对齐主流组件库的 Tag，基础 props 与可选特性拆分。 | 1 | 2 |
 | `text` | 对齐主流组件库的 Text，基础 props 与可选特性拆分。 | 1 | 0 |

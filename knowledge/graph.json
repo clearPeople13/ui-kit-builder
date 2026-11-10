@@ -1,17 +1,17 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-10T00:26:12.924Z",
-  "sourceDigest": "e6af8228b21a9b54",
+  "generatedAt": "2026-11-10T09:58:10.943Z",
+  "sourceDigest": "ed5432c9a23dd564",
   "stats": {
-    "nodes": 3038,
-    "edges": 4237,
+    "nodes": 3054,
+    "edges": 4286,
     "components": 87,
-    "features": 172,
-    "props": 1312,
+    "features": 173,
+    "props": 1311,
     "slots": 86,
-    "files": 515,
-    "docs": 352,
-    "tests": 163
+    "files": 517,
+    "docs": 365,
+    "tests": 164
   },
   "nodes": [
     {
@@ -2118,7 +2118,7 @@
       "id": "component:table",
       "type": "component",
       "label": "Table 表格",
-      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。",
+      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总；expand 列展开/收起抛 expand-change {row, expanded}。",
       "path": "packages/ui-kit/src/components/table",
       "tags": [
         "table",
@@ -2127,7 +2127,7 @@
       "meta": {
         "order": 10,
         "exports": 2,
-        "features": 9
+        "features": 10
       }
     },
     {
@@ -2907,7 +2907,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 258
+        "lines": 261
       }
     },
     {
@@ -4280,7 +4280,7 @@
       "id": "doc:README.md#3",
       "type": "doc-section",
       "label": "快速开始",
-      "summary": "```bash\n# 启动构建器（http://localhost:5173；并行工作树可用 .env.workbuddy 换成独立端口段）\nnpm run dev\n\n# 构建全部 profile 到 dist/（20 份正式包；172 个特性边际试算走 .build/，构建后清理）\nnpm run build:all\n\n# 生成调试台元数据（组件、属性、包体积）\nnpm run meta:demo\n\n# 启动组件调试台\nnpm --pr",
+      "summary": "```bash\n# 启动构建器（http://localhost:5173；并行工作树可用 .env.workbuddy 换成独立端口段）\nnpm run dev\n\n# 构建全部 profile 到 dist/（20 份正式包；173 个特性边际试算走 .build/，构建后清理）\nnpm run build:all\n\n# 生成调试台元数据（组件、属性、包体积）\nnpm run meta:demo\n\n# 启动组件调试台\nnpm --pr",
       "path": "README.md#3",
       "tags": [
         "doc",
@@ -4356,7 +4356,7 @@
         "doc"
       ],
       "meta": {
-        "lines": 1567
+        "lines": 1701
       }
     },
     {
@@ -5872,6 +5872,62 @@
       }
     },
     {
+      "id": "doc:REQUIREMENTS.md#196",
+      "type": "doc-section",
+      "label": "58. 表格行键与选择修复集（F-125…F-133）",
+      "summary": "> 触发：调试台表格场景探针 A/B/E/F/G/H/L/M/N 暴露「无 rowKey 时以渲染下标当行身份」引发的一串选中/展开错位，以及选择类 prop 声明侧与读取侧不一致。本波次在 `fix/20261110-table-selection-keys` 上用 21 条回归用例锁定 9 条缺陷。",
+      "path": "REQUIREMENTS.md#196",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#197",
+      "type": "doc-section",
+      "label": "58.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                                                                                     | 现象                                                         ",
+      "path": "REQUIREMENTS.md#197",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#198",
+      "type": "doc-section",
+      "label": "58.2 反证与验证",
+      "summary": "- 红用例反证：21 条新回归用例在改前代码上跑出 `18 failed | 48 passed (66)`（Qoder CN 会话记录，2026-11-10），证明用例非空转。\n- 接手基线：`2 failed | 65 passed (67)`；F-127 报 `selectable` 在滚动帧被调用 26 次，F-133 报 `tbody .is-indeterminate` 命中 0 个。\n- 修复后：`tests/compon",
+      "path": "REQUIREMENTS.md#198",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#199",
+      "type": "doc-section",
+      "label": "58.3 顺带收敛（不新增缺陷编号）",
+      "summary": "- `features/loading/style.css` 的 `font-size: 14px` 改走 `--ui-font-size-base` 令牌，消除硬编码字号。\n- `spec.mjs` 未新增 `events` schema：全库 spec 只有 `slots` 经 `registry.mjs` 校验，凭空加一段无人消费的元数据会形成第二份事实来源；事件口径改在组件 `description` 与 KNOWLEDGE 断",
+      "path": "REQUIREMENTS.md#199",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
       "id": "doc:REQUIREMENTS.md#2",
       "type": "doc-section",
       "label": "1. 需求背景",
@@ -5897,6 +5953,132 @@
       ],
       "meta": {
         "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#200",
+      "type": "doc-section",
+      "label": "58.4 像素基线漂移归因（floating / table）",
+      "summary": "- 现象：main 全量门禁 `test:browser` 只有 `floating`（1017 / 921600，0.110%）与 `table`（1790 / 921600，0.194%）越过 0.1% 上限，其余 4 场景绿，布局指纹段零漂移；同一次运行连跑两遍数值完全一致，排除随机抖动（归因 ①）。\n- 基线来源：`tests/browser/__snapshots__/pixels/win32/` 最后一次录入在 `638f3",
+      "path": "REQUIREMENTS.md#200",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#201",
+      "type": "doc-section",
+      "label": "59. 表格列宽拖拽边界修复集（F-134…F-136）",
+      "summary": "> 触发：真实调试台反馈「拖一列其他列跟着变」「勾选一下多选列就变宽」「冻结列旁边的列永远拖不小」。本波次在 `fix/20261110-table-resize` 上用 5 条回归用例锁定 3 条缺陷。",
+      "path": "REQUIREMENTS.md#201",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#202",
+      "type": "doc-section",
+      "label": "59.1 缺陷登记",
+      "summary": "| 编号  | 文件                                                                                                                       | 现象                                                                                       ",
+      "path": "REQUIREMENTS.md#202",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#203",
+      "type": "doc-section",
+      "label": "59.2 反证与验证",
+      "summary": "- 红用例反证：三处源码回退到改前，`tests/browser/table.spec.ts` 跑出 `3 failed | 16 passed (19)`（拖一列牵动他列 / 右冻结左邻列手柄不可达 / 双击复位），`tests/components/table.spec.ts` 跑出 `1 failed | 66 passed (67)`（窄列下限兜底），证明用例非空转。\n- 修复后：`tests/components/table.",
+      "path": "REQUIREMENTS.md#203",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#204",
+      "type": "doc-section",
+      "label": "59.3 顺带收敛（不新增缺陷编号）",
+      "summary": "- 缺陷索引补齐 F-134…F-136 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 136 条。",
+      "path": "REQUIREMENTS.md#204",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#205",
+      "type": "doc-section",
+      "label": "60. 表格溢出提示统一浮层（F-137）",
+      "summary": "> 触发：真实反馈「table 的 showOverflowTooltip 属性问题很大」。原生 `title` 提示样式不可控、不跟随主题、表头不参与，而且只有单行一种口径。本波次在 `fix/20261110-table-overflow` 上把它做成「表头 + 单元格共用的一套浮层」，同时支持配置多行钳制；语义对齐 Element Plus：列级未声明继承表格级，列级 `true` / `false` 覆盖。",
+      "path": "REQUIREMENTS.md#205",
+      "tags": [
+        "doc",
+        "section"
+      ],
+      "meta": {
+        "level": 2
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#206",
+      "type": "doc-section",
+      "label": "60.1 缺陷登记",
+      "summary": "| 编号  | 文件 | 现象 | 根因 | 修复 |\n| ----- | ---- | ---- | ---- | ---- |\n| F-137 | `packages/ui-kit/src/components/table/core.ts`、`packages/ui-kit/src/components/table/core.css`、`packages/ui-kit/src/components/table/spec.mjs`、`",
+      "path": "REQUIREMENTS.md#206",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#207",
+      "type": "doc-section",
+      "label": "60.2 反证与验证",
+      "summary": "- 组件层：`tests/components/table.spec.ts` 新增「包出测量盒、列级继承/覆盖、多行钳制变量」用例；把 `core.ts` 回退到改前会红（无 `.ui-table__cell-text`、`title` 仍存在），修复后 67/67 绿。\n- 浏览器层：`tests/browser/table-overflow-tooltip.spec.ts` 9/9 绿——33 个测量盒 / 20 个钳制盒、两行高度",
+      "path": "REQUIREMENTS.md#207",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
+      }
+    },
+    {
+      "id": "doc:REQUIREMENTS.md#208",
+      "type": "doc-section",
+      "label": "60.3 顺带收敛（不新增缺陷编号）",
+      "summary": "- `showOverflowTooltip` 从 `core` prop 全量移入特性（表格与列各一条），分类与构建器裁剪口径一致；`registry` 特性数由 172 增至 173，四处计数同步。\n- 缺陷索引补齐 F-137 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 137 条。",
+      "path": "REQUIREMENTS.md#208",
+      "tags": [
+        "doc",
+        "subsection"
+      ],
+      "meta": {
+        "level": 3
       }
     },
     {
@@ -9206,7 +9388,7 @@
       "id": "export:table.Table",
       "type": "export",
       "label": "Table 表格 / Table",
-      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。",
+      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总；expand 列展开/收起抛 expand-change {row, expanded}。",
       "path": "packages/ui-kit/src/components/table/core.ts",
       "tags": [
         "table",
@@ -9214,16 +9396,16 @@
         "export"
       ],
       "meta": {
-        "coreProps": 16,
+        "coreProps": 15,
         "slots": 1,
-        "features": 8
+        "features": 9
       }
     },
     {
       "id": "export:table.TableColumn",
       "type": "export",
       "label": "Table 表格 / TableColumn",
-      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总。",
+      "summary": "单表结构渲染，纯 CSS sticky 冻结列，支持排序、多列排序、树形、合并单元格、列宽拖拽、加载态、选择与汇总；expand 列展开/收起抛 expand-change {row, expanded}。",
       "path": "packages/ui-kit/src/components/table/core.ts",
       "tags": [
         "table",
@@ -9231,9 +9413,9 @@
         "export"
       ],
       "meta": {
-        "coreProps": 13,
+        "coreProps": 12,
         "slots": 2,
-        "features": 2
+        "features": 3
       }
     },
     {
@@ -11564,10 +11746,26 @@
       }
     },
     {
+      "id": "feature:table.overflow-tooltip",
+      "type": "feature",
+      "label": "内容溢出提示 (table.overflow-tooltip)",
+      "summary": "单元格与表头内容溢出时省略并弹出统一提示浮层，true 为单行、{ lineClamp } 指定行数；列级未声明时继承表格级，false 显式关闭。",
+      "path": "packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "tags": [
+        "table",
+        "table.overflow-tooltip",
+        "feature"
+      ],
+      "meta": {
+        "props": 1,
+        "requires": []
+      }
+    },
+    {
       "id": "feature:table.resize",
       "type": "feature",
       "label": "列宽拖拽 (table.resize)",
-      "summary": "拖拽表头右侧手柄调整列宽，双击手柄恢复默认宽度。",
+      "summary": "拖拽表头手柄只调整当前列宽，双击手柄恢复默认宽度。",
       "path": "packages/ui-kit/src/components/table/features/resize/index.ts",
       "tags": [
         "table",
@@ -18078,7 +18276,7 @@
         "css"
       ],
       "meta": {
-        "lines": 306
+        "lines": 302
       }
     },
     {
@@ -18091,7 +18289,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 1815
+        "lines": 2028
       }
     },
     {
@@ -18104,7 +18302,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 9
+        "lines": 11
       }
     },
     {
@@ -18143,7 +18341,33 @@
         "ts"
       ],
       "meta": {
-        "lines": 104
+        "lines": 69
+      }
+    },
+    {
+      "id": "file:packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "type": "file",
+      "label": "packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "summary": "",
+      "path": "packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "tags": [
+        "ts"
+      ],
+      "meta": {
+        "lines": 132
+      }
+    },
+    {
+      "id": "file:packages/ui-kit/src/components/table/features/overflow-tooltip/style.css",
+      "type": "file",
+      "label": "packages/ui-kit/src/components/table/features/overflow-tooltip/style.css",
+      "summary": "测量盒与裁切盒合体：判溢出只量这一个元素，不量 td（td 里还有树形缩进/箭头等前置节点）",
+      "path": "packages/ui-kit/src/components/table/features/overflow-tooltip/style.css",
+      "tags": [
+        "css"
+      ],
+      "meta": {
+        "lines": 36
       }
     },
     {
@@ -18156,20 +18380,20 @@
         "ts"
       ],
       "meta": {
-        "lines": 129
+        "lines": 130
       }
     },
     {
       "id": "file:packages/ui-kit/src/components/table/features/resize/style.css",
       "type": "file",
       "label": "packages/ui-kit/src/components/table/features/resize/style.css",
-      "summary": "",
+      "summary": "手柄整体落在 th 内：跨到下一格会被后绘制的 th（冻结列 z-index 更高）盖住，拖拽完全收不到指针",
       "path": "packages/ui-kit/src/components/table/features/resize/style.css",
       "tags": [
         "css"
       ],
       "meta": {
-        "lines": 33
+        "lines": 43
       }
     },
     {
@@ -18182,7 +18406,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 9
+        "lines": 11
       }
     },
     {
@@ -18195,7 +18419,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 159
+        "lines": 171
       }
     },
     {
@@ -18247,7 +18471,7 @@
         "ts"
       ],
       "meta": {
-        "lines": 210
+        "lines": 218
       }
     },
     {
@@ -18273,7 +18497,7 @@
         "mjs"
       ],
       "meta": {
-        "lines": 479
+        "lines": 499
       }
     },
     {
@@ -38113,10 +38337,27 @@
       }
     },
     {
+      "id": "prop:table.table.overflow-tooltip.showOverflowTooltip",
+      "type": "prop",
+      "label": "table.overflow-tooltip.showOverflowTooltip",
+      "summary": "溢出省略与悬停提示：true 单行，{ lineClamp } 指定行数，作为列级未声明时的回退",
+      "path": "packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "tags": [
+        "table",
+        "table.overflow-tooltip",
+        "showOverflowTooltip",
+        "prop"
+      ],
+      "meta": {
+        "type": "boolean | { lineClamp?: number }",
+        "default": false
+      }
+    },
+    {
       "id": "prop:table.table.resize.minColumnWidth",
       "type": "prop",
       "label": "table.resize.minColumnWidth",
-      "summary": "拖拽最小列宽",
+      "summary": "拖拽最小列宽；起始宽更窄的列（多选 / 序号）按起始宽兜底，不会被撑宽",
       "path": "packages/ui-kit/src/components/table/features/resize/index.ts",
       "tags": [
         "table",
@@ -38260,23 +38501,6 @@
       "meta": {
         "type": "boolean",
         "default": true
-      }
-    },
-    {
-      "id": "prop:table.Table.showOverflowTooltip",
-      "type": "prop",
-      "label": "Table.showOverflowTooltip",
-      "summary": "单元格内容溢出时以省略号显示并带 title 提示",
-      "path": "packages/ui-kit/src/components/table/core.ts",
-      "tags": [
-        "table",
-        "Table",
-        "showOverflowTooltip",
-        "prop"
-      ],
-      "meta": {
-        "type": "boolean",
-        "default": false
       }
     },
     {
@@ -38665,23 +38889,6 @@
       "meta": {
         "type": "string",
         "default": ""
-      }
-    },
-    {
-      "id": "prop:table.TableColumn.showOverflowTooltip",
-      "type": "prop",
-      "label": "TableColumn.showOverflowTooltip",
-      "summary": "该列内容溢出时省略并显示 title 提示",
-      "path": "packages/ui-kit/src/components/table/core.ts",
-      "tags": [
-        "table",
-        "TableColumn",
-        "showOverflowTooltip",
-        "prop"
-      ],
-      "meta": {
-        "type": "boolean",
-        "default": false
       }
     },
     {
@@ -44441,7 +44648,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 821
+        "lines": 897
       }
     },
     {
@@ -44536,6 +44743,19 @@
       }
     },
     {
+      "id": "test:tests/browser/table-overflow-tooltip.spec.ts",
+      "type": "test",
+      "label": "tests/browser/table-overflow-tooltip.spec.ts",
+      "summary": "",
+      "path": "tests/browser/table-overflow-tooltip.spec.ts",
+      "tags": [
+        "browser"
+      ],
+      "meta": {
+        "lines": 123
+      }
+    },
+    {
       "id": "test:tests/browser/table.spec.ts",
       "type": "test",
       "label": "tests/browser/table.spec.ts",
@@ -44545,7 +44765,7 @@
         "browser"
       ],
       "meta": {
-        "lines": 435
+        "lines": 542
       }
     },
     {
@@ -44857,7 +45077,7 @@
         "build"
       ],
       "meta": {
-        "lines": 116
+        "lines": 117
       }
     },
     {
@@ -45975,7 +46195,7 @@
         "component"
       ],
       "meta": {
-        "lines": 738
+        "lines": 1047
       }
     },
     {
@@ -48960,6 +49180,11 @@
     },
     {
       "from": "component:table",
+      "to": "feature:table.overflow-tooltip",
+      "type": "has-feature"
+    },
+    {
+      "from": "component:table",
       "to": "feature:table.resize",
       "type": "has-feature"
     },
@@ -49006,6 +49231,11 @@
     {
       "from": "component:table",
       "to": "file:packages/ui-kit/src/components/table/features/methods/index.ts",
+      "type": "implemented-by"
+    },
+    {
+      "from": "component:table",
+      "to": "file:packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
       "type": "implemented-by"
     },
     {
@@ -50495,6 +50725,11 @@
     },
     {
       "from": "doc:KNOWLEDGE.md#8",
+      "to": "component:col",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:KNOWLEDGE.md#8",
       "to": "component:color-picker",
       "type": "mentions"
     },
@@ -50596,6 +50831,11 @@
     {
       "from": "doc:KNOWLEDGE.md#8",
       "to": "component:radio",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:KNOWLEDGE.md#8",
+      "to": "component:row",
       "type": "mentions"
     },
     {
@@ -53080,6 +53320,11 @@
     },
     {
       "from": "doc:README.md#5",
+      "to": "component:col",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:README.md#5",
       "to": "component:dropdown",
       "type": "mentions"
     },
@@ -53111,6 +53356,11 @@
     {
       "from": "doc:README.md#5",
       "to": "component:time-picker",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:README.md#5",
+      "to": "component:tooltip",
       "type": "mentions"
     },
     {
@@ -53655,12 +53905,77 @@
     },
     {
       "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#196",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#197",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#198",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#199",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#2",
       "type": "contains"
     },
     {
       "from": "doc:REQUIREMENTS.md",
       "to": "doc:REQUIREMENTS.md#20",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#200",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#201",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#202",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#203",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#204",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#205",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#206",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#207",
+      "type": "contains"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md",
+      "to": "doc:REQUIREMENTS.md#208",
       "type": "contains"
     },
     {
@@ -55776,6 +56091,146 @@
     {
       "from": "doc:REQUIREMENTS.md#195",
       "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#196",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#197",
+      "to": "component:checkbox",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#197",
+      "to": "component:row",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#197",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#197",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#197",
+      "to": "component:tree",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#198",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#199",
+      "to": "component:loading",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#200",
+      "to": "component:loading",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#200",
+      "to": "component:popover",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#200",
+      "to": "component:select",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#200",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#200",
+      "to": "component:tree",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#201",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#202",
+      "to": "component:col",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#202",
+      "to": "component:scrollbar",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#202",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#203",
+      "to": "component:checkbox",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#203",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#205",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#205",
+      "to": "component:tooltip",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#206",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#206",
+      "to": "component:text",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#206",
+      "to": "component:tooltip",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#207",
+      "to": "component:table",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#207",
+      "to": "component:text",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#207",
+      "to": "component:tooltip",
+      "type": "mentions"
+    },
+    {
+      "from": "doc:REQUIREMENTS.md#208",
+      "to": "component:tooltip",
       "type": "mentions"
     },
     {
@@ -62170,6 +62625,11 @@
     },
     {
       "from": "export:table.Table",
+      "to": "feature:table.overflow-tooltip",
+      "type": "has-feature"
+    },
+    {
+      "from": "export:table.Table",
       "to": "feature:table.resize",
       "type": "has-feature"
     },
@@ -62260,11 +62720,6 @@
     },
     {
       "from": "export:table.Table",
-      "to": "prop:table.Table.showOverflowTooltip",
-      "type": "has-prop"
-    },
-    {
-      "from": "export:table.Table",
       "to": "prop:table.Table.size",
       "type": "has-prop"
     },
@@ -62291,6 +62746,11 @@
     {
       "from": "export:table.TableColumn",
       "to": "feature:table.column-sort",
+      "type": "has-feature"
+    },
+    {
+      "from": "export:table.TableColumn",
+      "to": "feature:table.overflow-tooltip",
       "type": "has-feature"
     },
     {
@@ -62351,11 +62811,6 @@
     {
       "from": "export:table.TableColumn",
       "to": "prop:table.TableColumn.prop",
-      "type": "has-prop"
-    },
-    {
-      "from": "export:table.TableColumn",
-      "to": "prop:table.TableColumn.showOverflowTooltip",
       "type": "has-prop"
     },
     {
@@ -65617,6 +66072,16 @@
       "from": "feature:table.methods",
       "to": "file:packages/ui-kit/src/components/table/features/methods/index.ts",
       "type": "defined-in"
+    },
+    {
+      "from": "feature:table.overflow-tooltip",
+      "to": "file:packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts",
+      "type": "defined-in"
+    },
+    {
+      "from": "feature:table.overflow-tooltip",
+      "to": "prop:table.table.overflow-tooltip.showOverflowTooltip",
+      "type": "has-prop"
     },
     {
       "from": "feature:table.resize",
