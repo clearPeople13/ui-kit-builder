@@ -408,6 +408,42 @@ function sceneTableSpanVirtual() {
     )
 }
 
+/** 溢出提示：同一张表里单行 / 继承多行 / 列级关闭三种口径，外加长表头与不溢出的短文本 */
+function sceneTableOverflow() {
+  const long = '这是一段很长的单元格文本用来验证省略与悬停浮层'
+  const rows = Array.from({ length: 10 }, (_, index) => ({
+    id: index + 1,
+    code: `CODE-${String(index + 1).padStart(4, '0')}-${long}`,
+    desc: index % 2 ? long : '短文本',
+    tag: index % 2 ? `标签-${long}` : '短'
+  }))
+
+  return () =>
+    h(
+      'div',
+      { style: 'width: 460px' },
+      h(
+        Table,
+        {
+          data: rows,
+          height: 300,
+          rowKey: 'id',
+          showOverflowTooltip: { lineClamp: 2 },
+          id: 'probe-table-overflow',
+          style: 'width: 100%'
+        },
+        {
+          default: () => [
+            h(TableColumn, { prop: 'id', label: '编号', width: 60 }),
+            h(TableColumn, { prop: 'code', label: '编码', width: 120, showOverflowTooltip: true }),
+            h(TableColumn, { prop: 'desc', label: '这是一段很长很长很长的表头标题', width: 160 }),
+            h(TableColumn, { prop: 'tag', label: '标签', width: 120, showOverflowTooltip: false })
+          ]
+        }
+      )
+    )
+}
+
 /** 树形大数据：展开一层的耗时（性能回归口径与消费者 demo 一致） */
 function sceneTree() {
   function build(prefix: string, depth: number): any[] {
@@ -813,6 +849,7 @@ const scenes: Record<string, () => any> = {
   'table-resize': sceneTableResize(),
   'table-virtual-variable': sceneTableVirtualVariable(),
   'table-span-virtual': sceneTableSpanVirtual(),
+  'table-overflow': sceneTableOverflow(),
   tree: sceneTree(),
   color: sceneColor(),
   a11y: sceneA11y(),

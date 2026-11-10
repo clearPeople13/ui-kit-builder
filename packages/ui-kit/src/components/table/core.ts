@@ -53,7 +53,6 @@ const tableBaseProps = {
   // 不给 default：留空才能让 ConfigProvider 的 locale 生效，显式传值仍优先
   emptyText: { type: String },
   tableLayout: { type: String, default: 'fixed' },
-  showOverflowTooltip: { type: Boolean },
   virtual: { type: Boolean }
 }
 
@@ -68,7 +67,6 @@ const tableColumnBaseProps = {
   headerAlign: { type: String, default: '' },
   className: { type: String, default: '' },
   labelClassName: { type: String, default: '' },
-  showOverflowTooltip: { type: Boolean },
   index: { type: [Number, Function] },
   formatter: { type: Function }
 }
@@ -84,7 +82,6 @@ const columnDefaults: Record<string, any> = {
   headerAlign: '',
   className: '',
   labelClassName: '',
-  showOverflowTooltip: undefined,
   index: undefined,
   formatter: undefined
 }
@@ -105,7 +102,6 @@ interface TableColumn {
   headerAlign: string
   className: string
   labelClassName: string
-  showOverflowTooltip?: boolean
   index?: number | ((index: number) => number)
   formatter?: (row: any, column: TableColumn, value: any, index: number) => any
   slots: TableColumnSlots
@@ -1268,6 +1264,9 @@ export function createTable(features: UiFeature[] = []) {
         columnIndex: number
         meta: Record<string, any>
         prependHooks: ((...args: any[]) => any)[]
+        contentHooks: ((...args: any[]) => any)[]
+        // 合并单元格的续格只是占位，内容列才拿得到真实行数据
+        merged?: boolean
       }
 
       // 半选只落在原生 indeterminate property 上时选择器观测不到，统一补 is-* 状态类
@@ -1276,7 +1275,7 @@ export function createTable(features: UiFeature[] = []) {
       }
 
       function renderCell(options: CellOptions): VNodeChild {
-        const { column, row, rowIndex, meta, prependHooks } = options
+        const { column, row, rowIndex, meta, prependHooks, contentHooks, merged } = options
         if (column.type === 'selection') {
           if (!checkboxVisibleOf(column, row)) {
             return null
@@ -1338,6 +1337,10 @@ export function createTable(features: UiFeature[] = []) {
             prepend.push(fragment)
           }
         }
+        // 内容挂点只包业务内容（缩进/箭头等前置节点保持可点、不被裁切）
+        for (const hook of contentHooks) {
+          content = hook(content, { ...scope, merged: Boolean(merged) })
+        }
         return prepend.length ? [...prepend, content] : content
       }
 
@@ -1350,6 +1353,8 @@ export function createTable(features: UiFeature[] = []) {
         const userWidthHooks = flattenHooks(states, 'tableColumnUserWidth')
         const spanHooks = flattenHooks(states, 'tableSpan')
         const prependHooks = flattenHooks(states, 'tableCellPrepend')
+        const attrsHooks = flattenHooks(states, 'tableCellAttrs')
+        const contentHooks = flattenHooks(states, 'tableCellContent')
         const headerExtraHooks = flattenHooks(states, 'tableHeaderExtra')
         const rowMetaHooks = flattenHooks(states, 'tableRowMeta')
         const sortStateHooks = flattenHooks(states, 'tableSortState')
@@ -1540,20 +1545,6 @@ export function createTable(features: UiFeature[] = []) {
         const fixedClasses = columns.map((_column, index) => fixedCellClass(index))
         const fixedStyles = columns.map((_column, index) => fixedCellStyle(index))
 
-        function cellTitle(column: TableColumn, row: any): string | undefined {
-          const enabled =
-            column.showOverflowTooltip === true ||
-            (column.showOverflowTooltip !== false && Boolean(resolved.showOverflowTooltip))
-          if (!enabled || column.slots.default) {
-            return undefined
-          }
-          const value = column.prop ? row?.[column.prop] : undefined
-          if (typeof value === 'string' || typeof value === 'number') {
-            return String(value)
-          }
-          return undefined
-        }
-
         const headerClick = (column: TableColumn) => {
           for (const hook of flattenHooks(states, 'tableHeaderClick')) {
             hook(column, columns, resolved)
@@ -1570,7 +1561,6 @@ export function createTable(features: UiFeature[] = []) {
           resolved.stripe ? 'ui-table--striped' : '',
           resolved.border ? 'ui-table--bordered' : '',
           resolved.size ? `ui-table--size-${resolved.size}` : '',
-          resolved.showOverflowTooltip ? 'ui-table--overflow-tooltip' : '',
           hasFixedLeft ? 'has-fixed-left' : '',
           hasFixedRight ? 'has-fixed-right' : '',
           hasFixedLeft && scrollState.value.left ? 'is-scrolled-left' : '',
@@ -1629,9 +1619,14 @@ export function createTable(features: UiFeature[] = []) {
                       }
                     }
                     const label = column.slots.header ? column.slots.header(scope) : column.label
+                    let headerContent: VNodeChild = label
+                    for (const hook of contentHooks) {
+                      headerContent = hook(headerContent, { ...scope, header: true })
+                    }
                     return h(
                       'th',
                       {
+                        ...mergeHookResults(attrsHooks, [{ ...scope, header: true }]),
                         class: [
                           column.labelClassName,
                           column.headerAlign || column.align ? `is-${column.headerAlign || column.align}` : '',
@@ -1663,7 +1658,7 @@ export function createTable(features: UiFeature[] = []) {
                             }),
                             ...extras
                           ]
-                        : [label, ...extras]
+                        : [headerContent, ...extras]
                     )
                   })
                 )
@@ -1762,6 +1757,18 @@ export function createTable(features: UiFeature[] = []) {
                 h(
                   'td',
                   {
+                    ...(isContent
+                      ? mergeHookResults(attrsHooks, [
+                          {
+                            column,
+                            row: cellRow,
+                            rowIndex: fake.startRow,
+                            columnIndex,
+                            meta: cellMeta ?? {},
+                            merged: true
+                          }
+                        ])
+                      : {}),
                     class: [
                       column.className,
                       column.align ? `is-${column.align}` : '',
@@ -1772,7 +1779,6 @@ export function createTable(features: UiFeature[] = []) {
                       isContent ? 'is-span-content' : ''
                     ],
                     style: fixedStyles[columnIndex],
-                    title: isContent ? cellTitle(column, cellRow) : undefined,
                     colspan: fake.colspan > 1 ? fake.colspan : undefined,
                     'aria-hidden': isContent ? undefined : 'true'
                   },
@@ -1784,7 +1790,9 @@ export function createTable(features: UiFeature[] = []) {
                           rowIndex: fake.startRow,
                           columnIndex,
                           meta: cellMeta ?? {},
-                          prependHooks
+                          prependHooks,
+                          contentHooks,
+                          merged: true
                         })
                       ]
                     : []
@@ -1826,13 +1834,13 @@ export function createTable(features: UiFeature[] = []) {
               h(
                 'td',
                 {
+                  ...mergeHookResults(attrsHooks, [{ column, row, rowIndex, columnIndex, meta, merged: false }]),
                   class: [
                     column.className,
                     column.align ? `is-${column.align}` : '',
                     ...(fixedClasses[columnIndex] ?? [])
                   ],
                   style: fixedStyles[columnIndex],
-                  title: cellTitle(column, row),
                   rowspan: rowspan > 1 ? rowspan : undefined,
                   colspan: colspan > 1 ? colspan : undefined
                 },
@@ -1843,7 +1851,8 @@ export function createTable(features: UiFeature[] = []) {
                     rowIndex,
                     columnIndex,
                     meta,
-                    prependHooks
+                    prependHooks,
+                    contentHooks
                   })
                 ]
               )

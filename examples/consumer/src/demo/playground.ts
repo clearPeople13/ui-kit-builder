@@ -613,7 +613,10 @@ const NAMED_STRING_OPTIONS: Record<string, string[]> = {
 }
 
 const CONTROL_KIND_OVERRIDES: Record<string, ControlKind> = {
-  'Space.size': 'number'
+  'Space.size': 'number',
+  // 布尔或 { lineClamp } 对象，推导不出控件种类；开关负责总开关，对象值由场景预设带入
+  'Table.showOverflowTooltip': 'switch',
+  'TableColumn.showOverflowTooltip': 'switch'
 }
 
 const SELECT_OPTIONS_OVERRIDES: Record<string, string[]> = {

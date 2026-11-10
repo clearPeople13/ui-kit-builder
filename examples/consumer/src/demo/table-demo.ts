@@ -28,7 +28,7 @@ interface TableColumnSpec {
   sortable?: boolean
   sortOrders?: Array<'ascending' | 'descending'>
   sortMethod?: 'name-length'
-  showOverflowTooltip?: boolean
+  showOverflowTooltip?: boolean | { lineClamp?: number }
   selectable?: 'active-only'
   showCheckbox?: 'hide-planning'
   indexMethod?: 'sequence'
@@ -332,6 +332,15 @@ const BLUEPRINTS: Record<string, TableColumnSpec[]> = {
   summary: [COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.orders, COLUMN.amount],
   'summary-method': [COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.orders, COLUMN.amount],
   overflow: [COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.remark],
+  // 名称列显式单行，说明列不声明、继承表格级两行
+  'line-clamp': [
+    COLUMN.index,
+    COLUMN.name,
+    COLUMN.city,
+    COLUMN.owner,
+    COLUMN.status,
+    { prop: 'remark', label: '说明', width: 320 }
+  ],
   'row-style': [COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.orders, COLUMN.amount],
   methods: [COLUMN.selection, COLUMN.index, COLUMN.name, COLUMN.city, COLUMN.owner, COLUMN.status, COLUMN.amount],
   events: [
@@ -413,7 +422,7 @@ function specProps(spec: TableColumnSpec): Record<string, any> {
     props.formatter = amountFormatter
   }
   if (spec.showOverflowTooltip) {
-    props.showOverflowTooltip = true
+    props.showOverflowTooltip = spec.showOverflowTooltip
   }
   if (spec.selectable === 'active-only') {
     props.selectable = selectActiveOnly

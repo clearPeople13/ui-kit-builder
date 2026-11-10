@@ -267,10 +267,6 @@
   font-size: 15px;
 }
 
-.ui-table--overflow-tooltip .ui-table__body td {
-  text-overflow: ellipsis;
-}
-
 /* 虚拟滚动把大 rowspan 拆成逐行续接单元格：统一底色、隐藏块内横线，视觉上仍是一块 */
 .ui-table__body td.is-span-start,
 .ui-table__body td.is-span-continuation {

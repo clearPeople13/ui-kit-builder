@@ -11,8 +11,9 @@ import { allBundles, bundleOf, featureEntries, loadTestRegistry, profileNames, r
 
 const BUDGETS = {
   core: { jsBytes: 620_000, cssBytes: 260_000, gzipBytes: 185_000 },
-  full: { jsBytes: 700_000, cssBytes: 285_000, gzipBytes: 205_000 },
-  theme: { cssGrowth: 1.25, totalGrowth: 1.12, gzipBytes: 210_000 }
+  // F-137 新增 table.overflow-tooltip 特性（浮层 + 多行钳制样式），full gzip 实测 205.5 kB
+  full: { jsBytes: 700_000, cssBytes: 285_000, gzipBytes: 212_000 },
+  theme: { cssGrowth: 1.25, totalGrowth: 1.12, gzipBytes: 217_000 }
 }
 
 const registry = await loadTestRegistry()
@@ -56,12 +57,12 @@ describe('体积预算', () => {
     }
   })
 
-  it('开满 172 个特性带来的增量落在可接受区间', () => {
+  it('开满 173 个特性带来的增量落在可接受区间', () => {
     const core = bundleOf('core').meta
     const full = bundleOf('full').meta
     const jsDelta = full.jsBytes - core.jsBytes
     const cssDelta = full.cssBytes - core.cssBytes
-    expect(featureEntries(registry).length).toBe(172)
+    expect(featureEntries(registry).length).toBe(173)
     // 实测：js +83.3 kB、css +20.5 kB；特性翻倍时不至于失控，也不至于什么都没带
     expect(jsDelta).toBeGreaterThan(60_000)
     expect(jsDelta).toBeLessThan(core.jsBytes * 0.2)

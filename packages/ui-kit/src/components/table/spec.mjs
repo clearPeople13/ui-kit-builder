@@ -89,12 +89,6 @@ export default {
           description: '表格布局算法：fixed 固定列宽 / auto 内容撑开'
         },
         {
-          name: 'showOverflowTooltip',
-          type: 'boolean',
-          default: false,
-          description: '单元格内容溢出时以省略号显示并带 title 提示'
-        },
-        {
           name: 'virtual',
           type: 'boolean',
           default: false,
@@ -312,6 +306,22 @@ export default {
               description: '切换全选'
             }
           ]
+        },
+        'table.overflow-tooltip': {
+          title: '内容溢出提示',
+          description:
+            '单元格与表头内容溢出时省略并弹出统一提示浮层，true 为单行、{ lineClamp } 指定行数；列级未声明时继承表格级，false 显式关闭。',
+          module: 'packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts',
+          exportName: 'tableOverflowTooltipFeature',
+          requires: [],
+          props: [
+            {
+              name: 'showOverflowTooltip',
+              type: 'boolean | { lineClamp?: number }',
+              default: false,
+              description: '溢出省略与悬停提示：true 单行，{ lineClamp } 指定行数，作为列级未声明时的回退'
+            }
+          ]
         }
       }
     },
@@ -378,12 +388,6 @@ export default {
           type: 'string',
           default: '',
           description: '表头单元格类名'
-        },
-        {
-          name: 'showOverflowTooltip',
-          type: 'boolean',
-          default: false,
-          description: '该列内容溢出时省略并显示 title 提示'
         },
         {
           name: 'index',
@@ -469,6 +473,22 @@ export default {
               default: false,
               description:
                 '树形数据多选时父子是否联动勾选，默认 false 联动并显示半选，置为 true 后各级独立勾选，仅在选择列配合树形数据时生效'
+            }
+          ]
+        },
+        'table.overflow-tooltip': {
+          title: '列溢出提示配置',
+          description:
+            '为单个列覆盖溢出省略与悬停提示，true 单行、{ lineClamp } 指定行数；不声明时继承表格级 showOverflowTooltip，false 显式关闭。',
+          module: 'packages/ui-kit/src/components/table/features/overflow-tooltip/index.ts',
+          exportName: 'tableOverflowTooltipFeature',
+          requires: [],
+          props: [
+            {
+              name: 'showOverflowTooltip',
+              type: 'boolean | { lineClamp?: number }',
+              default: false,
+              description: '该列溢出省略与悬停提示：true 单行，{ lineClamp } 指定行数，不声明时继承表格级'
             }
           ]
         }

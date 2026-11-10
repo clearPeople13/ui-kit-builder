@@ -1011,7 +1011,17 @@ const BASE_SCENE_PRESETS: Record<string, ScenePreset[]> = {
       '列内容省略',
       { showOverflowTooltip: true },
       {
-        hint: 'showOverflowTooltip 让所有文本列单行省略，悬停看 title'
+        hint: 'showOverflowTooltip 让所有文本列单行省略，悬停看统一浮层的全文',
+        requires: 'table.overflow-tooltip'
+      }
+    ),
+    tableScene(
+      'line-clamp',
+      '多行省略',
+      { showOverflowTooltip: { lineClamp: 2 } },
+      {
+        hint: 'lineClamp=2 时未单独配置的列最多两行，显式单行的列保持不变，悬停浮层给出全文',
+        requires: 'table.overflow-tooltip'
       }
     ),
     tableScene(

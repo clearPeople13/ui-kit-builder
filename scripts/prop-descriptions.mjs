@@ -201,7 +201,7 @@ export const PROP_DESCRIPTIONS = {
   noDataText: '无数据提示文本',
   formatter: '格式化函数',
   rowKey: '行唯一标识字段',
-  showOverflowTooltip: '内容超出时是否显示 tooltip',
+  showOverflowTooltip: '内容超出时省略并悬停显示全文，true 单行、{ lineClamp } 多行',
   fixed: '是否固定列',
   cache: '是否缓存',
   stretch: '是否拉伸填充',

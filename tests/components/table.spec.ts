@@ -504,12 +504,35 @@ describe('Table', () => {
     expect(wrapper.findAll('tbody tr').length).toBeGreaterThan(1)
   })
 
-  it('showOverflowTooltip 写入 title 与类名', async () => {
+  it('showOverflowTooltip 包出测量盒，列级可继承/覆盖且支持多行', async () => {
     const wrapper = await setup({ showOverflowTooltip: true })
-    expect(wrapper.classes()).toContain('ui-table--overflow-tooltip')
-    expect(wrapper.findAll('tbody tr')[0].findAll('td')[1].attributes('title')).toBe('A')
-    const off = await setup({})
-    expect(off.findAll('tbody tr')[0].findAll('td')[1].attributes('title')).toBeUndefined()
+    const cell = wrapper.findAll('tbody tr')[0].findAll('td')[1]
+    expect(cell.find('.ui-table__cell-text').text()).toBe('A')
+    expect(cell.find('.ui-table__cell-text').classes()).not.toContain('is-clamped')
+    expect(wrapper.find('thead th .ui-table__cell-text').text()).toBe('ID')
+    expect(cell.attributes('title')).toBeUndefined()
+
+    expect((await setup({})).find('.ui-table__cell-text').exists()).toBe(false)
+
+    const clamped = (await setup({ showOverflowTooltip: { lineClamp: 2 } }))
+      .findAll('tbody tr')[0]
+      .findAll('td')[1]
+      .find('.ui-table__cell-text')
+    expect(clamped.classes()).toContain('is-clamped')
+    expect(clamped.attributes('style')).toContain('--ui-table-line-clamp: 2')
+
+    const overridden = await setup(
+      { showOverflowTooltip: true },
+      {
+        default: () => [
+          h(TableColumn, { prop: 'name', label: '名称', showOverflowTooltip: false }),
+          h(TableColumn, { prop: 'age', label: '年龄' })
+        ]
+      }
+    )
+    const cells = overridden.findAll('tbody tr')[0].findAll('td')
+    expect(cells[0].find('.ui-table__cell-text').exists()).toBe(false)
+    expect(cells[1].find('.ui-table__cell-text').exists()).toBe(true)
   })
 
   it('tableLayout 影响内层表格布局', async () => {

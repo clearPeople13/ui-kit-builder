@@ -172,6 +172,7 @@
 | F-134 | [§59](#s59) |
 | F-135 | [§59](#s59) |
 | F-136 | [§59](#s59) |
+| F-137 | [§60](#s60) |
 
 <a id="s1"></a>
 
@@ -1676,3 +1677,24 @@ W4b 进一步把组件 glob 改为真正的逐文件下限（`perFile: true` + 3
 ### 59.3 顺带收敛（不新增缺陷编号）
 
 - 缺陷索引补齐 F-134…F-136 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 136 条。
+
+## 60. 表格溢出提示统一浮层（F-137）
+
+> 触发：真实反馈「table 的 showOverflowTooltip 属性问题很大」。原生 `title` 提示样式不可控、不跟随主题、表头不参与，而且只有单行一种口径。本波次在 `fix/20261110-table-overflow` 上把它做成「表头 + 单元格共用的一套浮层」，同时支持配置多行钳制；语义对齐 Element Plus：列级未声明继承表格级，列级 `true` / `false` 覆盖。
+
+### 60.1 缺陷登记
+
+| 编号  | 文件 | 现象 | 根因 | 修复 |
+| ----- | ---- | ---- | ---- | ---- |
+| F-137 | `packages/ui-kit/src/components/table/core.ts`、`packages/ui-kit/src/components/table/core.css`、`packages/ui-kit/src/components/table/spec.mjs`、`packages/ui-kit/src/components/table/features/overflow-tooltip/`、`tests/components/table.spec.ts`、`tests/browser/table-overflow-tooltip.spec.ts`、`tests/browser/harness/main.ts`、`examples/consumer/src/demo/` | `showOverflowTooltip` 只给 `td` 挂原生 `title`：样式与主题脱节、表头不提示、空 `title` 也会出现浏览器默认气泡；单行省略写死，长说明只能被裁成一行；列级关闭后连表头都跟着失效，与表格级开关的关系靠 `title` 是否为 `undefined` 隐式决定 | core 里 `cellTitle()` 把开关当成 `title` 属性的开关，省略样式由根节点类 `ui-table--overflow-tooltip` 的 `text-overflow: ellipsis` 统一施加；没有内容挂点，列级值只能通过 `title` 传下去；多行钳制无从表达 | 新增 `table.overflow-tooltip` 特性：内容挂点包出 `.ui-table__cell-text` 测量盒，属性挂点按列生效；表头 / 单元格共用 `useFloatingPanel` 浮层，悬停时从测量盒取全文。列级未声明继承表格级、`false` 关闭；`true` 单行、`{ lineClamp }` 多行（表头固定单行）。多行是否溢出先临时切回普通块量真实高度再还原（钳制态 `scrollHeight` 只到钳制高度）。core 删除 `cellTitle`、根类与对应 CSS 死规则 |
+
+### 60.2 反证与验证
+
+- 组件层：`tests/components/table.spec.ts` 新增「包出测量盒、列级继承/覆盖、多行钳制变量」用例；把 `core.ts` 回退到改前会红（无 `.ui-table__cell-text`、`title` 仍存在），修复后 67/67 绿。
+- 浏览器层：`tests/browser/table-overflow-tooltip.spec.ts` 9/9 绿——33 个测量盒 / 20 个钳制盒、两行高度 ≥ 短行 1.8 倍且展开后更高、长表头省略、浮层贴单元格下方 8px、单行与多行都给出全文、短文本与列级关闭不弹、长表头同样提示、移开鼠标与滚动表体都收起、全程无控制台告警。
+- 调试台：`overflow` 场景补 `table.overflow-tooltip` 依赖并改写提示文案（不再说看 `title`）；新增 `line-clamp` 场景（名称列显式单行、说明列继承两行）；`showOverflowTooltip` 控件按开关推导，对象值由场景预设带入；`table-demo.ts` 的列配置类型同步放开为 `boolean | { lineClamp?: number }`。
+
+### 60.3 顺带收敛（不新增缺陷编号）
+
+- `showOverflowTooltip` 从 `core` prop 全量移入特性（表格与列各一条），分类与构建器裁剪口径一致；`registry` 特性数由 172 增至 173，四处计数同步。
+- 缺陷索引补齐 F-137 的「编号 → 章节」引用；README / KNOWLEDGE / REQUIREMENTS 三处口径同步为 137 条。
